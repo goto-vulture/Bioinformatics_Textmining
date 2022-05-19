@@ -1,0 +1,38 @@
+# Konfigurationsdateien von Eclipse
+.project
+.cproject
+.settings/
+gmon.out
+Debug/
+Release/
+
+# Konfigurationsdatei vom Buildsystem scons
+.sconsign.dblite
+
+# Kompilierungsergebnisse
+Bioinformatics_Textmining*
+*.exe
+
+# Exportiere Binary unter Android (Export mittels C4droid)
+*.apk
+
+# Objektdateien
+debug_c_object_*
+release_c_object_*
+*.o
+
+# Vorkompilierte Header Dateien
+src/Error_Handling/*.gch
+
+# Konfiguationsdatei, wenn das Projekt auf Android mittels C4droid uebersetzt wird
+.c4droid
+
+# Profiling Daten von oprofile
+oprofile_data/
+
+# Von doxygen erstellte Dokumentation
+Documentation/
+
+# Programmausgaben, die in eine Datei weitergeleitet werden
+out.txt
+out_error.txt
