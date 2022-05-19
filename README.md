@@ -1,1 +1,1 @@
-# Big_Data_in_der_Bioinformatik_Textmining
+# Bioinformatics_Textmining
