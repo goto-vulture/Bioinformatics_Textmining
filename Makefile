@@ -240,7 +240,7 @@ clean:
 	@echo Clean Bioinformatics_Textmining build.
 	@echo
 	@echo \> Deleting compilation files:
-	$(RM) -f $(PROJECT_NAME)* *.o ./src/Alkane/*.gch ./src/Error_Handling/*.gch gmon.out
+	$(RM) -f $(PROJECT_NAME)* *.o ./src/Error_Handling/*.gch gmon.out
 	@echo
 	@echo \> Deleting doxygen documentation:
 	$(RM) -rf $(DOCUMENTATION_PATH)
