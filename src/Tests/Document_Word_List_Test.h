@@ -21,6 +21,7 @@ extern "C"
 
 
 extern _Bool TEST_Intersection (void);
+extern _Bool TEST_Intersection_With_Random_Data (void);
 
 
 

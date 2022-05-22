@@ -111,6 +111,7 @@ int main (const int argc, const char* argv [])
     (void) argv;
 
     TEST_Intersection();
+    TEST_Intersection_With_Random_Data();
 
     Show_Dynamic_Memory_Status();
 

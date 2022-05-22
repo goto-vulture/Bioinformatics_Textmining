@@ -11,6 +11,7 @@
 #include "../Error_Handling/Assert_Msg.h"
 #include "../Error_Handling/Dynamic_Memory.h"
 #include "../Print_Tools.h"
+#include "Create_Test_Data.h"
 
 
 
@@ -106,6 +107,20 @@ extern _Bool TEST_Intersection (void)
         Delete_Document_Word_List(intersection_objects [i]);
         intersection_objects[i] = NULL;
     }
+
+    return result;
+}
+
+extern _Bool TEST_Intersection_With_Random_Data (void)
+{
+    _Bool result = false;
+
+    struct Document_Word_List* list_with_random_data = Create_Document_Word_List_With_Random_Test_Data
+            (5, 25, 100);
+
+    Show_Data_And_Attributes_From_Document_Word_List(list_with_random_data);
+    Delete_Document_Word_List(list_with_random_data);
+    list_with_random_data = NULL;
 
     return result;
 }
