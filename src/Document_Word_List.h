@@ -82,4 +82,4 @@ Intersect_Data_With_Document_Word_List
 }
 #endif /* __cplusplus */
 
-#endif /* DOCUMENT_WORD_LIST_H_ */
+#endif /* DOCUMENT_WORD_LIST_H */
