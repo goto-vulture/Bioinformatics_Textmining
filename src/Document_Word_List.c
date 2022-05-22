@@ -133,6 +133,26 @@ Show_Data_From_Document_Word_List
 
 //---------------------------------------------------------------------------------------------------------------------
 
+extern void
+Show_Data_And_Attributes_From_Document_Word_List
+(
+        const struct Document_Word_List* const object
+)
+{
+    ASSERT_MSG(object != NULL, "Object is NULL !");
+
+    Show_Data_From_Document_Word_List(object);
+
+    puts ("> Attributes <");
+    printf ("Intersection data: %s\n", (object->intersection_data /* == true */) ? "yes" : "no");
+    printf ("Number of arrays: %zu\n", object->number_of_arrays);
+    printf ("Max. array length: %zu\n", object->max_array_length);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 extern struct Document_Word_List*
 Intersect_Data_With_Document_Word_List
 (
@@ -156,6 +176,7 @@ Intersect_Data_With_Document_Word_List
             sizeof (struct Document_Word_List) + object->number_of_arrays * object->max_array_length *
             sizeof (uint_fast32_t));
     intersection_result->next_free_array = object->next_free_array;
+    intersection_result->intersection_data = true;
 
     // Fuer den ersten Versuch die naive Variant fuer die Bestimmung der Schnittmenge
     for (size_t i = 0; i < object->number_of_arrays; ++ i)

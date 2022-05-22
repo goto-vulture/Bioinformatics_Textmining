@@ -34,6 +34,8 @@ struct Document_Word_List
     uint_fast32_t next_free_array;
     size_t max_array_length;
     size_t number_of_arrays;
+
+    _Bool intersection_data;
 };
 
 
@@ -61,6 +63,12 @@ Append_Data_To_Document_Word_List
 
 extern void
 Show_Data_From_Document_Word_List
+(
+        const struct Document_Word_List* const object
+);
+
+extern void
+Show_Data_And_Attributes_From_Document_Word_List
 (
         const struct Document_Word_List* const object
 );
