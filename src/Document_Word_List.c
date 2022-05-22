@@ -118,7 +118,7 @@ Show_Data_From_Document_Word_List
         printf ("%zu {", (i + 1));
         for (size_t i2 = 0; i2 < object->arrays_lengths [i]; ++ i2)
         {
-            printf (PRIuFAST32, object->data [i][i2]);
+            printf ("%" PRIuFAST32, object->data [i][i2]);
 
             if ((i2 + 1) < object->arrays_lengths [i])
             {
