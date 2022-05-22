@@ -73,6 +73,7 @@ extern _Bool TEST_Intersection (void)
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(test_data); ++ i)
     {
         Show_Data_And_Attributes_From_Document_Word_List(test_data [i]);
+        puts("");
     }
 
     // Das erste Objekt ist das Original-Objekt, welches die Menge enthalt, worauf die Schnittmengen gebildet werden
@@ -91,6 +92,7 @@ extern _Bool TEST_Intersection (void)
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(intersection_objects); ++ i)
     {
         Show_Data_And_Attributes_From_Document_Word_List(intersection_objects [i]);
+        puts("");
     }
 
     // Beide Arrays loeschen

@@ -9,6 +9,7 @@
 #include <string.h>
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
+#include "Misc.h"
 
 
 
@@ -115,17 +116,17 @@ Show_Data_From_Document_Word_List
     puts ("> Data <");
     for (size_t i = 0; i < object->number_of_arrays; ++ i)
     {
-        printf ("%zu {", (i + 1));
+        printf ("%2zu: { ", (i + 1));
         for (size_t i2 = 0; i2 < object->arrays_lengths [i]; ++ i2)
         {
-            printf ("%" PRIuFAST32, object->data [i][i2]);
+            printf ("%2" PRIuFAST32, object->data [i][i2]);
 
             if ((i2 + 1) < object->arrays_lengths [i])
             {
                 printf (", ");
             }
         }
-        puts("}");
+        puts(" }");
     }
 
     return;
@@ -143,10 +144,12 @@ Show_Data_And_Attributes_From_Document_Word_List
 
     Show_Data_From_Document_Word_List(object);
 
+    const int formatter_int = (int) MAX((object->number_of_arrays / 10) + 1, (object->max_array_length / 10) + 1);
+
     puts ("> Attributes <");
-    printf ("Intersection data: %s\n", (object->intersection_data /* == true */) ? "yes" : "no");
-    printf ("Number of arrays: %zu\n", object->number_of_arrays);
-    printf ("Max. array length: %zu\n", object->max_array_length);
+    printf ("Intersection data: %s\n", (object->intersection_data /* == true */) ? "YES" : "NO");
+    printf ("Number of arrays:  %*zu\n", formatter_int, object->number_of_arrays);
+    printf ("Max. array length: %*zu\n", formatter_int, object->max_array_length);
 
     return;
 }
