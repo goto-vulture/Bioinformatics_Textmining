@@ -167,6 +167,9 @@ STRING_TOOLS_C = ./src/String_Tools.c
 
 DOCUMENT_WORD_LIST_H = ./src/Document_Word_List.h
 DOCUMENT_WORD_LIST_C = ./src/Document_Word_List.c
+
+DOCUMENT_WORD_LIST_TEST_H = ./src/Tests/Document_Word_List_Test.h
+DOCUMENT_WORD_LIST_TEST_C = ./src/Tests/Document_Word_List_Test.c
 ##### ##### ##### ENDE Uebersetzungseinheiten ##### ##### #####
 
 
@@ -189,11 +192,11 @@ endif
 	@echo
 	@echo Bioinformatics_Textmining build completed !
 
-$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o
+$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o Document_Word_List_Test.o
 	@echo
 	@echo Linking object files ...
 	@echo
-	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o
+	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o Document_Word_List_Test.o
 
 ##### BEGINN Die einzelnen Uebersetzungseinheiten #####
 main.o: $(MAIN_C)
@@ -239,6 +242,9 @@ String_Tools.o: $(STRING_TOOLS_C)
 
 Document_Word_List.o: $(DOCUMENT_WORD_LIST_C)
 	$(CC) $(CCFLAGS) -c $(DOCUMENT_WORD_LIST_C)
+
+Document_Word_List_Test.o: $(DOCUMENT_WORD_LIST_TEST_C)
+	$(CC) $(CCFLAGS) -c $(DOCUMENT_WORD_LIST_TEST_C)
 ##### ENDE Die einzelnen Uebersetzungseinheiten #####
 
 # Alles wieder aufraeumen
