@@ -29,7 +29,13 @@ Create_Document_Word_List_With_Random_Test_Data
     ASSERT_ALLOC(result_object, "Cannot create new Document_Word_List with random test data !",
             sizeof (struct Document_Word_List));
 
-    srand((unsigned int) time(NULL));
+    // Hiermit wird sichergestellt, dass der Seed fuer die Zufallszahlen nur einmal gesetzt wird
+    static _Bool init_done = false;
+    if (init_done == false)
+    {
+        srand((unsigned int) time(NULL));
+    }
+    init_done = true;
 
     for (size_t i = 0; i < number_of_arrays; ++ i)
     {
