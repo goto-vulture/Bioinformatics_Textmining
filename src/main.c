@@ -90,6 +90,8 @@
 
 #include <stdlib.h>
 #include <assert.h>
+#include "Error_Handling/Dynamic_Memory.h"
+#include "Tests/Document_Word_List_Test.h"
 
 //=====================================================================================================================
 
@@ -107,6 +109,10 @@ int main (const int argc, const char* argv [])
 {
     (void) argc;
     (void) argv;
+
+    TEST_Intersection();
+
+    Show_Dynamic_Memory_Status();
 
     return EXIT_SUCCESS;
 }
