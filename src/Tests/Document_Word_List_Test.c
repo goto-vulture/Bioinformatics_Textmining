@@ -6,6 +6,7 @@
  */
 
 #include "Document_Word_List_Test.h"
+#include <time.h>
 #include "../Document_Word_List.h"
 #include "../Misc.h"
 #include "../Error_Handling/Assert_Msg.h"
@@ -116,17 +117,22 @@ extern _Bool TEST_Intersection_With_Random_Data (void)
     _Bool result = false;
 
     struct Document_Word_List* list_one_with_random_data = Create_Document_Word_List_With_Random_Test_Data
-            (5, 10, 10);
+            (10, 50000, 10);
     struct Document_Word_List* list_two_with_random_data = Create_Document_Word_List_With_Random_Test_Data
-            (5, 10, 10);
+            (10, 50000, 10);
 
-    Show_Data_And_Attributes_From_Document_Word_List(list_one_with_random_data);
-    Show_Data_And_Attributes_From_Document_Word_List(list_two_with_random_data);
+    // Show_Data_And_Attributes_From_Document_Word_List(list_one_with_random_data);
+    // Show_Data_And_Attributes_From_Document_Word_List(list_two_with_random_data);
 
     // Eine Schnittmenge mit den Zufallszahlen ausfuehren und die Zeit bestimmen
+    const clock_t begin = clock();
+    ASSERT_MSG(begin != -1, "Time values are not available on this system !");
     struct Document_Word_List* intersection_data =
             Intersect_Data_With_Document_Word_List(list_two_with_random_data, list_one_with_random_data->data [0],
                     list_one_with_random_data->arrays_lengths[0], INTERSECTION_MODE_DEFAULTS);
+    const clock_t end = clock();
+    ASSERT_MSG(end != -1, "Time values are not available on this system !");
+    printf ("Time for the intersection: %10.4f sec.\n", (float)(end - begin) / CLOCKS_PER_SEC);
 
     Show_Data_And_Attributes_From_Document_Word_List(intersection_data);
 
