@@ -89,9 +89,9 @@ Append_Data_To_Document_Word_List
     ASSERT_MSG(new_data != NULL, "New data is NULL !");
     ASSERT_MSG(data_length != 0, "New data length is 0 !");
 
-    ASSERT_FMSG(data_length < object->max_array_length, "New data is too large ! Value %zu; max. valid: %zu",
+    ASSERT_FMSG(data_length <= object->max_array_length, "New data is too large ! Value %zu; max. valid: %zu",
             data_length, object->max_array_length);
-    ASSERT_FMSG(object->number_of_arrays < (size_t) object->next_free_array, "All arrays are in use ! (%zu arrays)",
+    ASSERT_FMSG(object->number_of_arrays > (size_t) object->next_free_array, "All arrays are in use ! (%zu arrays)",
             object->number_of_arrays);
 
     // Daten kopieren
@@ -147,7 +147,7 @@ Intersect_Data_With_Document_Word_List
     ASSERT_MSG(data != NULL, "data is NULL !");
     ASSERT_MSG(data_length != 0, "data length is 0 !");
     ASSERT_MSG(mode == INTERSECTION_MODE_DEFAULTS, "Invalid intersection mode !");
-    ASSERT_FMSG(data_length < object->max_array_length, "data is too large ! Value %zu; max. valid: %zu",
+    ASSERT_FMSG(data_length <= object->max_array_length, "data is too large ! Value %zu; max. valid: %zu",
             data_length, object->max_array_length)
 
     struct Document_Word_List* intersection_result = Create_Document_Word_List (object->number_of_arrays,
