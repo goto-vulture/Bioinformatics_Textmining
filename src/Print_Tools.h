@@ -152,6 +152,13 @@ extern "C"
  */
 extern void Print_2D_String_Array (const char* const restrict drawing [], const size_t dim_1, const size_t dim_2);
 
+/**
+ * @brief Die Anzahl an Ziffern in einer Zahl bestimmen.
+ *
+ * @param[in] value Zahl, die betrachtet wird.
+ */
+extern size_t Count_Number_Of_Digits (size_t value);
+
 
 
 // ENDE C++-Kompablitaet herstellen

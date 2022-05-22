@@ -10,6 +10,7 @@
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Misc.h"
+#include "Print_Tools.h"
 
 
 
@@ -144,7 +145,8 @@ Show_Data_And_Attributes_From_Document_Word_List
 
     Show_Data_From_Document_Word_List(object);
 
-    const int formatter_int = (int) MAX((object->number_of_arrays / 10) + 1, (object->max_array_length / 10) + 1);
+    const int formatter_int = (int) MAX(Count_Number_Of_Digits(object->number_of_arrays),
+            Count_Number_Of_Digits(object->max_array_length));
 
     puts ("> Attributes <");
     printf ("Intersection data: %s\n", (object->intersection_data /* == true */) ? "YES" : "NO");
