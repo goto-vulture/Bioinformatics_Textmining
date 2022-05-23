@@ -16,6 +16,8 @@
 
 
 
+//---------------------------------------------------------------------------------------------------------------------
+
 extern _Bool TEST_Intersection (void)
 {
     _Bool result = false;
@@ -146,6 +148,8 @@ extern _Bool TEST_Intersection_With_Random_Data (void)
     return result;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
 {
     _Bool result = false;
@@ -178,3 +182,5 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
 
     return result;
 }
+
+//---------------------------------------------------------------------------------------------------------------------

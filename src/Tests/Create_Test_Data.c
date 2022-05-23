@@ -25,6 +25,8 @@ static void Create_Random_Data
 
 
 
+//---------------------------------------------------------------------------------------------------------------------
+
 extern struct Document_Word_List*
 Create_Document_Word_List_With_Random_Test_Data
 (
@@ -44,6 +46,8 @@ Create_Document_Word_List_With_Random_Test_Data
 
     return result_object;
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 extern struct Document_Word_List*
 Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
@@ -108,6 +112,8 @@ Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
     return result_object;
 }
 
+//=====================================================================================================================
+
 static void Create_Random_Data
 (
         const size_t number_of_arrays,
@@ -148,3 +154,6 @@ static void Create_Random_Data
 
     return;
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+

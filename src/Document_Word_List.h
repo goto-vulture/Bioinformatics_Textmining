@@ -21,6 +21,8 @@ extern "C"
 
 
 
+//=====================================================================================================================
+
 enum Intersection_Mode
 {
     INTERSECTION_MODE_DEFAULTS = 1 << 0
@@ -38,7 +40,7 @@ struct Document_Word_List
     _Bool intersection_data;
 };
 
-
+//=====================================================================================================================
 
 extern struct Document_Word_List*
 Create_Document_Word_List
