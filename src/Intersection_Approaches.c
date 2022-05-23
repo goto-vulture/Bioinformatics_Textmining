@@ -194,12 +194,15 @@ Binary_Search
 
     _Bool result = false;
 
-    uint_fast32_t left = 0;
-    uint_fast32_t right = data_size - 1;
+    // Diese Werte MUESSEN mit Vorzeichen sein, da in machen Faellen right -1 annimmt !
+    int_fast32_t left = 0;
+    int_fast32_t right = (int_fast32_t) (data_size - 1);
 
     while (left <= right)
     {
-        const uint_fast32_t middle = left + ((right - left) / 2);
+        // Hier wird der moegliche negative Wert fuer right durch die Ganzzahldivision auf -0 ausgewertet
+        // Ausdruck dieses Sonderfalls: 0 + ((-1 + 0) / 2) => 0 + (-0) => 0
+        const int_fast32_t middle = left + ((right - left) / 2);
         if (data [middle] == search_value)
         {
             result = true;
