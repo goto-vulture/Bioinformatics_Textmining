@@ -28,6 +28,14 @@ Intersection_Approach_2_Nested_Loops
     const size_t data_length
 );
 
+extern struct Document_Word_List*
+Intersection_Approach_QSort_And_Binary_Search
+(
+    const struct Document_Word_List* const restrict object,
+    const uint_fast32_t* const restrict data,
+    const size_t data_length
+);
+
 
 
 // ENDE C++-Kompablitaet herstellen
