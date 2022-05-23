@@ -35,6 +35,12 @@
 #error "The macro \"RAND_UPPER_BOUND\" is already defined !"
 #endif /* RAND_UPPER_BOUND */
 
+static void Use_All_Intersection_Modes
+(
+        struct Document_Word_List* data_1,
+        struct Document_Word_List* data_2
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 extern _Bool TEST_Intersection (void)
@@ -138,32 +144,17 @@ extern _Bool TEST_Intersection_With_Random_Data (void)
     _Bool result = false;
 
     struct Document_Word_List* list_one_with_random_data = Create_Document_Word_List_With_Random_Test_Data
-            (NUMBER_OF_ARRAYS, MAX_ARRAY_LENGTH, RAND_UPPER_BOUND);
+            (1, MAX_ARRAY_LENGTH, RAND_UPPER_BOUND);
     struct Document_Word_List* list_two_with_random_data = Create_Document_Word_List_With_Random_Test_Data
             (NUMBER_OF_ARRAYS, MAX_ARRAY_LENGTH, RAND_UPPER_BOUND);
 
-    // Show_Data_And_Attributes_From_Document_Word_List(list_one_with_random_data);
-    // Show_Data_And_Attributes_From_Document_Word_List(list_two_with_random_data);
-
-    // Eine Schnittmenge mit den Zufallszahlen ausfuehren und die Zeit bestimmen
-    const clock_t begin = clock();
-    ASSERT_MSG(begin != -1, "Time values are not available on this system !");
-    struct Document_Word_List* intersection_data =
-            Intersect_Data_With_Document_Word_List(list_two_with_random_data, list_one_with_random_data->data [0],
-                    list_one_with_random_data->arrays_lengths[0], INTERSECTION_MODE_2_NESTED_LOOPS);
-    const clock_t end = clock();
-    ASSERT_MSG(end != -1, "Time values are not available on this system !");
-    printf ("Time for the intersection: %10.4f sec.\n", (float)(end - begin) / CLOCKS_PER_SEC);
-
-    Show_Data_And_Attributes_From_Document_Word_List(intersection_data);
-    puts("");
+    // Eine Schnittmenge mit den Zufallszahlen ausfuehren und die Zeit bestimmen (Alle Modi verwenden)
+    Use_All_Intersection_Modes (list_one_with_random_data, list_two_with_random_data);
 
     Delete_Document_Word_List(list_one_with_random_data);
     Delete_Document_Word_List(list_two_with_random_data);
-    Delete_Document_Word_List(intersection_data);
     list_one_with_random_data = NULL;
     list_two_with_random_data = NULL;
-    intersection_data = NULL;
 
     return result;
 }
@@ -174,34 +165,71 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
 {
     _Bool result = false;
 
-    struct Document_Word_List* list_one_with_random_data = Create_Document_Word_List(1, 5);
+    struct Document_Word_List* list_one_with_specified_data = Create_Document_Word_List(1, 5);
     const uint_fast32_t array_data [] = { 0, 2, 4, 6, 8 };
-    Append_Data_To_Document_Word_List(list_one_with_random_data, array_data, COUNT_ARRAY_ELEMENTS(array_data));
+    Append_Data_To_Document_Word_List(list_one_with_specified_data, array_data, COUNT_ARRAY_ELEMENTS(array_data));
 
     struct Document_Word_List* list_two_with_random_data = Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
             (array_data, COUNT_ARRAY_ELEMENTS(array_data), NUMBER_OF_ARRAYS, MAX_ARRAY_LENGTH, RAND_UPPER_BOUND);
 
     // Eine Schnittmenge mit den Zufallszahlen ausfuehren und die Zeit bestimmen
-    const clock_t begin = clock();
-    ASSERT_MSG(begin != -1, "Time values are not available on this system !");
-    struct Document_Word_List* intersection_data =
-            Intersect_Data_With_Document_Word_List(list_two_with_random_data, list_one_with_random_data->data [0],
-                    list_one_with_random_data->arrays_lengths[0], INTERSECTION_MODE_2_NESTED_LOOPS);
-    const clock_t end = clock();
-    ASSERT_MSG(end != -1, "Time values are not available on this system !");
-    printf ("Time for the intersection: %10.4f sec.\n", (float)(end - begin) / CLOCKS_PER_SEC);
+    Use_All_Intersection_Modes(list_one_with_specified_data, list_two_with_random_data);
 
-    Show_Data_And_Attributes_From_Document_Word_List(intersection_data);
-    puts("");
-
-    Delete_Document_Word_List(list_one_with_random_data);
+    Delete_Document_Word_List(list_one_with_specified_data);
     Delete_Document_Word_List(list_two_with_random_data);
-    Delete_Document_Word_List(intersection_data);
-    list_one_with_random_data = NULL;
+    list_one_with_specified_data = NULL;
     list_two_with_random_data = NULL;
-    intersection_data = NULL;
 
     return result;
+}
+
+//=====================================================================================================================
+
+static void Use_All_Intersection_Modes
+(
+        struct Document_Word_List* data_1,
+        struct Document_Word_List* data_2
+)
+{
+    ASSERT_MSG(data_1 != NULL, "data 1 is NULL !");
+    ASSERT_MSG(data_2 != NULL, "data 2 is NULL !");
+
+    const enum Intersection_Mode used_modes [] =
+    {
+            INTERSECTION_MODE_2_NESTED_LOOPS,
+            INTERSECTION_MODE_QSORT_AND_BINARY_SEARCH
+    };
+    for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(used_modes); ++ i)
+    {
+        const clock_t begin = clock();
+        ASSERT_MSG(begin != -1, "Time values are not available on this system !");
+        struct Document_Word_List* intersection_data =
+                Intersect_Data_With_Document_Word_List(data_2, data_1->data [0], data_1->arrays_lengths[0],
+                        used_modes [i]);
+        const clock_t end = clock();
+        ASSERT_MSG(end != -1, "Time values are not available on this system !");
+
+        printf ("Mode: ");
+        switch (used_modes [i])
+        {
+        case INTERSECTION_MODE_2_NESTED_LOOPS:
+            printf ("2 nested loops:          ");
+            break;
+        case INTERSECTION_MODE_QSORT_AND_BINARY_SEARCH:
+            printf ("QSort and binary search: ");
+            break;
+        default:
+            ASSERT_MSG(false, "Default path executed !");
+        }
+        printf ("%10.4f sec.\n", (float)(end - begin) / CLOCKS_PER_SEC);
+
+        //Show_Data_And_Attributes_From_Document_Word_List(intersection_data);
+        // puts("");
+        Delete_Document_Word_List(intersection_data);
+        intersection_data = NULL;
+    }
+
+    return;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
