@@ -155,6 +155,7 @@ extern _Bool TEST_Intersection_With_Random_Data (void)
     printf ("Time for the intersection: %10.4f sec.\n", (float)(end - begin) / CLOCKS_PER_SEC);
 
     Show_Data_And_Attributes_From_Document_Word_List(intersection_data);
+    puts("");
 
     Delete_Document_Word_List(list_one_with_random_data);
     Delete_Document_Word_List(list_two_with_random_data);
@@ -190,6 +191,7 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
     printf ("Time for the intersection: %10.4f sec.\n", (float)(end - begin) / CLOCKS_PER_SEC);
 
     Show_Data_And_Attributes_From_Document_Word_List(intersection_data);
+    puts("");
 
     Delete_Document_Word_List(list_one_with_random_data);
     Delete_Document_Word_List(list_two_with_random_data);
