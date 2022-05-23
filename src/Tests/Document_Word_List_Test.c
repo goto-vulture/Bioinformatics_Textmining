@@ -16,6 +16,24 @@
 
 
 
+#ifndef NUMBER_OF_ARRAYS
+#define NUMBER_OF_ARRAYS 20
+#else
+#error "The macro \"NUMBER_OF_ARRAYS\" is already defined !"
+#endif /* NUMBER_OF_ARRAYS */
+
+#ifndef MAX_ARRAY_LENGTH
+#define MAX_ARRAY_LENGTH 25000
+#else
+#error "The macro \"MAX_ARRAY_LENGTH\" is already defined !"
+#endif /* MAX_ARRAY_LENGTH */
+
+#ifndef RAND_UPPER_BOUND
+#define RAND_UPPER_BOUND 10
+#else
+#error "The macro \"RAND_UPPER_BOUND\" is already defined !"
+#endif /* RAND_UPPER_BOUND */
+
 //---------------------------------------------------------------------------------------------------------------------
 
 extern _Bool TEST_Intersection (void)
@@ -119,9 +137,9 @@ extern _Bool TEST_Intersection_With_Random_Data (void)
     _Bool result = false;
 
     struct Document_Word_List* list_one_with_random_data = Create_Document_Word_List_With_Random_Test_Data
-            (10, 50000, 10);
+            (NUMBER_OF_ARRAYS, MAX_ARRAY_LENGTH, RAND_UPPER_BOUND);
     struct Document_Word_List* list_two_with_random_data = Create_Document_Word_List_With_Random_Test_Data
-            (10, 50000, 10);
+            (NUMBER_OF_ARRAYS, MAX_ARRAY_LENGTH, RAND_UPPER_BOUND);
 
     // Show_Data_And_Attributes_From_Document_Word_List(list_one_with_random_data);
     // Show_Data_And_Attributes_From_Document_Word_List(list_two_with_random_data);
@@ -159,7 +177,7 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
     Append_Data_To_Document_Word_List(list_one_with_random_data, array_data, COUNT_ARRAY_ELEMENTS(array_data));
 
     struct Document_Word_List* list_two_with_random_data = Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
-            (array_data, COUNT_ARRAY_ELEMENTS(array_data), 10, 50000, 10);
+            (array_data, COUNT_ARRAY_ELEMENTS(array_data), NUMBER_OF_ARRAYS, MAX_ARRAY_LENGTH, RAND_UPPER_BOUND);
 
     // Eine Schnittmenge mit den Zufallszahlen ausfuehren und die Zeit bestimmen
     const clock_t begin = clock();
@@ -184,3 +202,15 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+#ifdef NUMBER_OF_ARRAYS
+#undef NUMBER_OF_ARRAYS
+#endif /* NUMBER_OF_ARRAYS */
+
+#ifdef MAX_ARRAY_LENGTH
+#undef MAX_ARRAY_LENGTH
+#endif /* MAX_ARRAY_LENGTH */
+
+#ifdef RAND_UPPER_BOUND
+#undef RAND_UPPER_BOUND
+#endif /* RAND_UPPER_BOUND */
