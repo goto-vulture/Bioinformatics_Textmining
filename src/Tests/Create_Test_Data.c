@@ -6,6 +6,7 @@
  */
 
 #include "Create_Test_Data.h"
+
 #include <stdlib.h>
 #include <time.h>
 #include <inttypes.h>
@@ -15,6 +16,7 @@
 #include "../Print_Tools.h"
 
 
+
 static void Create_Random_Data
 (
         const size_t number_of_arrays,
@@ -22,8 +24,6 @@ static void Create_Random_Data
         const int rand_upper_bound,
         struct Document_Word_List* const data_container
 );
-
-
 
 //---------------------------------------------------------------------------------------------------------------------
 

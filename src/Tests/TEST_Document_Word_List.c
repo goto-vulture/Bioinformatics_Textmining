@@ -139,6 +139,8 @@ extern _Bool TEST_Intersection (void)
     return result;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 extern _Bool TEST_Intersection_With_Random_Data (void)
 {
     _Bool result = false;

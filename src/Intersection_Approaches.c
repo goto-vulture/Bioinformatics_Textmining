@@ -6,6 +6,7 @@
  */
 
 #include "Intersection_Approaches.h"
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -22,8 +23,19 @@
 #error "The macro \"MULTIPLE_GUARD_ALLOC_STEP\" is already defined !"
 #endif /* MULTIPLE_GUARD_ALLOC_STEP */
 
-static int Compare_Function (const void* const a, const void* const b);
-static _Bool Binary_Search (const uint_fast32_t* const data, const size_t data_size, const uint_fast32_t search_value);
+static int
+Compare_Function
+(
+        const void* const a,
+        const void* const b
+);
+static _Bool
+Binary_Search
+(
+        const uint_fast32_t* const data,
+        const size_t data_size,
+        const uint_fast32_t search_value
+    );
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -152,7 +164,12 @@ Intersection_Approach_QSort_And_Binary_Search
 
 //=====================================================================================================================
 
-static int Compare_Function (const void* const a, const void* const b)
+static int
+Compare_Function
+(
+        const void* const a,
+        const void* const b
+)
 {
     const uint_fast32_t* const val_a = (uint_fast32_t*) a;
     const uint_fast32_t* const val_b = (uint_fast32_t*) b;
@@ -164,7 +181,13 @@ static int Compare_Function (const void* const a, const void* const b)
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static _Bool Binary_Search (const uint_fast32_t* const data, const size_t data_size, const uint_fast32_t search_value)
+static _Bool
+Binary_Search
+(
+        const uint_fast32_t* const data,
+        const size_t data_size,
+        const uint_fast32_t search_value
+)
 {
     _Bool result = false;
 

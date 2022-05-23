@@ -6,6 +6,7 @@
  */
 
 #include "Document_Word_List.h"
+
 #include <string.h>
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
