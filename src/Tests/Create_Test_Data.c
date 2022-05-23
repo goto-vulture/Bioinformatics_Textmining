@@ -8,9 +8,11 @@
 #include "Create_Test_Data.h"
 #include <stdlib.h>
 #include <time.h>
+#include <inttypes.h>
 #include "../Error_Handling/Assert_Msg.h"
 #include "../Error_Handling/Dynamic_Memory.h"
 #include "../Misc.h"
+#include "../Print_Tools.h"
 
 
 
@@ -28,6 +30,8 @@ Create_Document_Word_List_With_Random_Test_Data
     struct Document_Word_List* result_object = Create_Document_Word_List(number_of_arrays, max_array_length);
     ASSERT_ALLOC(result_object, "Cannot create new Document_Word_List with random test data !",
             sizeof (struct Document_Word_List));
+
+    uint_fast64_t created_test_data = 0;
 
     // Hiermit wird sichergestellt, dass der Seed fuer die Zufallszahlen nur einmal gesetzt wird
     static _Bool init_done = false;
@@ -49,10 +53,13 @@ Create_Document_Word_List_With_Random_Test_Data
         for (size_t i2 = 0; i2 < used_array_length; ++ i2)
         {
             new_test_data [i2] = (size_t) rand () % (size_t) rand_upper_bound;
+            ++ created_test_data;
         }
         Append_Data_To_Document_Word_List (result_object, new_test_data, used_array_length);
         FREE_AND_SET_TO_NULL(new_test_data);
     }
+
+    PRINTF_FFLUSH("Created test data: %" PRIuFAST64 "\n", created_test_data);
 
     return result_object;
 }
