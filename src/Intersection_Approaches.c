@@ -189,6 +189,9 @@ Binary_Search
         const uint_fast32_t search_value
 )
 {
+    ASSERT_MSG(data != NULL, "data is NULL !");
+    ASSERT_MSG(data_size != 0, "data size is 0 !");
+
     _Bool result = false;
 
     uint_fast32_t left = 0;
