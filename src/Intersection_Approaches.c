@@ -16,8 +16,13 @@
 
 
 
-static int Compare_Function (const void* const a, const void* const b);
+#ifndef MULTIPLE_GUARD_ALLOC_STEP
+#define MULTIPLE_GUARD_ALLOC_STEP 100
+#else
+#error "The macro \"MULTIPLE_GUARD_ALLOC_STEP\" is already defined !"
+#endif /* MULTIPLE_GUARD_ALLOC_STEP */
 
+static int Compare_Function (const void* const a, const void* const b);
 static _Bool Binary_Search (const uint_fast32_t* const data, const size_t data_size, const uint_fast32_t search_value);
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -39,8 +44,7 @@ Intersection_Approach_2_Nested_Loops
     intersection_result->intersection_data = true;
 
     // Array, welches erkennt, ob in der Schnittmenge ein Wert mehrfach hinzugefuegt werden soll
-    const size_t multiple_guard_realloc_step = 1000;
-    size_t size_multiple_guard = multiple_guard_realloc_step;
+    size_t size_multiple_guard = MULTIPLE_GUARD_ALLOC_STEP;
 
     _Bool* multiple_guard = (_Bool*) CALLOC(size_multiple_guard, sizeof (_Bool));
     ASSERT_ALLOC(multiple_guard, "Cannot create the multiple guard !", size_multiple_guard * sizeof (_Bool));
@@ -60,7 +64,7 @@ Intersection_Approach_2_Nested_Loops
                     // Reicht der Speicher aus ?
                     if (data [i3] > size_multiple_guard)
                     {
-                        size_multiple_guard += multiple_guard_realloc_step;
+                        size_multiple_guard += MULTIPLE_GUARD_ALLOC_STEP;
                         multiple_guard = (_Bool*) REALLOC(multiple_guard, size_multiple_guard * sizeof (_Bool));
                         ASSERT_ALLOC(multiple_guard, "Cannot increase the memory for the multiple guard !",
                                 size_multiple_guard * sizeof (_Bool));
@@ -108,8 +112,7 @@ Intersection_Approach_QSort_And_Binary_Search
     }
 
     // Array, welches erkennt, ob in der Schnittmenge ein Wert mehrfach hinzugefuegt werden soll
-    const size_t multiple_guard_realloc_step = 1000;
-    size_t size_multiple_guard = multiple_guard_realloc_step;
+    size_t size_multiple_guard = MULTIPLE_GUARD_ALLOC_STEP;
 
     _Bool* multiple_guard = (_Bool*) CALLOC(size_multiple_guard, sizeof (_Bool));
     ASSERT_ALLOC(multiple_guard, "Cannot create the multiple guard !", size_multiple_guard * sizeof (_Bool));
@@ -126,7 +129,7 @@ Intersection_Approach_QSort_And_Binary_Search
                 // Reicht der Speicher aus ?
                 if (data [i2] > size_multiple_guard)
                 {
-                    size_multiple_guard += multiple_guard_realloc_step;
+                    size_multiple_guard += MULTIPLE_GUARD_ALLOC_STEP;
                     multiple_guard = (_Bool*) REALLOC(multiple_guard, size_multiple_guard * sizeof (_Bool));
                     ASSERT_ALLOC(multiple_guard, "Cannot increase the memory for the multiple guard !",
                             size_multiple_guard * sizeof (_Bool));
@@ -193,3 +196,7 @@ static _Bool Binary_Search (const uint_fast32_t* const data, const size_t data_s
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+#ifdef MULTIPLE_GUARD_ALLOC_STEP
+#undef MULTIPLE_GUARD_ALLOC_STEP
+#endif /* MULTIPLE_GUARD_ALLOC_STEP */
