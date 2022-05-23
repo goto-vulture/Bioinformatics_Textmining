@@ -172,11 +172,23 @@ Intersect_Data_With_Document_Word_List
     ASSERT_MSG(object != NULL, "Object is NULL !");
     ASSERT_MSG(data != NULL, "data is NULL !");
     ASSERT_MSG(data_length != 0, "data length is 0 !");
-    ASSERT_MSG(mode == INTERSECTION_MODE_DEFAULTS, "Invalid intersection mode !");
+    // ASSERT_MSG(mode == INTERSECTION_MODE_2_NESTED_LOOPS, "Invalid intersection mode !");
     ASSERT_FMSG(data_length <= object->max_array_length, "data is too large ! Value %zu; max. valid: %zu",
             data_length, object->max_array_length)
 
-    struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops(object, data, data_length);
+    // Je nach Modus die passende Variante fuer die Bestimmung der Schnittmenge verwenden
+    struct Document_Word_List* intersection_result = NULL;
+    switch (mode)
+    {
+    case INTERSECTION_MODE_2_NESTED_LOOPS:
+        intersection_result = Intersection_Approach_2_Nested_Loops(object, data, data_length);
+        break;
+    case INTERSECTION_MODE_QSORT_AND_BINARY_SEARCH:
+        intersection_result = Intersection_Approach_QSort_And_Binary_Search(object, data, data_length);
+        break;
+    default:
+        ASSERT_MSG(false, "Default path executed !");
+    }
     ASSERT_MSG(intersection_result != NULL, "Intersection result is NULL !");
 
     return intersection_result;

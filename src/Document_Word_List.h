@@ -25,7 +25,8 @@ extern "C"
 
 enum Intersection_Mode
 {
-    INTERSECTION_MODE_DEFAULTS = 1 << 0
+    INTERSECTION_MODE_2_NESTED_LOOPS = 1 << 0,
+    INTERSECTION_MODE_QSORT_AND_BINARY_SEARCH = 1 << 1
 };
 
 struct Document_Word_List
