@@ -5,7 +5,8 @@
  *      Author: pc178
  */
 
-#include "Document_Word_List_Test.h"
+#include "TEST_Document_Word_List.h"
+
 #include <time.h>
 #include "../Document_Word_List.h"
 #include "../Misc.h"
@@ -105,7 +106,7 @@ extern _Bool TEST_Intersection (void)
         // Schnittmengen bilden
         // T 1,1 sind die Daten womit die Schnittmenge erzeugt wird
         intersection_objects [i] = Intersect_Data_With_Document_Word_List(test_data [i + 1],
-                test_data [0]->data [0], 4, INTERSECTION_MODE_DEFAULTS);
+                test_data [0]->data [0], 4, INTERSECTION_MODE_2_NESTED_LOOPS);
         ASSERT_ALLOC(intersection_objects [i], "Cannot create an intersection object ! Given object size could be wrong !",
                 sizeof (struct Document_Word_List));
     }
@@ -149,7 +150,7 @@ extern _Bool TEST_Intersection_With_Random_Data (void)
     ASSERT_MSG(begin != -1, "Time values are not available on this system !");
     struct Document_Word_List* intersection_data =
             Intersect_Data_With_Document_Word_List(list_two_with_random_data, list_one_with_random_data->data [0],
-                    list_one_with_random_data->arrays_lengths[0], INTERSECTION_MODE_DEFAULTS);
+                    list_one_with_random_data->arrays_lengths[0], INTERSECTION_MODE_2_NESTED_LOOPS);
     const clock_t end = clock();
     ASSERT_MSG(end != -1, "Time values are not available on this system !");
     printf ("Time for the intersection: %10.4f sec.\n", (float)(end - begin) / CLOCKS_PER_SEC);
@@ -185,7 +186,7 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
     ASSERT_MSG(begin != -1, "Time values are not available on this system !");
     struct Document_Word_List* intersection_data =
             Intersect_Data_With_Document_Word_List(list_two_with_random_data, list_one_with_random_data->data [0],
-                    list_one_with_random_data->arrays_lengths[0], INTERSECTION_MODE_DEFAULTS);
+                    list_one_with_random_data->arrays_lengths[0], INTERSECTION_MODE_2_NESTED_LOOPS);
     const clock_t end = clock();
     ASSERT_MSG(end != -1, "Time values are not available on this system !");
     printf ("Time for the intersection: %10.4f sec.\n", (float)(end - begin) / CLOCKS_PER_SEC);

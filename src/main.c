@@ -91,7 +91,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "Error_Handling/Dynamic_Memory.h"
-#include "Tests/Document_Word_List_Test.h"
+#include "Tests/TEST_Document_Word_List.h"
 
 
 
