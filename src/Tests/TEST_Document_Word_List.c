@@ -37,8 +37,8 @@
 
 static void Use_All_Intersection_Modes
 (
-        struct Document_Word_List* data_1,
-        struct Document_Word_List* data_2
+        const struct Document_Word_List* const restrict data_1,
+        const struct Document_Word_List* const restrict data_2
 );
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -189,8 +189,8 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
 
 static void Use_All_Intersection_Modes
 (
-        struct Document_Word_List* data_1,
-        struct Document_Word_List* data_2
+        const struct Document_Word_List* const restrict data_1,
+        const struct Document_Word_List* const restrict data_2
 )
 {
     ASSERT_MSG(data_1 != NULL, "data 1 is NULL !");
