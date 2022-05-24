@@ -18,7 +18,7 @@
 
 
 #ifndef NUMBER_OF_ARRAYS
-#define NUMBER_OF_ARRAYS 20
+#define NUMBER_OF_ARRAYS 10
 #else
 #error "The macro \"NUMBER_OF_ARRAYS\" is already defined !"
 #endif /* NUMBER_OF_ARRAYS */
