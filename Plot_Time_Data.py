@@ -42,15 +42,15 @@ if __name__ == "__main__":
             list_qsort_and_binary_search_list.append(float(clean_result.group()))
 
     MAX_ARRAY_LENGTH    = 15000
-    NUMBER_OF_ARRAYS    = 20
+    NUMBER_OF_ARRAYS    = 10
     NUMBER_OF_RUNS      = 50
     DIV_VALUE           = 1000
 
     x_axis = []
-    min_x_axis = ((MAX_ARRAY_LENGTH / NUMBER_OF_RUNS) * (1) * NUMBER_OF_ARRAYS) / DIV_VALUE
-    max_x_axis = ((MAX_ARRAY_LENGTH / NUMBER_OF_RUNS) * (NUMBER_OF_RUNS) * NUMBER_OF_ARRAYS) / DIV_VALUE
+    min_x_axis = ((MAX_ARRAY_LENGTH / NUMBER_OF_RUNS) * (1)) / DIV_VALUE
+    max_x_axis = ((MAX_ARRAY_LENGTH / NUMBER_OF_RUNS) * (NUMBER_OF_RUNS)) / DIV_VALUE
     for i in range(0, NUMBER_OF_RUNS):
-        x_axis.append(((MAX_ARRAY_LENGTH / NUMBER_OF_RUNS) * (i + 1) * NUMBER_OF_ARRAYS) / DIV_VALUE)
+        x_axis.append(((MAX_ARRAY_LENGTH / NUMBER_OF_RUNS) * (i + 1)) / DIV_VALUE)
 
     min_measure_list_1 = min(list_2_nested_loops_times)
     max_measure_list_1 = max(list_2_nested_loops_times)
@@ -75,8 +75,8 @@ if __name__ == "__main__":
     plt.plot(x_axis, list_qsort_and_binary_search_list, "bo", label="QSort + Binäre Suche\nO(n * log(n)) + O(log(n))")
     plt.axis([min_x_axis, max_x_axis, min_y_axis, max_y_axis])
 
-    plt.xlabel("Anzahl an tausend Elementen pro Teilmenge (|M1,i| als auch |M2,i|)")
-    # plt.xlabel("Anzahl an tausend Elementen pro Teilmenge in |M2,i|; |M1,i| = 5")
+    plt.xlabel("Anzahl an tausend Elementen pro Teilmenge (|M1,i| als auch |M2,i|); i = " + str(NUMBER_OF_ARRAYS))
+    # plt.xlabel("Anzahl an tausend Elementen pro Teilmenge in |M2,i|; |M1,i| = 5; i = " + str(NUMBER_OF_ARRAYS))
     plt.ylabel("Laufzeit in Sekunden")
     plt.title("Vergleich Zeitaufwand Schnittmengenbestimmung")
 
