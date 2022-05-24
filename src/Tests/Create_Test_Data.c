@@ -134,11 +134,13 @@ static void Create_Random_Data
 
     for (size_t i = 0; i < number_of_arrays; ++ i)
     {
-        size_t used_array_length = ((size_t) rand () % (max_array_length + 1));
+        // Keine zufaellige Anzahl an Daten mehr
+        /* size_t used_array_length = ((size_t) rand () % (max_array_length + 1));
         if (used_array_length == 0)
         {
             ++ used_array_length;
-        }
+        } */
+        const size_t used_array_length = max_array_length;
 
         size_t* new_test_data = (size_t*) MALLOC(sizeof (uint_fast32_t) * used_array_length);
         for (size_t i2 = 0; i2 < used_array_length; ++ i2)
