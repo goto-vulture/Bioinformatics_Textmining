@@ -24,7 +24,7 @@
 #endif /* NUMBER_OF_ARRAYS */
 
 #ifndef MAX_ARRAY_LENGTH
-#define MAX_ARRAY_LENGTH 25000
+#define MAX_ARRAY_LENGTH 15000
 #else
 #error "The macro \"MAX_ARRAY_LENGTH\" is already defined !"
 #endif /* MAX_ARRAY_LENGTH */
@@ -34,6 +34,12 @@
 #else
 #error "The macro \"RAND_UPPER_BOUND\" is already defined !"
 #endif /* RAND_UPPER_BOUND */
+
+#ifndef NUMBER_OF_RUNS
+#define NUMBER_OF_RUNS 50
+#else
+#error "The macro \"NUMBER_OF_RUNS\" is already defined !"
+#endif /* NUMBER_OF_RUNS */
 
 static void Use_All_Intersection_Modes
 (
@@ -145,18 +151,23 @@ extern _Bool TEST_Intersection_With_Random_Data (void)
 {
     _Bool result = false;
 
-    struct Document_Word_List* list_one_with_random_data = Create_Document_Word_List_With_Random_Test_Data
-            (1, MAX_ARRAY_LENGTH, RAND_UPPER_BOUND);
-    struct Document_Word_List* list_two_with_random_data = Create_Document_Word_List_With_Random_Test_Data
-            (NUMBER_OF_ARRAYS, MAX_ARRAY_LENGTH, RAND_UPPER_BOUND);
+    for (size_t i = 1; i <= NUMBER_OF_RUNS; ++ i)
+    {
+        // Beim ersten Datensatz muss nur ein Array erzeugt werden, da nur dieses aus der 1. Menge fuer die
+        // Schnittmengenberechnung verwendet wird
+        struct Document_Word_List* list_one_with_random_data = Create_Document_Word_List_With_Random_Test_Data
+                (1, (MAX_ARRAY_LENGTH / NUMBER_OF_RUNS) * i, RAND_UPPER_BOUND);
+        struct Document_Word_List* list_two_with_random_data = Create_Document_Word_List_With_Random_Test_Data
+                (NUMBER_OF_ARRAYS, (MAX_ARRAY_LENGTH / NUMBER_OF_RUNS) * i, RAND_UPPER_BOUND);
 
-    // Eine Schnittmenge mit den Zufallszahlen ausfuehren und die Zeit bestimmen (Alle Modi verwenden)
-    Use_All_Intersection_Modes (list_one_with_random_data, list_two_with_random_data);
+        // Eine Schnittmenge mit den Zufallszahlen ausfuehren und die Zeit bestimmen (Alle Modi verwenden)
+        Use_All_Intersection_Modes (list_one_with_random_data, list_two_with_random_data);
 
-    Delete_Document_Word_List(list_one_with_random_data);
-    Delete_Document_Word_List(list_two_with_random_data);
-    list_one_with_random_data = NULL;
-    list_two_with_random_data = NULL;
+        Delete_Document_Word_List(list_one_with_random_data);
+        Delete_Document_Word_List(list_two_with_random_data);
+        list_one_with_random_data = NULL;
+        list_two_with_random_data = NULL;
+    }
 
     return result;
 }
@@ -167,20 +178,23 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
 {
     _Bool result = false;
 
-    struct Document_Word_List* list_one_with_specified_data = Create_Document_Word_List(1, 5);
-    const uint_fast32_t array_data [] = { 0, 2, 4, 6, 8 };
-    Append_Data_To_Document_Word_List(list_one_with_specified_data, array_data, COUNT_ARRAY_ELEMENTS(array_data));
+    for (size_t i = 1; i <= NUMBER_OF_RUNS; ++ i)
+    {
+        struct Document_Word_List* list_one_with_specified_data = Create_Document_Word_List(1, 5);
+        const uint_fast32_t array_data [] = { 0, 2, 4, 6, 8 };
+        Append_Data_To_Document_Word_List(list_one_with_specified_data, array_data, COUNT_ARRAY_ELEMENTS(array_data));
 
-    struct Document_Word_List* list_two_with_random_data = Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
-            (array_data, COUNT_ARRAY_ELEMENTS(array_data), NUMBER_OF_ARRAYS, MAX_ARRAY_LENGTH, RAND_UPPER_BOUND);
+        struct Document_Word_List* list_two_with_random_data = Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
+                (array_data, COUNT_ARRAY_ELEMENTS(array_data), NUMBER_OF_ARRAYS, (MAX_ARRAY_LENGTH / NUMBER_OF_RUNS) * i, RAND_UPPER_BOUND);
 
-    // Eine Schnittmenge mit den Zufallszahlen ausfuehren und die Zeit bestimmen
-    Use_All_Intersection_Modes(list_one_with_specified_data, list_two_with_random_data);
+        // Eine Schnittmenge mit den Zufallszahlen ausfuehren und die Zeit bestimmen
+        Use_All_Intersection_Modes(list_one_with_specified_data, list_two_with_random_data);
 
-    Delete_Document_Word_List(list_one_with_specified_data);
-    Delete_Document_Word_List(list_two_with_random_data);
-    list_one_with_specified_data = NULL;
-    list_two_with_random_data = NULL;
+        Delete_Document_Word_List(list_one_with_specified_data);
+        Delete_Document_Word_List(list_two_with_random_data);
+        list_one_with_specified_data = NULL;
+        list_two_with_random_data = NULL;
+    }
 
     return result;
 }
@@ -247,3 +261,7 @@ static void Use_All_Intersection_Modes
 #ifdef RAND_UPPER_BOUND
 #undef RAND_UPPER_BOUND
 #endif /* RAND_UPPER_BOUND */
+
+#ifdef NUMBER_OF_RUNS
+#undef NUMBER_OF_RUNS
+#endif /* NUMBER_OF_RUNS */
