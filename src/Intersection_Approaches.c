@@ -23,6 +23,20 @@
 #error "The macro \"MULTIPLE_GUARD_ALLOC_STEP\" is already defined !"
 #endif /* MULTIPLE_GUARD_ALLOC_STEP */
 
+static struct Document_Word_List*
+Init
+(
+        const struct Document_Word_List* const restrict object
+);
+static void
+Find_Intersection_Data
+(
+        const struct Document_Word_List* const restrict intersection_result,
+        const struct Document_Word_List* const restrict object,
+        const uint_fast32_t* const restrict data,
+        const size_t data_length
+);
+
 static int
 Compare_Function
 (
@@ -35,7 +49,13 @@ Binary_Search
         const uint_fast32_t* const data,
         const size_t data_size,
         const uint_fast32_t search_value
-    );
+);
+static void
+Heapsort
+(
+        uint_fast32_t* const data,
+        const size_t data_size
+);
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -109,6 +129,60 @@ Intersection_Approach_QSort_And_Binary_Search
     const size_t data_length
 )
 {
+    /*struct Document_Word_List* intersection_result = Create_Document_Word_List (object->number_of_arrays,
+            object->max_array_length);
+    ASSERT_ALLOC(intersection_result, "Cannot create new Document Word List for intersection !",
+            sizeof (struct Document_Word_List) + object->number_of_arrays * object->max_array_length *
+            sizeof (uint_fast32_t));
+    intersection_result->next_free_array = object->next_free_array;
+    intersection_result->intersection_data = true;*/
+
+    struct Document_Word_List* intersection_result = Init (object);
+
+    // Alle Daten der Woerter-Liste aufsteigend sortieren
+    for (size_t i = 0; i < object->number_of_arrays; ++ i)
+    {
+        qsort (object->data [i], object->arrays_lengths [i], sizeof (uint_fast32_t), Compare_Function);
+        //Heapsort(object->data [i], object->arrays_lengths [i]);
+    }
+
+    Find_Intersection_Data (intersection_result, object, data, data_length);
+
+    return intersection_result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+extern struct Document_Word_List*
+Intersection_Approach_HeapSort_And_Binary_Search
+(
+    const struct Document_Word_List* const restrict object,
+    const uint_fast32_t* const restrict data,
+    const size_t data_length
+)
+{
+    struct Document_Word_List* intersection_result = Init (object);
+
+    // Alle Daten der Woerter-Liste aufsteigend sortieren
+    for (size_t i = 0; i < object->number_of_arrays; ++ i)
+    {
+        // qsort (object->data [i], object->arrays_lengths [i], sizeof (uint_fast32_t), Compare_Function);
+        Heapsort(object->data [i], object->arrays_lengths [i]);
+    }
+
+    Find_Intersection_Data (intersection_result, object, data, data_length);
+
+    return intersection_result;
+}
+
+//=====================================================================================================================
+
+static struct Document_Word_List*
+Init
+(
+        const struct Document_Word_List* const restrict object
+)
+{
     struct Document_Word_List* intersection_result = Create_Document_Word_List (object->number_of_arrays,
             object->max_array_length);
     ASSERT_ALLOC(intersection_result, "Cannot create new Document Word List for intersection !",
@@ -117,12 +191,20 @@ Intersection_Approach_QSort_And_Binary_Search
     intersection_result->next_free_array = object->next_free_array;
     intersection_result->intersection_data = true;
 
-    // Alle Daten der Woerter-Liste aufsteigend sortieren
-    for (size_t i = 0; i < object->number_of_arrays; ++ i)
-    {
-        qsort (object->data [i], object->arrays_lengths [i], sizeof (uint_fast32_t), Compare_Function);
-    }
+    return intersection_result;
+}
 
+//---------------------------------------------------------------------------------------------------------------------
+
+static void
+Find_Intersection_Data
+(
+        const struct Document_Word_List* const restrict intersection_result,
+        const struct Document_Word_List* const restrict object,
+        const uint_fast32_t* const restrict data,
+        const size_t data_length
+)
+{
     // Array, welches erkennt, ob in der Schnittmenge ein Wert mehrfach hinzugefuegt werden soll
     size_t size_multiple_guard = MULTIPLE_GUARD_ALLOC_STEP;
 
@@ -159,10 +241,10 @@ Intersection_Approach_QSort_And_Binary_Search
 
     FREE_AND_SET_TO_NULL(multiple_guard);
 
-    return intersection_result;
+    return;
 }
 
-//=====================================================================================================================
+//---------------------------------------------------------------------------------------------------------------------
 
 static int
 Compare_Function
@@ -222,6 +304,96 @@ Binary_Search
     }
 
     return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+// Abgeleitet von der Implementierung auf Wikipedia: https://de.wikipedia.org/wiki/Heapsort#Implementierung
+static void
+Heapsort
+(
+        uint_fast32_t* const data,
+        const size_t data_size
+)
+{
+    ASSERT_MSG(data != NULL, "data is NULL !");
+    ASSERT_MSG(data_size != 0, "data size is 0 !");
+
+    uint_fast32_t value = 0;
+    uint_fast32_t parent = 0;
+    uint_fast32_t child = 0;
+    uint_fast32_t root = data_size / 2;
+    uint_fast32_t n = data_size;
+
+    while (1)
+    {
+        if (root > 0)
+        {
+            -- root;
+            parent = root;
+            value = data [root];
+        }
+        else
+        {
+            -- n;
+            if (n > 0)
+            {
+                value = data [n];
+                data [n] = data [0];
+                parent = 0;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        while ((child = (parent + 1) << 1) < n)
+        {
+            if (data [child - 1] > data [child])
+            {
+                -- child;
+            }
+            data [parent] = data [child];
+            parent = child;
+        }
+
+        if (child == n)
+        {
+            -- child;
+            if (data [child] >= value)
+            {
+                data [parent] = data [child];
+                data [child] = value;
+                continue;
+            }
+            child = parent;
+        }
+        else
+        {
+            if (data [parent] >= value)
+            {
+                data [parent] = value;
+                continue;
+            }
+            child = (parent - 1) >> 1;
+        }
+
+        while (child != root)
+        {
+            parent = (child - 1) >> 1;
+            if (data [parent] >= value)
+            {
+                break;
+            }
+            data [child] = data [parent];
+            child = parent;
+        }
+
+        data [child]= value;
+    }
+
+    return;
 }
 
 //---------------------------------------------------------------------------------------------------------------------

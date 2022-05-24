@@ -187,6 +187,9 @@ Intersect_Data_With_Document_Word_List
     case INTERSECTION_MODE_QSORT_AND_BINARY_SEARCH:
         intersection_result = Intersection_Approach_QSort_And_Binary_Search(object, data, data_length);
         break;
+    case INTERSECTION_MODE_HEAPSORT_AND_BINARY_SEARCH:
+        intersection_result = Intersection_Approach_HeapSort_And_Binary_Search(object, data, data_length);
+        break;
     default:
         ASSERT_MSG(false, "Default path executed !");
     }
