@@ -23,11 +23,27 @@
 #error "The macro \"MULTIPLE_GUARD_ALLOC_STEP\" is already defined !"
 #endif /* MULTIPLE_GUARD_ALLOC_STEP */
 
+/**
+ * @brief Uebergebene Woerterliste kopieren und initialisieren.
+ *
+ * @param[in] object Originale Woerterliste
+ *
+ * @param Initialisierte Kopie der uebergebenen Woerterliste
+ */
 static struct Document_Word_List*
-Init
+Init_Intersection
 (
-        const struct Document_Word_List* const restrict object
+        const struct Document_Word_List* const object
 );
+
+/**
+ * @brief Die eigentliche Schnittmengenberechnung durchfuehren.
+ *
+ * @param[in] intersection_result Ergebnisspeicher; hier befinden sich am Ende die Schnittmengen
+ * @param[in] object Originale Woerterliste
+ * @param[in] data Daten, die fuer die Betimmung der Schnittmenge zur Woerterliste verwendet werden
+ * @param[in] data_length Laenge der Daten
+ */
 static void
 Find_Intersection_Data
 (
@@ -37,12 +53,32 @@ Find_Intersection_Data
         const size_t data_length
 );
 
+/**
+ * @brief Vergleichsfunktion fuer qsort()
+ *
+ * @param[in] a Wert 1
+ * @param[in] b Wert 2
+ *
+ * @return -1, falls a < b; +1 falls a > b; sonst 0
+ */
 static int
 Compare_Function
 (
         const void* const a,
         const void* const b
 );
+
+/**
+ * @brief Binaere Suche durchfuehren.
+ *
+ * ! Diese Funktion setzt voraus, dass die Daten bereits aufsteigend sortiert sind !
+ *
+ * @param[in] data Datenmenge, in der gesucht wird
+ * @param[in] data_size Groesse der Daten
+ * @param[in] search_value Zu suchender Wert
+ *
+ * @return true, falls der Wert in der Datenmenge ist; ansonsten false
+ */
 static _Bool
 Binary_Search
 (
@@ -50,6 +86,16 @@ Binary_Search
         const size_t data_size,
         const uint_fast32_t search_value
 );
+
+/**
+ * @brief Implementierung des Sortierungsalgorithmus "HeapSort".
+ *
+ * Diese Implementierung wurde von der Beispiels-Implementierung auf Wikipedia abgeleitet.
+ * https://de.wikipedia.org/wiki/Heapsort#Implementierung
+ *
+ * @param[in] data Daten, die sortiert werden
+ * @param[in] data_size Groesse der Daten
+ */
 static void
 Heapsort
 (
@@ -59,6 +105,16 @@ Heapsort
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Schnittmenge durch die naive Herangehensweise (Jeden mit jedem vergleichen -> zwei verschachtelte Schleifen)
+ * bilden.
+ *
+ * @param[in] object Woerterliste
+ * @param[in] data Daten, die fuer die Schnittmengenbildung gegen der Woerterliste verwendet wird
+ * @param[in] data_length Groesse der Daten
+ *
+ * @return Neues dynamisch erzeugtes Objekt, welches die Schnittmenge zu jeder Untermenge der Woerterliste enthaelt
+ */
 extern struct Document_Word_List*
 Intersection_Approach_2_Nested_Loops
 (
@@ -121,6 +177,18 @@ Intersection_Approach_2_Nested_Loops
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Schnittmenge durch eine vorherige aufsteigende Sortierung der Elemente in der Woerterliste. Anschliessend
+ * werden die Elemente, die in beiden Mengen vorkommen, mittels der binaeren Suche gesucht.
+ *
+ * Algorithmus fuer die Sortierung: QSort
+ *
+ * @param[in] object Woerterliste
+ * @param[in] data Daten, die fuer die Schnittmengenbildung gegen der Woerterliste verwendet wird
+ * @param[in] data_length Groesse der Daten
+ *
+ * @return Neues dynamisch erzeugtes Objekt, welches die Schnittmenge zu jeder Untermenge der Woerterliste enthaelt
+ */
 extern struct Document_Word_List*
 Intersection_Approach_QSort_And_Binary_Search
 (
@@ -129,15 +197,7 @@ Intersection_Approach_QSort_And_Binary_Search
     const size_t data_length
 )
 {
-    /*struct Document_Word_List* intersection_result = Create_Document_Word_List (object->number_of_arrays,
-            object->max_array_length);
-    ASSERT_ALLOC(intersection_result, "Cannot create new Document Word List for intersection !",
-            sizeof (struct Document_Word_List) + object->number_of_arrays * object->max_array_length *
-            sizeof (uint_fast32_t));
-    intersection_result->next_free_array = object->next_free_array;
-    intersection_result->intersection_data = true;*/
-
-    struct Document_Word_List* intersection_result = Init (object);
+    struct Document_Word_List* intersection_result = Init_Intersection (object);
 
     // Alle Daten der Woerter-Liste aufsteigend sortieren
     for (size_t i = 0; i < object->number_of_arrays; ++ i)
@@ -153,6 +213,18 @@ Intersection_Approach_QSort_And_Binary_Search
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Schnittmenge durch eine vorherige aufsteigende Sortierung der Elemente in der Woerterliste. Anschliessend
+ * werden die Elemente, die in beiden Mengen vorkommen, mittels der binaeren Suche gesucht.
+ *
+ * Algorithmus fuer die Sortierung: HeapSort
+ *
+ * @param[in] object Woerterliste
+ * @param[in] data Daten, die fuer die Schnittmengenbildung gegen der Woerterliste verwendet wird
+ * @param[in] data_length Groesse der Daten
+ *
+ * @return Neues dynamisch erzeugtes Objekt, welches die Schnittmenge zu jeder Untermenge der Woerterliste enthaelt
+ */
 extern struct Document_Word_List*
 Intersection_Approach_HeapSort_And_Binary_Search
 (
@@ -161,7 +233,7 @@ Intersection_Approach_HeapSort_And_Binary_Search
     const size_t data_length
 )
 {
-    struct Document_Word_List* intersection_result = Init (object);
+    struct Document_Word_List* intersection_result = Init_Intersection (object);
 
     // Alle Daten der Woerter-Liste aufsteigend sortieren
     for (size_t i = 0; i < object->number_of_arrays; ++ i)
@@ -177,10 +249,17 @@ Intersection_Approach_HeapSort_And_Binary_Search
 
 //=====================================================================================================================
 
+/**
+ * @brief Uebergebene Woerterliste kopieren und initialisieren.
+ *
+ * @param[in] object Originale Woerterliste
+ *
+ * @param Initialisierte Kopie der uebergebenen Woerterliste
+ */
 static struct Document_Word_List*
-Init
+Init_Intersection
 (
-        const struct Document_Word_List* const restrict object
+        const struct Document_Word_List* const object
 )
 {
     struct Document_Word_List* intersection_result = Create_Document_Word_List (object->number_of_arrays,
@@ -196,6 +275,14 @@ Init
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Die eigentliche Schnittmengenberechnung durchfuehren.
+ *
+ * @param[in] intersection_result Ergebnisspeicher; hier befinden sich am Ende die Schnittmengen
+ * @param[in] object Originale Woerterliste
+ * @param[in] data Daten, die fuer die Betimmung der Schnittmenge zur Woerterliste verwendet werden
+ * @param[in] data_length Laenge der Daten
+ */
 static void
 Find_Intersection_Data
 (
@@ -246,6 +333,14 @@ Find_Intersection_Data
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Vergleichsfunktion fuer qsort()
+ *
+ * @param[in] a Wert 1
+ * @param[in] b Wert 2
+ *
+ * @return -1, falls a < b; +1 falls a > b; sonst 0
+ */
 static int
 Compare_Function
 (
@@ -263,6 +358,17 @@ Compare_Function
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Binaere Suche durchfuehren.
+ *
+ * ! Diese Funktion setzt voraus, dass die Daten bereits aufsteigend sortiert sind !
+ *
+ * @param[in] data Datenmenge, in der gesucht wird
+ * @param[in] data_size Groesse der Daten
+ * @param[in] search_value Zu suchender Wert
+ *
+ * @return true, falls der Wert in der Datenmenge ist; ansonsten false
+ */
 static _Bool
 Binary_Search
 (
@@ -308,7 +414,15 @@ Binary_Search
 
 //---------------------------------------------------------------------------------------------------------------------
 
-// Abgeleitet von der Implementierung auf Wikipedia: https://de.wikipedia.org/wiki/Heapsort#Implementierung
+/**
+ * @brief Implementierung des Sortierungsalgorithmus "HeapSort".
+ *
+ * Diese Implementierung wurde von der Beispiels-Implementierung auf Wikipedia abgeleitet.
+ * https://de.wikipedia.org/wiki/Heapsort#Implementierung
+ *
+ * @param[in] data Daten, die sortiert werden
+ * @param[in] data_size Groesse der Daten
+ */
 static void
 Heapsort
 (
@@ -319,11 +433,11 @@ Heapsort
     ASSERT_MSG(data != NULL, "data is NULL !");
     ASSERT_MSG(data_size != 0, "data size is 0 !");
 
-    uint_fast32_t value = 0;
-    uint_fast32_t parent = 0;
-    uint_fast32_t child = 0;
-    uint_fast32_t root = data_size / 2;
-    uint_fast32_t n = data_size;
+    uint_fast32_t value     = 0;
+    uint_fast32_t parent    = 0;
+    uint_fast32_t child     = 0;
+    uint_fast32_t root      = data_size / 2;
+    uint_fast32_t n         = data_size;
 
     while (1)
     {

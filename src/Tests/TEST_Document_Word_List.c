@@ -41,6 +41,13 @@
 #error "The macro \"NUMBER_OF_RUNS\" is already defined !"
 #endif /* NUMBER_OF_RUNS */
 
+/**
+ * @brief Alle Schnittmengenberechnungsverfahren anwenden und die Zeit fuer die Berechnung messen (und auf stdout
+ * ausgeben)
+ *
+ * @param[in] data_1 Erste Woerterliste
+ * @param[in] data_2 Zweite Woerterliste
+ */
 static void Use_All_Intersection_Modes
 (
         const struct Document_Word_List* const restrict data_1,
@@ -49,6 +56,9 @@ static void Use_All_Intersection_Modes
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Erster Schnittmengen-Test mit den Testdaten aus der ersten Besprechung am 11.05.2022
+ */
 extern _Bool TEST_Intersection (void)
 {
     _Bool result = false;
@@ -147,6 +157,9 @@ extern _Bool TEST_Intersection (void)
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Schnittmengenberechnung mit komplett zufaelligen Daten.
+ */
 extern _Bool TEST_Intersection_With_Random_Data (void)
 {
     _Bool result = false;
@@ -174,6 +187,10 @@ extern _Bool TEST_Intersection_With_Random_Data (void)
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Schnittmengenberechnung mit vorher spezifizierten Daten fuer jede Untermenge. Das Ziel: Die Ergebnisse sind
+ * dadurch vorher bekannt. Damit kann ueberprueft werden, dass die Verfahren richtig laufen.
+ */
 extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
 {
     _Bool result = false;
@@ -201,6 +218,13 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
 
 //=====================================================================================================================
 
+/**
+ * @brief Alle Schnittmengenberechnungsverfahren anwenden und die Zeit fuer die Berechnung messen (und auf stdout
+ * ausgeben)
+ *
+ * @param[in] data_1 Erste Woerterliste
+ * @param[in] data_2 Zweite Woerterliste
+ */
 static void Use_All_Intersection_Modes
 (
         const struct Document_Word_List* const restrict data_1,

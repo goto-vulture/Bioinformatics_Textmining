@@ -17,6 +17,14 @@
 
 
 
+/**
+ * @brief Woerterliste mit Zufallszahlen fuellen.
+ *
+ * @param[in] number_of_arrays Anzahl an Untermengen
+ * @param[in] max_array_length Maximale Laenge einer Untermenge
+ * @param[in] rand_upper_bound Obere Grenze fuer die Zufallszahlen
+ * @param[out] data_container Container fuer die Zufallszahlen
+ */
 static void Create_Random_Data
 (
         const size_t number_of_arrays,
@@ -27,6 +35,15 @@ static void Create_Random_Data
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Woerterliste mit Zufallszahlen erzeugen.
+ *
+ * @param[in] number_of_arrays Anzahl an Untermengen
+ * @param[in] max_array_length Maximale Laenge einer Untermenge
+ * @param[in] rand_upper_bound Obere Grenze fuer die Zufallszahlen
+ *
+ * @return Die neu erzeugte Woerterliste
+ */
 extern struct Document_Word_List*
 Create_Document_Word_List_With_Random_Test_Data
 (
@@ -49,6 +66,21 @@ Create_Document_Word_List_With_Random_Test_Data
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Woerterliste mit Zufallszahlen erzeugen + spezifizierte Menge an Daten, die in jeder Untermenge der
+ * Woerterliste vorkommen soll.
+ *
+ * Der Sinn hinter dieser Funktion ist, dass die Schnittmenge immer den der spezifizierten Daten entspricht. Damit kann
+ * man testen, ob die Schnittmengenbildung korrekt funktioniert.
+ *
+ * @param[in] specified_data Spezifizierte Daten
+ * @paran[in] specified_data_length Laenge der dpezifizierten Daten
+ * @param[in] number_of_arrays Anzahl an Untermengen
+ * @param[in] max_array_length Maximale Laenge einer Untermenge
+ * @param[in] rand_upper_bound Obere Grenze fuer die Zufallszahlen
+ *
+ * @return Die neu erzeugte Woerterliste
+ */
 extern struct Document_Word_List*
 Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
 (
@@ -114,6 +146,14 @@ Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
 
 //=====================================================================================================================
 
+/**
+ * @brief Woerterliste mit Zufallszahlen fuellen.
+ *
+ * @param[in] number_of_arrays Anzahl an Untermengen
+ * @param[in] max_array_length Maximale Laenge einer Untermenge
+ * @param[in] rand_upper_bound Obere Grenze fuer die Zufallszahlen
+ * @param[out] data_container Container fuer die Zufallszahlen
+ */
 static void Create_Random_Data
 (
         const size_t number_of_arrays,

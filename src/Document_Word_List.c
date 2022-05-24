@@ -18,6 +18,14 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Neue Woerterliste erstellen.
+ *
+ * @param[in] number_of_arrays Anzahl an Arrays (Untermengen)
+ * @param[in] max_array_length Maximale Laenge der Arrays bzw. Untermengen
+ *
+ * @return Neu dynamisch erzeugte Woerterliste
+ */
 extern struct Document_Word_List*
 Create_Document_Word_List
 (
@@ -56,6 +64,11 @@ Create_Document_Word_List
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Woerterliste loeschen.
+ *
+ * @param[in] object Woerterliste, die geloescht werden soll
+ */
 extern void
 Delete_Document_Word_List
 (
@@ -81,6 +94,13 @@ Delete_Document_Word_List
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Daten zu einer Woerterliste hinzufuegen.
+ *
+ * @param[in] object Woerterliste, an der die neuen Daten angebracht werden
+ * @param[in] new_data Neue Daten
+ * @param[in] data_length Laenge der neuen Daten
+ */
 extern void
 Append_Data_To_Document_Word_List
 (
@@ -108,6 +128,11 @@ Append_Data_To_Document_Word_List
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Daten einer Woerterliste auf stdout ausgeben
+ *
+ * @param[in] object Woerterliste
+ */
 extern void
 Show_Data_From_Document_Word_List
 (
@@ -137,6 +162,11 @@ Show_Data_From_Document_Word_List
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Daten einer Woerterliste + Attributinformationen auf stdout ausgeben
+ *
+ * @param[in] object Woerterliste
+ */
 extern void
 Show_Data_And_Attributes_From_Document_Word_List
 (
@@ -160,6 +190,16 @@ Show_Data_And_Attributes_From_Document_Word_List
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Schnittmenge zwischen einer Woerterliste und einem Datensatz bilden.
+ *
+ * @param[in] object Woerterliste (1. Menge fuer die Schnittmengenberechnung)
+ * @param[in] data Datensatz (2. Menge fuer die Schnittmengenberechnung)
+ * @param[in] data_length Groesse des Datensatzes
+ * @param[in] mode Modus fuer die Schnittstellenberechnung (Welches Verfahren soll verwendet werden ?)
+ *
+ * @return Neu erzeugte Woerterliste mit den Schnittmengen in den jeweiligen Untermengen
+ */
 extern struct Document_Word_List*
 Intersect_Data_With_Document_Word_List
 (
