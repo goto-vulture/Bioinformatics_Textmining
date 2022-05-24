@@ -213,7 +213,8 @@ static void Use_All_Intersection_Modes
     const enum Intersection_Mode used_modes [] =
     {
             INTERSECTION_MODE_2_NESTED_LOOPS,
-            INTERSECTION_MODE_QSORT_AND_BINARY_SEARCH
+            INTERSECTION_MODE_QSORT_AND_BINARY_SEARCH,
+            INTERSECTION_MODE_HEAPSORT_AND_BINARY_SEARCH
     };
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(used_modes); ++ i)
     {
@@ -229,10 +230,13 @@ static void Use_All_Intersection_Modes
         switch (used_modes [i])
         {
         case INTERSECTION_MODE_2_NESTED_LOOPS:
-            printf ("2 nested loops:          ");
+            printf ("2 nested loops:              ");
             break;
         case INTERSECTION_MODE_QSORT_AND_BINARY_SEARCH:
-            printf ("QSort and binary search: ");
+            printf ("QSort and binary search:     ");
+            break;
+        case INTERSECTION_MODE_HEAPSORT_AND_BINARY_SEARCH:
+            printf ("Heap-Sort and binary search: ");
             break;
         default:
             ASSERT_MSG(false, "Default path executed !");
