@@ -166,6 +166,8 @@ extern _Bool TEST_Intersection_With_Random_Data (void)
 
     for (size_t i = 1; i <= NUMBER_OF_RUNS; ++ i)
     {
+        PRINTF_FFLUSH("%4zu / %4zu\n", i, (size_t) NUMBER_OF_RUNS);
+
         // Beim ersten Datensatz muss nur ein Array erzeugt werden, da nur dieses aus der 1. Menge fuer die
         // Schnittmengenberechnung verwendet wird
         struct Document_Word_List* list_one_with_random_data = Create_Document_Word_List_With_Random_Test_Data
@@ -197,6 +199,8 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
 
     for (size_t i = 1; i <= NUMBER_OF_RUNS; ++ i)
     {
+        PRINTF_FFLUSH("%4zu / %4zu\n", i, (size_t) NUMBER_OF_RUNS);
+
         struct Document_Word_List* list_one_with_specified_data = Create_Document_Word_List(1, 5);
         const uint_fast32_t array_data [] = { 0, 2, 4, 6, 8 };
         Append_Data_To_Document_Word_List(list_one_with_specified_data, array_data, COUNT_ARRAY_ELEMENTS(array_data));
