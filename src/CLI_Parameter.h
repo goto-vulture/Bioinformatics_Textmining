@@ -33,30 +33,16 @@ extern const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION; ///< Zusaetzlich
 
 // Variablen fuer die geparsten CLI-Parameter
 /**
- * @brief CLI-Parameter: Anzahl an C-Atomen, die bei den Tests verwendet werden sollen
+ * @brief CLI-Parameter: Erste Eingabedatei
  */
-extern int GLOBAL_MAX_C_ATOMS_FOR_TESTS;
-
-/**
- * @brief CLI-Parameter: Soll eine Testfunktion zur Laufzeit vom Nutzer ausgewaehlt werden ?
- */
-extern _Bool GLOBAL_SELECT_TEST_FUNCTION;
-
-/**
- * @brief CLI_Parameter: Eine bestimmte Testfunktion aufrufen, wobei der Index der Testfunktion ueber diesen
- * CLI-Parameter festgelegt wird.
- *
- * Vorteil im Vergleich zur Variante, wo man die Testfunktion waehrend der Ausfuehrung auswaehlen muss: Das Testen kann
- * direkt ohne Umwege erfolgen.
- */
-extern int GLOBAL_RUN_TEST_FUNCTION_INDEX;
+extern const char* GLOBAL_CLI_INPUT_FILE;
 
 
 
 /**
- * @brief Testfunktion fuer die Anzahl an C-Atomen, die bei den Tests verwendet werden.
+ * @brief Testfunktion fuer den CLI Parameter, der die erste Eingabedatei beschreibt.
  */
-extern void Check_CLI_Parameter_MAX_C_ATOMS_FOR_TESTS (void);
+extern void Check_CLI_Parameter_CLI_INPUT_FILE (void);
 
 
 

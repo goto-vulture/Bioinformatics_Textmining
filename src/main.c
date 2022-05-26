@@ -90,8 +90,11 @@
 
 #include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Tests/TEST_Document_Word_List.h"
+#include "CLI_Parameter.h"
+#include "argparse.h"
 
 
 
@@ -109,12 +112,58 @@
  */
 int main (const int argc, const char* argv [])
 {
-    (void) argc;
-    (void) argv;
+    // ===== ===== ===== BEGINN CLI-Parameter parsen ===== ===== =====
+    struct argparse_option cli_options [] =
+    {
+            OPT_HELP(),
+
+            OPT_GROUP("Hauptfunktionen"),
+            OPT_STRING('i', "input", &GLOBAL_CLI_INPUT_FILE,
+                    "Eingabedatei", NULL, 0, 0),
+
+            OPT_END()
+    };
+
+    // CLI-Parameter parsen
+    struct argparse argparse_object;
+    argparse_init(&argparse_object, cli_options, GLOBAL_USAGES, 0);
+    argparse_describe(&argparse_object, GLOBAL_PROGRAM_DESCRIPTION, GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION);
+    const int new_argc = argparse_parse(&argparse_object, argc, argv);
+
+    // Wurden ueberhaupt ausreichend CLI-Parameter uebergeben ?
+    if (argc < 2)
+    {
+        puts ("Missing CLI parameter !");
+        int current_string = 0;
+        while (GLOBAL_USAGES [current_string] != NULL)
+        {
+            printf ("%s\n", GLOBAL_USAGES [current_string]);
+            ++ current_string;
+        }
+        fflush(stdout);
+        exit(1);
+    }
+
+    if (GLOBAL_CLI_INPUT_FILE != 0)
+    {
+        printf ("Input file: \"%s\"\n", GLOBAL_CLI_INPUT_FILE);
+        Check_CLI_Parameter_CLI_INPUT_FILE();
+    }
+    if (new_argc != 0)
+    {
+        printf ("argc: %d\n", new_argc);
+        for (int i = 0; i < new_argc; ++ i)
+        {
+            printf("argv [%d]: %s\n", i, *(argv + i));
+        }
+    }
+    // ===== ===== ===== ENDE CLI-Parameter parsen ===== ===== =====
+
+
 
     // TEST_Intersection();
-    TEST_Intersection_With_Random_Data();
-    TEST_Intersection_With_Random_Data_And_Specified_Result();
+    //TEST_Intersection_With_Random_Data();
+    //TEST_Intersection_With_Random_Data_And_Specified_Result();
 
     Show_Dynamic_Memory_Status();
 
