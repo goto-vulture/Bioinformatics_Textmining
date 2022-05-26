@@ -118,8 +118,8 @@ int main (const int argc, const char* argv [])
             OPT_HELP(),
 
             OPT_GROUP("Hauptfunktionen"),
-            OPT_STRING('i', "input", &GLOBAL_CLI_INPUT_FILE,
-                    "Eingabedatei", NULL, 0, 0),
+            OPT_STRING('i', "input", &GLOBAL_CLI_INPUT_FILE, "Eingabedatei", NULL, 0, 0),
+            OPT_STRING('o', "output", &GLOBAL_CLI_OUTPUT_FILE, "Ausgabedatei", NULL, 0, 0),
 
             OPT_END()
     };
@@ -134,6 +134,8 @@ int main (const int argc, const char* argv [])
     if (argc < 2)
     {
         puts ("Missing CLI parameter !");
+        puts ("At least an input file [-i / --input] and an output file [-o / --output] are expected !");
+
         int current_string = 0;
         while (GLOBAL_USAGES [current_string] != NULL)
         {
@@ -148,6 +150,11 @@ int main (const int argc, const char* argv [])
     {
         printf ("Input file: \"%s\"\n", GLOBAL_CLI_INPUT_FILE);
         Check_CLI_Parameter_CLI_INPUT_FILE();
+    }
+    if (GLOBAL_CLI_OUTPUT_FILE != 0)
+    {
+        printf ("Output file: \"%s\"\n", GLOBAL_CLI_OUTPUT_FILE);
+        Check_CLI_Parameter_CLI_OUTPUT_FILE();
     }
     if (new_argc != 0)
     {
