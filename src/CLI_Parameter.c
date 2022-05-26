@@ -30,6 +30,7 @@ const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION = "Weitere Programmbesch
 
 // Variablen fuer die geparsten CLI-Parameter
 const char* GLOBAL_CLI_INPUT_FILE = NULL;
+const char* GLOBAL_CLI_INPUT_FILE2 = NULL;
 const char* GLOBAL_CLI_OUTPUT_FILE = NULL;
 
 
@@ -53,8 +54,36 @@ void Check_CLI_Parameter_CLI_INPUT_FILE (void)
 
     if (input_file == NULL)
     {
-        FPRINTF_FFLUSH (stderr, "Cannot open the input file \"%s\" !", GLOBAL_CLI_INPUT_FILE);
+        FPRINTF_FFLUSH (stderr, "Cannot open the first input file \"%s\" !", GLOBAL_CLI_INPUT_FILE);
         exit(1);
+    }
+
+    FCLOSE_AND_SET_TO_NULL(input_file);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Testfunktion fuer den CLI Parameter, der die zweite Eingabedatei beschreibt.
+ */
+void Check_CLI_Parameter_CLI_INPUT_FILE2 (void)
+{
+    if (GLOBAL_CLI_INPUT_FILE2 == NULL || strlen (GLOBAL_CLI_INPUT_FILE2) == 0)
+    {
+        FPRINTF_FFLUSH_NO_VA_ARGS (stderr, "Invalid input file ! Either the file name is NULL or the name length is "
+                "zero !\n");
+        exit(1);
+    }
+
+    // Testweise die Eingabedatei oeffnen
+    FILE* input_file = fopen (GLOBAL_CLI_INPUT_FILE2, "r");
+
+    if (input_file == NULL)
+    {
+        FPRINTF_FFLUSH (stderr, "Cannot open the second input file \"%s\" !", GLOBAL_CLI_INPUT_FILE2);
+        //exit(1);
     }
 
     FCLOSE_AND_SET_TO_NULL(input_file);

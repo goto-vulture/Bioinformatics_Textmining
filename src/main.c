@@ -118,7 +118,8 @@ int main (const int argc, const char* argv [])
             OPT_HELP(),
 
             OPT_GROUP("Hauptfunktionen"),
-            OPT_STRING('i', "input", &GLOBAL_CLI_INPUT_FILE, "Eingabedatei", NULL, 0, 0),
+            OPT_STRING('i', "input", &GLOBAL_CLI_INPUT_FILE, "Erste Eingabedatei", NULL, 0, 0),
+            OPT_STRING('j', "input2", &GLOBAL_CLI_INPUT_FILE, "Zweite Eingabedatei", NULL, 0, 0),
             OPT_STRING('o', "output", &GLOBAL_CLI_OUTPUT_FILE, "Ausgabedatei", NULL, 0, 0),
 
             OPT_END()
@@ -150,6 +151,11 @@ int main (const int argc, const char* argv [])
     {
         printf ("Input file: \"%s\"\n", GLOBAL_CLI_INPUT_FILE);
         Check_CLI_Parameter_CLI_INPUT_FILE();
+    }
+    if (GLOBAL_CLI_INPUT_FILE2 != 0)
+    {
+        printf ("Input file: \"%s\"\n", GLOBAL_CLI_INPUT_FILE2);
+        Check_CLI_Parameter_CLI_INPUT_FILE2();
     }
     if (GLOBAL_CLI_OUTPUT_FILE != 0)
     {
