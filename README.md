@@ -37,3 +37,39 @@ Weitere Infos folgen ...
 ---
 
 <br>
+
+## EN
+
+### Introduction
+
+In our current time, more information will be collected than ever before. This trend extends to almost every area in our life. In the private area and also in the professional environment. Especially in science, an above average increase can be observed.
+
+In order to find more knowledge in this massive amount of data, the data will be placed and connected with other data, that was created in a comparable topic. Here is a simple example to show the general idea:
+
+For example, when looking at Wikipedia articles that contains meaning-related topics. Without going in the content, new knowledge can be found by looking at which words occur in all articles. This makes it possible to find topics that play a role in each article.
+
+With small amounts of data, this sounds easy and trivial. But with larger amounts of data, a search of this type through the data is only possible with the help of computers.
+
+---
+
+### General idea
+
+For a efficient search process, all words will be encoded in integers. With this encoded data, simple integer comparisons are possible in shortest time.
+
+With the help of some elementary set operations (the main important one: intersection), the set of words will be created, that appear in every source set.
+
+---
+
+### Technical information
+
+To make the implementation simple, the in and output will be created in a simple way. The name of the input files will be passed trough CLI parameter and the results will be represented as CSV file.
+
+A more user-friendly interface is possible. But the priority in this project is low.
+
+---
+
+### More information
+
+More information will follow ...
+
+---
