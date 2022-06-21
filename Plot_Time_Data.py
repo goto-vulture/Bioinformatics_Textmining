@@ -77,13 +77,18 @@ if __name__ == "__main__":
     max_y_axis = max(max_measure_list)
 
     # Daten visualisieren
-    plt.plot(x_axis, list_2_nested_loops_times, "ro", label="Zweifach verschachtelte Schleifen\nO(n²)")
-    plt.plot(x_axis, list_qsort_and_binary_search_list, "bo", label="QSort + Binäre Suche\nO(n * log(n)) + O(log(n))")
-    plt.plot(x_axis, list_heapsort_and_binary_search_list, "go", label="Heap-Sort + Binäre Suche\nO(n * log(n)) + O(log(n))")
+    plt.plot(x_axis, list_2_nested_loops_times, "ro",
+            label="Zweifach verschachtelte Schleifen\n" + r"$\mathcal{O}(n²)$")
+    plt.plot(x_axis, list_qsort_and_binary_search_list, "bo",
+            label="QSort + Binäre Suche\n" + r"$\mathcal{O}(n \cdot log(n)) + \mathcal{O}(log(n))$")
+    plt.plot(x_axis, list_heapsort_and_binary_search_list, "go",
+            label="Heap-Sort + Binäre Suche\n" + r"$\mathcal{O}(n \cdot log(n)) + \mathcal{O}(log(n))$")
     plt.axis([min_x_axis, max_x_axis, min_y_axis, max_y_axis])
 
-    plt.xlabel("Anzahl an tausend Elementen pro Teilmenge (|M1,i| als auch |M2,i|); i = " + str(NUMBER_OF_ARRAYS))
-    # plt.xlabel("Anzahl an tausend Elementen pro Teilmenge in |M2,i|; |M1,i| = 5; i = " + str(NUMBER_OF_ARRAYS))
+    plt.xlabel("Anzahl an tausend Elementen pro Teilmenge (" +
+            r"$\vert M_{1,i} \vert$" + " als auch " + r"$\vert M_{2,i}\vert$" + ")\nI := {1, ..., " + str(NUMBER_OF_ARRAYS) + "}")
+    #plt.xlabel("Anzahl an tausend Elementen pro Teilmenge in " +
+    #        r"$\vert M_{1,i} \vert$" + "\n" + r"$\vert M_{2,i} \vert$ = 5" + "    I := {1, ..., " + str(NUMBER_OF_ARRAYS) + "}")
     plt.ylabel("Laufzeit in Sekunden")
     plt.title("Vergleich Zeitaufwand Schnittmengenbestimmung")
 
