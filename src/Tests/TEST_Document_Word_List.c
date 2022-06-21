@@ -24,7 +24,7 @@
 #endif /* NUMBER_OF_ARRAYS */
 
 #ifndef MAX_ARRAY_LENGTH
-#define MAX_ARRAY_LENGTH 15000
+#define MAX_ARRAY_LENGTH 10000
 #else
 #error "The macro \"MAX_ARRAY_LENGTH\" is already defined !"
 #endif /* MAX_ARRAY_LENGTH */

@@ -49,7 +49,7 @@ if __name__ == "__main__":
             print (clean_result.group())
             list_heapsort_and_binary_search_list.append(float(clean_result.group()))
 
-    MAX_ARRAY_LENGTH    = 15000
+    MAX_ARRAY_LENGTH    = 10000
     NUMBER_OF_ARRAYS    = 10
     NUMBER_OF_RUNS      = 50
     DIV_VALUE           = 1000
