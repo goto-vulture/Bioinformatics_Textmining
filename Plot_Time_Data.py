@@ -78,19 +78,19 @@ if __name__ == "__main__":
 
     # Daten visualisieren
     plt.plot(x_axis, list_2_nested_loops_times, "ro",
-            label="Zweifach verschachtelte Schleifen\n" + r"$\mathcal{O}(n²)$")
+            label="Two nested loops\n" + r"$\mathcal{O}(n²)$")
     plt.plot(x_axis, list_qsort_and_binary_search_list, "bo",
-            label="QSort + Binäre Suche\n" + r"$\mathcal{O}(n \cdot log(n)) + \mathcal{O}(log(n))$")
+            label="QSort + binary search\n" + r"$\mathcal{O}(n \cdot log(n)) + \mathcal{O}(log(n))$")
     plt.plot(x_axis, list_heapsort_and_binary_search_list, "go",
-            label="Heap-Sort + Binäre Suche\n" + r"$\mathcal{O}(n \cdot log(n)) + \mathcal{O}(log(n))$")
+            label="Heap-Sort + binary search\n" + r"$\mathcal{O}(n \cdot log(n)) + \mathcal{O}(log(n))$")
     plt.axis([min_x_axis, max_x_axis, min_y_axis, max_y_axis])
 
-    plt.xlabel("Anzahl an tausend Elementen pro Teilmenge (" +
-            r"$\vert M_{1,i} \vert$" + " als auch " + r"$\vert M_{2,i}\vert$" + ")\nI := {1, ..., " + str(NUMBER_OF_ARRAYS) + "}")
-    #plt.xlabel("Anzahl an tausend Elementen pro Teilmenge in " +
+    plt.xlabel("Number of elements " + r"$\cdot$" + " 1000 per subset (" +
+            r"$\vert M_{1,i} \vert$" + " and " + r"$\vert M_{2,i}\vert$" + ")\nI := {1, ..., " + str(NUMBER_OF_ARRAYS) + "}")
+    #plt.xlabel("Number of elements " + r"$\cdot$" + " 1000 per subset (" +
     #        r"$\vert M_{1,i} \vert$" + "\n" + r"$\vert M_{2,i} \vert$ = 5" + "    I := {1, ..., " + str(NUMBER_OF_ARRAYS) + "}")
-    plt.ylabel("Laufzeit in Sekunden")
-    plt.title("Vergleich Zeitaufwand Schnittmengenbestimmung")
+    plt.ylabel("Runtime in seconds")
+    plt.title("Comparison intersection runtime")
 
     plt.legend()
     plt.show()
