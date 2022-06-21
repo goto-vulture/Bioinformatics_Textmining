@@ -88,7 +88,7 @@ if __name__ == "__main__":
     plt.xlabel("Number of elements " + r"$\cdot$" + " 1000 per subset (" +
             r"$\vert M_{1,i} \vert$" + " and " + r"$\vert M_{2,i}\vert$" + ")\nI := {1, ..., " + str(NUMBER_OF_ARRAYS) + "}")
     #plt.xlabel("Number of elements " + r"$\cdot$" + " 1000 per subset (" +
-    #        r"$\vert M_{1,i} \vert$" + "\n" + r"$\vert M_{2,i} \vert$ = 5" + "    I := {1, ..., " + str(NUMBER_OF_ARRAYS) + "}")
+    #        r"$\vert M_{1,i} \vert$" + ")\n" + r"$\vert M_{2,i} \vert$ = 5" + "    I := {1, ..., " + str(NUMBER_OF_ARRAYS) + "}")
     plt.ylabel("Runtime in seconds")
     plt.title("Comparison intersection runtime")
 
