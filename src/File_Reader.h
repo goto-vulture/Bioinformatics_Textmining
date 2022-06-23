@@ -25,19 +25,18 @@ extern "C"
 
 struct Token_Container
 {
+    // Objekt fuer die Tokens
     struct Tokens
     {
-        char* data;
-        size_t token_size;
-        size_t max_token_length; // Inkl. Nullterminator
-        uint_fast32_t next_free_element;
-
-        size_t allocated_tokens;
+        char* data;                         // Tokens (befinden sich auf einem linearen Stueck Speicher)
+        size_t max_token_length;            // Maximale Laenge eines Tokens - Inkl. Nullterminator
+        uint_fast32_t next_free_element;    // Naechstes freies Element im Tokenspeicher (Konkrete Adresse muss zur
+                                            // Laufzeit berechnet werden)
+        size_t allocated_tokens;            // Anzahl an Tokens, die allokiert wurden
     }* tokens;
 
-    uint_fast32_t next_free_element;
-    size_t allocated_token_container;
-    size_t structure_size;
+    uint_fast32_t next_free_element;        // Naechstes freies Tokens-Objekt
+    size_t allocated_token_container;       // Anzahl an allokierten Tokens-Objekte
 };
 
 //=====================================================================================================================
@@ -108,6 +107,18 @@ Get_Token_From_Token_Container
         const uint_fast32_t index_token_in_tokens_object
 );
 
+extern size_t
+Get_Token_Container_Size
+(
+        const struct Token_Container* const container
+);
+
+extern void
+Show_Selected_Token_Container
+(
+        const struct Token_Container* const container,
+        const size_t selected_container
+);
 
 
 // ENDE C++-Kompablitaet herstellen
