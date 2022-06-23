@@ -179,6 +179,9 @@ INTERSECTION_APPROACHES_C = ./src/Intersection_Approaches.c
 
 FILE_READER_H = ./src/File_Reader.h
 FILE_READER_C = ./src/File_Reader.c
+
+TOKEN_INT_MAPPING_H = ./src/Token_Int_Mapping.h
+TOKEN_INT_MAPPING_C = ./src/Token_Int_Mapping.c
 ##### ##### ##### ENDE Uebersetzungseinheiten ##### ##### #####
 
 
@@ -201,11 +204,11 @@ endif
 	@echo
 	@echo Bioinformatics_Textmining build completed !
 
-$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o
+$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o
 	@echo
 	@echo Linking object files ...
 	@echo
-	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o
+	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o
 
 ##### BEGINN Die einzelnen Uebersetzungseinheiten #####
 main.o: $(MAIN_C)
@@ -263,6 +266,9 @@ Intersection_Approaches.o: $(INTERSECTION_APPROACHES_C)
 
 File_Reader.o: $(FILE_READER_C)
 	$(CC) $(CCFLAGS) -c $(FILE_READER_C)
+
+Token_Int_Mapping.o: $(TOKEN_INT_MAPPING_C)
+	$(CC) $(CCFLAGS) -c $(TOKEN_INT_MAPPING_C)
 ##### ENDE Die einzelnen Uebersetzungseinheiten #####
 
 # Alles wieder aufraeumen
