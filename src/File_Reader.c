@@ -254,7 +254,7 @@ Get_Token_From_Token_Container
 
     const size_t max_token_size = container->tokens [index_tokens].max_token_length;
 
-    return container->tokens [index_tokens].data + max_token_size;
+    return container->tokens [index_tokens].data + (max_token_size * index_token_in_tokens_object);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
