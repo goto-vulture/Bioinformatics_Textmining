@@ -120,6 +120,12 @@ Show_Selected_Token_Container
         const size_t selected_container
 );
 
+extern uint_fast32_t
+Count_All_Tokens_In_Token_Container
+(
+        const struct Token_Container* const container
+);
+
 
 // ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus

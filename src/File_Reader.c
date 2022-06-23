@@ -300,6 +300,24 @@ Show_Selected_Token_Container
     return;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
+extern uint_fast32_t
+Count_All_Tokens_In_Token_Container
+(
+        const struct Token_Container* const container
+)
+{
+    uint_fast32_t result = 0;
+
+    for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
+    {
+        result += container->tokens [i].next_free_element;
+    }
+
+    return result;
+}
+
 //=====================================================================================================================
 
 static char*
@@ -417,7 +435,6 @@ Extract_Tokens_From_Line
                 ((token_length >= MAX_TOKEN_LENGTH) ? MAX_TOKEN_LENGTH - 1 : token_length));
 
         token_container->tokens [token_container->next_free_element].data [((next_free_element_in_tokens + 1) * token_size) - 1] = '\0';
-
         file_buffer_cursor += token_length;
         token_container->tokens [token_container->next_free_element].next_free_element ++;
         file_buffer_cursor = end_token + 1;
