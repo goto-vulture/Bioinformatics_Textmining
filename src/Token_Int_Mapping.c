@@ -188,25 +188,6 @@ Show_C_Str_Array_Usage
     return;
 }
 
-//=====================================================================================================================
-
-static inline uint_fast32_t
-Pseudo_Hash_Function
-(
-        const char* input_str,
-        const size_t input_str_length
-)
-{
-    uint_fast32_t sum_char_in_new_token = 0;
-    // Zeichen der Zeichenkette aufaddieren
-    for (size_t i = 0; i < input_str_length; ++ i)
-    {
-        sum_char_in_new_token += (uint_fast32_t) input_str [i];
-    }
-
-    return (sum_char_in_new_token % 100);
-}
-
 //---------------------------------------------------------------------------------------------------------------------
 
 extern uint_fast32_t
@@ -245,6 +226,25 @@ Token_To_Int
     }
 
     return result;
+}
+
+//=====================================================================================================================
+
+static inline uint_fast32_t
+Pseudo_Hash_Function
+(
+        const char* input_str,
+        const size_t input_str_length
+)
+{
+    uint_fast32_t sum_char_in_new_token = 0;
+    // Zeichen der Zeichenkette aufaddieren
+    for (size_t i = 0; i < input_str_length; ++ i)
+    {
+        sum_char_in_new_token += (uint_fast32_t) input_str [i];
+    }
+
+    return (sum_char_in_new_token % 100);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
