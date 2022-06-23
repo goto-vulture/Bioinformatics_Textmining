@@ -90,8 +90,13 @@
 
 #include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include <inttypes.h>
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Tests/TEST_Document_Word_List.h"
+#include "File_Reader.h"
+#include "Token_Int_Mapping.h"
 
 
 
@@ -113,8 +118,37 @@ int main (const int argc, const char* argv [])
     (void) argv;
 
     // TEST_Intersection();
-    TEST_Intersection_With_Random_Data();
-    TEST_Intersection_With_Random_Data_And_Specified_Result();
+    //TEST_Intersection_With_Random_Data();
+    // TEST_Intersection_With_Random_Data_And_Specified_Result();
+
+    struct Token_Container* token_container =
+            Create_Token_Container_From_File ("/home/am1/Downloads/Sachen/test_ebm_tokens.txt");
+
+    printf ("Full token container size: %zu byte\n", Get_Token_Container_Size(token_container));
+
+    for (uint_fast32_t i = 0; i < token_container->next_free_element; ++ i)
+    {
+        // Show_Selected_Token_Container(token_container, i);
+    }
+    printf ("Sum all tokens in container: %" PRIuFAST32 "\n\n", Count_All_Tokens_In_Token_Container(token_container));
+
+    struct Token_Int_Mapping* token_int_mapping = Create_Token_Int_Mapping();
+
+    for (uint_fast32_t i = 0; i < token_container [0].next_free_element; ++ i)
+    {
+        char* token = Get_Token_From_Token_Container (token_container, 0, i);
+        _Bool element_added = Add_Token_To_Mapping(token_int_mapping, token, strlen (token));
+
+        if (element_added)
+        {
+            printf ("%20s -> %5" PRIuFAST32 "\n", token, Token_To_Int (token_int_mapping, token, strlen(token)));
+        }
+    }
+
+    Show_C_Str_Array_Usage(token_int_mapping);
+
+    Delete_Token_Int_Mapping(token_int_mapping);
+    Delete_Token_Container (token_container);
 
     Show_Dynamic_Memory_Status();
 
