@@ -43,9 +43,9 @@
 static char*
 Read_Line
 (
-        struct Token_Container* const token_container,
-        FILE* file,
-        char* file_buffer,
+        struct Token_Container* const restrict token_container,
+        FILE* const file,
+        char* const restrict file_buffer,
         const size_t buffer_length,
         size_t next_char_in_buffer
 );
@@ -53,8 +53,8 @@ Read_Line
 static void
 Extract_Tokens_From_Line
 (
-        struct Token_Container* const token_container,
-        char* file_buffer,
+        struct Token_Container* const restrict token_container,
+        const char* const restrict file_buffer,
         const size_t buffer_length,
         const size_t used_char_in_buffer
 );
@@ -92,7 +92,7 @@ Extract_Tokens_From_Line
 extern struct Token_Container*
 Create_Token_Container_From_File
 (
-        const char* file_name
+        const char* const file_name
 )
 {
     ASSERT_MSG(file_name != NULL, "File name is NULL !");
@@ -302,7 +302,7 @@ Show_Selected_Token_Container
 
 //---------------------------------------------------------------------------------------------------------------------
 
-extern uint_fast32_t
+extern inline uint_fast32_t
 Count_All_Tokens_In_Token_Container
 (
         const struct Token_Container* const container
@@ -323,9 +323,9 @@ Count_All_Tokens_In_Token_Container
 static char*
 Read_Line
 (
-        struct Token_Container* const token_container,
-        FILE* file,
-        char* file_buffer,
+        struct Token_Container* const restrict token_container,
+        FILE* const file,
+        char* const restrict file_buffer,
         const size_t buffer_length,
         size_t next_char_in_buffer
 )
@@ -362,8 +362,8 @@ Read_Line
 static void
 Extract_Tokens_From_Line
 (
-        struct Token_Container* const token_container,
-        char* file_buffer,
+        struct Token_Container* const restrict token_container,
+        const char* const restrict file_buffer,
         const size_t buffer_length,
         const size_t used_char_in_buffer
 )

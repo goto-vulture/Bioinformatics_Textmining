@@ -30,7 +30,7 @@
 static inline uint_fast32_t
 Pseudo_Hash_Function
 (
-        const char* input_str,
+        const char* const input_str,
         const size_t input_str_length
 );
 
@@ -88,8 +88,8 @@ Delete_Token_Int_Mapping
 extern _Bool
 Add_Token_To_Mapping
 (
-        struct Token_Int_Mapping* object,
-        const char* new_token,
+        struct Token_Int_Mapping* const restrict object,
+        const char* const restrict new_token,
         const size_t new_token_length
 )
 {
@@ -174,7 +174,7 @@ Add_Token_To_Mapping
 extern void
 Show_C_Str_Array_Usage
 (
-        struct Token_Int_Mapping* object
+        const struct Token_Int_Mapping* const object
 )
 {
     uint_fast32_t sum_token = 0;
@@ -193,8 +193,8 @@ Show_C_Str_Array_Usage
 extern uint_fast32_t
 Token_To_Int
 (
-        struct Token_Int_Mapping* object,
-        const char* search_token,
+        const struct Token_Int_Mapping* const restrict object,
+        const char* const restrict search_token,
         const size_t search_token_length
 )
 {
@@ -233,7 +233,7 @@ Token_To_Int
 static inline uint_fast32_t
 Pseudo_Hash_Function
 (
-        const char* input_str,
+        const char* const input_str,
         const size_t input_str_length
 )
 {

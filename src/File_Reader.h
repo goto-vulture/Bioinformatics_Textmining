@@ -72,7 +72,7 @@ struct Token_Container
 extern struct Token_Container*
 Create_Token_Container_From_File
 (
-        const char* file_name
+        const char* const file_name
 );
 
 /**
@@ -120,7 +120,7 @@ Show_Selected_Token_Container
         const size_t selected_container
 );
 
-extern uint_fast32_t
+extern inline uint_fast32_t
 Count_All_Tokens_In_Token_Container
 (
         const struct Token_Container* const container
