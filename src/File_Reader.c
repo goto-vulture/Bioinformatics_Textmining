@@ -192,18 +192,12 @@ Create_Token_Container_From_File
                     token_container_realloc_counter);
         }
 
-
         Extract_Tokens_From_Line
         (
                 new_container,
                 file_buffer,
                 strlen(file_buffer)
         );
-
-        if (line_counter == 2)
-        {
-            // break;
-        }
     }
 
 
