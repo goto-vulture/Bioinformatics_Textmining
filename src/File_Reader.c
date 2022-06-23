@@ -71,7 +71,6 @@ Read_Line
  *
  * @param[in] token_container Token_Container
  * @param[in] file_buffer Datei-Puffer mit den Inhalt der Daten, die verarbeitet werden sollen
- * @param[in] buffer_length Groesse des Puffers
  * @param[in] next_char_in_buffer Index des naechsten freien Zeichen im Puffer
  */
 static void
@@ -79,7 +78,6 @@ Extract_Tokens_From_Line
 (
         struct Token_Container* const restrict token_container,
         const char* const restrict file_buffer,
-        const size_t buffer_length,
         const size_t used_char_in_buffer
 );
 
@@ -199,7 +197,6 @@ Create_Token_Container_From_File
         (
                 new_container,
                 file_buffer,
-                READ_FILE_BUFFER_SIZE,
                 strlen(file_buffer)
         );
 
@@ -424,7 +421,6 @@ Read_Line
  *
  * @param[in] token_container Token_Container
  * @param[in] file_buffer Datei-Puffer mit den Inhalt der Daten, die verarbeitet werden sollen
- * @param[in] buffer_length Groesse des Puffers
  * @param[in] next_char_in_buffer Index des naechsten freien Zeichen im Puffer
  */
 static void
@@ -432,13 +428,11 @@ Extract_Tokens_From_Line
 (
         struct Token_Container* const restrict token_container,
         const char* const restrict file_buffer,
-        const size_t buffer_length,
         const size_t used_char_in_buffer
 )
 {
     ASSERT_MSG(token_container != NULL, "Token_Container is NULL !");
     ASSERT_MSG(file_buffer != NULL, "file_buffer is NULL !");
-    ASSERT_MSG(buffer_length > 0, "buffer_length is 0 !");
     ASSERT_MSG(used_char_in_buffer > 0, "used_char_in_buffer is 0 !");
 
     if (used_char_in_buffer <= 2) { return; }
