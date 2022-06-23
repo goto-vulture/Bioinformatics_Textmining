@@ -134,14 +134,17 @@ int main (const int argc, const char* argv [])
 
     struct Token_Int_Mapping* token_int_mapping = Create_Token_Int_Mapping();
 
-    for (uint_fast32_t i = 0; i < token_container [0].next_free_element; ++ i)
+    for (uint_fast32_t i = 0; i < token_container->next_free_element; ++ i)
     {
-        char* token = Get_Token_From_Token_Container (token_container, 0, i);
-        _Bool element_added = Add_Token_To_Mapping(token_int_mapping, token, strlen (token));
-
-        if (element_added)
+        for (uint_fast32_t i2 = 0; i2 < token_container->tokens [i].next_free_element; ++ i2)
         {
-            printf ("%20s -> %5" PRIuFAST32 "\n", token, Token_To_Int (token_int_mapping, token, strlen(token)));
+            char* token = Get_Token_From_Token_Container (token_container, i, i2);
+            _Bool element_added = Add_Token_To_Mapping(token_int_mapping, token, strlen (token));
+
+            if (element_added)
+            {
+                printf ("%20s -> %5" PRIuFAST32 "\n", token, Token_To_Int (token_int_mapping, token, strlen(token)));
+            }
         }
     }
 
