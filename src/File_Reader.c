@@ -40,6 +40,19 @@
 #error "The macro \"READ_FILE_BUFFER_SIZE\" is already defined !"
 #endif /* READ_FILE_BUFFER_SIZE */
 
+/**
+ * @brief Eine Zeile aus einer bereits geoeffneten Datei lesen.
+ *
+ * Es wird der Zeiger auf den Puffer zurueckgegeben, um so Fehler (z.B. durch NULL) anzeigen zu koennen.
+ *
+ * @param[in] token_container Token_Container
+ * @param[in] file FILE-Objekt auf die bereits geoeffnete Datei
+ * @param[in] file_buffer Benutzerdefinierter Puffer fuer das Lesen der Datei
+ * @param[in] buffer_length Groesse des Puffers
+ * @param[in] next_char_in_buffer Index des naechsten freien Zeichen im Puffer
+ *
+ * @return Zeiger auf den Puffer
+ */
 static char*
 Read_Line
 (
@@ -50,6 +63,17 @@ Read_Line
         size_t next_char_in_buffer
 );
 
+/**
+ * @brief Tokens aus einem Puffer extrahieren und dem Token_Container hinzufuegen.
+ *
+ * Hinweis: Das Ermitteln der Tokens ist sehr rudimentaer und NICHT fuer die Verwendung geeignet ! Bisher wurde eine
+ * schmandige und sehr einfache Variante implementiert, um die Entwicklung fortfuehren zu koennen !
+ *
+ * @param[in] token_container Token_Container
+ * @param[in] file_buffer Datei-Puffer mit den Inhalt der Daten, die verarbeitet werden sollen
+ * @param[in] buffer_length Groesse des Puffers
+ * @param[in] next_char_in_buffer Index des naechsten freien Zeichen im Puffer
+ */
 static void
 Extract_Tokens_From_Line
 (
@@ -259,6 +283,13 @@ Get_Token_From_Token_Container
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Groesse des Token_Containers (inkl. dynamisch allokierten Speicher) in Byte zurueckgeben.
+ *
+ * @param[in] container Token_Container
+ *
+ * @return Groesse des Token_Containers (inkl. dynamisch allokierten Speicher) in Byte
+ */
 extern size_t
 Get_Token_Container_Size
 (
@@ -281,6 +312,12 @@ Get_Token_Container_Size
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Inhalt eines Tokens-Objektes ausgeben.
+ *
+ * @param[in] container Token_Container
+ * @param[in] selected_container Index des Tokens-Objektes im uebergebenen Token_Container
+ */
 extern void
 Show_Selected_Token_Container
 (
@@ -302,6 +339,13 @@ Show_Selected_Token_Container
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Anzahl alle Tokens im gesamten Token_Container (also inkl. aller Tokens-Objekte) ermitteln und zurueckgeben.
+ *
+ * @param[in] container Token_Container
+ *
+ * @return Anzahl aller Tokens im gesamten Token_Container (also inkl. aller Tokens-Objekte)
+ */
 extern inline uint_fast32_t
 Count_All_Tokens_In_Token_Container
 (
@@ -320,6 +364,19 @@ Count_All_Tokens_In_Token_Container
 
 //=====================================================================================================================
 
+/**
+ * @brief Eine Zeile aus einer bereits geoeffneten Datei lesen.
+ *
+ * Es wird der Zeiger auf den Puffer zurueckgegeben, um so Fehler (z.B. durch NULL) anzeigen zu koennen.
+ *
+ * @param[in] token_container Token_Container
+ * @param[in] file FILE-Objekt auf die bereits geoeffnete Datei
+ * @param[in] file_buffer Benutzerdefinierter Puffer fuer das Lesen der Datei
+ * @param[in] buffer_length Groesse des Puffers
+ * @param[in] next_char_in_buffer Index des naechsten freien Zeichen im Puffer
+ *
+ * @return Zeiger auf den Puffer
+ */
 static char*
 Read_Line
 (
@@ -359,6 +416,17 @@ Read_Line
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Tokens aus einem Puffer extrahieren und dem Token_Container hinzufuegen.
+ *
+ * Hinweis: Das Ermitteln der Tokens ist sehr rudimentaer und NICHT fuer die Verwendung geeignet ! Bisher wurde eine
+ * schmandige und sehr einfache Variante implementiert, um die Entwicklung fortfuehren zu koennen !
+ *
+ * @param[in] token_container Token_Container
+ * @param[in] file_buffer Datei-Puffer mit den Inhalt der Daten, die verarbeitet werden sollen
+ * @param[in] buffer_length Groesse des Puffers
+ * @param[in] next_char_in_buffer Index des naechsten freien Zeichen im Puffer
+ */
 static void
 Extract_Tokens_From_Line
 (

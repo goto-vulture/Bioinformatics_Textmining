@@ -107,12 +107,25 @@ Get_Token_From_Token_Container
         const uint_fast32_t index_token_in_tokens_object
 );
 
+/**
+ * @brief Groesse des Token_Containers (inkl. dynamisch allokierten Speicher) in Byte zurueckgeben.
+ *
+ * @param[in] container Token_Container
+ *
+ * @return Groesse des Token_Containers (inkl. dynamisch allokierten Speicher) in Byte
+ */
 extern size_t
 Get_Token_Container_Size
 (
         const struct Token_Container* const container
 );
 
+/**
+ * @brief Inhalt eines Tokens-Objektes ausgeben.
+ *
+ * @param[in] container Token_Container
+ * @param[in] selected_container Index des Tokens-Objektes im uebergebenen Token_Container
+ */
 extern void
 Show_Selected_Token_Container
 (
@@ -120,6 +133,13 @@ Show_Selected_Token_Container
         const size_t selected_container
 );
 
+/**
+ * @brief Anzahl alle Tokens im gesamten Token_Container (also inkl. aller Tokens-Objekte) ermitteln und zurueckgeben.
+ *
+ * @param[in] container Token_Container
+ *
+ * @return Anzahl aller Tokens im gesamten Token_Container (also inkl. aller Tokens-Objekte)
+ */
 extern inline uint_fast32_t
 Count_All_Tokens_In_Token_Container
 (
