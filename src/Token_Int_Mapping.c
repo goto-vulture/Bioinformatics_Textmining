@@ -52,7 +52,10 @@ Create_Token_Int_Mapping
         new_object->c_str_arrays [i] = (char*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (char) * MAX_TOKEN_LENGTH);
         ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
                 C_STR_ALLOCATION_STEP_SIZE * sizeof (char) * MAX_TOKEN_LENGTH);
-    }
+        new_object->int_mapping [i] = (uint_fast32_t*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (uint_fast32_t) * MAX_TOKEN_LENGTH);
+        ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
+                C_STR_ALLOCATION_STEP_SIZE * sizeof (uint_fast32_t) * MAX_TOKEN_LENGTH);
+}
 
     new_object->allocated_c_strings_in_array = C_STR_ALLOCATION_STEP_SIZE;
 
@@ -73,6 +76,7 @@ Delete_Token_Int_Mapping
     for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
     {
         FREE_AND_SET_TO_NULL(object->c_str_arrays [i]);
+        FREE_AND_SET_TO_NULL(object->int_mapping [i]);
     }
     FREE_AND_SET_TO_NULL(object);
 
@@ -81,7 +85,7 @@ Delete_Token_Int_Mapping
 
 //---------------------------------------------------------------------------------------------------------------------
 
-extern void
+extern _Bool
 Add_Token_To_Mapping
 (
         struct Token_Int_Mapping* object,
@@ -96,6 +100,7 @@ Add_Token_To_Mapping
 
     const uint_fast32_t chosen_c_string_array = Pseudo_Hash_Function (new_token, new_token_length);
     char* to_str = object->c_str_arrays [chosen_c_string_array];
+    uint_fast32_t* int_mapping_array = object->int_mapping [chosen_c_string_array];
 
     // Wird mehr Speicher fuer den folgenden Prozess benoetigt ?
     if (object->c_str_array_lengths [chosen_c_string_array] >= object->allocated_c_strings_in_array)
@@ -114,7 +119,14 @@ Add_Token_To_Mapping
                     (old_size + C_STR_ALLOCATION_STEP_SIZE) * MAX_TOKEN_LENGTH);
             memset(tmp_ptr, '\0', (old_size + C_STR_ALLOCATION_STEP_SIZE) * MAX_TOKEN_LENGTH);
 
+            uint_fast32_t* tmp_ptr_2 = (uint_fast32_t*) REALLOC(object->int_mapping [i],
+                    (old_size + C_STR_ALLOCATION_STEP_SIZE) * MAX_TOKEN_LENGTH);
+            ASSERT_ALLOC(tmp_ptr_2, "Cannot reallocate memory for token to int mapping data !",
+                    (old_size + C_STR_ALLOCATION_STEP_SIZE) * MAX_TOKEN_LENGTH);
+            //memset(tmp_ptr_2, '\0', (old_size + C_STR_ALLOCATION_STEP_SIZE) * MAX_TOKEN_LENGTH);
+
             object->c_str_arrays [i] = tmp_ptr;
+            object->int_mapping [i] = tmp_ptr_2;
             object->allocated_c_strings_in_array += C_STR_ALLOCATION_STEP_SIZE;
         }
 
@@ -122,12 +134,56 @@ Add_Token_To_Mapping
                 old_size + C_STR_ALLOCATION_STEP_SIZE, token_to_int_realloc_counter);
     }
 
-    strncpy (&(to_str [object->c_str_array_lengths [chosen_c_string_array] * MAX_TOKEN_LENGTH]),
-            new_token, ((new_token_length >= MAX_TOKEN_LENGTH) ? MAX_TOKEN_LENGTH - 1 : new_token_length));
+    // Ist das Token bereits in der Liste ?
+    _Bool token_already_in_list = false;
+    for (uint_fast32_t i = 0; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
+    {
+        if (strncmp (new_token, &(to_str [i * MAX_TOKEN_LENGTH]), new_token_length) == 0)
+        {
+            token_already_in_list = true;
+            break;
+        }
+    }
 
-    // Nullterminierung garantieren
-    to_str [((object->c_str_array_lengths [chosen_c_string_array] + 1) * MAX_TOKEN_LENGTH) - 1] = '\0';
-    object->c_str_array_lengths [chosen_c_string_array] ++;
+    if (! token_already_in_list)
+    {
+        strncpy (&(to_str [object->c_str_array_lengths [chosen_c_string_array] * MAX_TOKEN_LENGTH]),
+                new_token, ((new_token_length >= MAX_TOKEN_LENGTH) ? MAX_TOKEN_LENGTH - 1 : new_token_length));
+
+        // Nullterminierung garantieren
+        to_str [((object->c_str_array_lengths [chosen_c_string_array] + 1) * MAX_TOKEN_LENGTH) - 1] = '\0';
+        object->c_str_array_lengths [chosen_c_string_array] ++;
+
+        uint_fast32_t count_c_str_array_lengths = 0;
+        for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
+        {
+            count_c_str_array_lengths += object->c_str_array_lengths [i];
+        }
+        int_mapping_array [object->c_str_array_lengths [chosen_c_string_array] - 1] = count_c_str_array_lengths;
+    }
+    else
+    {
+        printf ("\"%s\" already in list !\n", new_token);
+    }
+
+    return ! token_already_in_list;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+extern void
+Show_C_Str_Array_Usage
+(
+        struct Token_Int_Mapping* object
+)
+{
+    uint_fast32_t sum_token = 0;
+    for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
+    {
+        printf ("Array %3zu: %4" PRIuFAST32 "\n", i, object->c_str_array_lengths [i]);
+        sum_token += object->c_str_array_lengths [i];
+    }
+    printf ("Sum tokens: %" PRIuFAST32 "\n\n", sum_token);
 
     return;
 }
@@ -149,6 +205,46 @@ Pseudo_Hash_Function
     }
 
     return (sum_char_in_new_token % 100);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+extern uint_fast32_t
+Token_To_Int
+(
+        struct Token_Int_Mapping* object,
+        const char* search_token,
+        const size_t search_token_length
+)
+{
+    ASSERT_MSG(object != NULL, "Token_Int_Mapping object is NULL !");
+    ASSERT_MSG(search_token != NULL, "New token is NULL !");
+    ASSERT_MSG(search_token_length > 0, "New token has the length 0 !");
+
+    uint_fast32_t result = UINT_FAST32_MAX;
+    const uint_fast32_t chosen_c_string_array = Pseudo_Hash_Function (search_token, search_token_length);
+    _Bool token_found = false;
+    uint_fast32_t i = 0;
+    char* c_string_array = object->c_str_arrays [chosen_c_string_array];
+
+    // Im berechneten C-String-Array nach dem Token suchen
+    for (; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
+    {
+        if (strncmp (search_token, &(c_string_array [i * MAX_TOKEN_LENGTH]), search_token_length) == 0)
+        {
+            token_found = true;
+            break;
+        }
+    }
+
+    // Nun bestimmen welche Position das Token bezogen auf alle C-String Arrays besitzt. Dies ist dann der gemappte
+    // Wert
+    if (token_found)
+    {
+        result = object->int_mapping [chosen_c_string_array][i];
+    }
+
+    return result;
 }
 
 //---------------------------------------------------------------------------------------------------------------------

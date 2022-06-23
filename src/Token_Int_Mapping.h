@@ -18,6 +18,7 @@ extern "C"
 
 #include <inttypes.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 
 
@@ -33,8 +34,9 @@ struct Token_Int_Mapping
 {
     char* c_str_arrays [C_STR_ARRAYS];                  // C-String Arrays, die die Tokens beinhalten
                                                         // Flaches Speichermodell !
+    uint_fast32_t* int_mapping [C_STR_ARRAYS];          // Mapping Nummern
 
-    size_t allocated_c_strings_in_array;                   // Anzahl an allokierten Tokens-Objekte
+    size_t allocated_c_strings_in_array;                // Anzahl an allokierten Tokens-Objekte
     uint_fast32_t c_str_array_lengths [C_STR_ARRAYS];   // Laenge der C-String Arrays
 };
 
@@ -52,12 +54,26 @@ Delete_Token_Int_Mapping
         struct Token_Int_Mapping* object
 );
 
-extern void
+extern _Bool
 Add_Token_To_Mapping
 (
         struct Token_Int_Mapping* object,
         const char* new_token,
         const size_t new_token_length
+);
+
+extern void
+Show_C_Str_Array_Usage
+(
+        struct Token_Int_Mapping* object
+);
+
+extern uint_fast32_t
+Token_To_Int
+(
+        struct Token_Int_Mapping* object,
+        const char* search_token,
+        const size_t search_token_length
 );
 
 
