@@ -429,6 +429,13 @@ Extract_Tokens_From_Line
         }
         const size_t token_length = end_token - file_buffer_cursor;
 
+        // Alle Tokens, die kleiner als 3 Zeichen sind, werden uebersprungen
+        if (token_length < 3)
+        {
+            file_buffer_cursor = end_token + 1;
+            continue;
+        }
+
         const size_t token_size = token_container->tokens [token_container->next_free_element].max_token_length;
         strncpy (&(token_container->tokens [token_container->next_free_element].data [next_free_element_in_tokens * token_size]),
                 &(file_buffer [file_buffer_cursor]),
