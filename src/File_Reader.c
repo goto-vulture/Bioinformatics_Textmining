@@ -343,7 +343,7 @@ Show_Selected_Token_Container
  *
  * @return Anzahl aller Tokens im gesamten Token_Container (also inkl. aller Tokens-Objekte)
  */
-extern inline uint_fast32_t
+extern uint_fast32_t
 Count_All_Tokens_In_Token_Container
 (
         const struct Token_Container* const container
