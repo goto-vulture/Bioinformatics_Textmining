@@ -143,7 +143,7 @@ int main (const int argc, const char* argv [])
 
             if (element_added)
             {
-                printf ("%20s -> %5" PRIuFAST32 "\n", token, Token_To_Int (token_int_mapping, token, strlen(token)));
+                printf ("%30s -> %5" PRIuFAST32 "\n", token, Token_To_Int (token_int_mapping, token, strlen(token)));
             }
         }
     }
