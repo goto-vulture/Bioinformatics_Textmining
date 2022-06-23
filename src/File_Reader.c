@@ -395,8 +395,8 @@ Extract_Tokens_From_Line
                     (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
             ASSERT_ALLOC(tmp_ptr, "Cannot reallocate memory for Tokens data !",
                     (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
-            memset(tmp_ptr, '\0',
-                    (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
+            //memset(tmp_ptr, '\0',
+            //        (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
 
             current_tokens_obj->data = tmp_ptr;
             current_tokens_obj->allocated_tokens += TOKENS_ALLOCATION_STEP_SIZE;
