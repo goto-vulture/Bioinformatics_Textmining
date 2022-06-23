@@ -192,7 +192,7 @@ Add_Token_To_Mapping
     }
     else
     {
-        printf ("\"%s\" already in list !\n", new_token);
+        //printf ("\"%s\" already in list !\n", new_token);
     }
 
     return ! token_already_in_list;
