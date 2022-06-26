@@ -287,7 +287,7 @@ Int_To_Token
     // Da wir keine weiteren Informationen haben, muessen wir alle Int Arrays durchsuchen
     for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
     {
-        for (size_t i2 = 0; i2 < object->allocated_c_strings_in_array; ++ i)
+        for (size_t i2 = 0; i2 < object->c_str_array_lengths [i]; ++ i2)
         {
             char* c_string_array = object->c_str_arrays [i];
 
