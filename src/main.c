@@ -150,11 +150,7 @@ int main (const int argc, const char* argv [])
         {
             char* token = Get_Token_From_Token_Container (token_container, i, i2);
             _Bool element_added = Add_Token_To_Mapping(token_int_mapping, token, strlen(token));
-
-            if (element_added)
-            {
-                // printf ("%30s -> %5" PRIuFAST32 "\n", token, Token_To_Int (token_int_mapping, token, strlen(token)));
-            }
+            (void) element_added;
         }
     }
     // ===== ===== ===== ENDE Mapping Tabelle bilden ===== ===== =====

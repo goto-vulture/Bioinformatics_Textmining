@@ -196,10 +196,6 @@ Add_Token_To_Mapping
         }
         int_mapping_array [object->c_str_array_lengths [chosen_c_string_array] - 1] = count_c_str_array_lengths;
     }
-    else
-    {
-        //printf ("\"%s\" already in list !\n", new_token);
-    }
 
     return ! token_already_in_list;
 }
