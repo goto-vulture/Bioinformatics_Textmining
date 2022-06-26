@@ -146,6 +146,12 @@ Count_All_Tokens_In_Token_Container
         const struct Token_Container* const container
 );
 
+extern size_t
+Get_Lengh_Of_Longest_Token_Container
+(
+        const struct Token_Container* const container
+);
+
 
 // ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus

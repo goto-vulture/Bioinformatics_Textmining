@@ -353,6 +353,27 @@ Count_All_Tokens_In_Token_Container
     return result;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
+extern size_t
+Get_Lengh_Of_Longest_Token_Container
+(
+        const struct Token_Container* const container
+)
+{
+    size_t result = 0;
+
+    for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
+    {
+        if (container->tokens [i].next_free_element > result)
+        {
+            result = container->tokens [i].next_free_element;
+        }
+    }
+
+    return result;
+}
+
 //=====================================================================================================================
 
 /**
