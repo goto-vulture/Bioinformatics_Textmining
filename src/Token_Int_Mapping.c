@@ -126,7 +126,6 @@ Add_Token_To_Mapping
     ASSERT_MSG(new_token != NULL, "New token is NULL !");
     ASSERT_MSG(new_token_length > 0, "New token has the length 0 !");
 
-
     const uint_fast32_t chosen_c_string_array = Pseudo_Hash_Function (new_token, new_token_length);
     char* to_str = object->c_str_arrays [chosen_c_string_array];
     uint_fast32_t* int_mapping_array = object->int_mapping [chosen_c_string_array];
@@ -167,6 +166,12 @@ Add_Token_To_Mapping
     _Bool token_already_in_list = false;
     for (uint_fast32_t i = 0; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
     {
+        // Vor dem Vergleich schauen, ob die Zeichenketten gleich lang sind
+        if (new_token_length != strlen(&(to_str [i * MAX_TOKEN_LENGTH])))
+        {
+            continue;
+        }
+
         if (strncmp (new_token, &(to_str [i * MAX_TOKEN_LENGTH]), new_token_length) == 0)
         {
             token_already_in_list = true;
@@ -254,6 +259,12 @@ Token_To_Int
     // Im berechneten C-String-Array nach dem Token suchen
     for (; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
     {
+        // Vor dem Vergleich schauen, ob die Zeichenketten gleich lang sind
+        if (search_token_length != strlen(&(c_string_array [i * MAX_TOKEN_LENGTH])))
+        {
+            continue;
+        }
+
         if (strncmp (search_token, &(c_string_array [i * MAX_TOKEN_LENGTH]), search_token_length) == 0)
         {
             token_found = true;
