@@ -97,8 +97,16 @@
 #include "Tests/TEST_Document_Word_List.h"
 #include "File_Reader.h"
 #include "Token_Int_Mapping.h"
+#include "Print_Tools.h"
+#include "Error_Handling/Assert_Msg.h"
 
 
+
+static size_t
+Get_Number_Of_Lines_From_File
+(
+        const char* const filename
+);
 
 //=====================================================================================================================
 
@@ -117,12 +125,13 @@ int main (const int argc, const char* argv [])
     (void) argc;
     (void) argv;
 
+    const char filename [] = "/home/am1/Downloads/Sachen/test_ebm_tokens.txt";
+
     // TEST_Intersection();
     //TEST_Intersection_With_Random_Data();
     // TEST_Intersection_With_Random_Data_And_Specified_Result();
 
-    struct Token_Container* token_container =
-            Create_Token_Container_From_File ("/home/am1/Downloads/Sachen/test_ebm_tokens.txt");
+    struct Token_Container* token_container = Create_Token_Container_From_File (filename);
 
     printf ("Full token container size: %zu byte\n", Get_Token_Container_Size(token_container));
 
@@ -132,6 +141,8 @@ int main (const int argc, const char* argv [])
     }
     printf ("Sum all tokens in container: %" PRIuFAST32 "\n\n", Count_All_Tokens_In_Token_Container(token_container));
 
+
+    // ===== ===== ===== BEGINN Mapping Tabelle bilden ===== ===== =====
     struct Token_Int_Mapping* token_int_mapping = Create_Token_Int_Mapping();
 
     for (uint_fast32_t i = 0; i < token_container->next_free_element; ++ i)
@@ -143,10 +154,17 @@ int main (const int argc, const char* argv [])
 
             if (element_added)
             {
-                printf ("%30s -> %5" PRIuFAST32 "\n", token, Token_To_Int (token_int_mapping, token, strlen(token)));
+                // printf ("%30s -> %5" PRIuFAST32 "\n", token, Token_To_Int (token_int_mapping, token, strlen(token)));
             }
         }
     }
+    // ===== ===== ===== ENDE Mapping Tabelle bilden ===== ===== =====
+
+    // Datei einlesen und mithilfe der Mapping Tablle die Tokens in Zahlen umwandeln. Mittels der Zahlendarstellung
+    // kann dann die Schnittmengenbestimmung durchgefuehrt werden
+    const size_t number_of_lines_in_file = Get_Number_Of_Lines_From_File(filename);
+    PRINTF_FFLUSH("Number of lines %zu (in file \"%s\")\n", number_of_lines_in_file, filename);
+
 
     Show_C_Str_Array_Usage(token_int_mapping);
 
@@ -159,3 +177,33 @@ int main (const int argc, const char* argv [])
 }
 
 //=====================================================================================================================
+
+static size_t
+Get_Number_Of_Lines_From_File
+(
+        const char* const filename
+)
+{
+    size_t result = 0;
+    FILE* file = NULL;
+
+    file = fopen (filename, "r");
+    ASSERT_FMSG(file != NULL, "Cannot open the file: \"%s\" !", filename);
+
+    int current_char = 0;
+
+    while (current_char != EOF)
+    {
+        current_char = fgetc (file);
+        if (current_char == '\n')
+        {
+            ++ result;
+        }
+    }
+
+    FCLOSE_AND_SET_TO_NULL(file);
+
+    return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
