@@ -98,15 +98,11 @@
 #include "File_Reader.h"
 #include "Token_Int_Mapping.h"
 #include "Print_Tools.h"
+#include "Document_Word_List.h"
 #include "Error_Handling/Assert_Msg.h"
+#include "Intersection_Approaches.h"
 
 
-
-static size_t
-Get_Number_Of_Lines_From_File
-(
-        const char* const filename
-);
 
 //=====================================================================================================================
 
@@ -133,6 +129,9 @@ int main (const int argc, const char* argv [])
 
     struct Token_Container* token_container = Create_Token_Container_From_File (filename);
 
+    //Show_Selected_Token_Container(token_container, 0);
+    //Show_Selected_Token_Container(token_container, 1);
+
     printf ("Full token container size: %zu byte\n", Get_Token_Container_Size(token_container));
 
     for (uint_fast32_t i = 0; i < token_container->next_free_element; ++ i)
@@ -150,7 +149,7 @@ int main (const int argc, const char* argv [])
         for (uint_fast32_t i2 = 0; i2 < token_container->tokens [i].next_free_element; ++ i2)
         {
             char* token = Get_Token_From_Token_Container (token_container, i, i2);
-            _Bool element_added = Add_Token_To_Mapping(token_int_mapping, token, strlen (token));
+            _Bool element_added = Add_Token_To_Mapping(token_int_mapping, token, strlen(token));
 
             if (element_added)
             {
@@ -162,12 +161,98 @@ int main (const int argc, const char* argv [])
 
     // Datei einlesen und mithilfe der Mapping Tablle die Tokens in Zahlen umwandeln. Mittels der Zahlendarstellung
     // kann dann die Schnittmengenbestimmung durchgefuehrt werden
-    const size_t number_of_lines_in_file = Get_Number_Of_Lines_From_File(filename);
-    PRINTF_FFLUSH("Number of lines %zu (in file \"%s\")\n", number_of_lines_in_file, filename);
+    const size_t length_of_longest_token_container = Get_Lengh_Of_Longest_Token_Container(token_container);
+    PRINTF_FFLUSH("Length of longest token container: %zu\n", length_of_longest_token_container);
 
+    // Show_C_Str_Array_Usage(token_int_mapping);
 
-    Show_C_Str_Array_Usage(token_int_mapping);
+    struct Document_Word_List* document_word_list =
+            Create_Document_Word_List(token_container->next_free_element, length_of_longest_token_container);
 
+    uint_fast32_t* token_int_values = (uint_fast32_t*) MALLOC(length_of_longest_token_container *
+            sizeof (uint_fast32_t));
+    uint_fast32_t* intersection_values = (uint_fast32_t*) CALLOC(length_of_longest_token_container,
+            sizeof (uint_fast32_t));
+    uint_fast32_t count_intersection_values = 0;
+
+    size_t next_free_value = 0;
+    ASSERT_ALLOC(token_int_values, "Cannot allocate memory for token int mapping values !",
+            length_of_longest_token_container * sizeof (uint_fast32_t));
+    ASSERT_ALLOC(intersection_values, "Cannot allocate memory for token int mapping values !",
+            length_of_longest_token_container * sizeof (uint_fast32_t));
+    _Bool intersection_values_created = false;
+
+    for (uint_fast32_t i = 0; i < token_container->next_free_element; ++ i)
+    {
+        memset(token_int_values, '\0', length_of_longest_token_container * sizeof (uint_fast32_t));
+        next_free_value = 0;
+
+        for (uint_fast32_t i2 = 0; i2 < token_container->tokens [i].next_free_element; ++ i2)
+        {
+            char* token = Get_Token_From_Token_Container (token_container, i, i2);
+            token_int_values [next_free_value] = Token_To_Int(token_int_mapping, token, strlen(token));
+            ++ next_free_value;
+        }
+
+        // Nur wenn Daten vorhanden sind, macht es Sinn diese zu kopieren
+        if (next_free_value > 0)
+        {
+            Append_Data_To_Document_Word_List(document_word_list, token_int_values, next_free_value);
+
+            if (! intersection_values_created /* == false */)
+            {
+                memcpy (intersection_values, token_int_values, length_of_longest_token_container *
+                        sizeof (uint_fast32_t));
+
+                intersection_values_created = true;
+                count_intersection_values = next_free_value;
+            }
+        }
+    }
+
+    struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops (document_word_list,
+            intersection_values, count_intersection_values);
+
+    for (size_t i = 0; i < intersection_result->number_of_arrays; ++ i)
+    {
+        printf("Token block: %zu\n[ ", i);
+        for (size_t i2 = 0; i2 < intersection_result->arrays_lengths [i]; ++ i2)
+        {
+            // Token zum passenden Int-Wert finden -> also Mapping rueckgaengig machen
+            char int_to_token_mem [32];
+            memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
+
+            Int_To_Token (token_int_mapping, intersection_result->data [i][i2], int_to_token_mem,
+                    sizeof (int_to_token_mem) - 1);
+            printf("%s", int_to_token_mem);
+
+            if ((i2 + 1) < intersection_result->arrays_lengths [i])
+            {
+                printf(", ");
+            }
+        }
+        puts(" ]");
+    }
+
+    /*const size_t result_obj = 1;
+    for (size_t i = 0; i < intersection_result->arrays_lengths [result_obj]; ++ i)
+    {
+        char int_to_token_mem [32];
+        memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
+
+        Int_To_Token (token_int_mapping, intersection_result->data [result_obj][i], int_to_token_mem,
+                sizeof (int_to_token_mem) - 1);
+
+        printf ("%3" PRIuFAST32 " -> %30s\n", intersection_result->data [result_obj][i], int_to_token_mem);
+    }
+    printf ("%3zu results\n\n", intersection_result->arrays_lengths [result_obj]);*/
+
+    Delete_Document_Word_List(intersection_result);
+
+    FREE_AND_SET_TO_NULL(token_int_values);
+    FREE_AND_SET_TO_NULL(intersection_values);
+
+    Delete_Document_Word_List(document_word_list);
     Delete_Token_Int_Mapping(token_int_mapping);
     Delete_Token_Container (token_container);
 
@@ -177,33 +262,3 @@ int main (const int argc, const char* argv [])
 }
 
 //=====================================================================================================================
-
-static size_t
-Get_Number_Of_Lines_From_File
-(
-        const char* const filename
-)
-{
-    size_t result = 0;
-    FILE* file = NULL;
-
-    file = fopen (filename, "r");
-    ASSERT_FMSG(file != NULL, "Cannot open the file: \"%s\" !", filename);
-
-    int current_char = 0;
-
-    while (current_char != EOF)
-    {
-        current_char = fgetc (file);
-        if (current_char == '\n')
-        {
-            ++ result;
-        }
-    }
-
-    FCLOSE_AND_SET_TO_NULL(file);
-
-    return result;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
