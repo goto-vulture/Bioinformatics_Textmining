@@ -415,8 +415,8 @@ Read_Line
     if (return_value != NULL)
     {
         sum_char_read += strlen(file_buffer);
-        PRINTF_FFLUSH("Read line %5" PRIuFAST32 ". %8zu char. Sum char read %zu\n", current_file_line,
-                strlen(file_buffer), sum_char_read);
+        //PRINTF_FFLUSH("Read line %5" PRIuFAST32 ". %8zu char. Sum char read %zu\n", current_file_line,
+        //        strlen(file_buffer), sum_char_read);
     }
 
     // Reicht die Groesse des Puffers aus ? Bzw. konnte die aktuelle Zeile komplett gelesen werden
