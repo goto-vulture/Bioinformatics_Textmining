@@ -132,7 +132,7 @@ Intersection_Approach_2_Nested_Loops
     intersection_result->intersection_data = true;
 
     // Array, welches erkennt, ob in der Schnittmenge ein Wert mehrfach hinzugefuegt werden soll
-    size_t size_multiple_guard = MULTIPLE_GUARD_ALLOC_STEP;
+    size_t size_multiple_guard = (data_length > MULTIPLE_GUARD_ALLOC_STEP) ? data_length : MULTIPLE_GUARD_ALLOC_STEP;
 
     _Bool* multiple_guard = (_Bool*) CALLOC(size_multiple_guard, sizeof (_Bool));
     ASSERT_ALLOC(multiple_guard, "Cannot create the multiple guard !", size_multiple_guard * sizeof (_Bool));
