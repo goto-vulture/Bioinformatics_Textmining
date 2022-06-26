@@ -133,10 +133,10 @@ Create_Token_Container_From_File
     // Speicher fuer die inneren Container erzeugen
     for (size_t i = 0; i < new_container->allocated_token_container; ++ i)
     {
-        new_container->tokens [i].data = (char*) MALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+        new_container->tokens [i].data = (char*) CALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE, sizeof (char));
         ASSERT_ALLOC(new_container->tokens [i].data, "Cannot create data for a Token object !",
                 MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-        memset(new_container->tokens [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+        // memset(new_container->tokens [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
 
         new_container->tokens [i].max_token_length = MAX_TOKEN_LENGTH;
         new_container->tokens [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
@@ -472,8 +472,8 @@ Extract_Tokens_From_Line
                     (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
             ASSERT_ALLOC(tmp_ptr, "Cannot reallocate memory for Tokens data !",
                     (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
-            //memset(tmp_ptr, '\0',
-            //        (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
+            memset(tmp_ptr + (old_tokens_size * token_size), '\0',
+                    (TOKENS_ALLOCATION_STEP_SIZE) * token_size);
 
             current_tokens_obj->data = tmp_ptr;
             current_tokens_obj->allocated_tokens += TOKENS_ALLOCATION_STEP_SIZE;
