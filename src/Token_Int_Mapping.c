@@ -271,6 +271,37 @@ Token_To_Int
     return result;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
+extern void
+Int_To_Token
+(
+        const struct Token_Int_Mapping* const restrict object,
+        const uint_fast32_t token_int_value,
+        char* const restrict result_token_memory,
+        const size_t result_token_memory_size
+)
+{
+    ASSERT_MSG(object != NULL, "Token_Int_Mapping object is NULL !");
+
+    // Da wir keine weiteren Informationen haben, muessen wir alle Int Arrays durchsuchen
+    for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
+    {
+        for (size_t i2 = 0; i2 < object->allocated_c_strings_in_array; ++ i)
+        {
+            char* c_string_array = object->c_str_arrays [i];
+
+            if (object->int_mapping [i][i2] == token_int_value)
+            {
+                strncpy(result_token_memory, &(c_string_array [i2 * MAX_TOKEN_LENGTH]), result_token_memory_size - 1);
+                break;
+            }
+        }
+    }
+
+    return;
+}
+
 //=====================================================================================================================
 
 /**

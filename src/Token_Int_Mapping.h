@@ -110,6 +110,15 @@ Token_To_Int
         const size_t search_token_length
 );
 
+extern void
+Int_To_Token
+(
+        const struct Token_Int_Mapping* const restrict object,
+        const uint_fast32_t token_int_value,
+        char* const restrict result_token_memory,
+        const size_t result_token_memory_size
+);
+
 
 
 // ENDE C++-Kompablitaet herstellen
