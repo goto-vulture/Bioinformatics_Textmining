@@ -127,8 +127,6 @@ Add_Token_To_Mapping
     ASSERT_MSG(new_token_length > 0, "New token has the length 0 !");
 
     const uint_fast32_t chosen_c_string_array = Pseudo_Hash_Function (new_token, new_token_length);
-    char* to_str = object->c_str_arrays [chosen_c_string_array];
-    uint_fast32_t* int_mapping_array = object->int_mapping [chosen_c_string_array];
 
     // Wird mehr Speicher fuer den folgenden Prozess benoetigt ?
     if (object->c_str_array_lengths [chosen_c_string_array] >= object->allocated_c_strings_in_array)
@@ -161,6 +159,9 @@ Add_Token_To_Mapping
         PRINTF_FFLUSH("Token to int realloc. From %zu to %zu objects (%zu times)\n", old_size,
                 old_size + C_STR_ALLOCATION_STEP_SIZE, token_to_int_realloc_counter);
     }
+
+    char* to_str = object->c_str_arrays [chosen_c_string_array];
+    uint_fast32_t* int_mapping_array = object->int_mapping [chosen_c_string_array];
 
     // Ist das Token bereits in der Liste ?
     _Bool token_already_in_list = false;
