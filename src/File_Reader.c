@@ -507,7 +507,7 @@ Extract_Tokens_From_Line
         const size_t token_length = end_token - file_buffer_cursor;
 
         // Alle Tokens, die kleiner als 3 Zeichen sind, werden uebersprungen
-        if (token_length < 3)
+        if (token_length < 2)
         {
             file_buffer_cursor = end_token + 1;
             continue;
