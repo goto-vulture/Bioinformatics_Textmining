@@ -67,7 +67,7 @@ Create_Token_Int_Mapping
         new_object->int_mapping [i] = (uint_fast32_t*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (uint_fast32_t) * MAX_TOKEN_LENGTH);
         ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
                 C_STR_ALLOCATION_STEP_SIZE * sizeof (uint_fast32_t) * MAX_TOKEN_LENGTH);
-}
+    }
 
     new_object->allocated_c_strings_in_array = C_STR_ALLOCATION_STEP_SIZE;
 
