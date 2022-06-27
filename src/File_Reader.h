@@ -23,17 +23,17 @@ extern "C"
 
 //=====================================================================================================================
 
-struct Token_Container
+struct Token_List_Container
 {
     // Objekt fuer die Tokens
-    struct Tokens
+    struct Token_List
     {
         char* data;                         // Tokens (befinden sich auf einem linearen Stueck Speicher)
         size_t max_token_length;            // Maximale Laenge eines Tokens - Inkl. Nullterminator
         uint_fast32_t next_free_element;    // Naechstes freies Element im Tokenspeicher (Konkrete Adresse muss zur
                                             // Laufzeit berechnet werden)
         size_t allocated_tokens;            // Anzahl an Tokens, die allokiert wurden
-    }* tokens;
+    }* token_lists;
 
     uint_fast32_t next_free_element;        // Naechstes freies Tokens-Objekt
     size_t allocated_token_container;       // Anzahl an allokierten Tokens-Objekte
@@ -69,7 +69,7 @@ struct Token_Container
  *
  * @return Adresse auf ein neuen dynamisch erzeugten Token_Container
  */
-extern struct Token_Container*
+extern struct Token_List_Container*
 Create_Token_Container_From_File
 (
         const char* const file_name
@@ -83,7 +83,7 @@ Create_Token_Container_From_File
 extern void
 Delete_Token_Container
 (
-        struct Token_Container* object
+        struct Token_List_Container* object
 );
 
 /**
@@ -102,7 +102,7 @@ Delete_Token_Container
 extern char*
 Get_Token_From_Token_Container
 (
-        const struct Token_Container* const container,
+        const struct Token_List_Container* const container,
         const uint_fast32_t index_tokens,
         const uint_fast32_t index_token_in_tokens_object
 );
@@ -117,7 +117,7 @@ Get_Token_From_Token_Container
 extern size_t
 Get_Token_Container_Size
 (
-        const struct Token_Container* const container
+        const struct Token_List_Container* const container
 );
 
 /**
@@ -129,7 +129,7 @@ Get_Token_Container_Size
 extern void
 Show_Selected_Token_Container
 (
-        const struct Token_Container* const container,
+        const struct Token_List_Container* const container,
         const size_t selected_container
 );
 
@@ -143,7 +143,7 @@ Show_Selected_Token_Container
 extern uint_fast32_t
 Count_All_Tokens_In_Token_Container
 (
-        const struct Token_Container* const container
+        const struct Token_List_Container* const container
 );
 
 /**
@@ -156,7 +156,7 @@ Count_All_Tokens_In_Token_Container
 extern size_t
 Get_Lengh_Of_Longest_Token_Container
 (
-        const struct Token_Container* const container
+        const struct Token_List_Container* const container
 );
 
 

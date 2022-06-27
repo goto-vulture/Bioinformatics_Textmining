@@ -56,7 +56,7 @@
 static char*
 Read_Line
 (
-        struct Token_Container* const restrict token_container,
+        struct Token_List_Container* const restrict token_container,
         FILE* const file,
         char* const restrict file_buffer,
         const size_t buffer_length,
@@ -76,7 +76,7 @@ Read_Line
 static void
 Extract_Tokens_From_Line
 (
-        struct Token_Container* const restrict token_container,
+        struct Token_List_Container* const restrict token_container,
         const char* const restrict file_buffer,
         const size_t used_char_in_buffer
 );
@@ -111,7 +111,7 @@ Extract_Tokens_From_Line
  *
  * @return Adresse auf ein neuen dynamisch erzeugten Token_Container
  */
-extern struct Token_Container*
+extern struct Token_List_Container*
 Create_Token_Container_From_File
 (
         const char* const file_name
@@ -120,26 +120,26 @@ Create_Token_Container_From_File
     ASSERT_MSG(file_name != NULL, "File name is NULL !");
 
     // Den (aeusseren) Container erzeugen
-    struct Token_Container* new_container =
-            (struct Token_Container*) CALLOC(1, sizeof (struct Token_Container));
-    ASSERT_ALLOC(new_container, "Cannot create new Token_Container !", 1 * sizeof (struct Token_Container));
+    struct Token_List_Container* new_container =
+            (struct Token_List_Container*) CALLOC(1, sizeof (struct Token_List_Container));
+    ASSERT_ALLOC(new_container, "Cannot create new Token_Container !", 1 * sizeof (struct Token_List_Container));
 
     // Die inneren Container erzeugen
     new_container->allocated_token_container = TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
-    new_container->tokens = (struct Tokens*) CALLOC(new_container->allocated_token_container, sizeof (struct Tokens));
-    ASSERT_ALLOC(new_container->tokens, "Cannot create new Token objects !", new_container->allocated_token_container *
-            sizeof (struct Tokens));
+    new_container->token_lists = (struct Token_List*) CALLOC(new_container->allocated_token_container, sizeof (struct Token_List));
+    ASSERT_ALLOC(new_container->token_lists, "Cannot create new Token objects !", new_container->allocated_token_container *
+            sizeof (struct Token_List));
 
     // Speicher fuer die inneren Container erzeugen
     for (size_t i = 0; i < new_container->allocated_token_container; ++ i)
     {
-        new_container->tokens [i].data = (char*) CALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE, sizeof (char));
-        ASSERT_ALLOC(new_container->tokens [i].data, "Cannot create data for a Token object !",
+        new_container->token_lists [i].data = (char*) CALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE, sizeof (char));
+        ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
                 MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
         // memset(new_container->tokens [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
 
-        new_container->tokens [i].max_token_length = MAX_TOKEN_LENGTH;
-        new_container->tokens [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
+        new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
+        new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
     }
 
     FILE* file = fopen(file_name, "r");
@@ -166,25 +166,25 @@ Create_Token_Container_From_File
             const size_t old_allocated_token_container = new_container->allocated_token_container;
 
             // Die aeusseren Token_Container Objekte anpassen (Anzahl erhoehen)
-            struct Tokens* temp_ptr = (struct Tokens*) REALLOC(new_container->tokens,
-                    (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Tokens));
+            struct Token_List* temp_ptr = (struct Token_List*) REALLOC(new_container->token_lists,
+                    (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
             ASSERT_ALLOC(temp_ptr, "Cannot reallocate memory for Token_Container objects !",
-                    (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Tokens));
-            memset(temp_ptr + old_allocated_token_container, '\0', sizeof (struct Tokens) * TOKEN_CONTAINER_ALLOCATION_STEP_SIZE);
+                    (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
+            memset(temp_ptr + old_allocated_token_container, '\0', sizeof (struct Token_List) * TOKEN_CONTAINER_ALLOCATION_STEP_SIZE);
 
-            new_container->tokens = temp_ptr;
+            new_container->token_lists = temp_ptr;
             new_container->allocated_token_container = old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
 
             // Fuer die neuen Objekte neue Tokens-Objekte erzeugen
             for (size_t i = old_allocated_token_container; i < new_container->allocated_token_container; ++ i)
             {
-                new_container->tokens [i].data = (char*) MALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-                ASSERT_ALLOC(new_container->tokens [i].data, "Cannot create data for a Token object !",
+                new_container->token_lists [i].data = (char*) MALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+                ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
                         MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-                memset(new_container->tokens [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+                memset(new_container->token_lists [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
 
-                new_container->tokens [i].max_token_length = MAX_TOKEN_LENGTH;
-                new_container->tokens [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
+                new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
+                new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
             }
 
             PRINTF_FFLUSH("Token_Container realloc. From %zu to %zu objects (%zu times)\n",
@@ -217,7 +217,7 @@ Create_Token_Container_From_File
 extern void
 Delete_Token_Container
 (
-        struct Token_Container* object
+        struct Token_List_Container* object
 )
 {
     ASSERT_MSG(object != NULL, "Token_Container is NULL !");
@@ -225,13 +225,13 @@ Delete_Token_Container
     // Von innen nach aussen die Elemente loeschen
     for (size_t i = 0; i < object->allocated_token_container; ++ i)
     {
-        if (&(object->tokens [i]) != NULL)
+        if (&(object->token_lists [i]) != NULL)
         {
-            FREE_AND_SET_TO_NULL(object->tokens [i].data);
+            FREE_AND_SET_TO_NULL(object->token_lists [i].data);
         }
     }
 
-    FREE_AND_SET_TO_NULL(object->tokens);
+    FREE_AND_SET_TO_NULL(object->token_lists);
     FREE_AND_SET_TO_NULL(object);
 
     return;
@@ -255,7 +255,7 @@ Delete_Token_Container
 extern char*
 Get_Token_From_Token_Container
 (
-        const struct Token_Container* const container,
+        const struct Token_List_Container* const container,
         const uint_fast32_t index_tokens,
         const uint_fast32_t index_token_in_tokens_object
 )
@@ -263,13 +263,13 @@ Get_Token_From_Token_Container
     ASSERT_MSG(container != NULL, "Token_Container is NULL !");
     ASSERT_FMSG(index_tokens < container->next_free_element, "Tokens object id is invalid ! Max. valid: %"
             PRIuFAST32 "; Got: %" PRIuFAST32 " !", container->next_free_element - 1, index_tokens);
-    ASSERT_FMSG(index_token_in_tokens_object < container->tokens [index_tokens].next_free_element,
+    ASSERT_FMSG(index_token_in_tokens_object < container->token_lists [index_tokens].next_free_element,
             "Token in Tokens object %" PRIuFAST32 " is invalid ! Max. valid: %" PRIuFAST32 "; Got: %" PRIuFAST32 " !",
-            index_tokens, container->tokens [index_tokens].next_free_element - 1, index_token_in_tokens_object);
+            index_tokens, container->token_lists [index_tokens].next_free_element - 1, index_token_in_tokens_object);
 
-    const size_t max_token_size = container->tokens [index_tokens].max_token_length;
+    const size_t max_token_size = container->token_lists [index_tokens].max_token_length;
 
-    return container->tokens [index_tokens].data + (max_token_size * index_token_in_tokens_object);
+    return container->token_lists [index_tokens].data + (max_token_size * index_token_in_tokens_object);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -284,18 +284,18 @@ Get_Token_From_Token_Container
 extern size_t
 Get_Token_Container_Size
 (
-        const struct Token_Container* const container
+        const struct Token_List_Container* const container
 )
 {
     size_t result = 0;
 
-    const size_t max_token_size = container [0].tokens->max_token_length;
-    result += sizeof (struct Tokens) * container->allocated_token_container;
-    result += sizeof (struct Token_Container);
+    const size_t max_token_size = container [0].token_lists->max_token_length;
+    result += sizeof (struct Token_List) * container->allocated_token_container;
+    result += sizeof (struct Token_List_Container);
 
     for (size_t i = 0; i < container->allocated_token_container; ++ i)
     {
-        result += (container->tokens [i].allocated_tokens * max_token_size);
+        result += (container->token_lists [i].allocated_tokens * max_token_size);
     }
 
     return result;
@@ -312,16 +312,16 @@ Get_Token_Container_Size
 extern void
 Show_Selected_Token_Container
 (
-        const struct Token_Container* const container,
+        const struct Token_List_Container* const container,
         const size_t selected_container
 )
 {
-    const size_t token_size = container->tokens [selected_container].max_token_length;
+    const size_t token_size = container->token_lists [selected_container].max_token_length;
 
     printf ("Container: %zu\n", selected_container);
-    for (size_t i = 0; i < container->tokens [selected_container].next_free_element; ++ i)
+    for (size_t i = 0; i < container->token_lists [selected_container].next_free_element; ++ i)
     {
-        printf ("%4zu: %s\n", i, &(container->tokens [selected_container].data [i * token_size]));
+        printf ("%4zu: %s\n", i, &(container->token_lists [selected_container].data [i * token_size]));
     }
     PUTS_FFLUSH("");
 
@@ -340,14 +340,14 @@ Show_Selected_Token_Container
 extern uint_fast32_t
 Count_All_Tokens_In_Token_Container
 (
-        const struct Token_Container* const container
+        const struct Token_List_Container* const container
 )
 {
     uint_fast32_t result = 0;
 
     for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
     {
-        result += container->tokens [i].next_free_element;
+        result += container->token_lists [i].next_free_element;
     }
 
     return result;
@@ -365,16 +365,16 @@ Count_All_Tokens_In_Token_Container
 extern size_t
 Get_Lengh_Of_Longest_Token_Container
 (
-        const struct Token_Container* const container
+        const struct Token_List_Container* const container
 )
 {
     size_t result = 0;
 
     for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
     {
-        if (container->tokens [i].next_free_element > result)
+        if (container->token_lists [i].next_free_element > result)
         {
-            result = container->tokens [i].next_free_element;
+            result = container->token_lists [i].next_free_element;
         }
     }
 
@@ -399,7 +399,7 @@ Get_Lengh_Of_Longest_Token_Container
 static char*
 Read_Line
 (
-        struct Token_Container* const restrict token_container,
+        struct Token_List_Container* const restrict token_container,
         FILE* const file,
         char* const restrict file_buffer,
         const size_t buffer_length,
@@ -448,7 +448,7 @@ Read_Line
 static void
 Extract_Tokens_From_Line
 (
-        struct Token_Container* const restrict token_container,
+        struct Token_List_Container* const restrict token_container,
         const char* const restrict file_buffer,
         const size_t used_char_in_buffer
 )
@@ -464,8 +464,8 @@ Extract_Tokens_From_Line
     while (file_buffer_cursor < used_char_in_buffer)
     {
         const uint_fast32_t next_free_element_in_tokens =
-                token_container->tokens [token_container->next_free_element].next_free_element;
-        struct Tokens* current_tokens_obj = &(token_container->tokens [token_container->next_free_element]);
+                token_container->token_lists [token_container->next_free_element].next_free_element;
+        struct Token_List* current_tokens_obj = &(token_container->token_lists [token_container->next_free_element]);
 
         // Wird weiterer Speicher fuer die neuen Tokens benoetigt ?
         if (next_free_element_in_tokens >= current_tokens_obj->allocated_tokens)
@@ -520,13 +520,13 @@ Extract_Tokens_From_Line
             continue;
         }
 
-        const size_t token_size = token_container->tokens [token_container->next_free_element].max_token_length;
-        strncpy (&(token_container->tokens [token_container->next_free_element].data [next_free_element_in_tokens * token_size]),
+        const size_t token_size = token_container->token_lists [token_container->next_free_element].max_token_length;
+        strncpy (&(token_container->token_lists [token_container->next_free_element].data [next_free_element_in_tokens * token_size]),
                 &(file_buffer [file_buffer_cursor]),
                 ((token_length >= MAX_TOKEN_LENGTH) ? MAX_TOKEN_LENGTH - 1 : token_length));
 
-        token_container->tokens [token_container->next_free_element].data [((next_free_element_in_tokens + 1) * token_size) - 1] = '\0';
-        token_container->tokens [token_container->next_free_element].next_free_element ++;
+        token_container->token_lists [token_container->next_free_element].data [((next_free_element_in_tokens + 1) * token_size) - 1] = '\0';
+        token_container->token_lists [token_container->next_free_element].next_free_element ++;
         file_buffer_cursor = end_token + 1;
     }
     end:

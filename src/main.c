@@ -127,7 +127,7 @@ int main (const int argc, const char* argv [])
     //TEST_Intersection_With_Random_Data();
     // TEST_Intersection_With_Random_Data_And_Specified_Result();
 
-    struct Token_Container* token_container = Create_Token_Container_From_File (filename);
+    struct Token_List_Container* token_container = Create_Token_Container_From_File (filename);
 
     //Show_Selected_Token_Container(token_container, 0);
     //Show_Selected_Token_Container(token_container, 1);
@@ -146,7 +146,7 @@ int main (const int argc, const char* argv [])
 
     for (uint_fast32_t i = 0; i < token_container->next_free_element; ++ i)
     {
-        for (uint_fast32_t i2 = 0; i2 < token_container->tokens [i].next_free_element; ++ i2)
+        for (uint_fast32_t i2 = 0; i2 < token_container->token_lists [i].next_free_element; ++ i2)
         {
             char* token = Get_Token_From_Token_Container (token_container, i, i2);
             _Bool element_added = Add_Token_To_Mapping(token_int_mapping, token, strlen(token));
@@ -183,7 +183,7 @@ int main (const int argc, const char* argv [])
         memset(token_int_values, '\0', length_of_longest_token_container * sizeof (uint_fast32_t));
         next_free_value = 0;
 
-        for (uint_fast32_t i2 = 0; i2 < token_container->tokens [i].next_free_element; ++ i2)
+        for (uint_fast32_t i2 = 0; i2 < token_container->token_lists [i].next_free_element; ++ i2)
         {
             char* token = Get_Token_From_Token_Container (token_container, i, i2);
             token_int_values [next_free_value] = Token_To_Int(token_int_mapping, token, strlen(token));
