@@ -159,6 +159,7 @@ Get_Lengh_Of_Longest_Token_Container
 );
 
 
+
 // ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus
 }
