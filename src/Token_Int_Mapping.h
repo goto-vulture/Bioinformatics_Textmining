@@ -110,6 +110,14 @@ Token_To_Int
         const size_t search_token_length
 );
 
+/**
+ * @brief Mapping rueckgaengig machen. Int -> Token.
+ *
+ * @param[in] objekt Token_Int_Mapping-Objekt
+ * @param[in] token_int_value Mapping-Wert
+ * @param[out] result_token_memory Speicherbeginn fuer das Ergebnistoken
+ * @param[in] result_token_memory_size Laenge des Speichers fuer das Ergebnistoken
+ */
 extern void
 Int_To_Token
 (

@@ -355,6 +355,13 @@ Count_All_Tokens_In_Token_Container
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Die Laenge des laengsten Containers ermitteln und zurueckgeben.
+ *
+ * @param[in] container Token_Container
+ *
+ * @return Laenge des laengsten Containers
+ */
 extern size_t
 Get_Lengh_Of_Longest_Token_Container
 (
