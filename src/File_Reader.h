@@ -25,7 +25,6 @@ extern "C"
 
 struct Token_List_Container
 {
-    // Objekt fuer die Tokens
     struct Token_List
     {
         char* data;                         // Tokens (befinden sich auf einem linearen Stueck Speicher)
@@ -35,8 +34,8 @@ struct Token_List_Container
         size_t allocated_tokens;            // Anzahl an Tokens, die allokiert wurden
     }* token_lists;
 
-    uint_fast32_t next_free_element;        // Naechstes freies Tokens-Objekt
-    size_t allocated_token_container;       // Anzahl an allokierten Tokens-Objekte
+    uint_fast32_t next_free_element;        // Naechstes freies Token_List-Objekt
+    size_t allocated_token_container;       // Anzahl an allokierten Token_List-Objekte
 };
 
 //=====================================================================================================================
@@ -67,7 +66,7 @@ struct Token_List_Container
  *
  * @param[in] file_name Vorverarbeitete Datei, aus denen die Tokens geladen werden
  *
- * @return Adresse auf ein neuen dynamisch erzeugten Token_Container
+ * @return Adresse auf ein neuen dynamisch erzeugten Token_List_Container
  */
 extern struct Token_List_Container*
 Create_Token_Container_From_File
@@ -76,7 +75,7 @@ Create_Token_Container_From_File
 );
 
 /**
- * @brief Token_Container loeschen.
+ * @brief Token_List_Container loeschen.
  *
  * @param[in] object Container, der geloescht wird
  */
@@ -89,13 +88,13 @@ Delete_Token_Container
 /**
  * @brief Ein bestimmtes Token aus dem Container auslesen.
  *
- * Damit die Speicherverwaltung moeglichst effizient ist, wird der Speicher fuer das innenliegende Tokens-Objekt in
- * einem Block alloziert. Dies macht die Ermittlung eines spezifischen Objektes etwas aufwaendiger. Daher diese
+ * Damit die Speicherverwaltung moeglichst effizient ist, wird der Speicher fuer die innenliegenden Token_List-Objekte
+ * in einem Block alloziert. Dies macht die Ermittlung eines spezifischen Objektes etwas aufwaendiger. Daher diese
  * Funktion
  *
- * @param[in] container Token_Container
- * @param[in] index_tokens Index des Token_Containers
- * @param[in] index_token_in_tokens_object Index des Tokens, im - durch den 2. Parameter - angegebenen Token_Container
+ * @param[in] container Eingabecontainer
+ * @param[in] index_tokens Index des Token_List-Objektes
+ * @param[in] index_token_in_tokens_object Index des Tokens im durch den 2. Parameter angegebenen Token_List-Objektes
  *
  * @return Zeiger auf den Beginn des Tokens (Token ist Nullterminiert !)
  */
@@ -103,16 +102,16 @@ extern char*
 Get_Token_From_Token_Container
 (
         const struct Token_List_Container* const container,
-        const uint_fast32_t index_tokens,
-        const uint_fast32_t index_token_in_tokens_object
+        const uint_fast32_t index_token_list,
+        const uint_fast32_t index_token_in_token_list
 );
 
 /**
- * @brief Groesse des Token_Containers (inkl. dynamisch allokierten Speicher) in Byte zurueckgeben.
+ * @brief Groesse des Token_List_Containers (inkl. dynamisch allokierten Speicher) in Byte zurueckgeben.
  *
- * @param[in] container Token_Container
+ * @param[in] container Token_List_Container
  *
- * @return Groesse des Token_Containers (inkl. dynamisch allokierten Speicher) in Byte
+ * @return Groesse des Token_List_Containers (inkl. dynamisch allokierten Speicher) in Byte
  */
 extern size_t
 Get_Token_Container_Size
@@ -121,24 +120,24 @@ Get_Token_Container_Size
 );
 
 /**
- * @brief Inhalt eines Tokens-Objektes ausgeben.
+ * @brief Inhalt eines Token_List-Objektes ausgeben.
  *
- * @param[in] container Token_Container
- * @param[in] selected_container Index des Tokens-Objektes im uebergebenen Token_Container
+ * @param[in] container Token_List_Container
+ * @param[in] selected_container Index des Token_List-Objektes im uebergebenen Token_List_Container
  */
 extern void
 Show_Selected_Token_Container
 (
         const struct Token_List_Container* const container,
-        const size_t selected_container
+        const size_t index_token_list
 );
 
 /**
- * @brief Anzahl alle Tokens im gesamten Token_Container (also inkl. aller Tokens-Objekte) ermitteln und zurueckgeben.
+ * @brief Anzahl alle Tokens im gesamten Token_List_Container ermitteln und zurueckgeben.
  *
- * @param[in] container Token_Container
+ * @param[in] container Token_List_Container
  *
- * @return Anzahl aller Tokens im gesamten Token_Container (also inkl. aller Tokens-Objekte)
+ * @return Anzahl aller Tokens im gesamten Token_List_Container
  */
 extern uint_fast32_t
 Count_All_Tokens_In_Token_Container
@@ -147,11 +146,11 @@ Count_All_Tokens_In_Token_Container
 );
 
 /**
- * @brief Die Laenge des laengsten Containers ermitteln und zurueckgeben.
+ * @brief Die Laenge des laengsten Token_List-Containers ermitteln und zurueckgeben.
  *
- * @param[in] container Token_Container
+ * @param[in] container Token_List_Container
  *
- * @return Laenge des laengsten Containers
+ * @return Laenge des laengsten Token_List-Containers
  */
 extern size_t
 Get_Lengh_Of_Longest_Token_Container

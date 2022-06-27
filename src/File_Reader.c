@@ -45,7 +45,7 @@
  *
  * Es wird der Zeiger auf den Puffer zurueckgegeben, um so Fehler (z.B. durch NULL) anzeigen zu koennen.
  *
- * @param[in] token_container Token_Container
+ * @param[in] token_list_container Token_List_Container
  * @param[in] file FILE-Objekt auf die bereits geoeffnete Datei
  * @param[in] file_buffer Benutzerdefinierter Puffer fuer das Lesen der Datei
  * @param[in] buffer_length Groesse des Puffers
@@ -56,7 +56,7 @@
 static char*
 Read_Line
 (
-        struct Token_List_Container* const restrict token_container,
+        struct Token_List_Container* const restrict token_list_container,
         FILE* const file,
         char* const restrict file_buffer,
         const size_t buffer_length,
@@ -64,19 +64,19 @@ Read_Line
 );
 
 /**
- * @brief Tokens aus einem Puffer extrahieren und dem Token_Container hinzufuegen.
+ * @brief Tokens aus einem Puffer extrahieren und dem Token_List_Container hinzufuegen.
  *
  * Hinweis: Das Ermitteln der Tokens ist sehr rudimentaer und NICHT fuer die Verwendung geeignet ! Bisher wurde eine
  * schmandige und sehr einfache Variante implementiert, um die Entwicklung fortfuehren zu koennen !
  *
- * @param[in] token_container Token_Container
+ * @param[in] token_list_container Token_List_Container
  * @param[in] file_buffer Datei-Puffer mit den Inhalt der Daten, die verarbeitet werden sollen
  * @param[in] next_char_in_buffer Index des naechsten freien Zeichen im Puffer
  */
 static void
 Extract_Tokens_From_Line
 (
-        struct Token_List_Container* const restrict token_container,
+        struct Token_List_Container* const restrict token_list_container,
         const char* const restrict file_buffer,
         const size_t used_char_in_buffer
 );
@@ -109,7 +109,7 @@ Extract_Tokens_From_Line
  *
  * @param[in] file_name Vorverarbeitete Datei, aus denen die Tokens geladen werden
  *
- * @return Adresse auf ein neuen dynamisch erzeugten Token_Container
+ * @return Adresse auf ein neuen dynamisch erzeugten Token_List_Container
  */
 extern struct Token_List_Container*
 Create_Token_Container_From_File
@@ -210,7 +210,7 @@ Create_Token_Container_From_File
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Token_Container loeschen.
+ * @brief Token_List_Container loeschen.
  *
  * @param[in] object Container, der geloescht wird
  */
@@ -242,13 +242,13 @@ Delete_Token_Container
 /**
  * @brief Ein bestimmtes Token aus dem Container auslesen.
  *
- * Damit die Speicherverwaltung moeglichst effizient ist, wird der Speicher fuer das innenliegende Tokens-Objekt in
- * einem Block alloziert. Dies macht die Ermittlung eines spezifischen Objektes etwas aufwaendiger. Daher diese
+ * Damit die Speicherverwaltung moeglichst effizient ist, wird der Speicher fuer die innenliegenden Token_List-Objekte
+ * in einem Block alloziert. Dies macht die Ermittlung eines spezifischen Objektes etwas aufwaendiger. Daher diese
  * Funktion
  *
- * @param[in] container Token_Container
- * @param[in] index_tokens Index des Token_Containers
- * @param[in] index_token_in_tokens_object Index des Tokens, im - durch den 2. Parameter - angegebenen Token_Container
+ * @param[in] container Eingabecontainer
+ * @param[in] index_tokens Index des Token_List-Objektes
+ * @param[in] index_token_in_tokens_object Index des Tokens im durch den 2. Parameter angegebenen Token_List-Objektes
  *
  * @return Zeiger auf den Beginn des Tokens (Token ist Nullterminiert !)
  */
@@ -256,30 +256,30 @@ extern char*
 Get_Token_From_Token_Container
 (
         const struct Token_List_Container* const container,
-        const uint_fast32_t index_tokens,
-        const uint_fast32_t index_token_in_tokens_object
+        const uint_fast32_t index_token_list,
+        const uint_fast32_t index_token_in_token_list
 )
 {
     ASSERT_MSG(container != NULL, "Token_Container is NULL !");
-    ASSERT_FMSG(index_tokens < container->next_free_element, "Tokens object id is invalid ! Max. valid: %"
-            PRIuFAST32 "; Got: %" PRIuFAST32 " !", container->next_free_element - 1, index_tokens);
-    ASSERT_FMSG(index_token_in_tokens_object < container->token_lists [index_tokens].next_free_element,
+    ASSERT_FMSG(index_token_list < container->next_free_element, "Tokens object id is invalid ! Max. valid: %"
+            PRIuFAST32 "; Got: %" PRIuFAST32 " !", container->next_free_element - 1, index_token_list);
+    ASSERT_FMSG(index_token_in_token_list < container->token_lists [index_token_list].next_free_element,
             "Token in Tokens object %" PRIuFAST32 " is invalid ! Max. valid: %" PRIuFAST32 "; Got: %" PRIuFAST32 " !",
-            index_tokens, container->token_lists [index_tokens].next_free_element - 1, index_token_in_tokens_object);
+            index_token_list, container->token_lists [index_token_list].next_free_element - 1, index_token_in_token_list);
 
-    const size_t max_token_size = container->token_lists [index_tokens].max_token_length;
+    const size_t max_token_size = container->token_lists [index_token_list].max_token_length;
 
-    return container->token_lists [index_tokens].data + (max_token_size * index_token_in_tokens_object);
+    return container->token_lists [index_token_list].data + (max_token_size * index_token_in_token_list);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Groesse des Token_Containers (inkl. dynamisch allokierten Speicher) in Byte zurueckgeben.
+ * @brief Groesse des Token_List_Containers (inkl. dynamisch allokierten Speicher) in Byte zurueckgeben.
  *
- * @param[in] container Token_Container
+ * @param[in] container Token_List_Container
  *
- * @return Groesse des Token_Containers (inkl. dynamisch allokierten Speicher) in Byte
+ * @return Groesse des Token_List_Containers (inkl. dynamisch allokierten Speicher) in Byte
  */
 extern size_t
 Get_Token_Container_Size
@@ -304,24 +304,24 @@ Get_Token_Container_Size
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Inhalt eines Tokens-Objektes ausgeben.
+ * @brief Inhalt eines Token_List-Objektes ausgeben.
  *
- * @param[in] container Token_Container
- * @param[in] selected_container Index des Tokens-Objektes im uebergebenen Token_Container
+ * @param[in] container Token_List_Container
+ * @param[in] selected_container Index des Token_List-Objektes im uebergebenen Token_List_Container
  */
 extern void
 Show_Selected_Token_Container
 (
         const struct Token_List_Container* const container,
-        const size_t selected_container
+        const size_t index_token_list
 )
 {
-    const size_t token_size = container->token_lists [selected_container].max_token_length;
+    const size_t token_size = container->token_lists [index_token_list].max_token_length;
 
-    printf ("Container: %zu\n", selected_container);
-    for (size_t i = 0; i < container->token_lists [selected_container].next_free_element; ++ i)
+    printf ("Container: %zu\n", index_token_list);
+    for (size_t i = 0; i < container->token_lists [index_token_list].next_free_element; ++ i)
     {
-        printf ("%4zu: %s\n", i, &(container->token_lists [selected_container].data [i * token_size]));
+        printf ("%4zu: %s\n", i, &(container->token_lists [index_token_list].data [i * token_size]));
     }
     PUTS_FFLUSH("");
 
@@ -331,11 +331,11 @@ Show_Selected_Token_Container
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Anzahl alle Tokens im gesamten Token_Container (also inkl. aller Tokens-Objekte) ermitteln und zurueckgeben.
+ * @brief Anzahl alle Tokens im gesamten Token_List_Container ermitteln und zurueckgeben.
  *
- * @param[in] container Token_Container
+ * @param[in] container Token_List_Container
  *
- * @return Anzahl aller Tokens im gesamten Token_Container (also inkl. aller Tokens-Objekte)
+ * @return Anzahl aller Tokens im gesamten Token_List_Container
  */
 extern uint_fast32_t
 Count_All_Tokens_In_Token_Container
@@ -356,11 +356,11 @@ Count_All_Tokens_In_Token_Container
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Die Laenge des laengsten Containers ermitteln und zurueckgeben.
+ * @brief Die Laenge des laengsten Token_List-Containers ermitteln und zurueckgeben.
  *
- * @param[in] container Token_Container
+ * @param[in] container Token_List_Container
  *
- * @return Laenge des laengsten Containers
+ * @return Laenge des laengsten Token_List-Containers
  */
 extern size_t
 Get_Lengh_Of_Longest_Token_Container
@@ -388,7 +388,7 @@ Get_Lengh_Of_Longest_Token_Container
  *
  * Es wird der Zeiger auf den Puffer zurueckgegeben, um so Fehler (z.B. durch NULL) anzeigen zu koennen.
  *
- * @param[in] token_container Token_Container
+ * @param[in] token_list_container Token_List_Container
  * @param[in] file FILE-Objekt auf die bereits geoeffnete Datei
  * @param[in] file_buffer Benutzerdefinierter Puffer fuer das Lesen der Datei
  * @param[in] buffer_length Groesse des Puffers
@@ -399,14 +399,14 @@ Get_Lengh_Of_Longest_Token_Container
 static char*
 Read_Line
 (
-        struct Token_List_Container* const restrict token_container,
+        struct Token_List_Container* const restrict token_list_container,
         FILE* const file,
         char* const restrict file_buffer,
         const size_t buffer_length,
         size_t next_char_in_buffer
 )
 {
-    ASSERT_MSG(token_container != NULL, "Token_Container is NULL !");
+    ASSERT_MSG(token_list_container != NULL, "Token_Container is NULL !");
     ASSERT_MSG(file_buffer != NULL, "file_buffer is NULL !");
     ASSERT_MSG(buffer_length > 0, "buffer_length is 0 !");
     ASSERT_FMSG(next_char_in_buffer < buffer_length, "Next char buffer index (%zu) is equal/larger than the buffer "
@@ -436,24 +436,24 @@ Read_Line
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Tokens aus einem Puffer extrahieren und dem Token_Container hinzufuegen.
+ * @brief Tokens aus einem Puffer extrahieren und dem Token_List_Container hinzufuegen.
  *
  * Hinweis: Das Ermitteln der Tokens ist sehr rudimentaer und NICHT fuer die Verwendung geeignet ! Bisher wurde eine
  * schmandige und sehr einfache Variante implementiert, um die Entwicklung fortfuehren zu koennen !
  *
- * @param[in] token_container Token_Container
+ * @param[in] token_list_container Token_List_Container
  * @param[in] file_buffer Datei-Puffer mit den Inhalt der Daten, die verarbeitet werden sollen
  * @param[in] next_char_in_buffer Index des naechsten freien Zeichen im Puffer
  */
 static void
 Extract_Tokens_From_Line
 (
-        struct Token_List_Container* const restrict token_container,
+        struct Token_List_Container* const restrict token_list_container,
         const char* const restrict file_buffer,
         const size_t used_char_in_buffer
 )
 {
-    ASSERT_MSG(token_container != NULL, "Token_Container is NULL !");
+    ASSERT_MSG(token_list_container != NULL, "Token_Container is NULL !");
     ASSERT_MSG(file_buffer != NULL, "file_buffer is NULL !");
     ASSERT_MSG(used_char_in_buffer > 0, "used_char_in_buffer is 0 !");
 
@@ -464,8 +464,8 @@ Extract_Tokens_From_Line
     while (file_buffer_cursor < used_char_in_buffer)
     {
         const uint_fast32_t next_free_element_in_tokens =
-                token_container->token_lists [token_container->next_free_element].next_free_element;
-        struct Token_List* current_tokens_obj = &(token_container->token_lists [token_container->next_free_element]);
+                token_list_container->token_lists [token_list_container->next_free_element].next_free_element;
+        struct Token_List* current_tokens_obj = &(token_list_container->token_lists [token_list_container->next_free_element]);
 
         // Wird weiterer Speicher fuer die neuen Tokens benoetigt ?
         if (next_free_element_in_tokens >= current_tokens_obj->allocated_tokens)
@@ -520,17 +520,17 @@ Extract_Tokens_From_Line
             continue;
         }
 
-        const size_t token_size = token_container->token_lists [token_container->next_free_element].max_token_length;
-        strncpy (&(token_container->token_lists [token_container->next_free_element].data [next_free_element_in_tokens * token_size]),
+        const size_t token_size = token_list_container->token_lists [token_list_container->next_free_element].max_token_length;
+        strncpy (&(token_list_container->token_lists [token_list_container->next_free_element].data [next_free_element_in_tokens * token_size]),
                 &(file_buffer [file_buffer_cursor]),
                 ((token_length >= MAX_TOKEN_LENGTH) ? MAX_TOKEN_LENGTH - 1 : token_length));
 
-        token_container->token_lists [token_container->next_free_element].data [((next_free_element_in_tokens + 1) * token_size) - 1] = '\0';
-        token_container->token_lists [token_container->next_free_element].next_free_element ++;
+        token_list_container->token_lists [token_list_container->next_free_element].data [((next_free_element_in_tokens + 1) * token_size) - 1] = '\0';
+        token_list_container->token_lists [token_list_container->next_free_element].next_free_element ++;
         file_buffer_cursor = end_token + 1;
     }
     end:
-    token_container->next_free_element ++;
+    token_list_container->next_free_element ++;
 
     return;
 }
