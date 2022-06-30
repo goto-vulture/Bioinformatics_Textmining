@@ -152,10 +152,7 @@ int main (const int argc, const char* argv [])
     PRINTF_FFLUSH ("Input file:  \"%s\"\nOutput file: \"%s\"\n\n", GLOBAL_INPUT_FILE, GLOBAL_OUTPUT_FILE);
     // ===== ===== ===== ENDE CLI-Parameter parsen ===== ===== =====
 
-    // const char filename [] = "/home/am1/Downloads/Sachen/test_ebm_tokens.txt";
-    const char* filename = GLOBAL_INPUT_FILE;
-
-    struct Token_List_Container* token_container = Create_Token_Container_From_File (filename);
+    struct Token_List_Container* token_container = Create_Token_Container_From_File (GLOBAL_INPUT_FILE);
 
     printf ("Full token container size: %zu byte\n", Get_Token_Container_Size(token_container));
     printf ("Sum all tokens in container: %" PRIuFAST32 "\n\n", Count_All_Tokens_In_Token_Container(token_container));
@@ -181,7 +178,8 @@ int main (const int argc, const char* argv [])
 
     // Show_C_Str_Array_Usage(token_int_mapping);
 
-    struct Document_Word_List* document_word_list =
+    // Mehrdimensionaler Container fuer Int-Werte, die fuer die Schnittmengenbestimmung verwendet werden
+    struct Document_Word_List* source_int_values =
             Create_Document_Word_List(token_container->next_free_element, length_of_longest_token_container);
 
     uint_fast32_t* token_int_values = (uint_fast32_t*) MALLOC(length_of_longest_token_container *
@@ -197,11 +195,13 @@ int main (const int argc, const char* argv [])
             length_of_longest_token_container * sizeof (uint_fast32_t));
     _Bool intersection_values_created = false;
 
+    // ===== ===== ===== BEGINN Daten fuer die Berechnung vorbereiten ===== ===== =====
     for (uint_fast32_t i = 0; i < token_container->next_free_element; ++ i)
     {
         memset(token_int_values, '\0', length_of_longest_token_container * sizeof (uint_fast32_t));
         next_free_value = 0;
 
+        // Token aus der Eingabedatei mittels des Mapping-Objektes in die passenden Int-Werte konvertieren
         for (uint_fast32_t i2 = 0; i2 < token_container->token_lists [i].next_free_element; ++ i2)
         {
             char* token = Get_Token_From_Token_Container (token_container, i, i2);
@@ -212,8 +212,11 @@ int main (const int argc, const char* argv [])
         // Nur wenn Daten vorhanden sind, macht es Sinn diese zu kopieren
         if (next_free_value > 0)
         {
-            Append_Data_To_Document_Word_List(document_word_list, token_int_values, next_free_value);
+            // Damit das Einfuegen schneller funktioniert, geschieht dies ueber einen Block an Speicher und nicht fuer
+            // jeden einzelnen Wert
+            Append_Data_To_Document_Word_List(source_int_values, token_int_values, next_free_value);
 
+            // Den ersten Datensatz als Datensatz verwenden, woran die Schnittmengenbestimmung durchgefuehrt wird
             if (! intersection_values_created /* == false */)
             {
                 memcpy (intersection_values, token_int_values, length_of_longest_token_container *
@@ -224,13 +227,20 @@ int main (const int argc, const char* argv [])
             }
         }
     }
+    // ===== ===== ===== ENDE Daten fuer die Berechnung vorbereiten ===== ===== =====
 
-    struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops (document_word_list,
+    // Schnittmengenbestimmung durchfuehren
+    struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops (source_int_values,
             intersection_values, count_intersection_values);
+
+    // ===== ===== ===== BEGINN Ergebnisse ausgeben / in die Datei schreiben ===== ===== =====
+    FILE* result_file = fopen(GLOBAL_OUTPUT_FILE, "w");
+    ASSERT_FMSG(result_file != NULL, "Cannot open/create the result file: \"%s\" !", GLOBAL_OUTPUT_FILE);
 
     for (size_t i = 0; i < intersection_result->number_of_arrays; ++ i)
     {
-        printf("Token block: %zu\n[ ", i);
+        fprintf(stdout, "Token block: %zu\n[ ", i);
+        fprintf(result_file, "Token block: %zu\n[ ", i);
         for (size_t i2 = 0; i2 < intersection_result->arrays_lengths [i]; ++ i2)
         {
             // Token zum passenden Int-Wert finden -> also Mapping rueckgaengig machen
@@ -239,22 +249,28 @@ int main (const int argc, const char* argv [])
 
             Int_To_Token (token_int_mapping, intersection_result->data [i][i2], int_to_token_mem,
                     sizeof (int_to_token_mem) - 1);
-            printf("%s", int_to_token_mem);
+            fprintf(stdout, "%s", int_to_token_mem);
+            fprintf(result_file, "%s", int_to_token_mem);
 
             if ((i2 + 1) < intersection_result->arrays_lengths [i])
             {
-                printf(", ");
+                fprintf(stdout, ", ");
+                fprintf(result_file, ", ");
             }
         }
-        puts(" ]");
+        fputs(" ]\n", stdout);
+        fputs(" ]\n", result_file);
     }
+
+    FCLOSE_AND_SET_TO_NULL(result_file);
+    // ===== ===== ===== ENDE Ergebnisse ausgeben / in die Datei schreiben ===== ===== =====
 
     Delete_Document_Word_List(intersection_result);
 
     FREE_AND_SET_TO_NULL(token_int_values);
     FREE_AND_SET_TO_NULL(intersection_values);
 
-    Delete_Document_Word_List(document_word_list);
+    Delete_Document_Word_List(source_int_values);
     Delete_Token_Int_Mapping(token_int_mapping);
     Delete_Token_Container (token_container);
 
