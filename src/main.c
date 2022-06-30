@@ -93,6 +93,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <inttypes.h>
+#include "argparse.h"
+#include "CLI_Parameter.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Tests/TEST_Document_Word_List.h"
 #include "File_Reader.h"
@@ -118,10 +120,40 @@
  */
 int main (const int argc, const char* argv [])
 {
-    (void) argc;
-    (void) argv;
+    // ===== ===== ===== BEGINN CLI-Parameter parsen ===== ===== =====
+    struct argparse_option cli_options [] =
+    {
+            OPT_HELP(),
 
-    const char filename [] = "/home/am1/Downloads/Sachen/test_ebm_tokens.txt";
+            OPT_GROUP("Hauptparameter"),
+            OPT_STRING('i', "input_file", &GLOBAL_INPUT_FILE, "Eingabedatei", NULL, 0, 0),
+            OPT_STRING('o', "output_file", &GLOBAL_OUTPUT_FILE, "Ausgabedatei", NULL, 0, 0),
+
+            OPT_END()
+    };
+
+    // Den eigentlichen Parsing-Prozess starten
+    struct argparse argparse_object;
+    argparse_init(&argparse_object, cli_options, GLOBAL_USAGES, 0);
+    argparse_describe(&argparse_object, GLOBAL_PROGRAM_DESCRIPTION, GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION);
+    const int new_argc = argparse_parse(&argparse_object, argc, argv);
+    (void) new_argc;
+
+    // Passt die Anzahl an CLI-Parameter ?
+    // Programmname
+    // Eingabe- und Ausgabedatei
+    // Die beiden CLI Optionsstrings ('i', 'o')
+    if (argc != 5)
+    {
+        PRINTF_FFLUSH ("Wrong number of CLI parameter ! Except exact two: Input and output file. (Got: %d)\n", argc);
+        exit(1);
+    }
+
+    PRINTF_FFLUSH ("Input file:  \"%s\"\nOutput file: \"%s\"\n\n", GLOBAL_INPUT_FILE, GLOBAL_OUTPUT_FILE);
+    // ===== ===== ===== ENDE CLI-Parameter parsen ===== ===== =====
+
+    // const char filename [] = "/home/am1/Downloads/Sachen/test_ebm_tokens.txt";
+    const char* filename = GLOBAL_INPUT_FILE;
 
     // TEST_Intersection();
     //TEST_Intersection_With_Random_Data();
