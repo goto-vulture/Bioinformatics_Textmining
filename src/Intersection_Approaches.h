@@ -1,8 +1,8 @@
-/*
- * Intersection_Approaches.h
+/**
+ * @file Intersection_Approaches.h
  *
- *  Created on: 23.05.2022
- *      Author: t430
+ * @date 23.05.2022
+ * @author Gyps
  */
 
 #ifndef INTERSECTION_APPROACHES_H

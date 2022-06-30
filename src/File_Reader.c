@@ -1,8 +1,8 @@
-/*
- * File_Reader.c
+/**
+ * @file File_Reader.c
  *
- *  Created on: 21.06.2022
- *      Author: am1
+ * @date 21.06.2022
+ * @author Gyps
  */
 
 #include "File_Reader.h"

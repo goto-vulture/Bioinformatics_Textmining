@@ -1,8 +1,8 @@
-/*
- * File_Reader.h
+/**
+ * @file File_Reader.h
  *
- *  Created on: 21.06.2022
- *      Author: am1
+ * @date 21.06.2022
+ * @author Gyps
  */
 
 #ifndef FILE_READER_H

@@ -1,8 +1,8 @@
-/*
- * Document_Word_List_Test.c
+/**
+ * @file Document_Word_List_Test.c
  *
- *  Created on: 22.05.2022
- *      Author: pc178
+ * @date 22.05.2022
+ * @author Gyps
  */
 
 #include "TEST_Document_Word_List.h"

@@ -1,8 +1,8 @@
-/*
- * Token_Int_Mapping.c
+/**
+ * @file Token_Int_Mapping.c
  *
- *  Created on: 23.06.2022
- *      Author: am1
+ * @date 23.06.2022
+ * @author Gyps
  */
 
 #include "Token_Int_Mapping.h"

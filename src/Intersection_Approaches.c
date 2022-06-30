@@ -1,8 +1,8 @@
-/*
- * Intersection_Approaches.c
+/**
+ * @file Intersection_Approaches.c
  *
- *  Created on: 23.05.2022
- *      Author: t430
+ * @date 23.05.2022
+ * @author Gyps
  */
 
 #include "Intersection_Approaches.h"

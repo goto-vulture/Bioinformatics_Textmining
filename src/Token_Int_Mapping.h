@@ -1,8 +1,8 @@
-/*
- * Token_Int_Mapping.h
+/**
+ * @file Token_Int_Mapping.h
  *
- *  Created on: 23.06.2022
- *      Author: am1
+ * @date 23.06.2022
+ * @author Gyps
  */
 
 #ifndef TOKEN_INT_MAPPING_H
