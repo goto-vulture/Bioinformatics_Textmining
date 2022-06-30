@@ -155,23 +155,10 @@ int main (const int argc, const char* argv [])
     // const char filename [] = "/home/am1/Downloads/Sachen/test_ebm_tokens.txt";
     const char* filename = GLOBAL_INPUT_FILE;
 
-    // TEST_Intersection();
-    //TEST_Intersection_With_Random_Data();
-    // TEST_Intersection_With_Random_Data_And_Specified_Result();
-
     struct Token_List_Container* token_container = Create_Token_Container_From_File (filename);
 
-    //Show_Selected_Token_Container(token_container, 0);
-    //Show_Selected_Token_Container(token_container, 1);
-
     printf ("Full token container size: %zu byte\n", Get_Token_Container_Size(token_container));
-
-    for (uint_fast32_t i = 0; i < token_container->next_free_element; ++ i)
-    {
-        // Show_Selected_Token_Container(token_container, i);
-    }
     printf ("Sum all tokens in container: %" PRIuFAST32 "\n\n", Count_All_Tokens_In_Token_Container(token_container));
-
 
     // ===== ===== ===== BEGINN Mapping Tabelle bilden ===== ===== =====
     struct Token_Int_Mapping* token_int_mapping = Create_Token_Int_Mapping();
@@ -261,19 +248,6 @@ int main (const int argc, const char* argv [])
         }
         puts(" ]");
     }
-
-    /*const size_t result_obj = 1;
-    for (size_t i = 0; i < intersection_result->arrays_lengths [result_obj]; ++ i)
-    {
-        char int_to_token_mem [32];
-        memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
-
-        Int_To_Token (token_int_mapping, intersection_result->data [result_obj][i], int_to_token_mem,
-                sizeof (int_to_token_mem) - 1);
-
-        printf ("%3" PRIuFAST32 " -> %30s\n", intersection_result->data [result_obj][i], int_to_token_mem);
-    }
-    printf ("%3zu results\n\n", intersection_result->arrays_lengths [result_obj]);*/
 
     Delete_Document_Word_List(intersection_result);
 
