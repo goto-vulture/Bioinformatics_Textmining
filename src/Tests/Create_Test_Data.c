@@ -74,7 +74,7 @@ Create_Document_Word_List_With_Random_Test_Data
  * man testen, ob die Schnittmengenbildung korrekt funktioniert.
  *
  * @param[in] specified_data Spezifizierte Daten
- * @paran[in] specified_data_length Laenge der dpezifizierten Daten
+ * @param[in] specified_data_length Laenge der dpezifizierten Daten
  * @param[in] number_of_arrays Anzahl an Untermengen
  * @param[in] max_array_length Maximale Laenge einer Untermenge
  * @param[in] rand_upper_bound Obere Grenze fuer die Zufallszahlen

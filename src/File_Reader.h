@@ -93,8 +93,8 @@ Delete_Token_Container
  * Funktion
  *
  * @param[in] container Eingabecontainer
- * @param[in] index_tokens Index des Token_List-Objektes
- * @param[in] index_token_in_tokens_object Index des Tokens im durch den 2. Parameter angegebenen Token_List-Objektes
+ * @param[in] index_token_list Index des Token_List-Objektes
+ * @param[in] index_token_in_token_list Index des Tokens im durch den 2. Parameter angegebenen Token_List-Objektes
  *
  * @return Zeiger auf den Beginn des Tokens (Token ist Nullterminiert !)
  */
@@ -123,7 +123,7 @@ Get_Token_Container_Size
  * @brief Inhalt eines Token_List-Objektes ausgeben.
  *
  * @param[in] container Token_List_Container
- * @param[in] selected_container Index des Token_List-Objektes im uebergebenen Token_List_Container
+ * @param[in] index_token_list Index des Token_List-Objektes im uebergebenen Token_List_Container
  */
 extern void
 Show_Selected_Token_Container

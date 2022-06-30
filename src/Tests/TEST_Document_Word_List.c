@@ -1,5 +1,5 @@
 /**
- * @file Document_Word_List_Test.c
+ * @file TEST_Document_Word_List.c
  *
  * @date 22.05.2022
  * @author Gyps

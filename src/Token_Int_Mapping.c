@@ -79,7 +79,7 @@ Create_Token_Int_Mapping
 /**
  * @brief Dynamisch erzeugtes Token_Int_Mapping-Objekt loeschen.
  *
- * @param[in] objekt Token_Int_Mapping-Objekt
+ * @param[in] object Token_Int_Mapping-Objekt
  */
 extern void
 Delete_Token_Int_Mapping
@@ -108,7 +108,7 @@ Delete_Token_Int_Mapping
  * Der Rueckgabewert ist ein Flag, welches anzeigt, ob die Operation erfolgreich war. Die Operation ist nicht
  * erfolgreich, wenn das neue Token bereits in der Mapping Tabelle ist. In diesem Fall wird es NICHT nochmal eingebaut !
  *
- * @param[in] objekt Token_Int_Mapping-Objekt
+ * @param[in] object Token_Int_Mapping-Objekt
  * @param[in] new_token Neues Token
  * @param[in] new_token_length Laenge des neuen Tokens
  *
@@ -205,7 +205,7 @@ Add_Token_To_Mapping
 /**
  * @brief Anzahl an Tokens in allen Untercontainern ausgeben.
  *
- * @param[in] objekt Token_Int_Mapping-Objekt
+ * @param[in] object Token_Int_Mapping-Objekt
  */
 extern void
 Show_C_Str_Array_Usage
@@ -229,7 +229,7 @@ Show_C_Str_Array_Usage
 /**
  * @brief Den gemappten Wert fuer das uebergebene Token ermitteln und zurueckgeben.
  *
- * @param[in] objekt Token_Int_Mapping-Objekt
+ * @param[in] object Token_Int_Mapping-Objekt
  * @param[in] search_token Token wofuer der gemappte Wert gesucht wird
  * @param[in] search_token_length Laenge vom uebergebenen Token
  *
@@ -284,7 +284,7 @@ Token_To_Int
 /**
  * @brief Mapping rueckgaengig machen. Int -> Token.
  *
- * @param[in] objekt Token_Int_Mapping-Objekt
+ * @param[in] object Token_Int_Mapping-Objekt
  * @param[in] token_int_value Mapping-Wert
  * @param[out] result_token_memory Speicherbeginn fuer das Ergebnistoken
  * @param[in] result_token_memory_size Laenge des Speichers fuer das Ergebnistoken
