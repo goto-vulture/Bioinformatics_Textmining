@@ -1,7 +1,7 @@
 /**
- * @file String_Tools.h
+ * @file String_Tools.c
  *
- * @brief Hier sind einige allgemeine Tools fuer die Verwendung von C-Strings.
+ * @brief Here are several general tools for the handling with C-Strings.
  *
  * @date: 07.03.2022
  * @author: am1

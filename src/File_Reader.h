@@ -1,6 +1,11 @@
 /**
  * @file File_Reader.h
  *
+ * @brief In this translation unit the Token_List_Container object is defined. This is the main object for storeing a
+ * input dataset.
+ *
+ * It holds the original tokens from the dataset and make them usable for the mapping process. (See: "Token_Int_Mapping")
+ *
  * @date 21.06.2022
  * @author Gyps
  */

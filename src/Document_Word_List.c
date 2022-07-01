@@ -1,6 +1,12 @@
 /**
  * @file Document_Word_List.c
  *
+ * @brief The Document_Word_List object is a two dimensional dynamic container for integer values (-> The mapped data).
+ *
+ * This object can be one of the input data of a intersection operation or a result object of them.
+ *
+ * The object name indicates, that it is a list with data from a whole document.
+ *
  * @date 22.05.2022
  * @author Gyps
  */

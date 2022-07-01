@@ -1,7 +1,7 @@
 /**
  * @file Dynamic_Memory.c
  *
- * @brief Anzahl an malloc (), calloc (), realloc () und free () Aufrufe ausgeben.
+ * @brief Print the number of malloc (), calloc (), realloc () and free () calls.
  *
  * @date 07.03.2021
  * @author x86 / Gyps

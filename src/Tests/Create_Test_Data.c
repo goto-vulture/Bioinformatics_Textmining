@@ -1,8 +1,15 @@
-/*
- * Create_Test_Data.c
+/**
+ * @file Create_Test_Data.c
  *
- *  Created on: 22.05.2022
- *      Author: pc178
+ * @brief The creation of test data.
+ *
+ * Two variations:
+ * 1. Full pseudo random numbers with an upper bound.
+ * 2. Full pseudo random numbers with an upper bound AND with a specified list of data, that will be appear in the
+ *    output.
+ *
+ * @date 22.05.2022
+ * @author Gyps
  */
 
 #include "Create_Test_Data.h"

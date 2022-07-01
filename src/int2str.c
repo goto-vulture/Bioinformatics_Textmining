@@ -1,7 +1,7 @@
 /**
  * @file int2str.c
  *
- * @brief Konvertierungsfunktion C-String -> int.
+ * @brief Converting function: Int -> C-String.
  *
  * @date 09.12.2021
  * @author x86 / Gyps

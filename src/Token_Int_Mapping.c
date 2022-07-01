@@ -1,6 +1,14 @@
 /**
  * @file Token_Int_Mapping.c
  *
+ * @brief The Token_Int_Mapping is an object, which maps a token to a unique unsigned value.
+ *
+ * This process is for the determination of a intersection not required. But with larger datasets it will be improve
+ * the performace, because the intersection process needs only to compare (unsigned) int values rather than full
+ * C-Strings char by char.
+ *
+ * Of course after the intersection it is necessary to invert the mapping. (This could be done with "Int_To_Token()")
+ *
  * @date 23.06.2022
  * @author Gyps
  */

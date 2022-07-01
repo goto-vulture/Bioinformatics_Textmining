@@ -1,7 +1,7 @@
 /**
- * @file Print_Tools.h
+ * @file Print_Tools.c
  *
- * @brief Einige hilfreiche Ausgabe-Tools. Bereitgestellt als Makros.
+ * @brief Some helpful output tools.
  *
  * @date 06.03.2022
  * @author: x86 / Gyps

@@ -1,8 +1,8 @@
 /**
  * @file Misc.h
  *
- * @brief Hier sind einige Makros definiert, die sich nicht einer bestimmten Uebersetzungseinheit zuordnen lassen. Z.B. das
- * Berechnen der Groesse eines Arrays, welches statisch definiert wurde.
+ * @brief Here are some macros defined, that cannot be classified for a specific translation unit. E.g.: The size
+ * determination of a static defined array.
  *
  * @date 14.03.2021
  * @author x86 / Gyps

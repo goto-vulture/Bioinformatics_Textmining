@@ -1,15 +1,13 @@
 /**
  * @file Dynamic_Memory.h
  *
- * @brief Hier werden die Anzahl an dynamischen Speicheroperaionen mittels globalen Variablen (ja ich weiss ganz boese:
- * man muss aufpassen, dass diese nicht zubeissen ! Aber bisher hatte ich viel Glueck mit denen. ;)) und Makros
- * mitgezaehlt.
+ * @brief Here the number of dynamic memory operations will be counted with global variables. (Yes I know: They are evil
+ * bytes. It is necessary to be careful; they can bite ! But up to now I had a accaptable relationship with them :3)
  *
- * Das Ziel ist festzustellen, ob das Vorhandensein von Speicherlecks moeglich ist. Wenn ja, dann muss es mehr
- * Allokationen als free-Aufrufe geben.
+ * The goal is to determine whether memory leaks are possible. If this is the case there will be more allocation calls
+ * than free calls.
  *
- * Damit dies sicher geschehen kann, muessen immer die hier definierten Makros verwendet werden ! Auch fuer die free-
- * Aufrufe !
+ * To work properly, it is necessary to use the macros, that are here defined. This is also required for the free calls !
  *
  * @date 07.03.2021
  * @author x86 / Gyps

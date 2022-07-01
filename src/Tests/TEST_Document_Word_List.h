@@ -1,6 +1,8 @@
 /**
  * @file TEST_Document_Word_List.h
  *
+ * @brief Some test functions for the Document_Word_List object.
+ *
  * @date 22.05.2022
  * @author Gyps
  */

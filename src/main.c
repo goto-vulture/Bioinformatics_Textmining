@@ -1,7 +1,7 @@
 /**
  * @file main.c
  *
- * @brief Die Bestimmung von sogenannten "Dominating Word Sets" aus Datensätzen im Bereich der Bioinformatik.
+ * @brief The calculation of so called "Dominating Word Sets" from data sets in the field of bioinformatics.
  *
  * @author x86 / Gyps
  */

@@ -1,7 +1,7 @@
 /**
  * @file str2int.h
  *
- * @brief Konvertierungsfunktion C-String -> int.
+ * @brief Converting function C-String -> int.
  *
  * @date 07.03.2021
  * @author x86 / Gyps

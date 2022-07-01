@@ -1,7 +1,7 @@
 /**
  * @file Print_Tools.h
  *
- * @brief Einige hilfreiche Ausgabe-Tools. Bereitgestellt als Makros.
+ * @brief Some helpful output tools.
  *
  * @date 13.03.2021
  * @author x86
