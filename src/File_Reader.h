@@ -11,9 +11,8 @@
  */
 
 #ifndef FILE_READER_H
-#define FILE_READER_H
+#define FILE_READER_H ///< Include-Guard
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -30,28 +29,45 @@ extern "C"
 
 struct Token_List_Container
 {
+    /**
+     * @brief This is a container for some tokens. In the current implementation every object represents a line in the
+     * dataset.
+     */
     struct Token_List
     {
-        char* data;                         // Tokens (befinden sich auf einem linearen Stueck Speicher)
-        size_t max_token_length;            // Maximale Laenge eines Tokens - Inkl. Nullterminator
-        uint_fast32_t next_free_element;    // Naechstes freies Element im Tokenspeicher (Konkrete Adresse muss zur
-                                            // Laufzeit berechnet werden)
-        size_t allocated_tokens;            // Anzahl an Tokens, die allokiert wurden
+        /**
+         * @brief C-Strings containing the tokens.
+         *
+         * It is a flat memory model. This means, that one C-String contains multiple tokens. Every token is saved as an
+         * interval in the C-String.
+         */
+        char* data;
+
+        /**
+         * @brief Max. possible length for one token (inkl. terminator symbol)
+         */
+        size_t max_token_length;
+
+        /**
+         * @brief Next free element in the memory. The specific address will be calculated at runtime.
+         */
+        uint_fast32_t next_free_element;
+        size_t allocated_tokens;            ///< Allocated number of tokens
     }* token_lists;
 
-    uint_fast32_t next_free_element;        // Naechstes freies Token_List-Objekt
-    size_t allocated_token_container;       // Anzahl an allokierten Token_List-Objekte
+    uint_fast32_t next_free_element;        ///< Next free element in the Token_List array
+    size_t allocated_token_container;       ///< Allocated number of Token_List objects
 };
 
 //=====================================================================================================================
 
 /**
- * @brief Aus den Inhalt einer Datei die Tokens einlesen.
+ * @brief Create the token list from a file content.
  *
- * Aktuell ist der "Parsingmechanismus" sehr simpel, sodass die Eingabe JSON Dateien bereits vorverarbeitet werden
- * muessen.
+ * Actual the "parsing mechanism" is very simple. Therefore the program execpts, that the JSON file is already
+ * preprocessed.
  *
- * Ein moegliches Python-Skript, welches die passende Ausgabe aus einer JSON-Datei erzeugt:
+ * A possible python script for a suitable preprocessed JSON file:
  *
     import json
 
@@ -66,12 +82,17 @@ struct Token_List_Container
 
     f.close()
 
- * Das Ziel ist, dass das Programm direkt mit JSON-Dateien arbeiten kann. Da dies aber nichts mit der
- * Grundfunktionalitaet zu tun hat, wird dies nach hinten verschoben.
  *
- * @param[in] file_name Vorverarbeitete Datei, aus denen die Tokens geladen werden
+ * The goal of the program is to work directly with JSON files. But this is for the core functionality not necessary.
+ * Therefore the priority is not on this feature.
  *
- * @return Adresse auf ein neuen dynamisch erzeugten Token_List_Container
+ * Asserts:
+ *      file_name != NULL
+ *      strlen(file_name) > 0
+ *
+ * @param[in] file_name Preprocessed file
+ *
+ * @return Address to the new dynamic Token_List_Container
  */
 extern struct Token_List_Container*
 Create_Token_Container_From_File
@@ -80,9 +101,12 @@ Create_Token_Container_From_File
 );
 
 /**
- * @brief Token_List_Container loeschen.
+ * @brief Delete a dynamic allocated Delete_Token_Container object.
  *
- * @param[in] object Container, der geloescht wird
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] object Delete_Token_Container object
  */
 extern void
 Delete_Token_Container
@@ -91,17 +115,22 @@ Delete_Token_Container
 );
 
 /**
+ * @brief Read a specific token from the container.
  * @brief Ein bestimmtes Token aus dem Container auslesen.
  *
- * Damit die Speicherverwaltung moeglichst effizient ist, wird der Speicher fuer die innenliegenden Token_List-Objekte
- * in einem Block alloziert. Dies macht die Ermittlung eines spezifischen Objektes etwas aufwaendiger. Daher diese
- * Funktion
+ * For performance reasons, the memory for each token list is allocated as one memory block. Therefore the address
+ * calculation is more complex. This is the reason for this function.
  *
- * @param[in] container Eingabecontainer
- * @param[in] index_token_list Index des Token_List-Objektes
- * @param[in] index_token_in_token_list Index des Tokens im durch den 2. Parameter angegebenen Token_List-Objektes
+ * Asserts:
+ *      container != NULL
+ *      container->next_free_element < index_token_list
+ *      index_token_in_token_list < container->token_lists [index_token_list].next_free_element
  *
- * @return Zeiger auf den Beginn des Tokens (Token ist Nullterminiert !)
+ * @param[in] container Token_List_Container object
+ * @param[in] index_token_list Index of the Token_List object
+ * @param[in] index_token_in_token_list Index of the token in the Token_List object
+ *
+ * @return Poiner at the begin of the token. (token is terminated with a null byte !)
  */
 extern char*
 Get_Token_From_Token_Container
@@ -112,11 +141,14 @@ Get_Token_From_Token_Container
 );
 
 /**
- * @brief Groesse des Token_List_Containers (inkl. dynamisch allokierten Speicher) in Byte zurueckgeben.
+ * @brief Determine the full memory usage in byte.
  *
- * @param[in] container Token_List_Container
+ * Asserts:
+ *      container != NULL
  *
- * @return Groesse des Token_List_Containers (inkl. dynamisch allokierten Speicher) in Byte
+ * @param[in] container Token_List_Container object
+ *
+ * @return Size of the full object in bytes
  */
 extern size_t
 Get_Token_Container_Size
@@ -125,10 +157,16 @@ Get_Token_Container_Size
 );
 
 /**
- * @brief Inhalt eines Token_List-Objektes ausgeben.
+ * @brief Print the content of a Token_List object.
  *
- * @param[in] container Token_List_Container
- * @param[in] index_token_list Index des Token_List-Objektes im uebergebenen Token_List_Container
+ * This is only for debugging purposes useful.
+ *
+ * Asserts:
+ *      container != NULL
+ *      container->next_free_element < index_token_list
+ *
+ * @param[in] container Token_List_Container object
+ * @param[in] index_token_list Index of the Token_List object
  */
 extern void
 Show_Selected_Token_Container
@@ -138,11 +176,14 @@ Show_Selected_Token_Container
 );
 
 /**
- * @brief Anzahl alle Tokens im gesamten Token_List_Container ermitteln und zurueckgeben.
+ * @brief Count all tokens in the whole Token_List_Container object.
  *
- * @param[in] container Token_List_Container
+ * Asserts:
+ *      container != NULL
  *
- * @return Anzahl aller Tokens im gesamten Token_List_Container
+ * @param[in] container Token_List_Container object
+ *
+ * @return Counted number of whole tokens in the Token_List_Container object
  */
 extern uint_fast32_t
 Count_All_Tokens_In_Token_Container
@@ -151,11 +192,14 @@ Count_All_Tokens_In_Token_Container
 );
 
 /**
- * @brief Die Laenge des laengsten Token_List-Containers ermitteln und zurueckgeben.
+ * @brief Determine the longest Token_List object and return the value.
  *
- * @param[in] container Token_List_Container
+ * Asserts:
+ *      container != NULL
  *
- * @return Laenge des laengsten Token_List-Containers
+ * @param[in] container Token_List_Container object
+ *
+ * @return Length of the longest Token_List object
  */
 extern size_t
 Get_Lengh_Of_Longest_Token_Container
@@ -165,7 +209,6 @@ Get_Lengh_Of_Longest_Token_Container
 
 
 
-// ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
