@@ -21,14 +21,22 @@
 
 
 
-// Maximale Laenge eines Tokens (inkl. Terminator-Symbol)
+/**
+ * @brief Maximum length of a token (inkl. the terminator byte)
+ *
+ * The value is a approximate order of magnitude and could be change in the future.
+ */
 #ifndef MAX_TOKEN_LENGTH
 #define MAX_TOKEN_LENGTH 32
 #else
 #error "The macro \"MAX_TOKEN_LENGTH\" is already defined !"
 #endif /* MAX_TOKEN_LENGTH */
 
-// Allokationsgroesse eines C-String Arrays
+/**
+ * @brief Memory for this number of tokens per C-String.
+ *
+ * It is also the allocation step size, if a reallocation is necessary.
+ */
 #ifndef C_STR_ALLOCATION_STEP_SIZE
 #define C_STR_ALLOCATION_STEP_SIZE 350
 #else
@@ -36,13 +44,20 @@
 #endif /* C_STR_ALLOCATION_STEP_SIZE */
 
 /**
- * @brief Eine sehr sehr sehr einfache "Hash-Funktion".
+ * @brief A very very very simple "hash function".
  *
- * Diese wird verwendet, um die Tokens auf die Listen zu verteilen. Als Verfahren wird die ASCII Darstellung jedes
- * Zeichen der Zeichenkette aufaddiert. Der ganzzahlige Rest mit 100 (Modulo 100) ist der "Hash-Wert".
+ * This function is used to calculate a number for distributing the tokens in different C-Strings.
  *
- * @param[in] input_str Eingabezeichenkette, wozu der "Hash-Wert" berechnet wird
- * @param[in] input_str_length Laenge der Eingabezeichenkette
+ * All char of the token will be interpreted as ASCII integer, added and modulo C_STR_ARRAYS.
+ *
+ * Asserts:
+ *      input_str != NULL
+ *      input_str_length > 0
+ *
+ * @param[in] input_str Input C-String
+ * @param[in] input_str_length Length of the input string
+ *
+ * @return The result
  */
 static inline uint_fast32_t
 Pseudo_Hash_Function
@@ -54,7 +69,12 @@ Pseudo_Hash_Function
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Neues Token_Int_Mapping-Objekt dynamisch erzeugen.
+ * @brief Create new dynamic Token_Int_Mapping object.
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @return Pointer to the new object
  */
 extern struct Token_Int_Mapping*
 Create_Token_Int_Mapping
@@ -62,11 +82,11 @@ Create_Token_Int_Mapping
         void
 )
 {
-    // Aeussere Objekt
+    // Outer object
     struct Token_Int_Mapping* new_object = (struct Token_Int_Mapping*) CALLOC(1, sizeof (struct Token_Int_Mapping));
     ASSERT_ALLOC(new_object, "Cannot create a new token int mapping !", sizeof (struct Token_Int_Mapping));
 
-    // Inneren C-String Arrays
+    // Inner C-Strings and memory for the mapping integer values
     for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
     {
         new_object->c_str_arrays [i] = (char*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (char) * MAX_TOKEN_LENGTH);
@@ -85,9 +105,12 @@ Create_Token_Int_Mapping
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Dynamisch erzeugtes Token_Int_Mapping-Objekt loeschen.
+ * @brief Delete a dynamic allocated Token_Int_Mapping object.
  *
- * @param[in] object Token_Int_Mapping-Objekt
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Token_Int_Mapping object
  */
 extern void
 Delete_Token_Int_Mapping
@@ -97,7 +120,7 @@ Delete_Token_Int_Mapping
 {
     ASSERT_MSG(object != NULL, "Token_Int_Mapping object is NULL !");
 
-    // Inneren C-String Arrays
+    // Delete the inner objects
     for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
     {
         FREE_AND_SET_TO_NULL(object->c_str_arrays [i]);
@@ -111,16 +134,21 @@ Delete_Token_Int_Mapping
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Token zur Mapping Tabelle hinzufuegen.
+ * @brief Add token to the mapping object.
  *
- * Der Rueckgabewert ist ein Flag, welches anzeigt, ob die Operation erfolgreich war. Die Operation ist nicht
- * erfolgreich, wenn das neue Token bereits in der Mapping Tabelle ist. In diesem Fall wird es NICHT nochmal eingebaut !
+ * The return value is an flag and indicates whether the operation was successful. The process is not successful, if
+ * the token already exists in the mapping table. In this case there will be NO duplicate in the mapping table.
  *
- * @param[in] object Token_Int_Mapping-Objekt
- * @param[in] new_token Neues Token
- * @param[in] new_token_length Laenge des neuen Tokens
+ * Asserts:
+ *      object != NULL
+ *      new_token != NULL
+ *      new_token_length > 0
  *
- * @return Flag, welches anzeigt, ob die Operation erfolgreich war
+ * @param[in] object Token_Int_Mapping object
+ * @param[in] new_token New token
+ * @param[in] new_token_length Length of the new token
+ *
+ * @return Flag, which indicates, whether the operation was successful.
  */
 extern _Bool
 Add_Token_To_Mapping
@@ -136,7 +164,7 @@ Add_Token_To_Mapping
 
     const uint_fast32_t chosen_c_string_array = Pseudo_Hash_Function (new_token, new_token_length);
 
-    // Wird mehr Speicher fuer den folgenden Prozess benoetigt ?
+    // Is more memory necessary to hold the new token ? Yes: Realloc the memory
     if (object->c_str_array_lengths [chosen_c_string_array] >= object->allocated_c_strings_in_array)
     {
         static size_t token_to_int_realloc_counter = 0;
@@ -144,7 +172,7 @@ Add_Token_To_Mapping
 
         const size_t old_size = object->allocated_c_strings_in_array;
 
-        // Fuer alle C-String Arrays den Speicher vergroessern
+        // For all C-Strings the memory will be extended
         for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
         {
             char* tmp_ptr = (char*) REALLOC(object->c_str_arrays [i],
@@ -157,7 +185,6 @@ Add_Token_To_Mapping
                     (old_size + C_STR_ALLOCATION_STEP_SIZE) * MAX_TOKEN_LENGTH);
             ASSERT_ALLOC(tmp_ptr_2, "Cannot reallocate memory for token to int mapping data !",
                     (old_size + C_STR_ALLOCATION_STEP_SIZE) * MAX_TOKEN_LENGTH);
-            //memset(tmp_ptr_2, '\0', (old_size + C_STR_ALLOCATION_STEP_SIZE) * MAX_TOKEN_LENGTH);
 
             object->c_str_arrays [i] = tmp_ptr;
             object->int_mapping [i] = tmp_ptr_2;
@@ -171,11 +198,11 @@ Add_Token_To_Mapping
     char* to_str = object->c_str_arrays [chosen_c_string_array];
     uint_fast32_t* int_mapping_array = object->int_mapping [chosen_c_string_array];
 
-    // Ist das Token bereits in der Liste ?
+    // Is the new token already in the list ?
     _Bool token_already_in_list = false;
     for (uint_fast32_t i = 0; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
     {
-        // Vor dem Vergleich schauen, ob die Zeichenketten gleich lang sind
+        // Before the comparison: Have the strings the same length ?
         if (new_token_length != strlen(&(to_str [i * MAX_TOKEN_LENGTH])))
         {
             continue;
@@ -193,7 +220,7 @@ Add_Token_To_Mapping
         strncpy (&(to_str [object->c_str_array_lengths [chosen_c_string_array] * MAX_TOKEN_LENGTH]),
                 new_token, ((new_token_length >= MAX_TOKEN_LENGTH) ? MAX_TOKEN_LENGTH - 1 : new_token_length));
 
-        // Nullterminierung garantieren
+        // Gurantee a zero byte at the end
         to_str [((object->c_str_array_lengths [chosen_c_string_array] + 1) * MAX_TOKEN_LENGTH) - 1] = '\0';
         object->c_str_array_lengths [chosen_c_string_array] ++;
 
@@ -211,9 +238,14 @@ Add_Token_To_Mapping
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Anzahl an Tokens in allen Untercontainern ausgeben.
+ * @brief Print the number of tokens in all C-Strings.
  *
- * @param[in] object Token_Int_Mapping-Objekt
+ * This function is especially useful in the debugging.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Token_Int_Mapping object
  */
 extern void
 Show_C_Str_Array_Usage
@@ -221,6 +253,8 @@ Show_C_Str_Array_Usage
         const struct Token_Int_Mapping* const object
 )
 {
+    ASSERT_MSG(object != NULL, "Token_Int_Mapping object is NULL !");
+
     uint_fast32_t sum_token = 0;
     for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
     {
@@ -235,13 +269,18 @@ Show_C_Str_Array_Usage
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Den gemappten Wert fuer das uebergebene Token ermitteln und zurueckgeben.
+ * @brief Determine the integer value for the given token. (token -> int)
  *
- * @param[in] object Token_Int_Mapping-Objekt
- * @param[in] search_token Token wofuer der gemappte Wert gesucht wird
- * @param[in] search_token_length Laenge vom uebergebenen Token
+ * Asserts:
+ *      object != NULL
+ *      search_token != NULL
+ *      search_token_length > 0
  *
- * @return Gemappter Wert oder UINT_FAST32_MAX, falls das Token nicht in der Mapping-Liste vorhanden ist.
+ * @param[in] object Token_Int_Mapping object
+ * @param[in] search_token Given token
+ * @param[in] search_token_length Token length
+ *
+ * @return Mapping integer or UINT_FAST32_MAX, if the token is not in the mapping list
  */
 extern uint_fast32_t
 Token_To_Int
@@ -261,10 +300,10 @@ Token_To_Int
     uint_fast32_t i = 0;
     char* c_string_array = object->c_str_arrays [chosen_c_string_array];
 
-    // Im berechneten C-String-Array nach dem Token suchen
+    // Search in the C-String, where the token would be, when it is already in the mapping list
     for (; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
     {
-        // Vor dem Vergleich schauen, ob die Zeichenketten gleich lang sind
+        // Before the comparison: Have the strings the same length ?
         if (search_token_length != strlen(&(c_string_array [i * MAX_TOKEN_LENGTH])))
         {
             continue;
@@ -277,8 +316,7 @@ Token_To_Int
         }
     }
 
-    // Nun bestimmen welche Position das Token bezogen auf alle C-String Arrays besitzt. Dies ist dann der gemappte
-    // Wert
+    // If the token is in the list, get the mapped integer value
     if (token_found)
     {
         result = object->int_mapping [chosen_c_string_array][i];
@@ -290,12 +328,18 @@ Token_To_Int
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Mapping rueckgaengig machen. Int -> Token.
+ * @brief Reverse the mapping. int -> token
  *
- * @param[in] object Token_Int_Mapping-Objekt
- * @param[in] token_int_value Mapping-Wert
- * @param[out] result_token_memory Speicherbeginn fuer das Ergebnistoken
- * @param[in] result_token_memory_size Laenge des Speichers fuer das Ergebnistoken
+ * Asserts:
+ *      object != NULL
+ *      token_int_value != UINT_FAST32_MAX
+ *      result_token_memory != NULL
+ *      result_token_memory_size > 0
+ *
+ * @param[in] object Token_Int_Mapping objckt
+ * @param[in] token_int_value Mapped integer
+ * @param[out] result_token_memory Memory, where the result token starts
+ * @param[in] result_token_memory_size length of the result token
  */
 extern void
 Int_To_Token
@@ -307,8 +351,13 @@ Int_To_Token
 )
 {
     ASSERT_MSG(object != NULL, "Token_Int_Mapping object is NULL !");
+    ASSERT_MSG(token_int_value != UINT_FAST32_MAX, "Token integer value is UINT_FAST32_MAX ! This value indicates "
+            "errors and therefor cannot be a valid input !");
+    ASSERT_MSG(result_token_memory != NULL, "The result token memory is NULL !");
+    ASSERT_MSG(result_token_memory_size > 0, "The length of the result token memory is 0 !");
 
-    // Da wir keine weiteren Informationen haben, muessen wir alle Int Arrays durchsuchen
+    // In the reverse process we have no further knowlede where the token might be. So it is necessary to search in
+    // every C-String
     for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
     {
         for (size_t i2 = 0; i2 < object->c_str_array_lengths [i]; ++ i2)
@@ -329,13 +378,20 @@ Int_To_Token
 //=====================================================================================================================
 
 /**
- * @brief Eine sehr sehr sehr einfache "Hash-Funktion".
+ * @brief A very very very simple "hash function".
  *
- * Diese wird verwendet, um die Tokens auf die Listen zu verteilen. Als Verfahren wird die ASCII Darstellung jedes
- * Zeichen der Zeichenkette aufaddiert. Der ganzzahlige Rest mit 100 (Modulo 100) ist der "Hash-Wert".
+ * This function is used to calculate a number for distributing the tokens in different C-Strings.
  *
- * @param[in] input_str Eingabezeichenkette, wozu der "Hash-Wert" berechnet wird
- * @param[in] input_str_length Laenge der Eingabezeichenkette
+ * All char of the token will be interpreted as ASCII integer, added and modulo C_STR_ARRAYS.
+ *
+ * Asserts:
+ *      input_str != NULL
+ *      input_str_length > 0
+ *
+ * @param[in] input_str Input C-String
+ * @param[in] input_str_length Length of the input string
+ *
+ * @return The result
  */
 static inline uint_fast32_t
 Pseudo_Hash_Function
@@ -344,14 +400,25 @@ Pseudo_Hash_Function
         const size_t input_str_length
 )
 {
+    ASSERT_MSG(input_str != NULL, "Input string is NULL !");
+    ASSERT_MSG(input_str_length > 0, "Input string length is 0 !");
+
     uint_fast32_t sum_char_in_new_token = 0;
-    // Zeichen der Zeichenkette aufaddieren
+    // Add char per char
     for (size_t i = 0; i < input_str_length; ++ i)
     {
         sum_char_in_new_token += (uint_fast32_t) input_str [i];
     }
 
-    return (sum_char_in_new_token % 100);
+    return (sum_char_in_new_token % C_STR_ARRAYS);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+#ifdef MAX_TOKEN_LENGTH
+#undef MAX_TOKEN_LENGTH
+#endif /* MAX_TOKEN_LENGTH */
+
+#ifdef C_STR_ALLOCATION_STEP_SIZE
+#undef C_STR_ALLOCATION_STEP_SIZE
+#endif /* C_STR_ALLOCATION_STEP_SIZE */
