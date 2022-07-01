@@ -14,9 +14,8 @@
  */
 
 #ifndef TOKEN_INT_MAPPING_H
-#define TOKEN_INT_MAPPING_H
+#define TOKEN_INT_MAPPING_H ///< Include-Guard
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -30,6 +29,12 @@ extern "C"
 
 
 
+/**
+ * @brief Number of C-Strings per object.
+ *
+ * This value can be altered to make the memory usage more efficient or to reduce the number of reallocs in the
+ * runtime.
+ */
 #ifndef C_STR_ARRAYS
 #define C_STR_ARRAYS 100
 #else
@@ -40,18 +45,37 @@ extern "C"
 
 struct Token_Int_Mapping
 {
-    char* c_str_arrays [C_STR_ARRAYS];                  // C-String Arrays, die die Tokens beinhalten
-                                                        // Flaches Speichermodell !
-    uint_fast32_t* int_mapping [C_STR_ARRAYS];          // Mapping Nummern
+    /**
+     * @brief C-String arrays containing the tokens.
+     *
+     * It is a flat memory model. This means, that one C-String contains multiple tokens. Every token is saved as an
+     * interval in the C-String.
+     */
+    char* c_str_arrays [C_STR_ARRAYS];
 
-    size_t allocated_c_strings_in_array;                // Anzahl an allokierten Tokens-Objekte
-    uint_fast32_t c_str_array_lengths [C_STR_ARRAYS];   // Laenge der C-String Arrays
+    uint_fast32_t* int_mapping [C_STR_ARRAYS];          ///< Mapping integers
+
+    /**
+     * @brief Allocated number of tokens for every C-String. This means, that every C-String has the same allocated
+     * size !
+     */
+    size_t allocated_c_strings_in_array;
+
+    /**
+     * @brief Used number of tokens per C-String.
+     */
+    uint_fast32_t c_str_array_lengths [C_STR_ARRAYS];
 };
 
 //=====================================================================================================================
 
 /**
- * @brief Neues Token_Int_Mapping-Objekt dynamisch erzeugen.
+ * @brief Create new dynamic Token_Int_Mapping object.
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @return Pointer to the new object
  */
 extern struct Token_Int_Mapping*
 Create_Token_Int_Mapping
@@ -60,9 +84,12 @@ Create_Token_Int_Mapping
 );
 
 /**
- * @brief Dynamisch erzeugtes Token_Int_Mapping-Objekt loeschen.
+ * @brief Delete a dynamic allocated Token_Int_Mapping object.
  *
- * @param[in] object Token_Int_Mapping-Objekt
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Token_Int_Mapping object
  */
 extern void
 Delete_Token_Int_Mapping
@@ -71,16 +98,21 @@ Delete_Token_Int_Mapping
 );
 
 /**
- * @brief Token zur Mapping Tabelle hinzufuegen.
+ * @brief Add token to the mapping object.
  *
- * Der Rueckgabewert ist ein Flag, welches anzeigt, ob die Operation erfolgreich war. Die Operation ist nicht
- * erfolgreich, wenn das neue Token bereits in der Mapping Tabelle ist. In diesem Fall wird es NICHT nochmal eingebaut !
+ * The return value is an flag and indicates whether the operation was successful. The process is not successful, if
+ * the token already exists in the mapping table. In this case there will be NO duplicate in the mapping table.
  *
- * @param[in] object Token_Int_Mapping-Objekt
- * @param[in] new_token Neues Token
- * @param[in] new_token_length Laenge des neuen Tokens
+ * Asserts:
+ *      object != NULL
+ *      new_token != NULL
+ *      new_token_length > 0
  *
- * @return Flag, welches anzeigt, ob die Operation erfolgreich war
+ * @param[in] object Token_Int_Mapping object
+ * @param[in] new_token New token
+ * @param[in] new_token_length Length of the new token
+ *
+ * @return Flag, which indicates, whether the operation was successful.
  */
 extern _Bool
 Add_Token_To_Mapping
@@ -91,9 +123,14 @@ Add_Token_To_Mapping
 );
 
 /**
- * @brief Anzahl an Tokens in allen Untercontainern ausgeben.
+ * @brief Print the number of tokens in all C-Strings.
  *
- * @param[in] object Token_Int_Mapping-Objekt
+ * This function is especially useful in the debugging.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Token_Int_Mapping object
  */
 extern void
 Show_C_Str_Array_Usage
@@ -102,13 +139,18 @@ Show_C_Str_Array_Usage
 );
 
 /**
- * @brief Den gemappten Wert fuer das uebergebene Token ermitteln und zurueckgeben.
+ * @brief Determine the integer value for the given token. (token -> int)
  *
- * @param[in] object Token_Int_Mapping-Objekt
- * @param[in] search_token Token wofuer der gemappte Wert gesucht wird
- * @param[in] search_token_length Laenge vom uebergebenen Token
+ * Asserts:
+ *      object != NULL
+ *      search_token != NULL
+ *      search_token_length > 0
  *
- * @return Gemappter Wert oder UINT_FAST32_MAX, falls das Token nicht in der Mapping-Liste vorhanden ist.
+ * @param[in] object Token_Int_Mapping object
+ * @param[in] search_token Given token
+ * @param[in] search_token_length Token length
+ *
+ * @return Mapping integer or UINT_FAST32_MAX, if the token is not in the mapping list
  */
 extern uint_fast32_t
 Token_To_Int
@@ -119,12 +161,18 @@ Token_To_Int
 );
 
 /**
- * @brief Mapping rueckgaengig machen. Int -> Token.
+ * @brief Reverse the mapping. int -> token
  *
- * @param[in] object Token_Int_Mapping-Objekt
- * @param[in] token_int_value Mapping-Wert
- * @param[out] result_token_memory Speicherbeginn fuer das Ergebnistoken
- * @param[in] result_token_memory_size Laenge des Speichers fuer das Ergebnistoken
+ * Asserts:
+ *      object != NULL
+ *      token_int_value != UINT_FAST32_MAX
+ *      result_token_memory != NULL
+ *      result_token_memory_size > 0
+ *
+ * @param[in] object Token_Int_Mapping objckt
+ * @param[in] token_int_value Mapped integer
+ * @param[out] result_token_memory Memory, where the result token starts
+ * @param[in] result_token_memory_size length of the result token
  */
 extern void
 Int_To_Token
@@ -137,7 +185,6 @@ Int_To_Token
 
 
 
-// ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
