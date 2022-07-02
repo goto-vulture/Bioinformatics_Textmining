@@ -17,19 +17,18 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Ein 2D-String-Array aud stdout ausgeben.
+ * @brief Print a 2D-String array to stdout. *
  *
- * Solch eine Funktionalitaet wird benoetigt, um Fehler bei der Erstellung von textbasierten Zeichnungen schneller zu
- * finden.
+ * This is helpful for debugging of text-based drawings.
  *
  * Asserts:
  *      drawing != NULL
  *      dim_1 > 0
  *      dim_2 > 0
  *
- * @param[in] drawing 2D-String-Array
- * @param[in] dim_1 Groesse der 1. Array Dimension (Anzahl an Zeichenketten)
- * @param[in] dim_2 Groesse der 2. Array Dimension (Maximale Anzahl an Zeichen pro Zeichenkette)
+ * @param[in] drawing 2D-String array
+ * @param[in] dim_1 Groesse der First array dimension (Number of C-Strings)
+ * @param[in] dim_2 Groesse der Second array dimension (Max numer of char per C-String)
  */
 extern void Print_2D_String_Array (const char* const restrict drawing [], const size_t dim_1, const size_t dim_2)
 {
@@ -68,9 +67,11 @@ extern void Print_2D_String_Array (const char* const restrict drawing [], const 
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Die Anzahl an Ziffern in einer Zahl bestimmen.
+ * @brief Count number of digits in a value.
  *
- * @param[in] value Zahl, die betrachtet wird.
+ * @param[in] value Value
+ *
+ * @return The number of digits in the given value
  */
 extern size_t Count_Number_Of_Digits (size_t value)
 {

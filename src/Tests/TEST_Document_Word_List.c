@@ -20,35 +20,34 @@
 
 
 #ifndef NUMBER_OF_ARRAYS
-#define NUMBER_OF_ARRAYS 10
+#define NUMBER_OF_ARRAYS 10 ///< Number of arrays in the Document_Word_List objects
 #else
 #error "The macro \"NUMBER_OF_ARRAYS\" is already defined !"
 #endif /* NUMBER_OF_ARRAYS */
 
 #ifndef MAX_ARRAY_LENGTH
-#define MAX_ARRAY_LENGTH 10000
+#define MAX_ARRAY_LENGTH 10000 ///< Max length of a subset, that will be used
 #else
 #error "The macro \"MAX_ARRAY_LENGTH\" is already defined !"
 #endif /* MAX_ARRAY_LENGTH */
 
 #ifndef RAND_UPPER_BOUND
-#define RAND_UPPER_BOUND 10
+#define RAND_UPPER_BOUND 10 ///< Upper bound for the pseudo random numbers
 #else
 #error "The macro \"RAND_UPPER_BOUND\" is already defined !"
 #endif /* RAND_UPPER_BOUND */
 
 #ifndef NUMBER_OF_RUNS
-#define NUMBER_OF_RUNS 50
+#define NUMBER_OF_RUNS 50 ///< Numer of runs in each test
 #else
 #error "The macro \"NUMBER_OF_RUNS\" is already defined !"
 #endif /* NUMBER_OF_RUNS */
 
 /**
- * @brief Alle Schnittmengenberechnungsverfahren anwenden und die Zeit fuer die Berechnung messen (und auf stdout
- * ausgeben)
+ * @brief Execute all intersection approaches and measure the used time. (Print the used time to stdout)
  *
- * @param[in] data_1 Erste Woerterliste
- * @param[in] data_2 Zweite Woerterliste
+ * @param[in] data_1 First Document_Word_List
+ * @param[in] data_2 Second Document_Word_List
  */
 static void Use_All_Intersection_Modes
 (
@@ -59,13 +58,13 @@ static void Use_All_Intersection_Modes
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Erster Schnittmengen-Test mit den Testdaten aus der ersten Besprechung am 11.05.2022
+ * @brief First intersection test with test data from the first meeting (11.05.2022).
  */
 extern _Bool TEST_Intersection (void)
 {
     _Bool result = false;
 
-    // Testdaten (die aus der ersten Besprechung)
+    // Testdata (from the first meeting)
     struct Document_Word_List* test_data [4];
     test_data [0] = Create_Document_Word_List(3, 4);
     ASSERT_ALLOC(test_data [0], "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List) *
@@ -123,12 +122,12 @@ extern _Bool TEST_Intersection (void)
         puts("");
     }
 
-    // Das erste Objekt ist das Original-Objekt, welches die Menge enthalt, worauf die Schnittmengen gebildet werden
+    // The first object is the origial object, that contains the set, on which the intersections will be generated
     struct Document_Word_List* intersection_objects [COUNT_ARRAY_ELEMENTS(test_data) - 1];
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(intersection_objects); ++ i)
     {
-        // Schnittmengen bilden
-        // T 1,1 sind die Daten womit die Schnittmenge erzeugt wird
+        // Determine intersections
+        // T 1,1 are the data, which will be used for the calculation
         intersection_objects [i] = Intersect_Data_With_Document_Word_List(test_data [i + 1],
                 test_data [0]->data [0], 4, INTERSECTION_MODE_2_NESTED_LOOPS);
         ASSERT_ALLOC(intersection_objects [i], "Cannot create an intersection object ! Given object size could be wrong !",
@@ -142,7 +141,7 @@ extern _Bool TEST_Intersection (void)
         puts("");
     }
 
-    // Beide Arrays loeschen
+    // Delete both arrays
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(test_data); ++ i)
     {
         Delete_Document_Word_List(test_data [i]);
@@ -160,7 +159,7 @@ extern _Bool TEST_Intersection (void)
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Schnittmengenberechnung mit komplett zufaelligen Daten.
+ * @brief Intersection tests with full pseudo random numbers.
  */
 extern _Bool TEST_Intersection_With_Random_Data (void)
 {
@@ -170,14 +169,14 @@ extern _Bool TEST_Intersection_With_Random_Data (void)
     {
         PRINTF_FFLUSH("%4zu / %4zu\n", i, (size_t) NUMBER_OF_RUNS);
 
-        // Beim ersten Datensatz muss nur ein Array erzeugt werden, da nur dieses aus der 1. Menge fuer die
-        // Schnittmengenberechnung verwendet wird
+        // For the first data set it is sufficient to create only one array, because from the first data set only the
+        // first subset will be used
         struct Document_Word_List* list_one_with_random_data = Create_Document_Word_List_With_Random_Test_Data
                 (1, (MAX_ARRAY_LENGTH / NUMBER_OF_RUNS) * i, RAND_UPPER_BOUND);
         struct Document_Word_List* list_two_with_random_data = Create_Document_Word_List_With_Random_Test_Data
                 (NUMBER_OF_ARRAYS, (MAX_ARRAY_LENGTH / NUMBER_OF_RUNS) * i, RAND_UPPER_BOUND);
 
-        // Eine Schnittmenge mit den Zufallszahlen ausfuehren und die Zeit bestimmen (Alle Modi verwenden)
+        // Determine the intersections with all modes and measure the execution time
         Use_All_Intersection_Modes (list_one_with_random_data, list_two_with_random_data);
 
         Delete_Document_Word_List(list_one_with_random_data);
@@ -192,8 +191,10 @@ extern _Bool TEST_Intersection_With_Random_Data (void)
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Schnittmengenberechnung mit vorher spezifizierten Daten fuer jede Untermenge. Das Ziel: Die Ergebnisse sind
- * dadurch vorher bekannt. Damit kann ueberprueft werden, dass die Verfahren richtig laufen.
+ * @brief Determine intersections with pseudo random data + a specified set of data, that will be inserted in every
+ * subset.
+ *
+ * With this approach the excepted result is clear and the functionality of the intersection calculation can be checked.
  */
 extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
 {
@@ -210,7 +211,7 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
         struct Document_Word_List* list_two_with_random_data = Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
                 (array_data, COUNT_ARRAY_ELEMENTS(array_data), NUMBER_OF_ARRAYS, (MAX_ARRAY_LENGTH / NUMBER_OF_RUNS) * i, RAND_UPPER_BOUND);
 
-        // Eine Schnittmenge mit den Zufallszahlen ausfuehren und die Zeit bestimmen
+        // Determine the intersections with all modes and measure the execution time
         Use_All_Intersection_Modes(list_one_with_specified_data, list_two_with_random_data);
 
         Delete_Document_Word_List(list_one_with_specified_data);
@@ -225,11 +226,10 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
 //=====================================================================================================================
 
 /**
- * @brief Alle Schnittmengenberechnungsverfahren anwenden und die Zeit fuer die Berechnung messen (und auf stdout
- * ausgeben)
+ * @brief Execute all intersection approaches and measure the used time. (Print the used time to stdout)
  *
- * @param[in] data_1 Erste Woerterliste
- * @param[in] data_2 Zweite Woerterliste
+ * @param[in] data_1 First Document_Word_List
+ * @param[in] data_2 Second Document_Word_List
  */
 static void Use_All_Intersection_Modes
 (

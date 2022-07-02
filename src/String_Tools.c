@@ -17,20 +17,18 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Eine Zeichenkette kopieren, in der nur Kleinbuchstaben aus der Original-Zeichenkette vorkommen.
+ * @brief Copy a C-String and convert all upper-case char to lower-case.
  *
- * Asserts: N/A
- *
- * @param[in] orig_string Original-String
- * @param[out] to_lower_string Zielstring
- * @param[in] to_lower_string_size Laenge des Zielstrings
+ * @param[in] orig_string Original C-String
+ * @param[out] to_lower_string Memory for the result C-String
+ * @param[in] to_lower_string_size Allocated length of the result C-String
  */
 extern void
 String_To_Lower
 (
-        const char* const restrict orig_string,     // Originale Zeichenkette, die konvertiert werden soll
-        char* const restrict to_lower_string,       // Zielspeicher fuer die konvertierte Zeichenkette
-        const size_t to_lower_string_size           // Groesse des Zielspeichers
+        const char* const restrict orig_string,
+        char* const restrict to_lower_string,
+        const size_t to_lower_string_size
 )
 {
     strncpy (to_lower_string, orig_string, to_lower_string_size);
@@ -39,9 +37,8 @@ String_To_Lower
             (current_char < strlen (orig_string)) && (current_char < to_lower_string_size);
             ++ current_char)
     {
-        // Alle Zeichen der Zeichenkette in Kleinbuchstaben umwandeln.
-        // Eine Ueberpruefung, ob das aktuelle Zeichen ein Grossbuchstabe ist, ist nicht notwendig, da tolower() diesen
-        // Test bereits durchfuehrt.
+        // Convert all upper-case char to lower-case char. It is not necessary to check for upper-case char, because
+        // tolower() do this check for us.
         // if (isupper (orig_string [current_char]) /* == true */)
             to_lower_string [current_char] = (char) tolower (orig_string [current_char]);
     }
@@ -55,23 +52,27 @@ String_To_Lower
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Vergleichen zweier C-Strings OHNE Beachtung der Gross- und Kleinschreibung.
+ * @brief Compare two C-Strings case insensitive.
+ *
+ * There might be a functiom "strncasecmp()" on your system with the same functionality. But this is an GNU extention
+ * and no potable C code.
  *
  * Asserts:
  *      strlen (string_1) == strlen (string_2)
  *
- * @param[in] string_1 1. Zeichenkette
- * @param[in] string_2 2. Zeichenkette
+ * @param[in] string_1 First C-String
+ * @param[in] string_2 Second C-String
+ *
+ * @return 0, if the C-String equals, else != 0
  */
-extern int                                              // 0, falls die Zeichenketten uebereinstimmen, ansonsten != 0
+extern int
 Compare_Strings_Case_Insensitive
 (
-        const char* const restrict string_1,            // 1. C-String
-        const char* const restrict string_2             // 2. C-String
+        const char* const restrict string_1,
+        const char* const restrict string_2
 )
 {
-    // Wenn die Laenge der Zeichenketten nicht identisch sind, dann koennen sie - auch ohne Beachtung der Gross- und
-    // Keinschreibung - nicht gleich sein !
+    // If the length of the input C-Strings are not equal, than a equalness is not possible !
     if (strlen (string_1) != strlen (string_2))
     {
         return -1;
@@ -82,28 +83,33 @@ Compare_Strings_Case_Insensitive
     memset (string_1_lowercase, '\0', sizeof (string_1_lowercase));
     memset (string_2_lowercase, '\0', sizeof (string_2_lowercase));
 
-    // Alle alphabetischen Zeichen in Kleinbuchstaben konvertieren, damit spaeter ein Vergleich unabhaengig von der
-    // Gross- und Kleinschreibung stattfinden kann
+    // Convert all alpha-char to lower-case char.
     String_To_Lower(string_1, string_1_lowercase, COUNT_ARRAY_ELEMENTS(string_1_lowercase));
     String_To_Lower(string_2, string_2_lowercase, COUNT_ARRAY_ELEMENTS(string_2_lowercase));
 
-    // Vergleich mit den angepassten Zeichenketten durchfuehren
-    // Es gibt auch die Funktion "strncasecmp()" die vorzeichenlos Zeichenketten vergleicht. Diese ist aber leider eine
-    // GNU-Extension und daher nicht auf allen Systemen verfuegbar !
+    // Compare the modified C-Strings
     return strncmp (string_1_lowercase, string_2_lowercase, strlen (string_1_lowercase));
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * Die Anzahl eines bestimmten Zeichens in einer Zeichenkette ermitteln und zurueckgeben.
+ * @brief Determine how many specific char exists in a C-String.
+ *
+ * The function cannot indicate any types of errors. For example: an input NULL pointer will be cause a segfault !
+ *
+ * @param[in] c_string Input C-String
+ * @param[in] string_length String length
+ * @param[in] searched_char Char to be searched
+ *
+ * @return Counted number of char in the C-String
  */
-extern uint_fast8_t                             // Anzahl der gesuchten Zeichen in der Zeichenkette
+extern uint_fast8_t
 Count_Char_In_String
 (
-        const char* const restrict c_string,    // Zeichenkette, die durchsucht wird
-        const size_t string_length,             // Laenge der Zeichenkette
-        const char searched_char                // Zu suchendes Zeichen
+        const char* const restrict c_string,
+        const size_t string_length,
+        const char searched_char
 )
 {
     uint_fast8_t result = 0;
@@ -122,12 +128,14 @@ Count_Char_In_String
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Uebergebenes Zeichen X-Mal an die uebergebene Zeichenkette anhaengen. Die Funktion geht davon aus, dass genug
- * Speicher in der Zeichenkette fuer die Operation vorhanden ist.
+ * @brief Append X times the same char to a C-String. This function expects, that in the C-String is enough memory for
+ * this operation !
  *
- * @param[in] str Zeichenkette, an der die Zeichen angehaengt werden
- * @param[in] character Zeichen, welches angehaengt werden soll
- * @param[in] times Wie oft wird das Zeichen angehaengt
+ * The function cannot indicate any types of errors. For example: an input NULL pointer will be cause a segfault !
+ *
+ * @param[in] str C-String, that will be extended
+ * @param[in] character Char
+ * @param[in] times How many times the char will be appended
  */
 extern void
 Append_X_Times_Char
@@ -150,10 +158,14 @@ Append_X_Times_Char
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Besteht die Zeile nur aus Terminal- bzw Nullsymbolen ?
+ * @brief Contain a C-String only null bytes ('\0') ?
  *
- * @param[in] str Zeichenkette, die kontrolliert wird
- * @param[in] length Laenge der Zeichenkette
+ * The function cannot indicate any types of errors. For example: an input NULL pointer will be cause a segfault !
+ *
+ * @param[in] str Input C-String
+ * @param[in] length C-String length
+ *
+ * @return true, if there only '\0' bytes, otherwise false
  */
 extern _Bool
 Contain_String_Only_Null_Symbols
@@ -179,20 +191,22 @@ Contain_String_Only_Null_Symbols
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Viele C-Strings gleichzeitig an einem anderen C-String anbringen.
+ * @brief Append many C-String to another C-String.
  *
- * Falls die anzuhaengenden Zeichenketten zusammen laenger sind als die Zieleichenkette, dann wird beim vorletzten
- * Zeichen der Inhalt abgetrennt.
+ * If there is not enough memory in the result C-String, the result is detached on the second last char !
  *
  * Asserts:
- * 		destination != NULL
- * 		destination_size > 1
- * 		count > 0
- * 		Jeder weitere C-String != NULL
+ *      destination != NULL
+ *      destination_size > 1
+ *      count > 0
+ *      Jeder weitere C-String != NULL
  *
- * @param[in] destination Ziel-Zeichenkette
- * @param[in] destination_size Laenge der Ziel-Zeichenkette
- * @param[in] count Anzahl an Eingabezeichenketten
+ * @param[in] destination Destination C-String
+ * @param[in] destination_size Length of the destination C-String
+ * @param[in] count Number of input C-Strings
+ * @param[in] ... va_list C-Strings
+ *
+ * @return The number of appended char of SIZE_MAX in case of errors
  */
 extern size_t
 Multi_strncat

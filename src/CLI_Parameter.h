@@ -1,9 +1,9 @@
 /**
  * @file CLI_Parameter.h
  *
- * @brief CLI-Parameter des Programms.
+ * @brief CLI parameter of the program.
  *
- * Implementiert als globale Variablen, damit von ueberall ein Zugriff moeglich ist.
+ * Implemented with global variables. A access at every point is for the usage necessary.
  *
  * @date 22.01.2022
  * @author: am1
@@ -12,7 +12,6 @@
 #ifndef CLI_PARAMETER_H
 #define CLI_PARAMETER_H ///< Include-Guard
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -24,26 +23,18 @@ extern "C"
 
 
 
-extern const char* const GLOBAL_USAGES []; ///< Beschreibung ueber die Verwendung des CLI Interfaces
+extern const char* const GLOBAL_USAGES []; ///< Description of the CLI interface usage
 
-extern const char* const GLOBAL_PROGRAM_DESCRIPTION; ///< Allgemeine Programmbeschreibung
-extern const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION; ///< Zusaetzliche Programmbeschreibung
-
-
-
-/**
- * @brief Eingabedatei.
- */
-extern char* GLOBAL_INPUT_FILE;
-
-/**
- * @brief Ausgabedatei.
- */
-extern char* GLOBAL_OUTPUT_FILE;
+extern const char* const GLOBAL_PROGRAM_DESCRIPTION; ///< General program description
+extern const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION; ///< Additional program description
 
 
 
-// ENDE C++-Kompablitaet herstellen
+extern char* GLOBAL_INPUT_FILE; ///< Input file
+extern char* GLOBAL_OUTPUT_FILE; ///< Output file
+
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

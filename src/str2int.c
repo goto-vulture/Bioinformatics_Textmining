@@ -19,16 +19,24 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
-/*
- * C-String zu long int konvertieren.
- * Fehlerhafte Eingaben werden ueber den Rueckgabewert angezeigt.
+/**
+ * @brief Convert a C-String to a integer with a width of at least 32 bits.
+ *
+ * Incorrect inputs are indicated with the return value. In this case the input parameter (out) is not modified.
+ *
+ * @param[out] out Pointer to the output integer.
+ * @param[in] input_string Input C-String
+ * @param[in] base Number base
+ *
+ * @return Error code. On success: STR2INT_SUCCESS; Otherwise != STR2INT_OVERFLOW, STR2INT_UNDERFLOW or
+ * STR2INT_INCONVERTIBLE
  */
-enum str2int_errno                          // Error-enum (STR2INT_SUCCESS: Erfolgreich durchgefuehrt)
+enum str2int_errno
 str2int
 (
-        long int* restrict out,             // Ausgabeadresse
-        const char* restrict input_string,  // String, der konvertiert werden soll
-        const int base                      // Zahlensystem
+        long int* restrict out,
+        const char* restrict input_string,
+        const int base
 )
 {
     char* end = NULL;
@@ -80,15 +88,23 @@ str2int
 
 //---------------------------------------------------------------------------------------------------------------------
 
-/*
- * C-String zu long int konvertieren.
- * Ergebnis wird direkt ueber den Rueckgabewert uebermittelt.
+/**
+ * @brief Convert a C-String to a integer with a width of at least 32 bits.
+ *
+ * The result will be given with the return values. Errors will be indicated with LONG_MIN. So you shoudn't use an
+ * input C-String, that represents LONG_MIN. In this case it is not possible to determine whether an error occured or
+ * not.
+ *
+ * @param[in] input_string Input C-String
+ * @param[in] base Number base
+ *
+ * @return The integer representation of the input C-String or LONG_MIN in case of errors
  */
 long int
 str2int_wo_errno
 (
-        const char* restrict input_string,  // String, der konvertiert werden soll
-        const int base                      // Zahlensystem
+        const char* restrict input_string,
+        const int base
 )
 {
     long int result = 0;

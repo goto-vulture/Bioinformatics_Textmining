@@ -12,7 +12,7 @@
 
 
 
-// Globale Variablen fuer das Zaehlen der malloc (), calloc (), realloc () und free () Aufrufe
+// Global variables to count the malloc (), calloc (), realloc () and free () calls
 uint_fast64_t GLOBAL_malloc_calls   = 0;
 uint_fast64_t GLOBAL_calloc_calls   = 0;
 uint_fast64_t GLOBAL_realloc_calls  = 0;
@@ -22,9 +22,9 @@ uint_fast64_t GLOBAL_free_calls     = 0;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-/*
- * Aktuelle Anzahl der durch die Makros MALLOC, CALLOC und FREE getaetigten malloc (), calloc () und free () Aufrufe
- * sowie die Anzahl an fehlenden free () Aufrufe ausgeben.
+/**
+ * @brief Show the current malloc (), calloc (), realloc () and free () calls, that were measured with the MALLOC,
+ * CALLOC and FREE macros.
  */
 void Show_Dynamic_Memory_Status (void)
 {

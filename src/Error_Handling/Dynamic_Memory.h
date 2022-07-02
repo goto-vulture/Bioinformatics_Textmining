@@ -16,7 +16,6 @@
 #ifndef DYNAMIC_MEMORY_H
 #define DYNAMIC_MEMORY_H ///< Include-Guard
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -28,18 +27,17 @@ extern "C"
 #include <stdlib.h>
 
 
-
-// Globale Variablen fuer das Zaehlen der malloc (), calloc (), realloc () und free () Aufrufe
-extern uint_fast64_t GLOBAL_malloc_calls;   ///< Anazhl an durchgefuehrten malloc-Aufrufen
-extern uint_fast64_t GLOBAL_calloc_calls;   ///< Anazhl an durchgefuehrten calloc-Aufrufen
-extern uint_fast64_t GLOBAL_realloc_calls;  ///< Anazhl an durchgefuehrten realloc-Aufrufen
-extern uint_fast64_t GLOBAL_free_calls;     ///< Anazhl an durchgefuehrten free-Aufrufen
+// Global variables to count the malloc (), calloc (), realloc () and free () calls
+extern uint_fast64_t GLOBAL_malloc_calls;   ///< Number of executed malloc calls
+extern uint_fast64_t GLOBAL_calloc_calls;   ///< Number of executed calloc calls
+extern uint_fast64_t GLOBAL_realloc_calls;  ///< Number of executed realloc calls
+extern uint_fast64_t GLOBAL_free_calls;     ///< Number of executed free calls
 
 
 
 /**
- * @brief Aktuelle Anzahl der durch die Makros MALLOC, CALLOC und FREE getaetigten malloc (), calloc () und free ()
- * Aufrufe sowie die Anzahl an fehlenden free () Aufrufe ausgeben.
+ * @brief Show the current malloc (), calloc (), realloc () and free () calls, that were measured with the MALLOC,
+ * CALLOC and FREE macros.
  */
 extern void Show_Dynamic_Memory_Status (void);
 
@@ -48,7 +46,7 @@ extern void Show_Dynamic_Memory_Status (void);
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief malloc-Aufrufe mitzaehlen
+ * @brief Execute and count malloc calls.
  */
 #ifndef MALLOC
     #define MALLOC(memory_size)                                                                                       \
@@ -61,7 +59,7 @@ extern void Show_Dynamic_Memory_Status (void);
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief calloc-Aufrufe mitzaehlen
+ * @brief Execute and count calloc calls.
  */
 #ifndef CALLOC
     #define CALLOC(number_of_elements, element_size)                                                                  \
@@ -74,11 +72,10 @@ extern void Show_Dynamic_Memory_Status (void);
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief realloc-Aufrufe mitzaehlen
+ * @brief Execute and count realloc calls.
  *
- * realloc fuehrt im Hintergrund einen malloc-Aufruf aus; allerdings auch automatisch einen free-Aufruf auf den alten
- * Speicherbereich !
- * => Daher muessen zwe Zaehler pro realloc-Aufruf inkrementiert werden.
+ * realloc do a malloc and a free call in the background.
+ * => So the malloc, realloc and free counter needs to be increased.
  */
 #ifndef REALLOC
     #define REALLOC(number_of_elements, element_size)                                                                 \
@@ -94,12 +91,11 @@ extern void Show_Dynamic_Memory_Status (void);
 
 /**
  * @brief Das uebergebene Objekt wird geloescht und auf nullptr gesetzt
+ * @brief Delete the object, increase the free counter and set the pointer to NULL.
  *
- * Eine Abfrage auf nullptr, vor dem Loeschen, ist NICHT erforderlich, da dies die free-Funktion bzw. dies sowieso vor
- * dem eigentlichen Loeschprozess machen ! Falls der Zeiger wirklich ein Nullzeiger sein sollte, dann wird von diesen
- * beiden Funktion einfach nichts gemacht !
+ * A nullptr check before the free call is NOT necessary. In case of nullptr the free function do nothing !
  *
- * Siehe: https://stackoverflow.com/questions/4190703/is-it-safe-to-delete-a-null-pointer
+ * See: https://stackoverflow.com/questions/4190703/is-it-safe-to-delete-a-null-pointer
  */
 #ifndef FREE_AND_SET_TO_NULL
     #define FREE_AND_SET_TO_NULL(pointer)                                                                             \
@@ -116,7 +112,7 @@ extern void Show_Dynamic_Memory_Status (void);
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Der uebergebene Filestreampointer wird geschlossen und auf nullptr gesetzt.
+ * @brief Close an file and set the FILE pointer to NULL.
  */
 #ifndef FCLOSE_AND_SET_TO_NULL
     #define FCLOSE_AND_SET_TO_NULL(pointer)                                                                           \
@@ -129,10 +125,7 @@ extern void Show_Dynamic_Memory_Status (void);
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Das Loeschen eines Objektes mittels der passenden Loesch-Funktion.
- *
- * Wie fuer Makros typisch: Es ist bloss eine Textersetzung ! Wenn eine falsche Loesch-Funktion angegeben wird, dann
- * wird sich der Compiler beschweren, und das zu Recht. ;)
+ * @brief Delete an object with a user-defined delete function.
  */
 #ifndef FREE_WITH_FUNCTION_AND_SET_TO_NULL
     #define FREE_WITH_FUNCTION_AND_SET_TO_NULL(free_function, pointer)                                                \
@@ -145,7 +138,6 @@ extern void Show_Dynamic_Memory_Status (void);
 
 
 
-// ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

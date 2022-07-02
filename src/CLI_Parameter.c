@@ -1,7 +1,9 @@
 /**
  * @file CLI_Parameter.c
  *
- * @brief CLI-Parameter des Programms.
+ * @brief CLI parameter of the program.
+ *
+ * Implemented with global variables. A access at every point is for the usage necessary.
  *
  * @date 22.01.2022
  * @author: am1
@@ -21,11 +23,11 @@ const char* const GLOBAL_USAGES [] =
      NULL,
 };
 
-const char* const GLOBAL_PROGRAM_DESCRIPTION            = "Programmbeschreibung";
-const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION = "Weitere Programmbeschreibung";
+const char* const GLOBAL_PROGRAM_DESCRIPTION            = "Program description";
+const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION = "Additional program description";
 
 
 
-// Variablen fuer die geparsten CLI-Parameter
-char* GLOBAL_INPUT_FILE = NULL;
-char* GLOBAL_OUTPUT_FILE = NULL;
+// Variable for the parsed CLI Parameter.
+char* GLOBAL_INPUT_FILE     = NULL;
+char* GLOBAL_OUTPUT_FILE    = NULL;

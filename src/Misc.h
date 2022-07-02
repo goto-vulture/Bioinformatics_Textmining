@@ -11,7 +11,6 @@
 #ifndef MISC_H
 #define MISC_H ///< Include-Guard
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -22,11 +21,11 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Dieses Makro zaehlt die Elemente in einem Array.
+ * @brief This macro determines the number of elements in an array.
  *
- * ! Dies funktioniert nur dann, wenn die Groesse des Arrays bereits zur Uebersetzungszeit bekannt ist !
- * !!! Wenn dies nicht der Fall ist (wie z.B. bei Speicherbereiche, die durch malloc() angelegt wurden, dann liefert
- *     dieses Makro FALSCHE ERGEBNISSE !!!
+ * ! Attention !
+ * This only works, if the number ob objects in the array is already known during the compiling process ! In other cases
+ * (e.g.: memory allocated with malloc()) wrong result will be determined !
  */
 #ifndef COUNT_ARRAY_ELEMENTS
 #define COUNT_ARRAY_ELEMENTS(array) ((sizeof (array)) / (sizeof (array [0])))
@@ -37,14 +36,9 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Dieses Makro soll die Erstellung einer Zeichenkettendarstellung von Objekten vereinfachen.
+ * @brief This macro helps to create a C-String representation of a object (struct).
  *
- * Bei der Konvertierung ist das Procedere immer das gleiche. Nur das Stringliteral unterscheidet sich. Daher bietet
- * sich dafuer ein Makro an.
- * Natuerlich wird dadurch vorausgesetzt, dass die Variablen sowie das Goto-Label vorher korrekt erzeugt wurden. Dieses
- * Makro nimmt nur eine Zeichenkette entgegen - KEINEN Formatstring mit weiteren Parametern.
- *
- * => Fuer die Verwendung eines Formatstrings: Siehe das Makro "TO_STRING_HELPER_VA_ARGS"
+ * => For the usage of a format string: See the macro "TO_STRING_HELPER_VA_ARGS"
  */
 #ifndef TO_STRING_HELPER
 #define TO_STRING_HELPER(new_string)                                                                    \
@@ -59,13 +53,8 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Dieses Makro soll die Erstellung einer Zeichenkettendarstellung von Objekten vereinfachen.
+ * @brief This macro helps to create a C-String representation of a object (struct). Here with a format string.
  * Diesmal mit einem Formatstring.
- *
- * Diese Unterteilung ist - leider - notwendig, da bei einem Makro, welches __VA_ARGS__ verwendet, ein Kommata zu viel
- * erzeugt wird, wenn __VA_ARGS__ leer ist.
- * Es gibt zwar compilerspezifische Erweiterungen, die dies unterbinden. Eine standardkonforme Loesung existiert aber
- * nicht !
  */
 #ifndef TO_STRING_HELPER_VA_ARGS
 #define TO_STRING_HELPER_VA_ARGS(format_string, ...)                                                                    \
@@ -80,17 +69,14 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Minimales Vergleichsmakro um aus zwei Werten den kleineren auszuwaehlen.
+ * @brief Comparison macro to find the lower value.
  *
- * ! Bei dem Makroansatz ist es wichtig, dass das Makro OHNE Seiteneffekte aufgerufen wird !
+ * ! This is a macro, not a function !
+ * It is important, that the "input parameter" have no side effects. (For example: MIN (x ++, ++ y) will determine
+ * wrong and unexpected results.
  *
- * Ein Aufruf wie
- * MIN (x ++, y ++)
- * darf nicht verwendet werden, da durch die einfache Textersetzung des Makros die Inkrementiertung des kleineren
- * Wertes ZWEIMAL stattfinden wuerde !
- *
- * Es empfiehlt sich daher, dass das Makro nur mit den "reinen" Werten (also OHNE Ausdruecke wie "x + 2" aufgerufen
- * wird), um dieses Problem im vorn­he­r­ein sicher zu vermeiden. :)
+ * Therefore it is recommended to use this macro only with "raw" valus and not with statements like "x + 2" to fully
+ * avoid mistakes with side effects.
  */
 #ifndef MIN
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
@@ -101,17 +87,14 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Minimales Vergleichsmakro um aus zwei Werten den groesseren auszuwaehlen.
+ * @brief Comparison macro to find the greater value.
  *
- * ! Bei dem Makroansatz ist es wichtig, dass das Makro OHNE Seiteneffekte aufgerufen wird !
+ * ! This is a macro, not a function !
+ * It is important, that the "input parameter" have no side effects. (For example: MAX (x ++, ++ y) will determine
+ * wrong and unexpected results.
  *
- * Ein Aufruf wie
- * MAX (x ++, y ++)
- * darf nicht verwendet werden, da durch die einfache Textersetzung des Makros die Inkrementiertung des groesseren
- * Wertes ZWEIMAL stattfinden wuerde !
- *
- * Es empfiehlt sich daher, dass das Makro nur mit den "reinen" Werten (also OHNE Ausdruecke wie "x + 2" aufgerufen
- * wird), um dieses Problem im vorn­he­r­ein sicher zu vermeiden. :)
+ * Therefore it is recommended to use this macro only with "raw" valus and not with statements like "x + 2" to fully
+ * avoid mistakes with side effects.
  */
 #ifndef MAX
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
@@ -122,7 +105,7 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Ein uebergebenes Array an Zeigern mit den Nullpointer initialisieren.
+ * @brief Initialize an array (or memory range) of pointers with NULL pointers.
  */
 #ifndef SET_POINTER_ARRAY_TO_NULL
 #define SET_POINTER_ARRAY_TO_NULL(array, number_of_elements)                                                            \
@@ -138,7 +121,6 @@ extern "C"
 
 
 
-// ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

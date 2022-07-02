@@ -10,7 +10,6 @@
 #ifndef INT2STR_H
 #define INT2STR_H ///< Include-Guard
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -34,33 +33,34 @@ enum int2str_errno
 
 
 /**
- * @brief long int (mind. 32 Bit) zu C-String konvertieren.
+ * @brief Convert long int (mind. 32 Bit) to C-String.
  *
- * Fehlerhafte Eingaben werden ueber den Rueckgabewert angezeigt.
+ * Incorrect input are indicated with the return value. (INT2STR_INCONVERTIBLE)
  *
- * @param[out] output_string C-String fuer die Ausgabe
- * @param[in] output_string_size Maximale Groesse des Ausgabestrings.
- * @param[in] input Integer, der konvertiert wird.
+ * @param[out] output_string Output C-String
+ * @param[in] output_string_size Max length of the output string
+ * @param[in] input Input integer
  *
- * @return Fehlercode. 0, wenn alles in Ordnung war; ansonsten != 0
+ * @return Error code (INT2STR_INCONVERTIBLE) on failure. On success: INT2STR_SUCCESS
  */
 extern enum int2str_errno int2str (char* const output_string, const size_t output_string_size, const long int input);
 
 /**
- * @brief long int (mind. 32 Bit) zu C-String konvertieren.
+ * @brief Convert long int (mind. 32 Bit) to C-String.
  *
- * Diese Funktion verwendet ein statischen C-String fuer das Ergebnis, sodass der Aufrufer vorher keinen Speicher
- * bereitstellen muss.
+ * The differences to "int2str()":
+ * - This function uses a static C-String for the result. Therefore the caller does not have to allocate memory
+ *   beforehand.
+ * - There is no error enum as return value. Errors will be indicate with a NULL pointer.
  *
- * @param[in] input Integer, der konvertiert wird.
+ * @param[in] input Input integer
  *
- * @return Adresse auf den statischen Ergebnis-C-String; oder NULL, wenn die Konvertierung nicht gelungen ist
+ * @return Address to the static result C-String; or, in case of errors, a NULL pointer
  */
 extern char* int2str_wo_errno (const long int input);
 
 
 
-// ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -25,12 +25,17 @@
 
 
 /**
- * @brief Woerterliste mit Zufallszahlen fuellen.
+ * @brief Fill a Document_Word_List with pseudo random numbers.
  *
- * @param[in] number_of_arrays Anzahl an Untermengen
- * @param[in] max_array_length Maximale Laenge einer Untermenge
- * @param[in] rand_upper_bound Obere Grenze fuer die Zufallszahlen
- * @param[out] data_container Container fuer die Zufallszahlen
+ * Asserts:
+ *      number_of_arrays > 0
+ *      max_array_length > 0
+ *      data_container != NULL
+ *
+ * @param[in] number_of_arrays Number of subsets
+ * @param[in] max_array_length Max length of a subset
+ * @param[in] rand_upper_bound Upper bound of pseudo random data
+ * @param[out] data_container Pre allocated Document_Word_List object, that gets the pseudo random numbers
  */
 static void Create_Random_Data
 (
@@ -43,13 +48,17 @@ static void Create_Random_Data
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Woerterliste mit Zufallszahlen erzeugen.
+ * @brief Create a Document_Word_List with pseudo random data
  *
- * @param[in] number_of_arrays Anzahl an Untermengen
- * @param[in] max_array_length Maximale Laenge einer Untermenge
- * @param[in] rand_upper_bound Obere Grenze fuer die Zufallszahlen
+ * Asserts:
+ *      number_of_arrays > 0
+ *      max_array_length > 0
  *
- * @return Die neu erzeugte Woerterliste
+ * @param[in] number_of_arrays Number of subsets
+ * @param[in] max_array_length Max length of a subset
+ * @param[in] rand_upper_bound Upper bound of pseudo random data
+ *
+ * @return Pointer to the new dynamic Document_Word_List object
  */
 extern struct Document_Word_List*
 Create_Document_Word_List_With_Random_Test_Data
@@ -74,19 +83,26 @@ Create_Document_Word_List_With_Random_Test_Data
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Woerterliste mit Zufallszahlen erzeugen + spezifizierte Menge an Daten, die in jeder Untermenge der
- * Woerterliste vorkommen soll.
+ * @brief Create a Document_Word_List with pseudo random data + a specified set of data, that will be inserted in every
+ * subset.
  *
- * Der Sinn hinter dieser Funktion ist, dass die Schnittmenge immer den der spezifizierten Daten entspricht. Damit kann
- * man testen, ob die Schnittmengenbildung korrekt funktioniert.
+ * The idea is to get the same intersection result. This is for debugging and test purposes useful, because the results
+ * will be specified in every usage.
  *
- * @param[in] specified_data Spezifizierte Daten
- * @param[in] specified_data_length Laenge der dpezifizierten Daten
- * @param[in] number_of_arrays Anzahl an Untermengen
- * @param[in] max_array_length Maximale Laenge einer Untermenge
- * @param[in] rand_upper_bound Obere Grenze fuer die Zufallszahlen
+ * Asserts:
+ *      specified_data != NULL
+ *      specified_data_length > 0
+ *      number_of_arrays > 0
+ *      max_array_length > 0
+ *      specified_data_length <= max_array_length
  *
- * @return Die neu erzeugte Woerterliste
+ * @param[in] specified_data Specified data
+ * @param[in] specified_data_length Length of the specified data
+ * @param[in] number_of_arrays Number of subsets
+ * @param[in] max_array_length Max length of a subset
+ * @param[in] rand_upper_bound Upper bound of pseudo random data
+ *
+ * @return Pointer to the new dynamic Document_Word_List object
  */
 extern struct Document_Word_List*
 Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
@@ -112,8 +128,8 @@ Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
 
     Create_Random_Data(number_of_arrays, max_array_length, rand_upper_bound, result_object);
 
-    // Nachdem die Testdaten erzeugt wurden, werden die vorher festgeleten Testdaten in jedem Array an zufaelliger
-    // Position eingebaut
+    // After the pseudo random test data is created, the pre-specified data will be inserted in random positions in the
+    // arrays
     for (size_t i = 0; i < number_of_arrays; ++ i)
     {
         uint_fast32_t* used_positions = (uint_fast32_t*) CALLOC(specified_data_length, sizeof (uint_fast32_t));
@@ -127,7 +143,7 @@ Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
                 used_positions [i2] = (uint_fast32_t) rand () % max_array_length;
                 _Bool new_position = true;
 
-                // Wurde diese Position bereits vergeben ?
+                // Is the current position in use for a value from the pre-specified data ?
                 for (size_t i3 = 0; i3 < i2; ++ i3)
                 {
                     if (used_positions [i2] == used_positions [i3])
@@ -154,12 +170,17 @@ Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
 //=====================================================================================================================
 
 /**
- * @brief Woerterliste mit Zufallszahlen fuellen.
+ * @brief Fill a Document_Word_List with pseudo random numbers.
  *
- * @param[in] number_of_arrays Anzahl an Untermengen
- * @param[in] max_array_length Maximale Laenge einer Untermenge
- * @param[in] rand_upper_bound Obere Grenze fuer die Zufallszahlen
- * @param[out] data_container Container fuer die Zufallszahlen
+ * Asserts:
+ *      number_of_arrays > 0
+ *      max_array_length > 0
+ *      data_container != NULL
+ *
+ * @param[in] number_of_arrays Number of subsets
+ * @param[in] max_array_length Max length of a subset
+ * @param[in] rand_upper_bound Upper bound of pseudo random data
+ * @param[out] data_container Pre allocated Document_Word_List object, that gets the pseudo random numbers
  */
 static void Create_Random_Data
 (
@@ -169,9 +190,13 @@ static void Create_Random_Data
         struct Document_Word_List* const data_container
 )
 {
+    ASSERT_MSG(number_of_arrays != 0, "Number of arrays is 0 !");
+    ASSERT_MSG(max_array_length != 0, "Max array length is 0 !");
+    ASSERT_MSG(data_container != NULL, "Data container is NULL !");
+
     uint_fast64_t created_test_data = 0;
 
-    // Hiermit wird sichergestellt, dass der Seed fuer die Zufallszahlen nur einmal gesetzt wird
+    // With this flag it is ensured, that the seed is only one time set
     static _Bool init_done = false;
     if (init_done == false)
     {
@@ -181,7 +206,7 @@ static void Create_Random_Data
 
     for (size_t i = 0; i < number_of_arrays; ++ i)
     {
-        // Keine zufaellige Anzahl an Daten mehr
+        // No random number of data anymore
         /* size_t used_array_length = ((size_t) rand () % (max_array_length + 1));
         if (used_array_length == 0)
         {

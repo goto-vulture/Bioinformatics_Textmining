@@ -10,7 +10,6 @@
 #ifndef ERROR_HANDLING_ASSERT_MSG_H
 #define ERROR_HANDLING_ASSERT_MSG_H ///< Include-Guard
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -27,7 +26,7 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Ein Assert mit benutzerdefinierter Fehlermeldung.
+ * @brief A assert with a user-defined error message.
  */
 #ifndef ASSERT_MSG
     #define ASSERT_MSG(expr, message) assert (((void) (message), expr));
@@ -38,11 +37,10 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Ein Assert mit benutzerdefinierter Fehlermeldung in Form eines Format-Strings.
+ * @brief A assert with a user-defined error message in the form of format string.
  *
- * Der Einfachheit halber wird die Fehlermeldung - inkl. der Parameter - auf stderr ausgegeben.
- * Zusaetzlich wird ein Zeilenumbruch auf stderr ausgegeben, damit die Format-String Fehlermeldung und die
- * Fehlermeldung vom ASSERT-Makro nicht in einer Zeile stehen.
+ * In an error case the error message will be shown before the assert will be executed becase the standard assert
+ * function only accepts C-String without format parameter.
  */
 #ifndef ASSERT_FMSG
     #define ASSERT_FMSG(expr, format_string, ...)                       \
@@ -60,11 +58,10 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Ein Assert fuer Fehlerfaelle bei der Allokation von Speicher.
+ * @brief This assert is for error cases after an dynamic allocation operation.
  *
- * Vor der eigentlichen Assert-Meldung wird die Groesse des Speichers angegeben, der allokiert werden sollte. Die
- * Angabe der Speichergroesse ist technisch nicht zwingend notwendig, macht aber die Fehlermeldungen besser, da man
- * weiss bei welcher Allokationsgroesse es Probleme gab.
+ * In an error case the number of bytes, that tried to allocte, will be printed. This additional information is not
+ * necessary. But it can help to find bugs. E.g.: Maybe there is an bug in the memory size calculation.
  */
 #ifndef ASSERT_ALLOC
     #define ASSERT_ALLOC(ptr, message, memory_size)                                 \
@@ -82,7 +79,6 @@ extern "C"
 
 
 
-// ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

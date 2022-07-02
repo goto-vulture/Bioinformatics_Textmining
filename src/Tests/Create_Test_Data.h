@@ -15,7 +15,6 @@
 #ifndef CREATE_TEST_DATA_H
 #define CREATE_TEST_DATA_H
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -29,13 +28,17 @@ extern "C"
 
 
 /**
- * @brief Woerterliste mit Zufallszahlen erzeugen.
+ * @brief Create a Document_Word_List with pseudo random data
  *
- * @param[in] number_of_arrays Anzahl an Untermengen
- * @param[in] max_array_length Maximale Laenge einer Untermenge
- * @param[in] rand_upper_bound Obere Grenze fuer die Zufallszahlen
+ * Asserts:
+ *      number_of_arrays > 0
+ *      max_array_length > 0
  *
- * @return Die neu erzeugte Woerterliste
+ * @param[in] number_of_arrays Number of subsets
+ * @param[in] max_array_length Max length of a subset
+ * @param[in] rand_upper_bound Upper bound of pseudo random data
+ *
+ * @return Pointer to the new dynamic Document_Word_List object
  */
 extern struct Document_Word_List*
 Create_Document_Word_List_With_Random_Test_Data
@@ -46,19 +49,26 @@ Create_Document_Word_List_With_Random_Test_Data
 );
 
 /**
- * @brief Woerterliste mit Zufallszahlen erzeugen + spezifizierte Menge an Daten, die in jeder Untermenge der
- * Woerterliste vorkommen soll.
+ * @brief Create a Document_Word_List with pseudo random data + a specified set of data, that will be inserted in every
+ * subset.
  *
- * Der Sinn hinter dieser Funktion ist, dass die Schnittmenge immer den der spezifizierten Daten entspricht. Damit kann
- * man testen, ob die Schnittmengenbildung korrekt funktioniert.
+ * The idea is to get the same intersection result. This is for debugging and test purposes useful, because the results
+ * will be specified in every usage.
  *
- * @param[in] specified_data Spezifizierte Daten
- * @param[in] specified_data_length Laenge der dpezifizierten Daten
- * @param[in] number_of_arrays Anzahl an Untermengen
- * @param[in] max_array_length Maximale Laenge einer Untermenge
- * @param[in] rand_upper_bound Obere Grenze fuer die Zufallszahlen
+ * Asserts:
+ *      specified_data != NULL
+ *      specified_data_length > 0
+ *      number_of_arrays > 0
+ *      max_array_length > 0
+ *      specified_data_length <= max_array_length
  *
- * @return Die neu erzeugte Woerterliste
+ * @param[in] specified_data Specified data
+ * @param[in] specified_data_length Length of the specified data
+ * @param[in] number_of_arrays Number of subsets
+ * @param[in] max_array_length Max length of a subset
+ * @param[in] rand_upper_bound Upper bound of pseudo random data
+ *
+ * @return Pointer to the new dynamic Document_Word_List object
  */
 extern struct Document_Word_List*
 Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
@@ -72,7 +82,6 @@ Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
 
 
 
-// ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

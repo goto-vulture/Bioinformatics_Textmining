@@ -10,7 +10,6 @@
 #ifndef PRINT_TOOLS_H
 #define PRINT_TOOLS_H ///< Include-Guard
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -25,9 +24,9 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Ausgabe mittels printf, wobei automatisch stdout geleert wird.
+ * @brief Print data with printf and flush the stdout cache.
  *
- * Dies dient dazu, dass eine Ausgabe direkt auf dem Bildschirm erscheint.
+ * The effect is, that the output will be appear on the terminal directly.
  */
 #ifndef PRINTF_FFLUSH
     #define PRINTF_FFLUSH(format_string, ...)                   \
@@ -39,9 +38,7 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Ausgabe mittels fprintf, wobei automatisch der file Puffer geleert wird.
- *
- * Dies dient dazu, dass eine Ausgabe in die Datei direkt durchgefuehrt wird.
+ * @brief Same as the macro "PRINTF_FFLUSH". But here with file streams.
  */
 #ifndef FPRINTF_FFLUSH
     #define FPRINTF_FFLUSH(file, format_string, ...)             \
@@ -53,11 +50,10 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Ausgabe mittels printf, wobei automatisch stdout geleert wird.
- * Dies dient dazu, dass eine Ausgabe direkt auf dem Bildschirm erscheint.
+ * @brief Same as the macro "PRINTF_FFLUSH".
  *
- * Der Hauptunterschied zwischen diesem Makro und der Verwendung eines Makros mit puts: Es wird hier nicht zwingend ein
- * Zeilenumbruch geschrieben !
+ * It is necessary to create a second macro for the va_args. If the va_args are empty a compiler error would be occur
+ * with the macro "PRINTF_FFLUSH".
  */
 #ifndef PRINTF_NO_VA_ARGS_FFLUSH
     #define PRINTF_NO_VA_ARGS_FFLUSH(format_string)             \
@@ -69,11 +65,7 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Ausgabe mittels fprintf, wobei automatisch der file Puffer geleert wird.
- * Dies dient dazu, dass eine Ausgabe direkt durchgefuehrt wird.
- *
- * Der Hauptunterschied zwischen diesem Makro und der Verwendung eines Makros mit puts: Es wird hier nicht zwingend ein
- * Zeilenumbruch geschrieben !
+ * @brief Same as the macro "PRINTF_NO_VA_ARGS_FFLUSH". But here with a file stream.
  */
 #ifndef FPRINTF_NO_VA_ARGS_FFLUSH
     #define FPRINTF_FFLUSH_NO_VA_ARGS(file, format_string)      \
@@ -85,9 +77,7 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Ausgabe mittels puts, wobei automatisch stdout geleert wird.
- *
- * Dies dient dazu, dass eine Ausgabe direkt auf dem Bildschirm erscheint. ("puts()": inklusive eines Zeilenumbruchs)
+ * @brief Same as the macro "PRINTF_FFLUSH". But here with a automatíc newline at the end.
  */
 #ifndef PUTS_FFLUSH
     #define PUTS_FFLUSH(string)                                 \
@@ -99,9 +89,9 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Aktuelle Terminalzeile mittels \r leeren.
+ * @brief Clean a full terminal line.
  *
- * Annahme, dass 96 Zeichen ausreichen.
+ * Approach: the line length of 96 is not exceeded.
  */
 #ifndef CLEAN_LINE
     #define CLEAN_LINE()                                                                                        \
@@ -113,7 +103,7 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Eine leere Zeile auf stdout ausgeben (mit Flush).
+ * @brief Print a newline to stdout with flush.
  */
 #ifndef PRINT_NEWLINE
     #define PRINT_NEWLINE PUTS_FFLUSH("")
@@ -124,7 +114,7 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief X Mal das gleiche Zeichen auf stdout ausgeben (mit Flush am Ende).
+ * @brief Print x times the same char to stdout. (With flush at the end of the process)
  */
 #ifndef PRINT_X_TIMES_SAME_CHAR
 #define PRINT_X_TIMES_SAME_CHAR(character, times) \
@@ -136,32 +126,32 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Ein 2D-String-Array aud stdout ausgeben.
+ * @brief Print a 2D-String array to stdout. *
  *
- * Solch eine Funktionalitaet wird benoetigt, um Fehler bei der Erstellung von textbasierten Zeichnungen schneller zu
- * finden.
+ * This is helpful for debugging of text-based drawings.
  *
  * Asserts:
  *      drawing != NULL
  *      dim_1 > 0
  *      dim_2 > 0
  *
- * @param[in] drawing 2D-String-Array
- * @param[in] dim_1 Groesse der 1. Array Dimension (Anzahl an Zeichenketten)
- * @param[in] dim_2 Groesse der 2. Array Dimension (Maximale Anzahl an Zeichen pro Zeichenkette)
+ * @param[in] drawing 2D-String array
+ * @param[in] dim_1 Groesse der First array dimension (Number of C-Strings)
+ * @param[in] dim_2 Groesse der Second array dimension (Max numer of char per C-String)
  */
 extern void Print_2D_String_Array (const char* const restrict drawing [], const size_t dim_1, const size_t dim_2);
 
 /**
- * @brief Die Anzahl an Ziffern in einer Zahl bestimmen.
+ * @brief Count number of digits in a value.
  *
- * @param[in] value Zahl, die betrachtet wird.
+ * @param[in] value Value
+ *
+ * @return The number of digits in the given value
  */
 extern size_t Count_Number_Of_Digits (size_t value);
 
 
 
-// ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

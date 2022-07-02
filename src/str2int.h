@@ -10,7 +10,6 @@
 #ifndef STR2INT_H
 #define STR2INT_H ///< Include-Guard
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -23,48 +22,48 @@ extern "C"
 
 
 /**
- * @brief Fehlercodes, die Fehlerzustaende bei der Verwendung von str2int(), anzeigen.
+ * @brief Errorcodes for the str2int() usage.
  */
 enum str2int_errno
 {
-    STR2INT_SUCCESS = 0,    ///< Konvertierung war erfolgreich
-    STR2INT_OVERFLOW,       ///< Overflow waehrend der Konvertierung
-    STR2INT_UNDERFLOW,      ///< Underflow waehrend der Konvertierung
-    STR2INT_INCONVERTIBLE   ///< Zeichenkette ist nicht konvertierbar
+    STR2INT_SUCCESS = 0,    ///< Conversion was successful
+    STR2INT_OVERFLOW,       ///< Overflow occured
+    STR2INT_UNDERFLOW,      ///< Underflow occured
+    STR2INT_INCONVERTIBLE   ///< C-String is not convertable
 };
 
 
 
 /**
- * @brief Konvertierung eines C-Strings zu einem mind. 32 Bit breiten Integer.
+ * @brief Convert a C-String to a integer with a width of at least 32 bits.
  *
- * Fehlerhafte Eingaben werden ueber den Rueckgabewert angezeigt. Im Fehlerfall wird der Ausgabespeicherbereich
- * (*out) nicht geaendert.
+ * Incorrect inputs are indicated with the return value. In this case the input parameter (out) is not modified.
  *
- * @param[out] out Pointer auf das Ausgabe-Objekt.
- * @param[in] input_string C-String Eingabe.
- * @param[in] base Basis der Zahl (Angabe des Zahlensystems).
+ * @param[out] out Pointer to the output integer.
+ * @param[in] input_string Input C-String
+ * @param[in] base Number base
  *
- * @return Fehlercode. STR2INT_SUCCESS, wenn alles in Ordnung war; ansonsten != STR2INT_SUCCESS
+ * @return Error code. On success: STR2INT_SUCCESS; Otherwise != STR2INT_OVERFLOW, STR2INT_UNDERFLOW or
+ * STR2INT_INCONVERTIBLE
  */
 extern enum str2int_errno str2int (long int* out, const char* input_string, const int base);
 
 /**
- * @brief Konvertierung eines C-Strings zu einem mind. 32 Bit breiten Integer.
+ * @brief Convert a C-String to a integer with a width of at least 32 bits.
  *
- * Das Ergebnis wird direkt ueber den Rueckgabewert angezeigt. Falls Fehler bei der Konvertierung aufgetreten sind,
- * dann ist der Rueckgabewert immer LONG_MIN.
+ * The result will be given with the return values. Errors will be indicated with LONG_MIN. So you shoudn't use an
+ * input C-String, that represents LONG_MIN. In this case it is not possible to determine whether an error occured or
+ * not.
  *
- * @param[in] input_string C-String Eingabe.
- * @param[in] base Basis der Zahl (Angabe des Zahlensystems).
+ * @param[in] input_string Input C-String
+ * @param[in] base Number base
  *
- * @return Der konvertierte C-String; oder LONG_MIN im Fehlerfall
+ * @return The integer representation of the input C-String or LONG_MIN in case of errors
  */
 extern long int str2int_wo_errno (const char* input_string, const int base);
 
 
 
-// ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

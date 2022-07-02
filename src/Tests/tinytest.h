@@ -43,13 +43,12 @@
  * @date 2010
  * @author Joe Walnes <joe@walnes.com> http://joewalnes.com
  *
- * Angepasst von: x86 / Gyps.
+ * Adapted from: x86 / Gyps.
  */
 
 #ifndef _TINYTEST_INCLUDED
 #define _TINYTEST_INCLUDED ///< Include-Guard
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -64,7 +63,7 @@ extern "C"
 
 
 /**
- * @brief Haupt-Assert Makro.
+ * @brief Main test assert macro.
  */
 #ifndef ASSERT
 #define ASSERT(msg, expression) if (!tt_assert(__FILE__, __LINE__, (msg), (#expression), (expression) ? 1 : 0)) return
@@ -73,10 +72,10 @@ extern "C"
 #endif /* ASSERT */
 
 /**
- * @brief Assert fuer die Gleichheit ganzzahliger Werte.
+ * @brief Test assert macro for the equalness of two values.
  *
- * Ein Vergleich von Gleitkommazahlen kann durchgefuehrt werden; ist aber wegen der potenziellen Ungenauigkeit und
- * Fehleranfaelligkeit von Vergleichen mittels == nicht empfohlen.
+ * A comparison with floating point numbers is possible but not recommended, due the potential inaccuracy of this value
+ * types.
  */
 #ifndef ASSERT_EQUALS
 #define ASSERT_EQUALS(expected, actual) ASSERT((#actual), (expected) == (actual))
@@ -85,7 +84,7 @@ extern "C"
 #endif /* ASSERT_EQUALS */
 
 /**
- * @brief Assert fuer die Gleichheit von C-Strings.
+ * @brief Test assert macro for the equalness of two C-Strings.
  */
 #ifndef ASSERT_STRING_EQUALS
 #define ASSERT_STRING_EQUALS(expected, actual)                                                      \
@@ -99,7 +98,7 @@ extern "C"
 #endif /* ASSERT_STRING_EQUALS */
 
 /**
- * @brief Assert fuer die Gleichheit von C-Strings ohne Beachtung der Gross- und Kleinschreibung.
+ * @brief Test assert macro for the equalness of two C-Strings (case-insensitive).
  */
 #ifndef ASSERT_STRING_CASE_INSENSITIVE_EQUALS
 #define ASSERT_STRING_CASE_INSENSITIVE_EQUALS(expected, actual)                                                     \
@@ -113,7 +112,7 @@ extern "C"
 #endif /* ASSERT_STRING_CASE_INSENSITIVE_EQUALS */
 
 /**
- * @brief Test-Funktion starten.
+ * @brief Run all test functions.
  */
 #ifndef RUN
 #define RUN(test_function) tt_execute((#test_function), (test_function))
@@ -122,7 +121,8 @@ extern "C"
 #endif /* RUN */
 
 /**
- * @brief Test-Funktion (mit manueller Zeichenkette als Funktionsname) starten.
+ * @brief Run all test functions with user-defined name for the function name. The name of the test function will
+ * appear in the test results.
  */
 #ifndef RUN_2
 #define RUN_2(test_function, manual_test_function_name) tt_execute((manual_test_function_name), (test_function))
@@ -131,7 +131,7 @@ extern "C"
 #endif /* RUN_2 */
 
 /**
- * @brief Bericht aller bisher stattgefundenen Asserts ausgeben.
+ * @brief Print report of all already executed test asserts.
  */
 #ifndef TEST_REPORT
 #define TEST_REPORT() tt_report()
@@ -140,93 +140,89 @@ extern "C"
 #endif /* TEST_REPORT */
 
 #ifndef TT_COLOR_CODE
-#define TT_COLOR_CODE 0x1B ///< Einleitungswert fuer das Terminal, dass ein Farbcode folgt ("Escape"-Steuerzeichen)
+#define TT_COLOR_CODE 0x1B ///< Start value for the Terminal. Meaning: The next value will be a colour code
 #else
 #error "The macro \"TT_COLOR_CODE\" is already defined !"
 #endif /* TT_COLOR_CODE */
 #ifndef TT_COLOR_RED
-#define TT_COLOR_RED "[1;31m" ///< Farbcode fuer rote Ausgaben im Terminal (ANSI-Escape-Sequenz)
+#define TT_COLOR_RED "[1;31m" ///< Colour code for red outputs in the terminal (ANSI-Escape-Sequence)
 #else
 #error "The macro \"TT_COLOR_RED\" is already defined !"
 #endif /* TT_COLOR_RED */
 #ifndef TT_COLOR_GREEN
-#define TT_COLOR_GREEN "[1;32m" ///< Farbcode fuer gruene Ausgaben im Termial (ANSI-Escape-Sequenz)
+#define TT_COLOR_GREEN "[1;32m" ///< Colour code for green outputs in the terminal (ANSI-Escape-Sequence)
 #else
 #error "The macro \"TT_COLOR_GREEN\" is already defined !"
 #endif /* TT_COLOR_GREEN */
 #ifndef TT_COLOR_RESET
-#define TT_COLOR_RESET "[0m" ///< Aktell gesetzten Farbcode zuruecksetzen (ANSI-Escape-Sequenz)
+#define TT_COLOR_RESET "[0m" ///< Reset all colour code, that were set until now (ANSI-Escape-Sequence)
 #else
 #error "The macro \"TT_COLOR_RESET\" is already defined !"
 #endif /* TT_COLOR_RESET */
 
 
 
-extern int tt_passes;                           ///< Anzahl an Tests, die erfolgreich durchgefuehrt wurden
-extern int tt_fails;                            ///< Anzahl an Tests, die fehlgeschlagen sind
-extern int tt_current_test_failed;              ///< Ist der akuelle Test fehlgeschlagen ?
-extern const char* tt_current_msg;              ///< Nachricht des aktuellen Tests
-extern const char* tt_current_expression;       ///< Aktueller Assert-Ausdruck
-extern const char* tt_current_file;             ///< Aktueller Dateiname
-extern int tt_current_line;                     ///< Aktuelle Zeile
+extern int tt_passes;                           ///< Number of test, that passed
+extern int tt_fails;                            ///< Number of tests, that failed
+extern int tt_current_test_failed;              ///< Failed the current test ?
+extern const char* tt_current_msg;              ///< Name of the current test
+extern const char* tt_current_expression;       ///< Current assert statement
+extern const char* tt_current_file;             ///< Current file name
+extern int tt_current_line;                     ///< Current line
 
-extern char tt_failed_function_names [32][128]; ///< Funktionsnamen, bei denen der Test fehlgeschlagen ist
+extern char tt_failed_function_names [32][128]; ///< Function name where the tests failed
 /**
- * @brief Aktuller Index fuer das Array, welches die Namen der fehlgeschlagenen Funktionen sichert
+ * @brief Current index for the array, that holds the function names where the tests failed.
  */
 extern int tt_current_failed_function_name;
 
 
 
 /**
- * @brief Zu testende Funktion starten.
+ * @brief Start the test function.
  *
- * Die Testfunktion (Signatur: void NAME (void)) wird uebergeben und gestartet. In der Testfunktion befinden sich
- * Makros, die - falls ein Test fehlschlaegt - eine globale Variable anpassen. Dadurch erkennt die tt_execute()
- * Funktion, dass mind. ein Test fehlschlug.
+ * The test function (signature: void NAME (void)) will be handed over and executed. In the test function are macros, if
+ * a test failded, adjust global variables. Though this mecanism tt_execute() can determine, that at least one test
+ * failed.
  *
- * ! Das Starten eins Tests erfolgt ueber das Makro "RUN" !
- * Diese Funktion muss nie direkt ausgefuehrt werden !
+ * ! Starting a test is done via the macro "RUN" !
+ *   It is not nece
+ * ! This function must never be executed directly !
  *
- * @param[in] name Name des Testes. Wird fuer Statusausgaben verwendet. I.d.R. ist diese Variable der Name der zu
- * testenden Funktion.
- * @param[in] test_function Die zu testende Funktion. Grundsignatur: void NAME (void)
- *
- * @return N/A
+ * @param[in] name Name of the test. Will be used for report information
+ * @param[in] test_function Function, that will be tested. Main signature: void NAME (void)
  */
 extern void tt_execute (const char *name, void (*test_function) (void));
 
 /**
- * @brief Die Assert-Funktion.
+ * @brief The assert function.
  *
- * In dieser Funktion werden die Statusvariablen auf den passenden Wert gesetzt.
+ * In this function the state variables will be adjusted to suitable values.
  *
- * ! Wie bei der Funktion tt_execute(): Diese Funktion muss nie direkt aufgerufen werden ! Der Aufruf geschieht ueber
- *   passenden Makros (ASSERT, ASSERT_EQUALS, ...)
+ * ! Like in the function tt_execute(): This function never has to call directly ! The call will be executed though the
+ *   suitable macros (ASSERT, ASSERT_EQUALS, ...)
  *
- * @param[in] file Name der Quelltestdatei, in der der Test ausgefuehrt wird (Fuer praezisere Fehlerausgaben)
- * @param[in] line Die Zeilennummer, wo der Test ausgefuehrt wird (Fuer praezisere Fehlerausgaben)
- * @param[in] msg Nachricht die ausgegeben werden soll, wenn der Test fehlschlug
- * @param[in] expression Der Assert-Ausdruck als Zeichenkette (wird mittels einer Praeprozessor-Anweisung in den Makros
- * erzeugt)
- * @param[in] pass War der Test (siehe: expression Variable) erfolgreich ?
+ * @param[in] file Name of the source file, where the current test was written
+ * @param[in] line Line number, where the test failed
+ * @param[in] msg Message, that will be printed, if the test fails
+ * @param[in] expression The assert statement represented as C-String (is created with preprocessor commands)
+ * @param[in] pass Was the test (see: expression variable) successful ?
  *
- * @return Ergebnis des Assert-Ausdrucks
+ * @return Result of the assert statement
  */
 extern int tt_assert (const char *file, int line, const char *msg, const char *expression, int pass);
 
 /**
- * @brief Bericht aller bisher stattgefundenen Asserts ausgeben.
+ * @brief Print the test reports.
  *
- * Wie viele Asserts waren erfolgreich; wie viele sind fehlgeschlagen ?
+ * How many tests failed ?
  *
- * @return N/A
+ * @return 0 if all tests passed; -1, if at least one test failed
  */
 extern int tt_report (void);
 
 
 
-// ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
