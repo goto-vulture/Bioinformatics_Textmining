@@ -25,12 +25,16 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Neue Woerterliste erstellen.
+ * @brief Create new document word list.
  *
- * @param[in] number_of_arrays Anzahl an Arrays (Untermengen)
- * @param[in] max_array_length Maximale Laenge der Arrays bzw. Untermengen
+ * Asserts:
+ *      number_of_arrays > 0
+ *      max_array_length > 0
  *
- * @return Neu dynamisch erzeugte Woerterliste
+ * @param[in] number_of_arrays Number of arrays (Subsets)
+ * @param[in] max_array_length Maximum length of the subsets
+ *
+ * @return Pointer to the new dynamic allocated Document_Word_List
  */
 extern struct Document_Word_List*
 Create_Document_Word_List
@@ -45,11 +49,11 @@ Create_Document_Word_List
     struct Document_Word_List* new_object = (struct Document_Word_List*) CALLOC(1, sizeof (struct Document_Word_List));
     ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List));
 
-    // Aeussere Dimension
+    // Outer dimension
     new_object->data = (uint_fast32_t**) CALLOC(number_of_arrays, sizeof (uint_fast32_t*));
     ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (uint_fast32_t*) * number_of_arrays);
 
-    // Innere Dimension
+    // Inner dimension
     for (uint_fast32_t i = 0; i < number_of_arrays; ++ i)
     {
         new_object->data [i] = (uint_fast32_t*) CALLOC(max_array_length, sizeof (uint_fast32_t));
@@ -57,7 +61,7 @@ Create_Document_Word_List
                 sizeof (uint_fast32_t) * max_array_length);
     }
 
-    // Laengenliste
+    // Length list
     new_object->arrays_lengths = (size_t*) CALLOC(number_of_arrays, sizeof (size_t));
     ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (size_t) * number_of_arrays);
 
@@ -71,9 +75,12 @@ Create_Document_Word_List
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Woerterliste loeschen.
+ * @brief Delete a Document_Word_List object.
  *
- * @param[in] object Woerterliste, die geloescht werden soll
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List, which will be deleted
  */
 extern void
 Delete_Document_Word_List
@@ -83,13 +90,13 @@ Delete_Document_Word_List
 {
     ASSERT_MSG(object != NULL, "Object is NULL !");
 
-    // Innere Dimension
+    // Inner dimension
     for (uint_fast32_t i = 0; i < object->number_of_arrays; ++ i)
     {
         FREE_AND_SET_TO_NULL(object->data [i]);
     }
 
-    // Aeussere Dimension
+    // Outer dimension
     FREE_AND_SET_TO_NULL(object->data);
 
     FREE_AND_SET_TO_NULL(object->arrays_lengths);
@@ -101,11 +108,16 @@ Delete_Document_Word_List
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Daten zu einer Woerterliste hinzufuegen.
+ * @brief Add data to a Document_Word_List.
  *
- * @param[in] object Woerterliste, an der die neuen Daten angebracht werden
- * @param[in] new_data Neue Daten
- * @param[in] data_length Laenge der neuen Daten
+ * Asserts:
+ *      object != NULL
+ *      new_data != NULL
+ *      data_length > 0
+ *
+ * @param[in] object Document_Word_List
+ * @param[in] new_data New data
+ * @param[in] data_length Length of the new data
  */
 extern void
 Append_Data_To_Document_Word_List
@@ -124,7 +136,7 @@ Append_Data_To_Document_Word_List
     ASSERT_FMSG(object->number_of_arrays > (size_t) object->next_free_array, "All arrays are in use ! (%zu arrays)",
             object->number_of_arrays);
 
-    // Daten kopieren
+    // Copy the new data
     memcpy (object->data [object->next_free_array], new_data, sizeof (uint_fast32_t) * data_length);
     object->arrays_lengths [object->next_free_array] = data_length;
     object->next_free_array ++;
@@ -135,9 +147,14 @@ Append_Data_To_Document_Word_List
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Daten einer Woerterliste auf stdout ausgeben
+ * @brief Printh data of a Document_Word_List to stdout.
  *
- * @param[in] object Woerterliste
+ * This function is for debugging purposes.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
  */
 extern void
 Show_Data_From_Document_Word_List
@@ -169,9 +186,14 @@ Show_Data_From_Document_Word_List
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Daten einer Woerterliste + Attributinformationen auf stdout ausgeben
+ * @brief Printh data and the attribute information of a Document_Word_List to stdout.
  *
- * @param[in] object Woerterliste
+ * This function is for debugging purposes.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
  */
 extern void
 Show_Data_And_Attributes_From_Document_Word_List
@@ -197,14 +219,26 @@ Show_Data_And_Attributes_From_Document_Word_List
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Schnittmenge zwischen einer Woerterliste und einem Datensatz bilden.
+ * @brief Determine intersection with a Document_Word_List and a dataset.
  *
- * @param[in] object Woerterliste (1. Menge fuer die Schnittmengenberechnung)
- * @param[in] data Datensatz (2. Menge fuer die Schnittmengenberechnung)
- * @param[in] data_length Groesse des Datensatzes
- * @param[in] mode Modus fuer die Schnittstellenberechnung (Welches Verfahren soll verwendet werden ?)
+ * You can change the intersection mode with the enum parameter Intersection_Mode. Actual following modes are
+ * available
+ * - 2 nested loops
+ * - QSort with binary search
+ * - Heapsort with binary search
  *
- * @return Neu erzeugte Woerterliste mit den Schnittmengen in den jeweiligen Untermengen
+ * Asserts:
+ *      object != NULL
+ *      data != NULL
+ *      data_length > 0
+ *      data_length <= object->max_array_length
+ *
+ * @param[in] object Document_Word_List (1. Set for the intersection calculation)
+ * @param[in] data dataset (2. Set for the intersection calculation)
+ * @param[in] data_length Size of the dataset
+ * @param[in] mode mode for the intersection calculation (Which approach should be used ?)
+ *
+ * @return New Document_Word_List with the intersections in the respective subsets
  */
 extern struct Document_Word_List*
 Intersect_Data_With_Document_Word_List
@@ -223,7 +257,7 @@ Intersect_Data_With_Document_Word_List
     ASSERT_FMSG(data_length <= object->max_array_length, "data is too large ! Value %zu; max. valid: %zu",
             data_length, object->max_array_length)
 
-    // Je nach Modus die passende Variante fuer die Bestimmung der Schnittmenge verwenden
+    // Execute the proper function for the selected mode
     struct Document_Word_List* intersection_result = NULL;
     switch (mode)
     {

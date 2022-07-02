@@ -18,9 +18,8 @@
  */
 
 #ifndef INTERSECTION_APPROACHES_H
-#define INTERSECTION_APPROACHES_H
+#define INTERSECTION_APPROACHES_H ///< Include-Guard
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -33,14 +32,18 @@ extern "C"
 
 
 /**
- * @brief Schnittmenge durch die naive Herangehensweise (Jeden mit jedem vergleichen -> zwei verschachtelte Schleifen)
- * bilden.
+ * @brief Determine intersections with a naive approach (Compare everyone with everyone -> to nested loops).
  *
- * @param[in] object Woerterliste
- * @param[in] data Daten, die fuer die Schnittmengenbildung gegen der Woerterliste verwendet wird
- * @param[in] data_length Groesse der Daten
+ * Asserts:
+ *      object != NULL
+ *      data != NULL
+ *      data_length = 0
  *
- * @return Neues dynamisch erzeugtes Objekt, welches die Schnittmenge zu jeder Untermenge der Woerterliste enthaelt
+ * @param[in] object Document_Word_List
+ * @param[in] data Data, that will be used for the intersection with the Document_Word_List object
+ * @param[in] data_length Number of the elements in the data
+ *
+ * @return New dynamic object containing the intersection result to each subset of the word list
  */
 extern struct Document_Word_List*
 Intersection_Approach_2_Nested_Loops
@@ -51,16 +54,21 @@ Intersection_Approach_2_Nested_Loops
 );
 
 /**
- * @brief Schnittmenge durch eine vorherige aufsteigende Sortierung der Elemente in der Woerterliste. Anschliessend
- * werden die Elemente, die in beiden Mengen vorkommen, mittels der binaeren Suche gesucht.
+ * @brief Determine intersections with a previous ascending sort of the elements ih the Document_Word_List. Afterwards
+ * for the search process the binary search will be used.
  *
- * Algorithmus fuer die Sortierung: QSort
+ * Algorithm for the sorting: QSort (https://en.wikipedia.org/wiki/Qsort)
  *
- * @param[in] object Woerterliste
- * @param[in] data Daten, die fuer die Schnittmengenbildung gegen der Woerterliste verwendet wird
- * @param[in] data_length Groesse der Daten
+ * Asserts:
+ *      object != NULL
+ *      data != NULL
+ *      data_length = 0
  *
- * @return Neues dynamisch erzeugtes Objekt, welches die Schnittmenge zu jeder Untermenge der Woerterliste enthaelt
+ * @param[in] object Document_Word_List
+ * @param[in] data Data, that will be used for the intersection with the Document_Word_List object
+ * @param[in] data_length Number of the elements in the data
+ *
+ * @return New dynamic object containing the intersection result to each subset of the word list
  */
 extern struct Document_Word_List*
 Intersection_Approach_QSort_And_Binary_Search
@@ -71,16 +79,21 @@ Intersection_Approach_QSort_And_Binary_Search
 );
 
 /**
- * @brief Schnittmenge durch eine vorherige aufsteigende Sortierung der Elemente in der Woerterliste. Anschliessend
- * werden die Elemente, die in beiden Mengen vorkommen, mittels der binaeren Suche gesucht.
+ * @brief Determine intersections with a previous ascending sort of the elements ih the Document_Word_List. Afterwards
+ * for the search process the binary search will be used.
  *
- * Algorithmus fuer die Sortierung: HeapSort
+ * Algorithm for the sorting: Heapsort (https://en.wikipedia.org/wiki/Heapsort)
  *
- * @param[in] object Woerterliste
- * @param[in] data Daten, die fuer die Schnittmengenbildung gegen der Woerterliste verwendet wird
- * @param[in] data_length Groesse der Daten
+ * Asserts:
+ *      object != NULL
+ *      data != NULL
+ *      data_length = 0
  *
- * @return Neues dynamisch erzeugtes Objekt, welches die Schnittmenge zu jeder Untermenge der Woerterliste enthaelt
+ * @param[in] object Document_Word_List
+ * @param[in] data Data, that will be used for the intersection with the Document_Word_List object
+ * @param[in] data_length Number of the elements in the data
+ *
+ * @return New dynamic object containing the intersection result to each subset of the word list
  */
 extern struct Document_Word_List*
 Intersection_Approach_HeapSort_And_Binary_Search
@@ -92,7 +105,6 @@ Intersection_Approach_HeapSort_And_Binary_Search
 
 
 
-// ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

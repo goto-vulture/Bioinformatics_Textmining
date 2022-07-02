@@ -38,25 +38,29 @@ enum Intersection_Mode
 
 struct Document_Word_List
 {
-    uint_fast32_t** data;           ///< 2 dimensionales Array mit den Daten
-    size_t* arrays_lengths;         ///< 1 dimensionales Array mit den Laengen der Datenarrays
+    uint_fast32_t** data;           ///< 2 dimensional Array with the data
+    size_t* arrays_lengths;         ///< 1 dimensional Array with the data length information
 
-    uint_fast32_t next_free_array;  ///< Naechstes freies Array
-    size_t max_array_length;        ///< Maximale Laenge aller Dateiarrays
-    size_t number_of_arrays;        ///< Anzahl an Arrays
+    uint_fast32_t next_free_array;  ///< Next free array in data
+    size_t max_array_length;        ///< Max length of all data arrays
+    size_t number_of_arrays;        ///< Number of arrays
 
-    _Bool intersection_data;        ///< Ist der Datensatz durch eine Schnittmengenoperation entstanden ?
+    _Bool intersection_data;        ///< Was this object created as intersection result ?
 };
 
 //=====================================================================================================================
 
 /**
- * @brief Neue Woerterliste erstellen.
+ * @brief Create new document word list.
  *
- * @param[in] number_of_arrays Anzahl an Arrays (Untermengen)
- * @param[in] max_array_length Maximale Laenge der Arrays bzw. Untermengen
+ * Asserts:
+ *      number_of_arrays > 0
+ *      max_array_length > 0
  *
- * @return Neu dynamisch erzeugte Woerterliste
+ * @param[in] number_of_arrays Number of arrays (Subsets)
+ * @param[in] max_array_length Maximum length of the subsets
+ *
+ * @return Pointer to the new dynamic allocated Document_Word_List
  */
 extern struct Document_Word_List*
 Create_Document_Word_List
@@ -66,9 +70,12 @@ Create_Document_Word_List
 );
 
 /**
- * @brief Woerterliste loeschen.
+ * @brief Delete a Document_Word_List object.
  *
- * @param[in] object Woerterliste, die geloescht werden soll
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List, which will be deleted
  */
 extern void
 Delete_Document_Word_List
@@ -77,11 +84,16 @@ Delete_Document_Word_List
 );
 
 /**
- * @brief Daten zu einer Woerterliste hinzufuegen.
+ * @brief Add data to a Document_Word_List.
  *
- * @param[in] object Woerterliste, an der die neuen Daten angebracht werden
- * @param[in] new_data Neue Daten
- * @param[in] data_length Laenge der neuen Daten
+ * Asserts:
+ *      object != NULL
+ *      new_data != NULL
+ *      data_length > 0
+ *
+ * @param[in] object Document_Word_List
+ * @param[in] new_data New data
+ * @param[in] data_length Length of the new data
  */
 extern void
 Append_Data_To_Document_Word_List
@@ -92,9 +104,14 @@ Append_Data_To_Document_Word_List
 );
 
 /**
- * @brief Daten einer Woerterliste auf stdout ausgeben
+ * @brief Printh data of a Document_Word_List to stdout.
  *
- * @param[in] object Woerterliste
+ * This function is for debugging purposes.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
  */
 extern void
 Show_Data_From_Document_Word_List
@@ -103,9 +120,14 @@ Show_Data_From_Document_Word_List
 );
 
 /**
- * @brief Daten einer Woerterliste + Attributinformationen auf stdout ausgeben
+ * @brief Printh data and the attribute information of a Document_Word_List to stdout.
  *
- * @param[in] object Woerterliste
+ * This function is for debugging purposes.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
  */
 extern void
 Show_Data_And_Attributes_From_Document_Word_List
@@ -114,14 +136,26 @@ Show_Data_And_Attributes_From_Document_Word_List
 );
 
 /**
- * @brief Schnittmenge zwischen einer Woerterliste und einem Datensatz bilden.
+ * @brief Determine intersection with a Document_Word_List and a dataset.
  *
- * @param[in] object Woerterliste (1. Menge fuer die Schnittmengenberechnung)
- * @param[in] data Datensatz (2. Menge fuer die Schnittmengenberechnung)
- * @param[in] data_length Groesse des Datensatzes
- * @param[in] mode Modus fuer die Schnittstellenberechnung (Welches Verfahren soll verwendet werden ?)
+ * You can change the intersection mode with the enum parameter Intersection_Mode. Actual following modes are
+ * available
+ * - 2 nested loops
+ * - QSort with binary search
+ * - Heapsort with binary search
  *
- * @return Neu erzeugte Woerterliste mit den Schnittmengen in den jeweiligen Untermengen
+ * Asserts:
+ *      object != NULL
+ *      data != NULL
+ *      data_length > 0
+ *      data_length <= object->max_array_length
+ *
+ * @param[in] object Document_Word_List (1. Set for the intersection calculation)
+ * @param[in] data dataset (2. Set for the intersection calculation)
+ * @param[in] data_length Size of the dataset
+ * @param[in] mode mode for the intersection calculation (Which approach should be used ?)
+ *
+ * @return New Document_Word_List with the intersections in the respective subsets
  */
 extern struct Document_Word_List*
 Intersect_Data_With_Document_Word_List

@@ -35,11 +35,14 @@
 #endif /* MULTIPLE_GUARD_ALLOC_STEP */
 
 /**
- * @brief Uebergebene Woerterliste kopieren und initialisieren.
+ * @brief Create a copy of the submitted Document_Word_List and initialize them.
  *
- * @param[in] object Originale Woerterliste
+ * Asserts:
+ *      object != NULL
  *
- * @param Initialisierte Kopie der uebergebenen Woerterliste
+ * @param[in] object Original Document_Word_List
+ *
+ * @return Pointer to the new initialized Document_Word_List
  */
 static struct Document_Word_List*
 Init_Intersection
@@ -48,12 +51,21 @@ Init_Intersection
 );
 
 /**
- * @brief Die eigentliche Schnittmengenberechnung durchfuehren.
+ * @brief Start a intersection process.
  *
- * @param[in] intersection_result Ergebnisspeicher; hier befinden sich am Ende die Schnittmengen
- * @param[in] object Originale Woerterliste
- * @param[in] data Daten, die fuer die Betimmung der Schnittmenge zur Woerterliste verwendet werden
- * @param[in] data_length Laenge der Daten
+ * It is necessary to prealloc the intersection result. Also there will be no realloc process. So the size of the data
+ * needs also be suitable.
+ *
+ * Asserts:
+ *      intersection_result != NULL
+ *      object != NULL
+ *      data != NULL
+ *      data_length > 0
+ *
+ * @param[in] intersection_result Return memory; here the results of the intersection can be found
+ * @param[in] object Original Document_Word_List
+ * @param[in] data Data, that will be used for the intersection with the Document_Word_List object
+ * @param[in] data_length Number of the elements in the data
  */
 static void
 Find_Intersection_Data
@@ -65,12 +77,12 @@ Find_Intersection_Data
 );
 
 /**
- * @brief Vergleichsfunktion fuer qsort()
+ * @brief Compare function for qsort()
  *
- * @param[in] a Wert 1
- * @param[in] b Wert 2
+ * @param[in] a First value
+ * @param[in] b Second value
  *
- * @return -1, falls a < b; +1 falls a > b; sonst 0
+ * @return -1, if a < b; +1 if a > b; else 0
  */
 static int
 Compare_Function
@@ -80,15 +92,19 @@ Compare_Function
 );
 
 /**
- * @brief Binaere Suche durchfuehren.
+ * @brief Execute binary search.
  *
- * ! Diese Funktion setzt voraus, dass die Daten bereits aufsteigend sortiert sind !
+ * ! This function excepts, that the data is already ascending sorted !
  *
- * @param[in] data Datenmenge, in der gesucht wird
- * @param[in] data_size Groesse der Daten
- * @param[in] search_value Zu suchender Wert
+ * Asserts:
+ *      data != NULL
+ *      data_size > 0
  *
- * @return true, falls der Wert in der Datenmenge ist; ansonsten false
+ * @param[in] data Data in which is searched
+ * @param[in] data_size Size of the data
+ * @param[in] search_value Value to be searched
+ *
+ * @return true, if the value is in the dataset, else false
  */
 static _Bool
 Binary_Search
@@ -99,13 +115,18 @@ Binary_Search
 );
 
 /**
+ * @brief Implementation of the sorting algorithm "HeapSort".
  * @brief Implementierung des Sortierungsalgorithmus "HeapSort".
  *
- * Diese Implementierung wurde von der Beispiels-Implementierung auf Wikipedia abgeleitet.
+ * This implementation was derived from the example implementation on Wikipedia.
  * https://de.wikipedia.org/wiki/Heapsort#Implementierung
  *
- * @param[in] data Daten, die sortiert werden
- * @param[in] data_size Groesse der Daten
+ * Asserts:
+ *      data != NULL
+ *      data_size > 0
+ *
+ * @param[in] data Data which will be sorted (ascending)
+ * @param[in] data_size Size of the data
  */
 static void
 Heapsort
@@ -117,14 +138,18 @@ Heapsort
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Schnittmenge durch die naive Herangehensweise (Jeden mit jedem vergleichen -> zwei verschachtelte Schleifen)
- * bilden.
+ * @brief Determine intersections with a naive approach (Compare everyone with everyone -> to nested loops).
  *
- * @param[in] object Woerterliste
- * @param[in] data Daten, die fuer die Schnittmengenbildung gegen der Woerterliste verwendet wird
- * @param[in] data_length Groesse der Daten
+ * Asserts:
+ *      object != NULL
+ *      data != NULL
+ *      data_length = 0
  *
- * @return Neues dynamisch erzeugtes Objekt, welches die Schnittmenge zu jeder Untermenge der Woerterliste enthaelt
+ * @param[in] object Document_Word_List
+ * @param[in] data Data, that will be used for the intersection with the Document_Word_List object
+ * @param[in] data_length Number of the elements in the data
+ *
+ * @return New dynamic object containing the intersection result to each subset of the word list
  */
 extern struct Document_Word_List*
 Intersection_Approach_2_Nested_Loops
@@ -134,6 +159,10 @@ Intersection_Approach_2_Nested_Loops
     const size_t data_length
 )
 {
+    ASSERT_MSG(object != NULL, "Document_Word_List is NULL !");
+    ASSERT_MSG(data != NULL, "Data is NULL !");
+    ASSERT_MSG(data_length > 0, "Length of the data is 0 !");
+
     struct Document_Word_List* intersection_result = Create_Document_Word_List (object->number_of_arrays,
             object->max_array_length);
     ASSERT_ALLOC(intersection_result, "Cannot create new Document Word List for intersection !",
@@ -142,25 +171,25 @@ Intersection_Approach_2_Nested_Loops
     intersection_result->next_free_array = object->next_free_array;
     intersection_result->intersection_data = true;
 
-    // Array, welches erkennt, ob in der Schnittmenge ein Wert mehrfach hinzugefuegt werden soll
+    // Array, which display, if a value is already in the intersection
     size_t size_multiple_guard = (data_length > MULTIPLE_GUARD_ALLOC_STEP) ? data_length : MULTIPLE_GUARD_ALLOC_STEP;
 
     _Bool* multiple_guard = (_Bool*) CALLOC(size_multiple_guard, sizeof (_Bool));
     ASSERT_ALLOC(multiple_guard, "Cannot create the multiple guard !", size_multiple_guard * sizeof (_Bool));
 
-    // Fuer den ersten Versuch die naive Variant fuer die Bestimmung der Schnittmenge
+
     for (size_t i = 0; i < object->number_of_arrays; ++ i)
     {
         memset(multiple_guard, '\0', size_multiple_guard * sizeof (_Bool));
 
         for (size_t i2 = 0; i2 < object->arrays_lengths [i]; ++ i2)
         {
-            // Jedes Element des Arrays mit jedem Element der Testdaten miteinander vergleichen
+            // Compare everyone with everyone
             for (size_t i3 = 0; i3 < data_length; ++ i3)
             {
                 if (object->data [i][i2] == data [i3])
                 {
-                    // Reicht der Speicher aus ?
+                    // Has the array, which display, if a value is already in the intersection, enough memory ?
                     if (data [i3] > size_multiple_guard)
                     {
                         size_multiple_guard += MULTIPLE_GUARD_ALLOC_STEP;
@@ -189,16 +218,21 @@ Intersection_Approach_2_Nested_Loops
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Schnittmenge durch eine vorherige aufsteigende Sortierung der Elemente in der Woerterliste. Anschliessend
- * werden die Elemente, die in beiden Mengen vorkommen, mittels der binaeren Suche gesucht.
+ * @brief Determine intersections with a previous ascending sort of the elements ih the Document_Word_List. Afterwards
+ * for the search process the binary search will be used.
  *
- * Algorithmus fuer die Sortierung: QSort
+ * Algorithm for the sorting: QSort (https://en.wikipedia.org/wiki/Qsort)
  *
- * @param[in] object Woerterliste
- * @param[in] data Daten, die fuer die Schnittmengenbildung gegen der Woerterliste verwendet wird
- * @param[in] data_length Groesse der Daten
+ * Asserts:
+ *      object != NULL
+ *      data != NULL
+ *      data_length = 0
  *
- * @return Neues dynamisch erzeugtes Objekt, welches die Schnittmenge zu jeder Untermenge der Woerterliste enthaelt
+ * @param[in] object Document_Word_List
+ * @param[in] data Data, that will be used for the intersection with the Document_Word_List object
+ * @param[in] data_length Number of the elements in the data
+ *
+ * @return New dynamic object containing the intersection result to each subset of the word list
  */
 extern struct Document_Word_List*
 Intersection_Approach_QSort_And_Binary_Search
@@ -208,13 +242,16 @@ Intersection_Approach_QSort_And_Binary_Search
     const size_t data_length
 )
 {
+    ASSERT_MSG(object != NULL, "Document_Word_List is NULL !");
+    ASSERT_MSG(data != NULL, "Data is NULL !");
+    ASSERT_MSG(data_length > 0, "Length of the data is 0 !");
+
     struct Document_Word_List* intersection_result = Init_Intersection (object);
 
-    // Alle Daten der Woerter-Liste aufsteigend sortieren
+    // Sort all data ascending with the QSort algorithm
     for (size_t i = 0; i < object->number_of_arrays; ++ i)
     {
         qsort (object->data [i], object->arrays_lengths [i], sizeof (uint_fast32_t), Compare_Function);
-        //Heapsort(object->data [i], object->arrays_lengths [i]);
     }
 
     Find_Intersection_Data (intersection_result, object, data, data_length);
@@ -225,16 +262,21 @@ Intersection_Approach_QSort_And_Binary_Search
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Schnittmenge durch eine vorherige aufsteigende Sortierung der Elemente in der Woerterliste. Anschliessend
- * werden die Elemente, die in beiden Mengen vorkommen, mittels der binaeren Suche gesucht.
+ * @brief Determine intersections with a previous ascending sort of the elements ih the Document_Word_List. Afterwards
+ * for the search process the binary search will be used.
  *
- * Algorithmus fuer die Sortierung: HeapSort
+ * Algorithm for the sorting: Heapsort (https://en.wikipedia.org/wiki/Heapsort)
  *
- * @param[in] object Woerterliste
- * @param[in] data Daten, die fuer die Schnittmengenbildung gegen der Woerterliste verwendet wird
- * @param[in] data_length Groesse der Daten
+ * Asserts:
+ *      object != NULL
+ *      data != NULL
+ *      data_length = 0
  *
- * @return Neues dynamisch erzeugtes Objekt, welches die Schnittmenge zu jeder Untermenge der Woerterliste enthaelt
+ * @param[in] object Document_Word_List
+ * @param[in] data Data, that will be used for the intersection with the Document_Word_List object
+ * @param[in] data_length Number of the elements in the data
+ *
+ * @return New dynamic object containing the intersection result to each subset of the word list
  */
 extern struct Document_Word_List*
 Intersection_Approach_HeapSort_And_Binary_Search
@@ -244,12 +286,15 @@ Intersection_Approach_HeapSort_And_Binary_Search
     const size_t data_length
 )
 {
+    ASSERT_MSG(object != NULL, "Document_Word_List is NULL !");
+    ASSERT_MSG(data != NULL, "Data is NULL !");
+    ASSERT_MSG(data_length > 0, "Length of the data is 0 !");
+
     struct Document_Word_List* intersection_result = Init_Intersection (object);
 
-    // Alle Daten der Woerter-Liste aufsteigend sortieren
+    // Sort all data ascending with the Heapsort algorithm
     for (size_t i = 0; i < object->number_of_arrays; ++ i)
     {
-        // qsort (object->data [i], object->arrays_lengths [i], sizeof (uint_fast32_t), Compare_Function);
         Heapsort(object->data [i], object->arrays_lengths [i]);
     }
 
@@ -261,11 +306,14 @@ Intersection_Approach_HeapSort_And_Binary_Search
 //=====================================================================================================================
 
 /**
- * @brief Uebergebene Woerterliste kopieren und initialisieren.
+ * @brief Create a copy of the submitted Document_Word_List and initialize them.
  *
- * @param[in] object Originale Woerterliste
+ * Asserts:
+ *      object != NULL
  *
- * @param Initialisierte Kopie der uebergebenen Woerterliste
+ * @param[in] object Original Document_Word_List
+ *
+ * @return Pointer to the new initialized Document_Word_List
  */
 static struct Document_Word_List*
 Init_Intersection
@@ -273,6 +321,8 @@ Init_Intersection
         const struct Document_Word_List* const object
 )
 {
+    ASSERT_MSG(object != NULL, "Document_Word_List is NULL !");
+
     struct Document_Word_List* intersection_result = Create_Document_Word_List (object->number_of_arrays,
             object->max_array_length);
     ASSERT_ALLOC(intersection_result, "Cannot create new Document Word List for intersection !",
@@ -287,12 +337,21 @@ Init_Intersection
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Die eigentliche Schnittmengenberechnung durchfuehren.
+ * @brief Start a intersection process.
  *
- * @param[in] intersection_result Ergebnisspeicher; hier befinden sich am Ende die Schnittmengen
- * @param[in] object Originale Woerterliste
- * @param[in] data Daten, die fuer die Betimmung der Schnittmenge zur Woerterliste verwendet werden
- * @param[in] data_length Laenge der Daten
+ * It is necessary to prealloc the intersection result. Also there will be no realloc process. So the size of the data
+ * needs also be suitable.
+ *
+ * Asserts:
+ *      intersection_result != NULL
+ *      object != NULL
+ *      data != NULL
+ *      data_length > 0
+ *
+ * @param[in] intersection_result Return memory; here the results of the intersection can be found
+ * @param[in] object Original Document_Word_List
+ * @param[in] data Data, that will be used for the intersection with the Document_Word_List object
+ * @param[in] data_length Number of the elements in the data
  */
 static void
 Find_Intersection_Data
@@ -303,7 +362,12 @@ Find_Intersection_Data
         const size_t data_length
 )
 {
-    // Array, welches erkennt, ob in der Schnittmenge ein Wert mehrfach hinzugefuegt werden soll
+    ASSERT_MSG(intersection_result != NULL, "Memory for the intersection result is NULL !");
+    ASSERT_MSG(object != NULL, "Original Document_Word_List is NULL !");
+    ASSERT_MSG(data != NULL, "Data is NULL !");
+    ASSERT_MSG(data_length > 0, "Data length is 0 !");
+
+    // Array, which display, if a value is already in the intersection
     size_t size_multiple_guard = MULTIPLE_GUARD_ALLOC_STEP;
 
     _Bool* multiple_guard = (_Bool*) CALLOC(size_multiple_guard, sizeof (_Bool));
@@ -313,12 +377,12 @@ Find_Intersection_Data
     {
         memset(multiple_guard, '\0', size_multiple_guard * sizeof (_Bool));
 
-        // Binaere Suche durchfuehren
+        // Execute the binary search
         for (size_t i2 = 0; i2 < data_length; ++ i2)
         {
             if (Binary_Search(object->data[i], object->arrays_lengths [i], data [i2]) == true)
             {
-                // Reicht der Speicher aus ?
+                // Has the array, which display, if a value is already in the intersection, enough memory ?
                 if (data [i2] > size_multiple_guard)
                 {
                     size_multiple_guard += MULTIPLE_GUARD_ALLOC_STEP;
@@ -345,12 +409,12 @@ Find_Intersection_Data
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Vergleichsfunktion fuer qsort()
+ * @brief Compare function for qsort()
  *
- * @param[in] a Wert 1
- * @param[in] b Wert 2
+ * @param[in] a First value
+ * @param[in] b Second value
  *
- * @return -1, falls a < b; +1 falls a > b; sonst 0
+ * @return -1, if a < b; +1 if a > b; else 0
  */
 static int
 Compare_Function
@@ -370,15 +434,19 @@ Compare_Function
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Binaere Suche durchfuehren.
+ * @brief Execute binary search.
  *
- * ! Diese Funktion setzt voraus, dass die Daten bereits aufsteigend sortiert sind !
+ * ! This function excepts, that the data is already ascending sorted !
  *
- * @param[in] data Datenmenge, in der gesucht wird
- * @param[in] data_size Groesse der Daten
- * @param[in] search_value Zu suchender Wert
+ * Asserts:
+ *      data != NULL
+ *      data_size > 0
  *
- * @return true, falls der Wert in der Datenmenge ist; ansonsten false
+ * @param[in] data Dta in which is searched
+ * @param[in] data_size Size of the data
+ * @param[in] search_value Value to be searched
+ *
+ * @return true, if the value is in the dataset, else false
  */
 static _Bool
 Binary_Search
@@ -393,14 +461,14 @@ Binary_Search
 
     _Bool result = false;
 
-    // Diese Werte MUESSEN mit Vorzeichen sein, da in machen Faellen right -1 annimmt !
+    // This values must be signed values. In some cases right can get the value -1 !
     int_fast32_t left = 0;
     int_fast32_t right = (int_fast32_t) (data_size - 1);
 
     while (left <= right)
     {
-        // Hier wird der moegliche negative Wert fuer right durch die Ganzzahldivision auf -0 ausgewertet
-        // Ausdruck dieses Sonderfalls: 0 + ((-1 + 0) / 2) => 0 + (-0) => 0
+        // Here the possible negative value for the variable "right" is evaluated to -0 by integer division
+        // Statement for this special case: 0 + ((-1 + 0) / 2) => 0 + (-0) => 0
         const int_fast32_t middle = left + ((right - left) / 2);
         if (data [middle] == search_value)
         {
@@ -426,13 +494,18 @@ Binary_Search
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Implementation of the sorting algorithm "HeapSort".
  * @brief Implementierung des Sortierungsalgorithmus "HeapSort".
  *
- * Diese Implementierung wurde von der Beispiels-Implementierung auf Wikipedia abgeleitet.
+ * This implementation was derived from the example implementation on Wikipedia.
  * https://de.wikipedia.org/wiki/Heapsort#Implementierung
  *
- * @param[in] data Daten, die sortiert werden
- * @param[in] data_size Groesse der Daten
+ * Asserts:
+ *      data != NULL
+ *      data_size > 0
+ *
+ * @param[in] data Data which will be sorted (ascending)
+ * @param[in] data_size Size of the data
  */
 static void
 Heapsort

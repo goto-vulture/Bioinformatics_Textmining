@@ -18,21 +18,33 @@
 
 
 
-// Maximale Laenge eines Tokens (inkl. Terminator-Symbol)
+/**
+ * @brief Maximum length of a token (inkl. the terminator byte)
+ *
+ * The value is a approximate order of magnitude and could be change in the future.
+ */
 #ifndef MAX_TOKEN_LENGTH
 #define MAX_TOKEN_LENGTH 32
 #else
 #error "The macro \"MAX_TOKEN_LENGTH\" is already defined !"
 #endif /* MAX_TOKEN_LENGTH */
 
-// Allokationsgroesse eines Tokens-Objektes, wenn der Speicher nicht mehr ausreicht
+/**
+ * @brief Number of tokens in a Token_List
+ *
+ * It is also the allocation step size, if a reallocation is necessary.
+ */
 #ifndef TOKENS_ALLOCATION_STEP_SIZE
 #define TOKENS_ALLOCATION_STEP_SIZE 350
 #else
 #error "The macro \"TOKENS_ALLOCATION_STEP_SIZE\" is already defined !"
 #endif /* TOKENS_ALLOCATION_STEP_SIZE */
 
-// Allokationsgroesse des Token_Containers, wenn der Speicher nicht mehr ausreicht
+/**
+ * @brief Number of Token_Lists in a Token_List_Container
+ *
+ * It is also the allocation step size, if a reallocation is necessary.
+ */
 #ifndef TOKEN_CONTAINER_ALLOCATION_STEP_SIZE
 #define TOKEN_CONTAINER_ALLOCATION_STEP_SIZE 100
 #else
@@ -40,23 +52,30 @@
 #endif /* TOKEN_CONTAINER_ALLOCATION_STEP_SIZE */
 
 #ifndef READ_FILE_BUFFER_SIZE
-#define READ_FILE_BUFFER_SIZE 100000
+#define READ_FILE_BUFFER_SIZE 100000 ///< Buffer size for reading files
 #else
 #error "The macro \"READ_FILE_BUFFER_SIZE\" is already defined !"
 #endif /* READ_FILE_BUFFER_SIZE */
 
 /**
- * @brief Eine Zeile aus einer bereits geoeffneten Datei lesen.
+ * @brief Read a line from a already opened file.
  *
- * Es wird der Zeiger auf den Puffer zurueckgegeben, um so Fehler (z.B. durch NULL) anzeigen zu koennen.
+ * The return value is a pointer to the buffer. In this way errors can be shown (e.g. with a NULL pointer).
+ *
+ * Asserts:
+ *      token_list_container != NULL
+ *      file != NULL
+ *      file_buffer != NULL
+ *      buffer_length > 0
+ *      next_char_in_buffer < buffer_length
  *
  * @param[in] token_list_container Token_List_Container
- * @param[in] file FILE-Objekt auf die bereits geoeffnete Datei
- * @param[in] file_buffer Benutzerdefinierter Puffer fuer das Lesen der Datei
- * @param[in] buffer_length Groesse des Puffers
- * @param[in] next_char_in_buffer Index des naechsten freien Zeichen im Puffer
+ * @param[in] file FILE object of a already opened file
+ * @param[in] file_buffer User defined buffer for file reading
+ * @param[in] buffer_length Size of the buffer
+ * @param[in] next_char_in_buffer Index to the next free char in the buffer
  *
- * @return Zeiger auf den Puffer
+ * @return Pointer to the buffer
  */
 static char*
 Read_Line
@@ -69,32 +88,41 @@ Read_Line
 );
 
 /**
- * @brief Tokens aus einem Puffer extrahieren und dem Token_List_Container hinzufuegen.
+ * @brief Extract tokens from a buffer and add them to a Token_List_Container.
  *
- * Hinweis: Das Ermitteln der Tokens ist sehr rudimentaer und NICHT fuer die Verwendung geeignet ! Bisher wurde eine
- * schmandige und sehr einfache Variante implementiert, um die Entwicklung fortfuehren zu koennen !
+ * Note: The parsing process to determine the tokens is simple and rudimentary and NOT usable for real datasets. Current
+ * this very simple implementation is used to focus the development to the important parts.
+ *
+ * The parsing process can be outsourced in e.g. python scripts.
+ *
+ * Asserts:
+ *      token_list_container != NULL
+ *      file_buffer != NULL
+ *      buffer_length > 0
+ *      used_char_in_buffer < buffer_length
  *
  * @param[in] token_list_container Token_List_Container
- * @param[in] file_buffer Datei-Puffer mit den Inhalt der Daten, die verarbeitet werden sollen
- * @param[in] next_char_in_buffer Index des naechsten freien Zeichen im Puffer
+ * @param[in] file_buffer User defined buffer with tokens
+ * @param[in] buffer_length Size of the buffer
  */
 static void
 Extract_Tokens_From_Line
 (
         struct Token_List_Container* const restrict token_list_container,
         const char* const restrict file_buffer,
+        const size_t buffer_length,
         const size_t used_char_in_buffer
 );
 
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Aus den Inhalt einer Datei die Tokens einlesen.
+ * @brief Create the token list from a file content.
  *
- * Aktuell ist der "Parsingmechanismus" sehr simpel, sodass die Eingabe JSON Dateien bereits vorverarbeitet werden
- * muessen.
+ * Actual the "parsing mechanism" is very simple. Therefore the program execpts, that the JSON file is already
+ * preprocessed.
  *
- * Ein moegliches Python-Skript, welches die passende Ausgabe aus einer JSON-Datei erzeugt:
+ * A possible python script for a suitable preprocessed JSON file:
  *
     import json
 
@@ -109,12 +137,17 @@ Extract_Tokens_From_Line
 
     f.close()
 
- * Das Ziel ist, dass das Programm direkt mit JSON-Dateien arbeiten kann. Da dies aber nichts mit der
- * Grundfunktionalitaet zu tun hat, wird dies nach hinten verschoben.
  *
- * @param[in] file_name Vorverarbeitete Datei, aus denen die Tokens geladen werden
+ * The goal of the program is to work directly with JSON files. But this is for the core functionality not necessary.
+ * Therefore the priority is not on this feature.
  *
- * @return Adresse auf ein neuen dynamisch erzeugten Token_List_Container
+ * Asserts:
+ *      file_name != NULL
+ *      strlen(file_name) > 0
+ *
+ * @param[in] file_name Preprocessed file
+ *
+ * @return Address to the new dynamic Token_List_Container
  */
 extern struct Token_List_Container*
 Create_Token_Container_From_File
@@ -123,19 +156,20 @@ Create_Token_Container_From_File
 )
 {
     ASSERT_MSG(file_name != NULL, "File name is NULL !");
+    ASSERT_MSG(strlen(file_name) > 0, "File name is empty !");
 
-    // Den (aeusseren) Container erzeugen
+    // Create the (outer) container
     struct Token_List_Container* new_container =
             (struct Token_List_Container*) CALLOC(1, sizeof (struct Token_List_Container));
     ASSERT_ALLOC(new_container, "Cannot create new Token_Container !", 1 * sizeof (struct Token_List_Container));
 
-    // Die inneren Container erzeugen
+    // Create the inner container
     new_container->allocated_token_container = TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
     new_container->token_lists = (struct Token_List*) CALLOC(new_container->allocated_token_container, sizeof (struct Token_List));
     ASSERT_ALLOC(new_container->token_lists, "Cannot create new Token objects !", new_container->allocated_token_container *
             sizeof (struct Token_List));
 
-    // Speicher fuer die inneren Container erzeugen
+    // Allocate memory for the inner container
     for (size_t i = 0; i < new_container->allocated_token_container; ++ i)
     {
         new_container->token_lists [i].data = (char*) CALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE, sizeof (char));
@@ -163,14 +197,14 @@ Create_Token_Container_From_File
 
         ++ line_counter;
 
-        // Muessen neue Token_Container erzeugt werden ?
+        // Is it necessary to realloc/increase the number of Token_Container ?
         if ((line_counter % TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) == 0)
         {
             static size_t token_container_realloc_counter = 0;
             ++ token_container_realloc_counter;
             const size_t old_allocated_token_container = new_container->allocated_token_container;
 
-            // Die aeusseren Token_Container Objekte anpassen (Anzahl erhoehen)
+            // Adjust the number of Token_List object
             struct Token_List* temp_ptr = (struct Token_List*) REALLOC(new_container->token_lists,
                     (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
             ASSERT_ALLOC(temp_ptr, "Cannot reallocate memory for Token_Container objects !",
@@ -180,7 +214,7 @@ Create_Token_Container_From_File
             new_container->token_lists = temp_ptr;
             new_container->allocated_token_container = old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
 
-            // Fuer die neuen Objekte neue Tokens-Objekte erzeugen
+            // Create memory for the new Token_List objects
             for (size_t i = old_allocated_token_container; i < new_container->allocated_token_container; ++ i)
             {
                 new_container->token_lists [i].data = (char*) MALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
@@ -201,6 +235,7 @@ Create_Token_Container_From_File
         (
                 new_container,
                 file_buffer,
+                READ_FILE_BUFFER_SIZE * sizeof (char),
                 strlen(file_buffer)
         );
     }
@@ -215,9 +250,12 @@ Create_Token_Container_From_File
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Token_List_Container loeschen.
+ * @brief Delete a dynamic allocated Delete_Token_Container object.
  *
- * @param[in] object Container, der geloescht wird
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] object Delete_Token_Container object
  */
 extern void
 Delete_Token_Container
@@ -225,9 +263,9 @@ Delete_Token_Container
         struct Token_List_Container* object
 )
 {
-    ASSERT_MSG(object != NULL, "Token_Container is NULL !");
+    ASSERT_MSG(object != NULL, "Token_List_Container is NULL !");
 
-    // Von innen nach aussen die Elemente loeschen
+    // Delete from inner to the outer objects
     for (size_t i = 0; i < object->allocated_token_container; ++ i)
     {
         if (&(object->token_lists [i]) != NULL)
@@ -245,17 +283,22 @@ Delete_Token_Container
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Read a specific token from the container.
  * @brief Ein bestimmtes Token aus dem Container auslesen.
  *
- * Damit die Speicherverwaltung moeglichst effizient ist, wird der Speicher fuer die innenliegenden Token_List-Objekte
- * in einem Block alloziert. Dies macht die Ermittlung eines spezifischen Objektes etwas aufwaendiger. Daher diese
- * Funktion
+ * For performance reasons, the memory for each token list is allocated as one memory block. Therefore the address
+ * calculation is more complex. This is the reason for this function.
  *
- * @param[in] container Eingabecontainer
- * @param[in] index_token_list Index des Token_List-Objektes
- * @param[in] index_token_in_token_list Index des Tokens im durch den 2. Parameter angegebenen Token_List-Objektes
+ * Asserts:
+ *      container != NULL
+ *      container->next_free_element < index_token_list
+ *      index_token_in_token_list < container->token_lists [index_token_list].next_free_element
  *
- * @return Zeiger auf den Beginn des Tokens (Token ist Nullterminiert !)
+ * @param[in] container Token_List_Container object
+ * @param[in] index_token_list Index of the Token_List object
+ * @param[in] index_token_in_token_list Index of the token in the Token_List object
+ *
+ * @return Poiner at the begin of the token. (token is terminated with a null byte !)
  */
 extern char*
 Get_Token_From_Token_Container
@@ -280,11 +323,14 @@ Get_Token_From_Token_Container
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Groesse des Token_List_Containers (inkl. dynamisch allokierten Speicher) in Byte zurueckgeben.
+ * @brief Determine the full memory usage in byte.
  *
- * @param[in] container Token_List_Container
+ * Asserts:
+ *      container != NULL
  *
- * @return Groesse des Token_List_Containers (inkl. dynamisch allokierten Speicher) in Byte
+ * @param[in] container Token_List_Container object
+ *
+ * @return Size of the full object in bytes
  */
 extern size_t
 Get_Token_Container_Size
@@ -292,6 +338,8 @@ Get_Token_Container_Size
         const struct Token_List_Container* const container
 )
 {
+    ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
+
     size_t result = 0;
 
     const size_t max_token_size = container [0].token_lists->max_token_length;
@@ -309,10 +357,16 @@ Get_Token_Container_Size
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Inhalt eines Token_List-Objektes ausgeben.
+ * @brief Print the content of a Token_List object.
  *
- * @param[in] container Token_List_Container
- * @param[in] index_token_list Index des Token_List-Objektes im uebergebenen Token_List_Container
+ * This is only for debugging purposes useful.
+ *
+ * Asserts:
+ *      container != NULL
+ *      container->next_free_element < index_token_list
+ *
+ * @param[in] container Token_List_Container object
+ * @param[in] index_token_list Index of the Token_List object
  */
 extern void
 Show_Selected_Token_Container
@@ -321,6 +375,10 @@ Show_Selected_Token_Container
         const size_t index_token_list
 )
 {
+    ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
+    ASSERT_FMSG(container->next_free_element < index_token_list, "Index for the Token_List object is invalid ! Max. "
+            "valid: %" PRIuFAST32 "; Got %zu !", container->next_free_element - 1, index_token_list);
+
     const size_t token_size = container->token_lists [index_token_list].max_token_length;
 
     printf ("Container: %zu\n", index_token_list);
@@ -336,11 +394,14 @@ Show_Selected_Token_Container
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Anzahl alle Tokens im gesamten Token_List_Container ermitteln und zurueckgeben.
+ * @brief Count all tokens in the whole Token_List_Container object.
  *
- * @param[in] container Token_List_Container
+ * Asserts:
+ *      container != NULL
  *
- * @return Anzahl aller Tokens im gesamten Token_List_Container
+ * @param[in] container Token_List_Container object
+ *
+ * @return Counted number of whole tokens in the Token_List_Container object
  */
 extern uint_fast32_t
 Count_All_Tokens_In_Token_Container
@@ -348,6 +409,8 @@ Count_All_Tokens_In_Token_Container
         const struct Token_List_Container* const container
 )
 {
+    ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
+
     uint_fast32_t result = 0;
 
     for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
@@ -361,11 +424,14 @@ Count_All_Tokens_In_Token_Container
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Die Laenge des laengsten Token_List-Containers ermitteln und zurueckgeben.
+ * @brief Determine the longest Token_List object and return the value.
  *
- * @param[in] container Token_List_Container
+ * Asserts:
+ *      container != NULL
  *
- * @return Laenge des laengsten Token_List-Containers
+ * @param[in] container Token_List_Container object
+ *
+ * @return Length of the longest Token_List object
  */
 extern size_t
 Get_Lengh_Of_Longest_Token_Container
@@ -373,6 +439,8 @@ Get_Lengh_Of_Longest_Token_Container
         const struct Token_List_Container* const container
 )
 {
+    ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
+
     size_t result = 0;
 
     for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
@@ -389,17 +457,24 @@ Get_Lengh_Of_Longest_Token_Container
 //=====================================================================================================================
 
 /**
- * @brief Eine Zeile aus einer bereits geoeffneten Datei lesen.
+ * @brief Read a line from a already opened file.
  *
- * Es wird der Zeiger auf den Puffer zurueckgegeben, um so Fehler (z.B. durch NULL) anzeigen zu koennen.
+ * The return value is a pointer to the buffer. In this way errors can be shown (e.g. with a NULL pointer).
+ *
+ * Asserts:
+ *      token_list_container != NULL
+ *      file != NULL
+ *      file_buffer != NULL
+ *      buffer_length > 0
+ *      next_char_in_buffer < buffer_length
  *
  * @param[in] token_list_container Token_List_Container
- * @param[in] file FILE-Objekt auf die bereits geoeffnete Datei
- * @param[in] file_buffer Benutzerdefinierter Puffer fuer das Lesen der Datei
- * @param[in] buffer_length Groesse des Puffers
- * @param[in] next_char_in_buffer Index des naechsten freien Zeichen im Puffer
+ * @param[in] file FILE object of a already opened file
+ * @param[in] file_buffer User defined buffer for file reading
+ * @param[in] buffer_length Size of the buffer
+ * @param[in] next_char_in_buffer Index to the next free char in the buffer
  *
- * @return Zeiger auf den Puffer
+ * @return Pointer to the buffer
  */
 static char*
 Read_Line
@@ -412,6 +487,7 @@ Read_Line
 )
 {
     ASSERT_MSG(token_list_container != NULL, "Token_Container is NULL !");
+    ASSERT_MSG(file != NULL, "FILE is NULL !");
     ASSERT_MSG(file_buffer != NULL, "file_buffer is NULL !");
     ASSERT_MSG(buffer_length > 0, "buffer_length is 0 !");
     ASSERT_FMSG(next_char_in_buffer < buffer_length, "Next char buffer index (%zu) is equal/larger than the buffer "
@@ -431,7 +507,7 @@ Read_Line
         //        strlen(file_buffer), sum_char_read);
     }
 
-    // Reicht die Groesse des Puffers aus ? Bzw. konnte die aktuelle Zeile komplett gelesen werden
+    // Is the size of the buffer large enough ? Or rather was it possible to read the full line ?
     //ASSERT_FMSG(file_buffer [buffer_length - 1] != '\0', "File buffer length %zu is not large enough to read the full "
     //        "line %" PRIuFAST32 " !", buffer_length, current_file_line);
 
@@ -441,26 +517,38 @@ Read_Line
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Tokens aus einem Puffer extrahieren und dem Token_List_Container hinzufuegen.
+ * @brief Extract tokens from a buffer and add them to a Token_List_Container.
  *
- * Hinweis: Das Ermitteln der Tokens ist sehr rudimentaer und NICHT fuer die Verwendung geeignet ! Bisher wurde eine
- * schmandige und sehr einfache Variante implementiert, um die Entwicklung fortfuehren zu koennen !
+ * Note: The parsing process to determine the tokens is simple and rudimentary and NOT usable for real datasets. Current
+ * this very simple implementation is used to focus the development to the important parts.
+ *
+ * The parsing process can be outsourced in e.g. python scripts.
+ *
+ * Asserts:
+ *      token_list_container != NULL
+ *      file_buffer != NULL
+ *      buffer_length > 0
+ *      used_char_in_buffer < buffer_length
  *
  * @param[in] token_list_container Token_List_Container
- * @param[in] file_buffer Datei-Puffer mit den Inhalt der Daten, die verarbeitet werden sollen
- * @param[in] next_char_in_buffer Index des naechsten freien Zeichen im Puffer
+ * @param[in] file_buffer User defined buffer with tokens
+ * @param[in] buffer_length Size of the buffer
+ * @param[in] next_char_in_buffer Index to the next free char in the buffer
  */
 static void
 Extract_Tokens_From_Line
 (
         struct Token_List_Container* const restrict token_list_container,
         const char* const restrict file_buffer,
+        const size_t buffer_length,
         const size_t used_char_in_buffer
 )
 {
     ASSERT_MSG(token_list_container != NULL, "Token_Container is NULL !");
     ASSERT_MSG(file_buffer != NULL, "file_buffer is NULL !");
-    ASSERT_MSG(used_char_in_buffer > 0, "used_char_in_buffer is 0 !");
+    ASSERT_MSG(buffer_length > 0, "buffer length is 0 !");
+    ASSERT_FMSG(used_char_in_buffer < buffer_length, "Used char buffer index (%zu) is equal/larger than the buffer "
+            "length (%zu) !", used_char_in_buffer, buffer_length);
 
     if (used_char_in_buffer <= 2) { return; }
 
@@ -472,7 +560,7 @@ Extract_Tokens_From_Line
                 token_list_container->token_lists [token_list_container->next_free_element].next_free_element;
         struct Token_List* current_tokens_obj = &(token_list_container->token_lists [token_list_container->next_free_element]);
 
-        // Wird weiterer Speicher fuer die neuen Tokens benoetigt ?
+        // Here the same question: Is more memory for the new tokens necessary ?
         if (next_free_element_in_tokens >= current_tokens_obj->allocated_tokens)
         {
             static size_t tokens_realloc_counter = 0;
@@ -495,7 +583,7 @@ Extract_Tokens_From_Line
         }
 
 
-        // Beginn des naechsten Tokens suchen
+        // Search the begin of the next token
         while (file_buffer [file_buffer_cursor] != '\'' && file_buffer [file_buffer_cursor] != '\"')
         {
             ++ file_buffer_cursor;
@@ -506,7 +594,7 @@ Extract_Tokens_From_Line
         }
         ++ file_buffer_cursor;
 
-        // Das Ende des Tokens suchen
+        // Search the end of the current token
         size_t end_token = file_buffer_cursor;
         while (file_buffer [end_token] != '\'' && file_buffer [end_token] != '\"')
         {
@@ -518,7 +606,8 @@ Extract_Tokens_From_Line
         }
         const size_t token_length = end_token - file_buffer_cursor;
 
-        // Alle Tokens, die kleiner als 3 Zeichen sind, werden uebersprungen
+        // All tokens smaller than 3 characters will be skipped. The size is adjustable and will be skipped tokens like
+        // 'a', 'or', etc. -> Tokens without usable information
         if (token_length < 2)
         {
             file_buffer_cursor = end_token + 1;
