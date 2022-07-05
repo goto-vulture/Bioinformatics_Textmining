@@ -557,12 +557,15 @@ static cJSON_bool print_number(const cJSON * const item, printbuffer * const out
         return false;
     }
 
+
     /* This checks for NaN and Infinity */
     if (isnan(d) || isinf(d))
     {
         length = sprintf((char*)number_buffer, "null");
     }
-	else if(d == (double)item->valueint)
+	//else if(d == (double)item->valueint)
+    // It's better to use this comparison, because item->valueint is before the cast an integer value !
+    else if((int) d == item->valueint)
 	{
 		length = sprintf((char*)number_buffer, "%d", item->valueint);
 	}
