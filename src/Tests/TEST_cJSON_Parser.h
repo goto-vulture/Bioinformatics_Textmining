@@ -18,7 +18,11 @@ extern "C"
 
 
 
-// ...
+extern void TEST_cJSON_Parse_JSON_Fragment (void);
+
+extern void TEST_cJSON_Get_Token_Array_From_JSON_Fragment (void);
+
+extern void TEST_cJSON_Parse_Full_JSON_File (void);
 
 
 
