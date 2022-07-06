@@ -32,6 +32,7 @@ extern const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION; ///< Additional 
 
 extern char* GLOBAL_INPUT_FILE; ///< Input file
 extern char* GLOBAL_OUTPUT_FILE; ///< Output file
+extern _Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS; ///< Run all test functions ?
 
 
 

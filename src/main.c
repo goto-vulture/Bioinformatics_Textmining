@@ -104,7 +104,16 @@
 #include "Error_Handling/Assert_Msg.h"
 #include "Intersection_Approaches.h"
 
+#include "Tests/tinytest.h"
+#include "Tests/TEST_cJSON_Parser.h"
 
+
+
+static void
+Run_All_Test_Functions
+(
+        void
+);
 
 //=====================================================================================================================
 
@@ -129,6 +138,10 @@ int main (const int argc, const char* argv [])
             OPT_STRING('i', "input_file", &GLOBAL_INPUT_FILE, "Eingabedatei", NULL, 0, 0),
             OPT_STRING('o', "output_file", &GLOBAL_OUTPUT_FILE, "Ausgabedatei", NULL, 0, 0),
 
+            OPT_GROUP("Debug- / Testfunktionen"),
+            OPT_BOOLEAN('T', "run_all_test_functions", &GLOBAL_RUN_ALL_TEST_FUNCTIONS,
+                    "Ausfuehrung aller Testfunktionen", NULL, 0, 0),
+
             OPT_END()
     };
 
@@ -139,7 +152,16 @@ int main (const int argc, const char* argv [])
     const int new_argc = argparse_parse(&argparse_object, argc, argv);
     (void) new_argc;
 
-    if (GLOBAL_INPUT_FILE == NULL && GLOBAL_OUTPUT_FILE == NULL)
+    if (GLOBAL_RUN_ALL_TEST_FUNCTIONS)
+    {
+        Run_All_Test_Functions();
+
+        // Show a test report
+        TEST_REPORT();
+
+        return (tt_fails != 0) ? EXIT_FAILURE : EXIT_SUCCESS;
+    }
+    else if (GLOBAL_INPUT_FILE == NULL && GLOBAL_OUTPUT_FILE == NULL)
     {
         GLOBAL_INPUT_FILE = (char*) "/home/am1/Downloads/Sachen/test_ebm_tokens.txt";
         GLOBAL_OUTPUT_FILE = (char*) "/home/am1/Downloads/Sachen/output.txt";
@@ -285,3 +307,14 @@ int main (const int argc, const char* argv [])
 }
 
 //=====================================================================================================================
+
+static void
+Run_All_Test_Functions
+(
+        void
+)
+{
+    RUN(TEST_cJSON_Parse_JSON_Fragment);
+
+    return;
+}

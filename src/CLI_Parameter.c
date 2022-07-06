@@ -31,3 +31,4 @@ const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION = "Additional program de
 // Variable for the parsed CLI Parameter.
 char* GLOBAL_INPUT_FILE     = NULL;
 char* GLOBAL_OUTPUT_FILE    = NULL;
+_Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS = false;
