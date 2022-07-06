@@ -14,6 +14,7 @@
 #include "../Error_Handling/Dynamic_Memory.h"
 #include "../Error_Handling/Assert_Msg.h"
 #include "tinytest.h"
+#include "../Print_Tools.h"
 
 
 
@@ -27,7 +28,10 @@ extern void TEST_cJSON_Parse_JSON_Fragment (void)
     {
             #include "./Test_Data/Expected_Result_1.txt"
     };
+    const size_t test_file_length = strlen (test_file_content);
     const size_t expected_results_file_length = strlen (expected_results_file_content);
+    PRINTF_FFLUSH("Test file size:            %5zu byte\n"
+                  "Expected result file size: %5zu byte\n",test_file_length, expected_results_file_length);
 
     // Allocate memory for the parsing result and execute the parsing process
     // For the sake of simplicity, I assume that the double length of the expected result is enough
