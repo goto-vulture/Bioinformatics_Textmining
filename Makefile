@@ -185,6 +185,9 @@ TOKEN_INT_MAPPING_C = ./src/Token_Int_Mapping.c
 
 CJSON_H = ./src/JSON_Parser/cJSON.h
 CJSON_C = ./src/JSON_Parser/cJSON.c
+
+TEST_CJSON_PARSER_H = ./src/Tests/TEST_cJSON_Parser.h
+TEST_CJSON_PARSER_C = ./src/Tests/TEST_cJSON_Parser.c
 ##### ##### ##### ENDE Uebersetzungseinheiten ##### ##### #####
 
 
@@ -207,11 +210,11 @@ endif
 	@echo
 	@echo Bioinformatics_Textmining build completed !
 
-$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o
+$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o
 	@echo
 	@echo Linking object files ...
 	@echo
-	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o
+	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o
 
 ##### BEGINN Die einzelnen Uebersetzungseinheiten #####
 main.o: $(MAIN_C)
@@ -275,6 +278,9 @@ Token_Int_Mapping.o: $(TOKEN_INT_MAPPING_C)
 
 cJSON.o: $(CJSON_C)
 	$(CC) $(CCFLAGS) -c $(CJSON_C)
+
+TEST_cJSON_Parser.o: $(TEST_CJSON_PARSER_C)
+	$(CC) $(CCFLAGS) -c $(TEST_CJSON_PARSER_C)
 ##### ENDE Die einzelnen Uebersetzungseinheiten #####
 
 # Alles wieder aufraeumen
