@@ -374,7 +374,10 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
                 parsing_result_mem_left --;
                 curr = curr->next;
             }
-            parsing_result --;
+            *parsing_result = '\n';
+            parsing_result ++;
+            ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
+                    "(Allocated size: %lu byte)", parsing_result_length);
             *parsing_result = '\0';
         }
 
