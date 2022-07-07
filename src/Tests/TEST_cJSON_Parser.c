@@ -385,8 +385,6 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
         json = NULL;
     }
 
-    printf("=====\n%s\n=====\n", parsing_result_orig_ptr);
-
     const time_t end = clock ();
     float seconds = (float)(end - start) / CLOCKS_PER_SEC;
     printf ("=> %f seconds\n", seconds);
