@@ -316,6 +316,7 @@ Run_All_Test_Functions
 {
     RUN(TEST_cJSON_Parse_JSON_Fragment);
     RUN(TEST_cJSON_Get_Token_Array_From_JSON_Fragment);
+    RUN(TEST_cJSON_Parse_Full_JSON_File);
 
     return;
 }
