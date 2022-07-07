@@ -138,6 +138,20 @@
  */
 int main (const int argc, const char* argv [])
 {
+    // Runtime check of the system
+    // This check is necessary, because a _Static_assert test is only available in C11
+#if __STDC_VERSION__ < 201112L
+    ASSERT_MSG(CHAR_BIT == 8, "A char must be exact 8 bit long !");
+    ASSERT_MSG(sizeof(size_t) >= 4, "The type \"size_t\" needs to be at least 4 byte wide !");
+    ASSERT_MSG(sizeof(time_t) >= 4, "The type \"time_t\" needs to be at least 4 byte wide !");
+    ASSERT_MSG(sizeof(int) >= 4, "The type \"int\" needs to be at least 4 byte wide !");
+    ASSERT_MSG(sizeof(long int) >= 8, "The type \"long int\" needs to be at least 4 byte wide !");
+    ASSERT_MSG(sizeof(void*) >= 4, "The type \"void*\" needs to be at least 4 byte wide !");
+    ASSERT_MSG(sizeof(float) >= 4, "The type \"float\" needs to be at least 4 byte wide !");
+    ASSERT_MSG(sizeof(double) >= 4, "The type \"double\" needs to be at least 4 byte wide !");
+    ASSERT_MSG(sizeof(long double) >= 4, "The type \"long double\" needs to be at least 4 byte wide !");
+#endif /* __STDC_VERSION__ < 201112L */
+
     // ===== ===== ===== BEGINN CLI-Parameter parsen ===== ===== =====
     struct argparse_option cli_options [] =
     {
