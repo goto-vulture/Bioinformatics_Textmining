@@ -77,6 +77,24 @@
     #else
         #error "The macro \"false\" is already defined !"
     #endif /* false */
+
+/*
+ * Is C11 available: Use _Statc_asserts to check the system before compiling the program.
+ */
+#elif __STDC_VERSION__ == 201112L
+    #include <limits.h>
+    #include <stddef.h>
+    #include <time.h>
+
+    _Static_assert(CHAR_BIT == 8, "A char must be exact 8 bit long !");
+    _Static_assert(sizeof(size_t) >= 4, "The type \"size_t\" needs to be at least 4 byte wide !");
+    _Static_assert(sizeof(time_t) >= 4, "The type \"time_t\" needs to be at least 4 byte wide !");
+    _Static_assert(sizeof(int) >= 4, "The type \"int\" needs to be at least 4 byte wide !");
+    _Static_assert(sizeof(long int) >= 8, "The type \"long int\" needs to be at least 4 byte wide !");
+    _Static_assert(sizeof(void*) >= 4, "The type \"void*\" needs to be at least 4 byte wide !");
+    _Static_assert(sizeof(float) >= 4, "The type \"float\" needs to be at least 4 byte wide !");
+    _Static_assert(sizeof(double) >= 4, "The type \"double\" needs to be at least 4 byte wide !");
+    _Static_assert(sizeof(long double) >= 4, "The type \"long double\" needs to be at least 4 byte wide !");
 #endif /* __STDC_VERSION__ */
 
 /**
