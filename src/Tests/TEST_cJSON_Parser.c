@@ -388,13 +388,13 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
     float seconds = (float)(end - start) / CLOCKS_PER_SEC;
     printf ("=> %f seconds\n", seconds);
 
-    const int cmp_result = strncmp (test_file_data, parsing_result, (size_t) test_file_length);
+    const int cmp_result = strncmp (test_file_data, parsing_result_orig_ptr, (size_t) test_file_length);
 
     ASSERT_EQUALS(0, cmp_result);
 
     FREE_AND_SET_TO_NULL(input_file_data);
     FREE_AND_SET_TO_NULL(test_file_data);
-    FREE_AND_SET_TO_NULL(parsing_result);
+    FREE_AND_SET_TO_NULL(parsing_result_orig_ptr);
 
     return;
 }
