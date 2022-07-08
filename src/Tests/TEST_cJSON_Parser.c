@@ -238,7 +238,11 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
     char* input_file_data = (char*) MALLOC ((long unsigned int) (input_file_length + 1) * sizeof (char));
     ASSERT_ALLOC(input_file_data, "Cannot allocate memory for reading the input file !",
             (input_file_length + 1) * sizeof (char));
-    fread (input_file_data, 1, (size_t) input_file_length, input_file); // Read full input file
+
+    // If there is a read error, less than input_file_length bytes are read
+    size_t mem_read = fread (input_file_data, 1, (size_t) input_file_length, input_file); // Read full input file
+    ASSERT_FMSG(mem_read == (size_t) input_file_length, "Error while reading the file \"%s\" !", input_file_name);
+
     input_file_data [input_file_length] = '\0';
     PRINTF_FFLUSH(" done ! (%ld byte)\n", input_file_length);
     FCLOSE_AND_SET_TO_NULL(input_file);
@@ -255,7 +259,11 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
     char* test_file_data = (char*) MALLOC ((long unsigned int) (test_file_length + 1) * sizeof (char));
     ASSERT_ALLOC(test_file_data, "Cannot allocate memory for reading the test file !",
             (test_file_length + 1) * sizeof (char));
-    fread (test_file_data, 1, (size_t) test_file_length, test_file); // Read full test file
+
+    // If there is a read error, less than input_file_length bytes are read
+    mem_read = fread (test_file_data, 1, (size_t) test_file_length, test_file); // Read full test file
+    ASSERT_FMSG(mem_read == (size_t) test_file_length, "Error while reading the file \"%s\" !", test_file_name);
+
     test_file_data [test_file_length] = '\0';
     PRINTF_FFLUSH(" done ! (%ld byte)\n", test_file_length);
     FCLOSE_AND_SET_TO_NULL(test_file);
