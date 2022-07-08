@@ -119,7 +119,7 @@ int main (const int argc, const char* argv [])
 
             OPT_GROUP("Hauptfunktionen"),
             OPT_STRING('i', "input", &GLOBAL_CLI_INPUT_FILE, "Erste Eingabedatei", NULL, 0, 0),
-            OPT_STRING('j', "input2", &GLOBAL_CLI_INPUT_FILE, "Zweite Eingabedatei", NULL, 0, 0),
+            OPT_STRING('j', "input2", &GLOBAL_CLI_INPUT_FILE2, "Zweite Eingabedatei", NULL, 0, 0),
             OPT_STRING('o', "output", &GLOBAL_CLI_OUTPUT_FILE, "Ausgabedatei", NULL, 0, 0),
 
             OPT_END()
