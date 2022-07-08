@@ -95,6 +95,7 @@
 #include "Tests/TEST_Document_Word_List.h"
 #include "CLI_Parameter.h"
 #include "argparse.h"
+#include "Print_Tools.h"
 
 
 
@@ -131,20 +132,35 @@ int main (const int argc, const char* argv [])
     argparse_describe(&argparse_object, GLOBAL_PROGRAM_DESCRIPTION, GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION);
     const int new_argc = argparse_parse(&argparse_object, argc, argv);
 
-    if (GLOBAL_CLI_INPUT_FILE != 0)
+    if (GLOBAL_CLI_INPUT_FILE != NULL)
     {
         printf ("Input file: \"%s\"\n", GLOBAL_CLI_INPUT_FILE);
         Check_CLI_Parameter_CLI_INPUT_FILE();
     }
-    if (GLOBAL_CLI_INPUT_FILE2 != 0)
+    else
+    {
+        PUTS_FFLUSH ("Missing first input file. Option: [-i / --input]");
+        exit(EXIT_FAILURE);
+    }
+    if (GLOBAL_CLI_INPUT_FILE2 != NULL)
     {
         printf ("Input file2: \"%s\"\n", GLOBAL_CLI_INPUT_FILE2);
         Check_CLI_Parameter_CLI_INPUT_FILE2();
     }
-    if (GLOBAL_CLI_OUTPUT_FILE != 0)
+    else
+    {
+        PUTS_FFLUSH ("Missing second input file. Option: [-j / --input2]");
+        exit(EXIT_FAILURE);
+    }
+    if (GLOBAL_CLI_OUTPUT_FILE != NULL)
     {
         printf ("Output file: \"%s\"\n", GLOBAL_CLI_OUTPUT_FILE);
         Check_CLI_Parameter_CLI_OUTPUT_FILE();
+    }
+    else
+    {
+        PUTS_FFLUSH ("Missing output file. Option: [-o / --output]");
+        exit(EXIT_FAILURE);
     }
     // ===== ===== ===== ENDE CLI-Parameter parsen ===== ===== =====
 
