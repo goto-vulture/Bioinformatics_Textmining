@@ -55,7 +55,7 @@ void Check_CLI_Parameter_CLI_INPUT_FILE (void)
 
     if (input_file == NULL)
     {
-        FPRINTF_FFLUSH (stderr, "Cannot open the first input file \"%s\" !", GLOBAL_CLI_INPUT_FILE);
+        FPRINTF_FFLUSH (stderr, "Cannot open the first input file \"%s\" !\n", GLOBAL_CLI_INPUT_FILE);
         exit(1);
     }
 
@@ -83,7 +83,7 @@ void Check_CLI_Parameter_CLI_INPUT_FILE2 (void)
 
     if (input_file == NULL)
     {
-        FPRINTF_FFLUSH (stderr, "Cannot open the second input file \"%s\" !", GLOBAL_CLI_INPUT_FILE2);
+        FPRINTF_FFLUSH (stderr, "Cannot open the second input file \"%s\" !\n", GLOBAL_CLI_INPUT_FILE2);
         exit(1);
     }
 
@@ -111,7 +111,7 @@ void Check_CLI_Parameter_CLI_OUTPUT_FILE (void)
 
     if (output_file == NULL)
     {
-        FPRINTF_FFLUSH (stderr, "Cannot open the output file \"%s\" !", GLOBAL_CLI_OUTPUT_FILE);
+        FPRINTF_FFLUSH (stderr, "Cannot open the output file \"%s\" !\n", GLOBAL_CLI_OUTPUT_FILE);
         exit(1);
     }
 
