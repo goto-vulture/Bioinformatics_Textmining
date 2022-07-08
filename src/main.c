@@ -131,22 +131,6 @@ int main (const int argc, const char* argv [])
     argparse_describe(&argparse_object, GLOBAL_PROGRAM_DESCRIPTION, GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION);
     const int new_argc = argparse_parse(&argparse_object, argc, argv);
 
-    // Wurden ueberhaupt ausreichend CLI-Parameter uebergeben ?
-    if (argc < 2)
-    {
-        puts ("Missing CLI parameter !");
-        puts ("At least an input file [-i / --input] and an output file [-o / --output] are expected !");
-
-        int current_string = 0;
-        while (GLOBAL_USAGES [current_string] != NULL)
-        {
-            printf ("%s\n", GLOBAL_USAGES [current_string]);
-            ++ current_string;
-        }
-        fflush(stdout);
-        exit(1);
-    }
-
     if (GLOBAL_CLI_INPUT_FILE != 0)
     {
         printf ("Input file: \"%s\"\n", GLOBAL_CLI_INPUT_FILE);
@@ -154,7 +138,7 @@ int main (const int argc, const char* argv [])
     }
     if (GLOBAL_CLI_INPUT_FILE2 != 0)
     {
-        printf ("Input file: \"%s\"\n", GLOBAL_CLI_INPUT_FILE2);
+        printf ("Input file2: \"%s\"\n", GLOBAL_CLI_INPUT_FILE2);
         Check_CLI_Parameter_CLI_INPUT_FILE2();
     }
     if (GLOBAL_CLI_OUTPUT_FILE != 0)
@@ -162,21 +146,7 @@ int main (const int argc, const char* argv [])
         printf ("Output file: \"%s\"\n", GLOBAL_CLI_OUTPUT_FILE);
         Check_CLI_Parameter_CLI_OUTPUT_FILE();
     }
-    if (new_argc != 0)
-    {
-        printf ("argc: %d\n", new_argc);
-        for (int i = 0; i < new_argc; ++ i)
-        {
-            printf("argv [%d]: %s\n", i, *(argv + i));
-        }
-    }
     // ===== ===== ===== ENDE CLI-Parameter parsen ===== ===== =====
-
-
-
-    // TEST_Intersection();
-    //TEST_Intersection_With_Random_Data();
-    //TEST_Intersection_With_Random_Data_And_Specified_Result();
 
     Show_Dynamic_Memory_Status();
 
