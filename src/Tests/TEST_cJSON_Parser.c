@@ -387,7 +387,7 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
 
     const time_t end = clock ();
     float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-    printf ("=> %f seconds\n", seconds);
+    printf ("=> %3.3fs for parsing the whole file\n", seconds);
 
     const int cmp_result = strncmp (test_file_data, parsing_result_orig_ptr, (size_t) test_file_length);
 
