@@ -171,7 +171,8 @@ int main (const int argc, const char* argv [])
     const int new_argc = argparse_parse(&argparse_object, argc, argv);
     (void) new_argc;
 
-    if (GLOBAL_INPUT_FILE == NULL && GLOBAL_OUTPUT_FILE == NULL)
+    /* Old (for test purposes) way to run the calculations */
+    /* if (GLOBAL_INPUT_FILE == NULL && GLOBAL_OUTPUT_FILE == NULL)
     {
         GLOBAL_INPUT_FILE = (char*) "/home/am1/Downloads/Sachen/test_ebm_tokens.txt";
         GLOBAL_OUTPUT_FILE = (char*) "/home/am1/Downloads/Sachen/output.txt";
@@ -245,7 +246,7 @@ int main (const int argc, const char* argv [])
             Append_Data_To_Document_Word_List(source_int_values, token_int_values, next_free_value);
 
             // Den ersten Datensatz als Datensatz verwenden, woran die Schnittmengenbestimmung durchgefuehrt wird
-            if (! intersection_values_created /* == false */)
+            if (! intersection_values_created)
             {
                 memcpy (intersection_values, token_int_values, length_of_longest_token_container *
                         sizeof (uint_fast32_t));
@@ -300,7 +301,7 @@ int main (const int argc, const char* argv [])
 
     Delete_Document_Word_List(source_int_values);
     Delete_Token_Int_Mapping(token_int_mapping);
-    Delete_Token_Container (token_container);
+    Delete_Token_Container (token_container); */
 
     Show_Dynamic_Memory_Status();
 
