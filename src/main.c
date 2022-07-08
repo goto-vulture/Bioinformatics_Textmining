@@ -176,15 +176,6 @@ int main (const int argc, const char* argv [])
         GLOBAL_INPUT_FILE = (char*) "/home/am1/Downloads/Sachen/test_ebm_tokens.txt";
         GLOBAL_OUTPUT_FILE = (char*) "/home/am1/Downloads/Sachen/output.txt";
     }
-    /*// Passt die Anzahl an CLI-Parameter ?
-    // Programmname
-    // Eingabe- und Ausgabedatei
-    // Die beiden CLI Optionsstrings ('i', 'o')
-    if (argc != 5)
-    {
-        PRINTF_FFLUSH ("Wrong number of CLI parameter ! Except exact two: Input and output file. (Got: %d)\n", argc);
-        exit(1);
-    }*/
 
     PRINTF_FFLUSH ("Input file:  \"%s\"\nOutput file: \"%s\"\n\n", GLOBAL_INPUT_FILE, GLOBAL_OUTPUT_FILE);
     // ===== ===== ===== ENDE CLI-Parameter parsen ===== ===== =====
