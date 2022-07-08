@@ -83,7 +83,7 @@ void Check_CLI_Parameter_CLI_INPUT_FILE2 (void)
     if (input_file == NULL)
     {
         FPRINTF_FFLUSH (stderr, "Cannot open the second input file \"%s\" !", GLOBAL_CLI_INPUT_FILE2);
-        //exit(1);
+        exit(1);
     }
 
     FCLOSE_AND_SET_TO_NULL(input_file);
