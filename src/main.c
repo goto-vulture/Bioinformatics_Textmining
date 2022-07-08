@@ -122,7 +122,29 @@
 #include "Error_Handling/Assert_Msg.h"
 #include "Intersection_Approaches.h"
 
+#include "Tests/tinytest.h"
+#include "Tests/TEST_cJSON_Parser.h"
 
+
+
+/**
+ * @brief Run all test functions.
+ */
+static void
+Run_All_Test_Functions
+(
+        void
+);
+
+/**
+ * @brief Show the dynamic memory status. (How many malloc / calloc calls were done and is the number equal with the
+ * amount of free calls). -> Exists memory leaks ?
+ */
+static void
+At_Exit_Function
+(
+     void
+);
 
 //=====================================================================================================================
 
@@ -152,6 +174,9 @@ int main (const int argc, const char* argv [])
     ASSERT_MSG(sizeof(long double) >= 4, "The type \"long double\" needs to be at least 4 byte wide !");
 #endif /* __STDC_VERSION__ < 201112L */
 
+    // Use a user defined function at the end of the program
+    atexit(At_Exit_Function);
+
     // ===== ===== ===== BEGINN CLI-Parameter parsen ===== ===== =====
     struct argparse_option cli_options [] =
     {
@@ -161,6 +186,10 @@ int main (const int argc, const char* argv [])
             OPT_STRING('i', "input", &GLOBAL_CLI_INPUT_FILE, "Erste Eingabedatei", NULL, 0, 0),
             OPT_STRING('j', "input2", &GLOBAL_CLI_INPUT_FILE2, "Zweite Eingabedatei", NULL, 0, 0),
             OPT_STRING('o', "output", &GLOBAL_CLI_OUTPUT_FILE, "Ausgabedatei", NULL, 0, 0),
+
+            OPT_GROUP("Debug- / Testfunktionen"),
+            OPT_BOOLEAN('T', "run_all_test_functions", &GLOBAL_RUN_ALL_TEST_FUNCTIONS,
+                    "Ausfuehrung aller Testfunktionen", NULL, 0, 0),
 
             OPT_END()
     };
@@ -174,6 +203,7 @@ int main (const int argc, const char* argv [])
 
     /* Old (for test purposes) way to run the calculations */
     /* if (GLOBAL_INPUT_FILE == NULL && GLOBAL_OUTPUT_FILE == NULL)
+    else if (GLOBAL_INPUT_FILE == NULL && GLOBAL_OUTPUT_FILE == NULL)
     {
         GLOBAL_INPUT_FILE = (char*) "/home/am1/Downloads/Sachen/test_ebm_tokens.txt";
         GLOBAL_OUTPUT_FILE = (char*) "/home/am1/Downloads/Sachen/output.txt";
@@ -304,6 +334,15 @@ int main (const int argc, const char* argv [])
     Delete_Token_Int_Mapping(token_int_mapping);
     Delete_Token_Container (token_container); */
 
+    if (GLOBAL_RUN_ALL_TEST_FUNCTIONS)
+    {
+        Run_All_Test_Functions();
+
+        // Show a test report
+        TEST_REPORT();
+
+        return (tt_fails != 0) ? EXIT_FAILURE : EXIT_SUCCESS;
+    }
     if (GLOBAL_CLI_INPUT_FILE != NULL)
     {
         printf ("Input file: \"%s\"\n", GLOBAL_CLI_INPUT_FILE);
@@ -342,3 +381,37 @@ int main (const int argc, const char* argv [])
 }
 
 //=====================================================================================================================
+
+/**
+ * @brief Run all test functions.
+ */
+static void
+Run_All_Test_Functions
+(
+        void
+)
+{
+    RUN(TEST_cJSON_Parse_JSON_Fragment);
+    RUN(TEST_cJSON_Get_Token_Array_From_JSON_Fragment);
+    RUN(TEST_cJSON_Parse_Full_JSON_File);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Show the dynamic memory status. (How many malloc / calloc calls were done and is the number equal with the
+ * amount of free calls). -> Exists memory leaks ?
+ */
+static void
+At_Exit_Function
+(
+        void
+)
+{
+    Show_Dynamic_Memory_Status();
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------

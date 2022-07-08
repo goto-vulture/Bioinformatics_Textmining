@@ -28,10 +28,11 @@ const char* const GLOBAL_USAGES [] =
 const char* const GLOBAL_PROGRAM_DESCRIPTION            = "Program description";
 const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION = "Additional program description";
 
-// Variablen fuer die geparsten CLI-Parameter
+// Variables for the parsed CLI parameter
 const char* GLOBAL_CLI_INPUT_FILE = NULL;
 const char* GLOBAL_CLI_INPUT_FILE2 = NULL;
 const char* GLOBAL_CLI_OUTPUT_FILE = NULL;
+_Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS = false;
 
 
 

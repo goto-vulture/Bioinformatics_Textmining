@@ -30,21 +30,14 @@ extern const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION; ///< Additional 
 
 
 
-// Variablen fuer die geparsten CLI-Parameter
-/**
- * @brief CLI-Parameter: Erste Eingabedatei
- */
-extern const char* GLOBAL_CLI_INPUT_FILE;
+// Variables for the parsed CLI parameter
+extern const char* GLOBAL_CLI_INPUT_FILE; ///< First input file
 
-/**
- * @brief CLI-Parameter: Zweite Eingabedatei
- */
-extern const char* GLOBAL_CLI_INPUT_FILE2;
+extern const char* GLOBAL_CLI_INPUT_FILE2; ///< Second input file
 
-/**
- * @brief CLI-Parameter: Ausgabedatei
- */
-extern const char* GLOBAL_CLI_OUTPUT_FILE;
+extern const char* GLOBAL_CLI_OUTPUT_FILE; ///< Output file
+
+extern _Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS; ///< Run all test functions ?
 
 
 
