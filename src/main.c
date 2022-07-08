@@ -109,10 +109,23 @@
 
 
 
+/**
+ * @brief Run all test functions.
+ */
 static void
 Run_All_Test_Functions
 (
         void
+);
+
+/**
+ * @brief Show the dynamic memory status. (How many malloc / calloc calls were done and is the number equal with the
+ * amount of free calls). -> Exists memory leaks ?
+ */
+static void
+At_Exit_Function
+(
+     void
 );
 
 //=====================================================================================================================
@@ -129,6 +142,9 @@ Run_All_Test_Functions
  */
 int main (const int argc, const char* argv [])
 {
+    // Use a user defined function at the end of the program
+    atexit(At_Exit_Function);
+
     // ===== ===== ===== BEGINN CLI-Parameter parsen ===== ===== =====
     struct argparse_option cli_options [] =
     {
@@ -308,6 +324,9 @@ int main (const int argc, const char* argv [])
 
 //=====================================================================================================================
 
+/**
+ * @brief Run all test functions.
+ */
 static void
 Run_All_Test_Functions
 (
@@ -320,3 +339,21 @@ Run_All_Test_Functions
 
     return;
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Show the dynamic memory status. (How many malloc / calloc calls were done and is the number equal with the
+ * amount of free calls). -> Exists memory leaks ?
+ */
+static void
+At_Exit_Function
+(
+        void
+)
+{
+    Show_Dynamic_Memory_Status();
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
