@@ -157,14 +157,15 @@ int main (const int argc, const char* argv [])
     {
             OPT_HELP(),
 
-            OPT_GROUP("Hauptparameter"),
-            OPT_STRING('i', "input_file", &GLOBAL_INPUT_FILE, "Eingabedatei", NULL, 0, 0),
-            OPT_STRING('o', "output_file", &GLOBAL_OUTPUT_FILE, "Ausgabedatei", NULL, 0, 0),
+            OPT_GROUP("Hauptfunktionen"),
+            OPT_STRING('i', "input", &GLOBAL_CLI_INPUT_FILE, "Erste Eingabedatei", NULL, 0, 0),
+            OPT_STRING('j', "input2", &GLOBAL_CLI_INPUT_FILE2, "Zweite Eingabedatei", NULL, 0, 0),
+            OPT_STRING('o', "output", &GLOBAL_CLI_OUTPUT_FILE, "Ausgabedatei", NULL, 0, 0),
 
             OPT_END()
     };
 
-    // Den eigentlichen Parsing-Prozess starten
+    // CLI-Parameter parsen
     struct argparse argparse_object;
     argparse_init(&argparse_object, cli_options, GLOBAL_USAGES, 0);
     argparse_describe(&argparse_object, GLOBAL_PROGRAM_DESCRIPTION, GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION);
@@ -302,6 +303,38 @@ int main (const int argc, const char* argv [])
     Delete_Document_Word_List(source_int_values);
     Delete_Token_Int_Mapping(token_int_mapping);
     Delete_Token_Container (token_container); */
+
+    if (GLOBAL_CLI_INPUT_FILE != NULL)
+    {
+        printf ("Input file: \"%s\"\n", GLOBAL_CLI_INPUT_FILE);
+        Check_CLI_Parameter_CLI_INPUT_FILE();
+    }
+    else
+    {
+        PUTS_FFLUSH ("Missing first input file. Option: [-i / --input]");
+        exit(EXIT_FAILURE);
+    }
+    if (GLOBAL_CLI_INPUT_FILE2 != NULL)
+    {
+        printf ("Input file2: \"%s\"\n", GLOBAL_CLI_INPUT_FILE2);
+        Check_CLI_Parameter_CLI_INPUT_FILE2();
+    }
+    else
+    {
+        PUTS_FFLUSH ("Missing second input file. Option: [-j / --input2]");
+        exit(EXIT_FAILURE);
+    }
+    if (GLOBAL_CLI_OUTPUT_FILE != NULL)
+    {
+        printf ("Output file: \"%s\"\n", GLOBAL_CLI_OUTPUT_FILE);
+        Check_CLI_Parameter_CLI_OUTPUT_FILE();
+    }
+    else
+    {
+        PUTS_FFLUSH ("Missing output file. Option: [-o / --output]");
+        exit(EXIT_FAILURE);
+    }
+    // ===== ===== ===== ENDE CLI-Parameter parsen ===== ===== =====
 
     Show_Dynamic_Memory_Status();
 

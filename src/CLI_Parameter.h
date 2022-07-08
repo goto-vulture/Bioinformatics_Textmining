@@ -30,8 +30,38 @@ extern const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION; ///< Additional 
 
 
 
-extern char* GLOBAL_INPUT_FILE; ///< Input file
-extern char* GLOBAL_OUTPUT_FILE; ///< Output file
+// Variablen fuer die geparsten CLI-Parameter
+/**
+ * @brief CLI-Parameter: Erste Eingabedatei
+ */
+extern const char* GLOBAL_CLI_INPUT_FILE;
+
+/**
+ * @brief CLI-Parameter: Zweite Eingabedatei
+ */
+extern const char* GLOBAL_CLI_INPUT_FILE2;
+
+/**
+ * @brief CLI-Parameter: Ausgabedatei
+ */
+extern const char* GLOBAL_CLI_OUTPUT_FILE;
+
+
+
+/**
+ * @brief Testfunktion fuer den CLI Parameter, der die erste Eingabedatei beschreibt.
+ */
+extern void Check_CLI_Parameter_CLI_INPUT_FILE (void);
+
+/**
+ * @brief Testfunktion fuer den CLI Parameter, der die zweite Eingabedatei beschreibt.
+ */
+extern void Check_CLI_Parameter_CLI_INPUT_FILE2 (void);
+
+/**
+ * @brief Testfunktion fuer den CLI Parameter, der die Ausgabedatei beschreibt.
+ */
+extern void Check_CLI_Parameter_CLI_OUTPUT_FILE (void);
 
 
 
