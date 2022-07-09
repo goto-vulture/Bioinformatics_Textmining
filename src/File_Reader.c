@@ -28,7 +28,7 @@
  * The value is a approximate order of magnitude and could be change in the future.
  */
 #ifndef MAX_TOKEN_LENGTH
-#define MAX_TOKEN_LENGTH 32
+#define MAX_TOKEN_LENGTH 64
 #else
 #error "The macro \"MAX_TOKEN_LENGTH\" is already defined !"
 #endif /* MAX_TOKEN_LENGTH */
@@ -39,7 +39,7 @@
  * It is also the allocation step size, if a reallocation is necessary.
  */
 #ifndef TOKENS_ALLOCATION_STEP_SIZE
-#define TOKENS_ALLOCATION_STEP_SIZE 75
+#define TOKENS_ALLOCATION_STEP_SIZE 5
 #else
 #error "The macro \"TOKENS_ALLOCATION_STEP_SIZE\" is already defined !"
 #endif /* TOKENS_ALLOCATION_STEP_SIZE */
@@ -50,7 +50,7 @@
  * It is also the allocation step size, if a reallocation is necessary.
  */
 #ifndef TOKEN_CONTAINER_ALLOCATION_STEP_SIZE
-#define TOKEN_CONTAINER_ALLOCATION_STEP_SIZE 1000
+#define TOKEN_CONTAINER_ALLOCATION_STEP_SIZE 5
 #else
 #error "The macro \"TOKEN_CONTAINER_ALLOCATION_STEP_SIZE\" is already defined !"
 #endif /* TOKEN_CONTAINER_ALLOCATION_STEP_SIZE */
