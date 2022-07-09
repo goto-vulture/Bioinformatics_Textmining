@@ -375,7 +375,16 @@ int main (const int argc, const char* argv [])
     }
     // ===== ===== ===== ENDE CLI-Parameter parsen ===== ===== =====
 
-    Show_Dynamic_Memory_Status();
+    struct Token_List_Container* token_container_input_1 = Create_Token_Container_From_File (GLOBAL_CLI_INPUT_FILE);
+    Print_Token_List_Status_Infos (token_container_input_1);
+
+    struct Token_List_Container* token_container_input_2 = Create_Token_Container_From_File (GLOBAL_CLI_INPUT_FILE2);
+    Print_Token_List_Status_Infos (token_container_input_2);
+
+    Delete_Token_Container(token_container_input_1);
+    token_container_input_1 = NULL;
+    Delete_Token_Container(token_container_input_2);
+    token_container_input_2 = NULL;
 
     return EXIT_SUCCESS;
 }
