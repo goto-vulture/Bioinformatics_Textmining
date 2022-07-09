@@ -95,7 +95,6 @@ Delete_Token_Container
 
 /**
  * @brief Read a specific token from the container.
- * @brief Ein bestimmtes Token aus dem Container auslesen.
  *
  * For performance reasons, the memory for each token list is allocated as one memory block. Therefore the address
  * calculation is more complex. This is the reason for this function.
