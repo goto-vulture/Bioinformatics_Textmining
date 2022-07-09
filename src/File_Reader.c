@@ -39,7 +39,7 @@
  * It is also the allocation step size, if a reallocation is necessary.
  */
 #ifndef TOKENS_ALLOCATION_STEP_SIZE
-#define TOKENS_ALLOCATION_STEP_SIZE 350
+#define TOKENS_ALLOCATION_STEP_SIZE 75
 #else
 #error "The macro \"TOKENS_ALLOCATION_STEP_SIZE\" is already defined !"
 #endif /* TOKENS_ALLOCATION_STEP_SIZE */
@@ -50,7 +50,7 @@
  * It is also the allocation step size, if a reallocation is necessary.
  */
 #ifndef TOKEN_CONTAINER_ALLOCATION_STEP_SIZE
-#define TOKEN_CONTAINER_ALLOCATION_STEP_SIZE 100
+#define TOKEN_CONTAINER_ALLOCATION_STEP_SIZE 1000
 #else
 #error "The macro \"TOKEN_CONTAINER_ALLOCATION_STEP_SIZE\" is already defined !"
 #endif /* TOKEN_CONTAINER_ALLOCATION_STEP_SIZE */
@@ -475,6 +475,42 @@ Count_All_Tokens_In_Token_Container
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Determine the longest token in the whole container and return the value.
+ *
+ * This function need some time, especially when the container holds many tokens.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ *
+ * @return Length of the longest token
+ */
+extern size_t
+Get_Lengh_Of_Longest_Token
+(
+        const struct Token_List_Container* const container
+)
+{
+    ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
+
+    const size_t token_size = container->token_lists [0].max_token_length;
+    size_t result = 0;
+
+    for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
+    {
+        for (uint_fast32_t i2 = 0; i2 < container->token_lists [i].next_free_element; ++ i2)
+        {
+            result = MAX(result, strlen (&(container->token_lists [i].data [i2 * token_size])));
+        }
+    }
+
+    return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Determine the longest Token_List object and return the value.
  *
  * Asserts:
@@ -528,6 +564,7 @@ Print_Token_List_Status_Infos
             (double) Get_Token_Container_Size(container) / 1024.0 / 1024.0);
     printf ("Sum all tokens:                 %" PRIuFAST32 "\n", Count_All_Tokens_In_Token_Container(container));
     printf ("Longest token list:             %zu\n", Get_Lengh_Of_Longest_Token_Container(container));
+    printf ("Longest token:                  %zu\n", Get_Lengh_Of_Longest_Token(container));
     fflush (stdout);
 
     return;

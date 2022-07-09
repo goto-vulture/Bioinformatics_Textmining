@@ -170,6 +170,24 @@ Count_All_Tokens_In_Token_Container
 );
 
 /**
+ * @brief Determine the longest token in the whole container and return the value.
+ *
+ * This function need some time, especially when the container holds many tokens.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ *
+ * @return Length of the longest token
+ */
+extern size_t
+Get_Lengh_Of_Longest_Token
+(
+        const struct Token_List_Container* const container
+);
+
+/**
  * @brief Determine the longest Token_List object and return the value.
  *
  * Asserts:
