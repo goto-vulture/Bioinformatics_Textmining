@@ -55,12 +55,6 @@
 #error "The macro \"TOKEN_CONTAINER_ALLOCATION_STEP_SIZE\" is already defined !"
 #endif /* TOKEN_CONTAINER_ALLOCATION_STEP_SIZE */
 
-#ifndef READ_FILE_BUFFER_SIZE
-#define READ_FILE_BUFFER_SIZE 100000 ///< Buffer size for reading files
-#else
-#error "The macro \"READ_FILE_BUFFER_SIZE\" is already defined !"
-#endif /* READ_FILE_BUFFER_SIZE */
-
 /**
  * @brief Calculate the begin of the next free token in a Token_List.
  *
