@@ -290,110 +290,112 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
     {
         // Parse the file JSON fragment per JSON fragment
         cJSON* json = cJSON_ParseWithOpts(current_parsing_position, (const char**) &current_parsing_position, false);
-        cJSON* curr = json->child;
         if (! json)
         {
-            printf("Error before: [%s]\n",cJSON_GetErrorPtr());
+            // Sometimes the json pointer is NULL. But an error only occurrs, when an error message is available
+            if (strlen (cJSON_GetErrorPtr()) > 0)
+            {
+                printf("Error before: [%s]\n", cJSON_GetErrorPtr());
+            }
             break;
         }
-        else
+        cJSON* curr = json->child;
+
+        while (curr != NULL)
         {
-            while (curr != NULL)
+            // Is the current name_x_x available ?
+            cJSON* name = cJSON_GetObjectItemCaseSensitive(json, curr->string);
+            if (! name) { continue; }
+
+            // Exists a tokens array ?
+            cJSON* tokens_array = cJSON_GetObjectItemCaseSensitive(name, "tokens");
+            if (! tokens_array) { continue; }
+
+            // Get all tokens from tokens array
+            //const int tokens_array_size = cJSON_GetArraySize(tokens_array);
+            register cJSON* curr_token = tokens_array->child;
+
+            // Add id, if exists
+            if (name->string)
             {
-                // Is the current name_x_x available ?
-                cJSON* name = cJSON_GetObjectItemCaseSensitive(json, curr->string);
-                if (! name) { continue; }
-
-                // Exists a tokens array ?
-                cJSON* tokens_array = cJSON_GetObjectItemCaseSensitive(name, "tokens");
-                if (! tokens_array) { continue; }
-
-                // Get all tokens from tokens array
-                //const int tokens_array_size = cJSON_GetArraySize(tokens_array);
-                register cJSON* curr_token = tokens_array->child;
-
-                // Add id, if exists
-                if (name->string)
-                {
-                    strncat(parsing_result, name->string, parsing_result_mem_left);
-                    parsing_result += strlen (name->string);
-                }
-
-                ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
-                        "(Allocated size: %lu byte)", parsing_result_length);
-                *parsing_result = '\n';
-                parsing_result ++;
-                parsing_result_mem_left --;
-                ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
-                        "(Allocated size: %lu byte)", parsing_result_length);
-                *parsing_result = '[';
-                parsing_result ++;
-                parsing_result_mem_left --;
-
-                // Go though the full chained list
-                while(curr_token != NULL)
-                {
-                    if (! curr_token->valuestring) { continue; }
-
-                    // Exists a \' in the string
-                    // If yes it is necessary to replace the token begin and end with \" instead of \'
-                    char* double_quote_exists = strchr(curr_token->valuestring, '\'');
-
-                    // Faster way to copy one char than "strncat(parsing_result, "\'", parsing_result_mem_left);"
-                    ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
-                            "(Allocated size: %lu byte)", parsing_result_length);
-                    *parsing_result = (double_quote_exists == NULL) ? '\'' : '\"';
-                    parsing_result ++;
-                    parsing_result_mem_left --;
-
-                    strncat(parsing_result, curr_token->valuestring, parsing_result_mem_left);
-                    tokens_found ++;
-                    const size_t curr_token_length = strlen(curr_token->valuestring);
-                    ASSERT_FMSG(parsing_result_mem_left > curr_token_length, "Not enough memory allocated for the "
-                            "parsing result ! (Allocated size: %lu byte)", parsing_result_length);
-                    parsing_result += curr_token_length;
-                    parsing_result_mem_left -= curr_token_length;
-
-                    // Faster way to copy three char than "strncat(parsing_result, "\", ", parsing_result_mem_left);"
-                    ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
-                            "(Allocated size: %lu byte)", parsing_result_length);
-                    *parsing_result = (double_quote_exists == NULL) ? '\'' : '\"';
-                    parsing_result ++;
-                    parsing_result_mem_left --;
-                    ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
-                            "(Allocated size: %lu byte)", parsing_result_length);
-                    *parsing_result = ',';
-                    parsing_result ++;
-                    parsing_result_mem_left --;
-                    ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
-                            "(Allocated size: %lu byte)", parsing_result_length);
-                    *parsing_result = ' ';
-                    parsing_result ++;
-                    parsing_result_mem_left --;
-
-                    curr_token = curr_token->next;
-                }
-                // Memory left check can be skipped here, because the pointer will be decremented before the write
-                // commands
-                parsing_result -= 2;
-                *parsing_result = ']';
-                parsing_result ++;
-                *parsing_result = '\n';
-                parsing_result ++;
-                ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
-                        "(Allocated size: %lu byte)", parsing_result_length);
-                // Faster way to copy one char than "strncat(parsing_result, "\n", parsing_result_mem_left);"
-                *parsing_result = '\n';
-                parsing_result ++;
-                parsing_result_mem_left --;
-                curr = curr->next;
+                strncat(parsing_result, name->string, parsing_result_mem_left);
+                parsing_result += strlen (name->string);
             }
+
+            ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
+                    "(Allocated size: %lu byte)", parsing_result_length);
+            *parsing_result = '\n';
+            parsing_result ++;
+            parsing_result_mem_left --;
+            ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
+                    "(Allocated size: %lu byte)", parsing_result_length);
+            *parsing_result = '[';
+            parsing_result ++;
+            parsing_result_mem_left --;
+
+            // Go though the full chained list
+            while(curr_token != NULL)
+            {
+                if (! curr_token->valuestring) { continue; }
+
+                // Exists a \' in the string
+                // If yes it is necessary to replace the token begin and end with \" instead of \'
+                char* double_quote_exists = strchr(curr_token->valuestring, '\'');
+
+                // Faster way to copy one char than "strncat(parsing_result, "\'", parsing_result_mem_left);"
+                ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
+                        "(Allocated size: %lu byte)", parsing_result_length);
+                *parsing_result = (double_quote_exists == NULL) ? '\'' : '\"';
+                parsing_result ++;
+                parsing_result_mem_left --;
+
+                strncat(parsing_result, curr_token->valuestring, parsing_result_mem_left);
+                tokens_found ++;
+                const size_t curr_token_length = strlen(curr_token->valuestring);
+                ASSERT_FMSG(parsing_result_mem_left > curr_token_length, "Not enough memory allocated for the "
+                        "parsing result ! (Allocated size: %lu byte)", parsing_result_length);
+                parsing_result += curr_token_length;
+                parsing_result_mem_left -= curr_token_length;
+
+                // Faster way to copy three char than "strncat(parsing_result, "\", ", parsing_result_mem_left);"
+                ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
+                        "(Allocated size: %lu byte)", parsing_result_length);
+                *parsing_result = (double_quote_exists == NULL) ? '\'' : '\"';
+                parsing_result ++;
+                parsing_result_mem_left --;
+                ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
+                        "(Allocated size: %lu byte)", parsing_result_length);
+                *parsing_result = ',';
+                parsing_result ++;
+                parsing_result_mem_left --;
+                ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
+                        "(Allocated size: %lu byte)", parsing_result_length);
+                *parsing_result = ' ';
+                parsing_result ++;
+                parsing_result_mem_left --;
+
+                curr_token = curr_token->next;
+            }
+            // Memory left check can be skipped here, because the pointer will be decremented before the write
+            // commands
+            parsing_result -= 2;
+            *parsing_result = ']';
+            parsing_result ++;
             *parsing_result = '\n';
             parsing_result ++;
             ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
                     "(Allocated size: %lu byte)", parsing_result_length);
-            *parsing_result = '\0';
+            // Faster way to copy one char than "strncat(parsing_result, "\n", parsing_result_mem_left);"
+            *parsing_result = '\n';
+            parsing_result ++;
+            parsing_result_mem_left --;
+            curr = curr->next;
         }
+        *parsing_result = '\n';
+        parsing_result ++;
+        ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
+                "(Allocated size: %lu byte)", parsing_result_length);
+        *parsing_result = '\0';
 
         cJSON_Delete(json);
         json = NULL;
