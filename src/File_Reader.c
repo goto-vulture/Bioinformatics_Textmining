@@ -421,7 +421,7 @@ Show_Selected_Token_Container
 )
 {
     ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
-    ASSERT_FMSG(container->next_free_element < index_token_list, "Index for the Token_List object is invalid ! Max. "
+    ASSERT_FMSG(container->next_free_element > index_token_list, "Index for the Token_List object is invalid ! Max. "
             "valid: %" PRIuFAST32 "; Got %zu !", container->next_free_element - 1, index_token_list);
 
     const size_t token_size = container->token_lists [index_token_list].max_token_length;
