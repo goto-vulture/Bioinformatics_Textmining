@@ -284,6 +284,7 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
             parsing_result_mem_left * sizeof (char));
     parsing_result [parsing_result_mem_left - 1] = '\0'; // Gurantee a temination
 
+    uint_fast32_t tokens_found = 0;
     const char* current_parsing_position = input_file_data;
     while (*current_parsing_position != '\0')
     {
@@ -346,6 +347,7 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
                     parsing_result_mem_left --;
 
                     strncat(parsing_result, curr_token->valuestring, parsing_result_mem_left);
+                    tokens_found ++;
                     const size_t curr_token_length = strlen(curr_token->valuestring);
                     ASSERT_FMSG(parsing_result_mem_left > curr_token_length, "Not enough memory allocated for the "
                             "parsing result ! (Allocated size: %lu byte)", parsing_result_length);
@@ -399,7 +401,7 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
 
     end = clock ();
     used_seconds = DETERMINE_USED_TIME(start, end);
-    printf ("=> %3.3fs for parsing the whole file\n", used_seconds);
+    printf ("=> %3.3fs for parsing the whole file (%" PRIuFAST32 " tokens found)\n", used_seconds, tokens_found);
 
     const int cmp_result = strncmp (test_file_data, parsing_result_orig_ptr, (size_t) test_file_length);
 
