@@ -227,10 +227,14 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
     const char input_file_name [] = "./src/Tests/Test_Data/test_ebm.json";
     const char test_file_name [] = "./src/Tests/Test_Data/test_ebm_expected_results.txt";
 
+    clock_t start = 0;
+    clock_t end = 0;
+    float used_seconds = 0.0f;
+
     // Try to read the full input_file
     FILE* input_file = fopen (input_file_name, "rb");
     ASSERT_FMSG(input_file != NULL, "Cannot open the input file: \"%s\" !", input_file_name);
-    PRINTF_FFLUSH("Read file \"%s\" ... ", input_file_name);
+    PRINTF_FFLUSH("Read file \"%s\" ...", input_file_name);
     // Get file size
     fseek (input_file, 0, SEEK_END);
     const long int input_file_length = ftell (input_file);
@@ -240,18 +244,21 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
             (input_file_length + 1) * sizeof (char));
 
     // If there is a read error, less than input_file_length bytes are read
+    start = clock();
     size_t mem_read = fread (input_file_data, 1, (size_t) input_file_length, input_file); // Read full input file
     ASSERT_FMSG(mem_read == (size_t) input_file_length, "Error while reading the file \"%s\" !", input_file_name);
+    end = clock();
+    used_seconds = DETERMINE_USED_TIME(start, end);
 
     input_file_data [input_file_length] = '\0';
-    PRINTF_FFLUSH(" done ! (%ld byte)\n", input_file_length);
+    PRINTF_FFLUSH(" done ! (%ld byte | Used time: %3.3fs)\n", input_file_length, used_seconds);
     FCLOSE_AND_SET_TO_NULL(input_file);
 
 
     // Try to read the full test file
     FILE* test_file = fopen (test_file_name, "rb");
     ASSERT_FMSG(test_file != NULL, "Cannot open the test file: \"%s\" !", test_file_name);
-    PRINTF_FFLUSH("Read file \"%s\" ... ", test_file_name);
+    PRINTF_FFLUSH("Read file \"%s\" ...", test_file_name);
     // Get file size
     fseek (test_file, 0, SEEK_END);
     const long int test_file_length = ftell (test_file);
@@ -261,14 +268,17 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
             (test_file_length + 1) * sizeof (char));
 
     // If there is a read error, less than input_file_length bytes are read
+    start = clock ();
     mem_read = fread (test_file_data, 1, (size_t) test_file_length, test_file); // Read full test file
     ASSERT_FMSG(mem_read == (size_t) test_file_length, "Error while reading the file \"%s\" !", test_file_name);
+    end = clock ();
+    used_seconds = DETERMINE_USED_TIME(start, end);
 
     test_file_data [test_file_length] = '\0';
-    PRINTF_FFLUSH(" done ! (%ld byte)\n", test_file_length);
+    PRINTF_FFLUSH(" done ! (%ld byte | Used time: %3.3fs)\n", test_file_length, used_seconds);
     FCLOSE_AND_SET_TO_NULL(test_file);
 
-    const time_t start = clock ();
+    start = clock ();
 
     // Allocate memory for the parsing result and execute the parsing process
     // For the sake of simplicity, I assume that the double length of the expected result is enough
@@ -393,9 +403,9 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
         json = NULL;
     }
 
-    const time_t end = clock ();
-    float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-    printf ("=> %3.3fs for parsing the whole file\n", seconds);
+    end = clock ();
+    used_seconds = DETERMINE_USED_TIME(start, end);
+    printf ("=> %3.3fs for parsing the whole file\n", used_seconds);
 
     const int cmp_result = strncmp (test_file_data, parsing_result_orig_ptr, (size_t) test_file_length);
 
