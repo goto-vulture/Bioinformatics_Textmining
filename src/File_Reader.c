@@ -426,7 +426,7 @@ Show_Selected_Token_Container
 
     const size_t token_size = container->token_lists [index_token_list].max_token_length;
 
-    printf ("Container: %zu\n", index_token_list);
+    printf ("Container: %zu (ID: %s)\n", index_token_list, container->token_lists [index_token_list].id);
     for (size_t i = 0; i < container->token_lists [index_token_list].next_free_element; ++ i)
     {
         printf ("%4zu: %s\n", i, &(container->token_lists [index_token_list].data [i * token_size]));
