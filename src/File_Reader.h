@@ -30,8 +30,8 @@ extern "C"
 struct Token_List_Container
 {
     /**
-     * @brief This is a container for some tokens. In the current implementation every object represents a line in the
-     * dataset.
+     * @brief This is a container for some tokens. In the current implementation every object represents a dataset for
+     * a specific id.
      */
     struct Token_List
     {
@@ -53,6 +53,7 @@ struct Token_List_Container
          */
         uint_fast32_t next_free_element;
         size_t allocated_tokens;            ///< Allocated number of tokens
+        char id [16];                       ///< ID of the dataset
     }* token_lists;
 
     uint_fast32_t next_free_element;        ///< Next free element in the Token_List array
@@ -62,35 +63,13 @@ struct Token_List_Container
 //=====================================================================================================================
 
 /**
- * @brief Create the token list from a file content.
- *
- * Actual the "parsing mechanism" is very simple. Therefore the program execpts, that the JSON file is already
- * preprocessed.
- *
- * A possible python script for a suitable preprocessed JSON file:
- *
-    import json
-
-    f = open('test_ebm.json')
-
-    data = json.load(f)
-
-    for i in data:
-        print(i)
-        print(data[i]["tokens"])
-        print("")
-
-    f.close()
-
- *
- * The goal of the program is to work directly with JSON files. But this is for the core functionality not necessary.
- * Therefore the priority is not on this feature.
+ * @brief Create the token list from a JSON file.
  *
  * Asserts:
  *      file_name != NULL
  *      strlen(file_name) > 0
  *
- * @param[in] file_name Preprocessed file
+ * @param[in] file_name Input file name
  *
  * @return Address to the new dynamic Token_List_Container
  */
