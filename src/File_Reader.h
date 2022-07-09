@@ -186,6 +186,20 @@ Get_Lengh_Of_Longest_Token_Container
         const struct Token_List_Container* const container
 );
 
+/**
+ * @brief Print several container information.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ */
+extern void
+Print_Token_List_Status_Infos
+(
+        const struct Token_List_Container* const container
+);
+
 
 
 #ifdef __cplusplus

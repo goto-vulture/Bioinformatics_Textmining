@@ -505,6 +505,34 @@ Get_Lengh_Of_Longest_Token_Container
     return result;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Print several container information.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ */
+extern void
+Print_Token_List_Status_Infos
+(
+        const struct Token_List_Container* const container
+)
+{
+    ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
+
+    printf ("Full token list container size: %zu B (%.3f KB | %.3f MB)\n", Get_Token_Container_Size(container),
+            (double) Get_Token_Container_Size(container) / 1024.0,
+            (double) Get_Token_Container_Size(container) / 1024.0 / 1024.0);
+    printf ("Sum all tokens:                 %" PRIuFAST32 "\n", Count_All_Tokens_In_Token_Container(container));
+    printf ("Longest token list:             %zu\n", Get_Lengh_Of_Longest_Token_Container(container));
+    fflush (stdout);
+
+    return;
+}
+
 //=====================================================================================================================
 
 /**
