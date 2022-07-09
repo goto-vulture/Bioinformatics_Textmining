@@ -477,14 +477,7 @@ Binary_Search
         }
         else
         {
-            if (data [middle] > search_value)
-            {
-                right = middle - 1;
-            }
-            else
-            {
-                left = middle + 1;
-            }
+            if (data [middle] > search_value) { right = middle - 1; } else { left = middle + 1; }
         }
     }
 
@@ -540,10 +533,7 @@ Heapsort
                 data [n] = data [0];
                 parent = 0;
             }
-            else
-            {
-                break;
-            }
+            else { break; }
         }
 
         while ((child = (parent + 1) << 1) < n)
@@ -580,10 +570,8 @@ Heapsort
         while (child != root)
         {
             parent = (child - 1) >> 1;
-            if (data [parent] >= value)
-            {
-                break;
-            }
+            if (data [parent] >= value) { break; }
+
             data [child] = data [parent];
             child = parent;
         }

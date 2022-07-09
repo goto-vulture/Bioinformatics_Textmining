@@ -190,10 +190,7 @@ Create_Token_Container_From_File
     uint_fast32_t line_counter = 0;
     while (Read_Line (new_container, file, file_buffer, READ_FILE_BUFFER_SIZE, 0) != NULL)
     {
-        if (file_buffer [0] != '[')
-        {
-            continue;
-        }
+        if (file_buffer [0] != '[') { continue; }
 
         ++ line_counter;
 
@@ -587,10 +584,7 @@ Extract_Tokens_From_Line
         while (file_buffer [file_buffer_cursor] != '\'' && file_buffer [file_buffer_cursor] != '\"')
         {
             ++ file_buffer_cursor;
-            if (file_buffer [file_buffer_cursor] == ']' || (file_buffer_cursor >= used_char_in_buffer))
-            {
-                goto end;
-            }
+            if (file_buffer [file_buffer_cursor] == ']' || (file_buffer_cursor >= used_char_in_buffer)) { goto end; }
         }
         ++ file_buffer_cursor;
 
@@ -599,10 +593,7 @@ Extract_Tokens_From_Line
         while (file_buffer [end_token] != '\'' && file_buffer [end_token] != '\"')
         {
             ++ end_token;
-            if (file_buffer [end_token] == ']' || (end_token >= used_char_in_buffer))
-            {
-                goto end;
-            }
+            if (file_buffer [end_token] == ']' || (end_token >= used_char_in_buffer)) { goto end; }
         }
         const size_t token_length = end_token - file_buffer_cursor;
 

@@ -162,16 +162,10 @@ extern void TEST_cJSON_Get_Token_Array_From_JSON_Fragment (void)
 
                     // Is the current name_x_x available ?
                     cJSON* name = cJSON_GetObjectItemCaseSensitive(json, name_x_x);
-                    if (! name)
-                    {
-                        continue;
-                    }
+                    if (! name) { continue; }
                     // Exists a tokens array ?
                     cJSON* tokens_array = cJSON_GetObjectItemCaseSensitive(name, "tokens");
-                    if (! tokens_array)
-                    {
-                        continue;
-                    }
+                    if (! tokens_array) { continue; }
 
                     // Get all tokens from tokens array
                     const int tokens_array_size = cJSON_GetArraySize(tokens_array);

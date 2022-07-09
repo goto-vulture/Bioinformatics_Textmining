@@ -152,10 +152,7 @@ Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
                         break;
                     }
                 }
-                if (new_position == true)
-                {
-                    break;
-                }
+                if (new_position == true) { break; }
             }
 
             result_object->data [i][used_positions [i2]] = specified_data [i2];

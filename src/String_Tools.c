@@ -73,10 +73,7 @@ Compare_Strings_Case_Insensitive
 )
 {
     // If the length of the input C-Strings are not equal, than a equalness is not possible !
-    if (strlen (string_1) != strlen (string_2))
-    {
-        return -1;
-    }
+    if (strlen (string_1) != strlen (string_2)) { return -1; }
 
     char string_1_lowercase [255];
     char string_2_lowercase [255];
@@ -116,10 +113,7 @@ Count_Char_In_String
 
     for (size_t i = 0; i < string_length; ++ i)
     {
-        if (c_string [i] == searched_char)
-        {
-            ++ result;
-        }
+        if (c_string [i] == searched_char) { ++ result; }
     }
 
     return result;
@@ -230,10 +224,8 @@ Multi_strncat
 	for (int i = 0; i < count; ++ i)
 	{
 		char* next_string = va_arg(valist, char*);
-		if (next_string == NULL)
-		{
-			break;
-		}
+		if (next_string == NULL) { break; }
+
 		strncat (destination, next_string, memory_left);
 		memory_left -= strlen (next_string);
 	}

@@ -203,10 +203,7 @@ Add_Token_To_Mapping
     for (uint_fast32_t i = 0; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
     {
         // Before the comparison: Have the strings the same length ?
-        if (new_token_length != strlen(&(to_str [i * MAX_TOKEN_LENGTH])))
-        {
-            continue;
-        }
+        if (new_token_length != strlen(&(to_str [i * MAX_TOKEN_LENGTH]))) { continue; }
 
         if (strncmp (new_token, &(to_str [i * MAX_TOKEN_LENGTH]), new_token_length) == 0)
         {
@@ -304,10 +301,7 @@ Token_To_Int
     for (; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
     {
         // Before the comparison: Have the strings the same length ?
-        if (search_token_length != strlen(&(c_string_array [i * MAX_TOKEN_LENGTH])))
-        {
-            continue;
-        }
+        if (search_token_length != strlen(&(c_string_array [i * MAX_TOKEN_LENGTH]))) { continue; }
 
         if (strncmp (search_token, &(c_string_array [i * MAX_TOKEN_LENGTH]), search_token_length) == 0)
         {

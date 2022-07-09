@@ -91,10 +91,7 @@ Delete_Document_Word_List
     ASSERT_MSG(object != NULL, "Object is NULL !");
 
     // Inner dimension
-    for (uint_fast32_t i = 0; i < object->number_of_arrays; ++ i)
-    {
-        FREE_AND_SET_TO_NULL(object->data [i]);
-    }
+    for (uint_fast32_t i = 0; i < object->number_of_arrays; ++ i) { FREE_AND_SET_TO_NULL(object->data [i]); }
 
     // Outer dimension
     FREE_AND_SET_TO_NULL(object->data);
