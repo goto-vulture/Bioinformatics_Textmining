@@ -211,9 +211,9 @@ Create_Token_Container_From_File
                             new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
                         }
 
-                        PRINTF_FFLUSH("Token_Container realloc. From %zu to %zu objects (%zu times)\n",
-                                old_allocated_token_container, new_container->allocated_token_container,
-                                token_container_realloc_counter);
+                        //PRINTF_FFLUSH("Token_Container realloc. From %zu to %zu objects (%zu times)\n",
+                        //        old_allocated_token_container, new_container->allocated_token_container,
+                        //        token_container_realloc_counter);
                     }
                 }
 
@@ -259,8 +259,8 @@ Create_Token_Container_From_File
                     current_token_list_obj->data = tmp_ptr;
                     current_token_list_obj->allocated_tokens += TOKENS_ALLOCATION_STEP_SIZE;
 
-                    PRINTF_FFLUSH("Tokens realloc. From %zu to %zu objects (%zu times)\n", old_tokens_size,
-                            current_token_list_obj->allocated_tokens, tokens_realloc_counter);
+                    //PRINTF_FFLUSH("Tokens realloc. From %zu to %zu objects (%zu times)\n", old_tokens_size,
+                    //        current_token_list_obj->allocated_tokens, tokens_realloc_counter);
                 }
 
                 char* res_mem_for_curr_token = Get_Address_Of_Next_Free_Token (current_token_list_obj);
