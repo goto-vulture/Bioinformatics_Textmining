@@ -143,12 +143,31 @@ Create_Token_Container_From_File
     PRINTF_FFLUSH(" done ! (%ld byte | Used time: %3.3fs)\n", input_file_length, used_seconds);
     FCLOSE_AND_SET_TO_NULL(input_file);
 
-    uint_fast32_t tokens_found = 0;
+    printf ("\nParsing file \"%s\"\n", file_name);
+    uint_fast32_t tokens_found      = 0;
+    uint_fast16_t last_percent_done = 0;
+    time_t start_percent_done       = 0;
+    const float max_steps = 100.0f;
     const char* current_parsing_position = input_file_data;
     while (*current_parsing_position != '\0')
     {
         // Parse the file JSON fragment per JSON fragment
         cJSON* json = cJSON_ParseWithOpts(current_parsing_position, (const char**) &current_parsing_position, false);
+        const size_t used_input_file_char = (size_t) (current_parsing_position - input_file_data);
+
+        const uint_fast16_t percent_done =
+                ((uint_fast16_t) used_input_file_char / ((uint_fast16_t) input_file_length / (uint_fast16_t) max_steps));
+        // Show next percent step on termial ?
+        if (percent_done > last_percent_done)
+        {
+            CLEAN_LINE()
+            const float time_used = DETERMINE_USED_TIME(start_percent_done, clock ());
+            PRINTF_FFLUSH ("\r%3.0f %% (ETA: ~ %7.2fs)",
+                    (float) percent_done / (max_steps / 100.0f), (max_steps - (float) percent_done) * time_used);
+            last_percent_done = percent_done;
+            start_percent_done = clock ();
+        }
+
         if (! json)
         {
             // Sometimes the json pointer is NULL. But an error only occurrs, when an error message is available
@@ -286,7 +305,7 @@ Create_Token_Container_From_File
 
     end = clock ();
     used_seconds = DETERMINE_USED_TIME(start, end);
-    printf ("=> %3.3fs for parsing the whole file (%" PRIuFAST32 " tokens found)\n", used_seconds, tokens_found);
+    printf ("\n=> %3.3fs for parsing the whole file (%" PRIuFAST32 " tokens found)\n", used_seconds, tokens_found);
 
     FREE_AND_SET_TO_NULL(input_file_data);
 
