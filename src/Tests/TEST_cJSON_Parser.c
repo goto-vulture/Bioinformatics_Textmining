@@ -229,10 +229,15 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
     FILE* input_file = fopen (input_file_name, "rb");
     ASSERT_FMSG(input_file != NULL, "Cannot open the input file: \"%s\" !", input_file_name);
     PRINTF_FFLUSH("Read file \"%s\" ...", input_file_name);
+
     // Get file size
-    fseek (input_file, 0, SEEK_END);
+    int fseek_return = fseek (input_file, 0, SEEK_END);
+    ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
     const long int input_file_length = ftell (input_file);
-    fseek (input_file, 0, SEEK_SET);
+    ASSERT_MSG(input_file_length != -1, "ftell() returned -1 !");
+    fseek_return = fseek (input_file, 0, SEEK_SET);
+    ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
+
     char* input_file_data = (char*) MALLOC (((size_t) input_file_length + sizeof ("")) * sizeof (char));
     ASSERT_ALLOC(input_file_data, "Cannot allocate memory for reading the input file !",
             ((size_t) input_file_length + sizeof ("")) * sizeof (char));
@@ -253,10 +258,15 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
     FILE* test_file = fopen (test_file_name, "rb");
     ASSERT_FMSG(test_file != NULL, "Cannot open the test file: \"%s\" !", test_file_name);
     PRINTF_FFLUSH("Read file \"%s\" ...", test_file_name);
+
     // Get file size
-    fseek (test_file, 0, SEEK_END);
+    fseek_return = fseek (test_file, 0, SEEK_END);
+    ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
     const long int test_file_length = ftell (test_file);
-    fseek (test_file, 0, SEEK_SET);
+    ASSERT_MSG(input_file_length != -1, "ftell() returned -1 !");
+    fseek_return = fseek (test_file, 0, SEEK_SET);
+    ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
+
     char* test_file_data = (char*) MALLOC (((size_t) test_file_length + sizeof ("")) * sizeof (char));
     ASSERT_ALLOC(test_file_data, "Cannot allocate memory for reading the test file !",
             ((size_t) test_file_length + sizeof ("")) * sizeof (char));

@@ -124,10 +124,15 @@ Create_Token_Container_From_File
     FILE* input_file = fopen (file_name, "rb");
     ASSERT_FMSG(input_file != NULL, "Cannot open the input file: \"%s\" !", file_name);
     PRINTF_FFLUSH("Read file \"%s\" ...", file_name);
+
     // Get file size
-    fseek (input_file, 0, SEEK_END);
+    int fseek_return = fseek (input_file, 0, SEEK_END);
+    ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
     const long int input_file_length = ftell (input_file);
-    fseek (input_file, 0, SEEK_SET);
+    ASSERT_MSG(input_file_length != -1, "ftell() returned -1 !");
+    fseek_return = fseek (input_file, 0, SEEK_SET);
+    ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
+
     char* input_file_data = (char*) MALLOC (((size_t) input_file_length + sizeof ("")) * sizeof (char));
     ASSERT_ALLOC(input_file_data, "Cannot allocate memory for reading the input file !",
             ((size_t) input_file_length + sizeof ("")) * sizeof (char));
