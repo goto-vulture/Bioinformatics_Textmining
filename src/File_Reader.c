@@ -305,7 +305,8 @@ Create_Token_Container_From_File
 
     end = clock ();
     used_seconds = DETERMINE_USED_TIME(start, end);
-    printf ("\n=> %3.3fs for parsing the whole file (%" PRIuFAST32 " tokens found)\n", used_seconds, tokens_found);
+    printf ("\n=> %3.3fs (~ %.3f MB/s) for parsing the whole file (%" PRIuFAST32 " tokens found)\n", used_seconds,
+            ((float) input_file_length / 1024.0f / 1024.0f) / used_seconds, tokens_found);
 
     FREE_AND_SET_TO_NULL(input_file_data);
 
