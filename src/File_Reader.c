@@ -184,6 +184,7 @@ Create_Token_Container_From_File
         {
             cJSON* name = cJSON_GetObjectItemCaseSensitive(json, curr->string);
             if (! name) { continue; }
+            if (! name->string) { continue; }
 
             // Exists a tokens array ?
             cJSON* tokens_array = cJSON_GetObjectItemCaseSensitive(name, "tokens");
@@ -194,47 +195,44 @@ Create_Token_Container_From_File
             register cJSON* curr_token = tokens_array->child;
 
             // ===== ===== ===== BEGIN Is it an new dataset ? ===== ===== =====
-            if (name->string)
+            // Is it not the first token list?
+            if (new_container->token_lists [new_container->next_free_element].id != 0)
             {
-                // Is it not the first token list?
-                if (new_container->token_lists [new_container->next_free_element].id != 0)
+                // Use the next element in the container
+                new_container->next_free_element ++;
+
+                // Is it necessary to realloc/increase the number of Token_Container ?
+                if (new_container->next_free_element >= new_container->allocated_token_container)
                 {
-                    // Use the next element in the container
-                    new_container->next_free_element ++;
+                    static size_t token_container_realloc_counter = 0;
+                    ++ token_container_realloc_counter;
+                    const size_t old_allocated_token_container = new_container->allocated_token_container;
 
-                    // Is it necessary to realloc/increase the number of Token_Container ?
-                    if (new_container->next_free_element >= new_container->allocated_token_container)
+                    // Adjust the number of Token_List object
+                    struct Token_List* temp_ptr = (struct Token_List*) REALLOC(new_container->token_lists,
+                            (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
+                    ASSERT_ALLOC(temp_ptr, "Cannot reallocate memory for Token_Container objects !",
+                            (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
+                    memset(temp_ptr + old_allocated_token_container, '\0', sizeof (struct Token_List) * TOKEN_CONTAINER_ALLOCATION_STEP_SIZE);
+
+                    new_container->token_lists = temp_ptr;
+                    new_container->allocated_token_container = old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
+
+                    // Create memory for the new Token_List objects
+                    for (size_t i = old_allocated_token_container; i < new_container->allocated_token_container; ++ i)
                     {
-                        static size_t token_container_realloc_counter = 0;
-                        ++ token_container_realloc_counter;
-                        const size_t old_allocated_token_container = new_container->allocated_token_container;
+                        new_container->token_lists [i].data = (char*) MALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+                        ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
+                                MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+                        memset(new_container->token_lists [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
 
-                        // Adjust the number of Token_List object
-                        struct Token_List* temp_ptr = (struct Token_List*) REALLOC(new_container->token_lists,
-                                (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
-                        ASSERT_ALLOC(temp_ptr, "Cannot reallocate memory for Token_Container objects !",
-                                (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
-                        memset(temp_ptr + old_allocated_token_container, '\0', sizeof (struct Token_List) * TOKEN_CONTAINER_ALLOCATION_STEP_SIZE);
-
-                        new_container->token_lists = temp_ptr;
-                        new_container->allocated_token_container = old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
-
-                        // Create memory for the new Token_List objects
-                        for (size_t i = old_allocated_token_container; i < new_container->allocated_token_container; ++ i)
-                        {
-                            new_container->token_lists [i].data = (char*) MALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-                            ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
-                                    MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-                            memset(new_container->token_lists [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-
-                            new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
-                            new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
-                        }
-
-                        //PRINTF_FFLUSH("Token_Container realloc. From %zu to %zu objects (%zu times)\n",
-                        //        old_allocated_token_container, new_container->allocated_token_container,
-                        //        token_container_realloc_counter);
+                        new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
+                        new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
                     }
+
+                    //PRINTF_FFLUSH("Token_Container realloc. From %zu to %zu objects (%zu times)\n",
+                    //        old_allocated_token_container, new_container->allocated_token_container,
+                    //        token_container_realloc_counter);
                 }
 
                 //long int new_id = 0;
