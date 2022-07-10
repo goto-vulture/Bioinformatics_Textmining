@@ -242,11 +242,11 @@ Create_Token_Container_From_File
                 //ASSERT_FMSG(convert_result == STR2INT_SUCCESS, "Cannot convert string \"%s\" to int !",
                 //        name->string);
                 //new_container->token_lists [new_container->next_free_element].id = new_id;
-                if (strlen (name->string) >= COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].id))
+                /*if (strlen (name->string) >= COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].id))
                 {
                     ASSERT_MSG(false, "<->");
                 }
-                else
+                else*/
                 {
                     strncpy (new_container->token_lists [new_container->next_free_element].id, name->string, 15);
                 }
