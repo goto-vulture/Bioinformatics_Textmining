@@ -128,9 +128,9 @@ Create_Token_Container_From_File
     fseek (input_file, 0, SEEK_END);
     const long int input_file_length = ftell (input_file);
     fseek (input_file, 0, SEEK_SET);
-    char* input_file_data = (char*) MALLOC ((long unsigned int) (input_file_length + 1) * sizeof (char));
+    char* input_file_data = (char*) MALLOC (((size_t) input_file_length + sizeof ("")) * sizeof (char));
     ASSERT_ALLOC(input_file_data, "Cannot allocate memory for reading the input file !",
-            (input_file_length + 1) * sizeof (char));
+            ((size_t) input_file_length + sizeof ("")) * sizeof (char));
 
     // If there is a read error, less than input_file_length bytes are read
     start = clock();

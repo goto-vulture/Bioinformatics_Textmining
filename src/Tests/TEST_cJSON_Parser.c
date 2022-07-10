@@ -233,9 +233,9 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
     fseek (input_file, 0, SEEK_END);
     const long int input_file_length = ftell (input_file);
     fseek (input_file, 0, SEEK_SET);
-    char* input_file_data = (char*) MALLOC ((long unsigned int) (input_file_length + 1) * sizeof (char));
+    char* input_file_data = (char*) MALLOC (((size_t) input_file_length + sizeof ("")) * sizeof (char));
     ASSERT_ALLOC(input_file_data, "Cannot allocate memory for reading the input file !",
-            (input_file_length + 1) * sizeof (char));
+            ((size_t) input_file_length + sizeof ("")) * sizeof (char));
 
     // If there is a read error, less than input_file_length bytes are read
     start = clock();
@@ -257,9 +257,9 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
     fseek (test_file, 0, SEEK_END);
     const long int test_file_length = ftell (test_file);
     fseek (test_file, 0, SEEK_SET);
-    char* test_file_data = (char*) MALLOC ((long unsigned int) (test_file_length + 1) * sizeof (char));
+    char* test_file_data = (char*) MALLOC (((size_t) test_file_length + sizeof ("")) * sizeof (char));
     ASSERT_ALLOC(test_file_data, "Cannot allocate memory for reading the test file !",
-            (test_file_length + 1) * sizeof (char));
+            ((size_t) test_file_length + sizeof ("")) * sizeof (char));
 
     // If there is a read error, less than input_file_length bytes are read
     start = clock ();
