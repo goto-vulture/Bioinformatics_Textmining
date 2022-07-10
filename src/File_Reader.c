@@ -147,7 +147,7 @@ Create_Token_Container_From_File
     uint_fast32_t tokens_found      = 0;
     uint_fast16_t last_percent_done = 0;
     time_t start_percent_done       = 0;
-    const float max_steps = 100.0f;
+    const float max_steps           = 10000.0f;
     const char* current_parsing_position = input_file_data;
     while (*current_parsing_position != '\0')
     {
@@ -160,10 +160,11 @@ Create_Token_Container_From_File
         // Show next percent step on termial ?
         if (percent_done > last_percent_done)
         {
-            CLEAN_LINE()
-            const float time_used = DETERMINE_USED_TIME(start_percent_done, clock ());
-            PRINTF_FFLUSH ("\r%3.0f %% (ETA: ~ %7.2fs)",
-                    (float) percent_done / (max_steps / 100.0f), (max_steps - (float) percent_done) * time_used);
+            const float time_used       = DETERMINE_USED_TIME(start_percent_done, clock ());
+            const float current_percent = (float) percent_done / (max_steps / 100.0f);
+            const float eta             = (max_steps - (float) percent_done) * time_used;
+            PRINTF_FFLUSH ("\r%6.2f %% (ETA: ~ %10.2fs)",
+                    (current_percent > 100.0f) ? 100.0f : current_percent, (eta < 0.0f) ? 0.0f : eta);
             last_percent_done = percent_done;
             start_percent_done = clock ();
         }
