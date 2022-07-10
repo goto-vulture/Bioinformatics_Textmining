@@ -439,6 +439,51 @@ Show_Selected_Token_Container
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Print the content of a Token_List object as array.
+ *
+ * Example for the array representation:
+ *      ID: <Token_List ID>: [ <Token_List data> ]
+ *
+ * This is only for debugging purposes useful.
+ *
+ * Asserts:
+ *      container != NULL
+ *      container->next_free_element < index_token_list
+ *
+ * @param[in] container Token_List_Container object
+ * @param[in] index_token_list Index of the Token_List object
+ */
+extern void
+Show_Selected_Token_Container_As_Array
+(
+        const struct Token_List_Container* const container,
+        const size_t index_token_list
+)
+{
+    ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
+    ASSERT_FMSG(container->next_free_element > index_token_list, "Index for the Token_List object is invalid ! Max. "
+            "valid: %" PRIuFAST32 "; Got %zu !", container->next_free_element - 1, index_token_list);
+
+    const size_t token_size = container->token_lists [index_token_list].max_token_length;
+
+    printf ("ID: %s [ ", container->token_lists [index_token_list].id);
+    for (size_t i = 0; i < container->token_lists [index_token_list].next_free_element; ++ i)
+    {
+        printf ("\"%s\"", &(container->token_lists [index_token_list].data [i * token_size]));
+
+        if ((i + 1) < container->token_lists [index_token_list].next_free_element)
+        {
+            printf (", ");
+        }
+    }
+    PUTS_FFLUSH(" ]");
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Print the content of all Token_List containers in a Token_List_Container object.
  *
  * This is only for debugging purposes useful.
@@ -459,6 +504,34 @@ Show_All_Token_Container
     for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
     {
         Show_Selected_Token_Container (container, i);
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Print the content of all Token_List containers in a Token_List_Container object with the array representation.
+ *
+ * This is only for debugging purposes useful.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ */
+extern void
+Show_All_Token_Container_With_Array_Representation
+(
+        const struct Token_List_Container* const container
+)
+{
+    ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
+
+    for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
+    {
+        Show_Selected_Token_Container_As_Array (container, i);
     }
 
     return;

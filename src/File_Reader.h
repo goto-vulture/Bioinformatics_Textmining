@@ -154,6 +154,28 @@ Show_Selected_Token_Container
 );
 
 /**
+ * @brief Print the content of a Token_List object as array.
+ *
+ * Example for the array representation:
+ *      ID: <Token_List ID>: [ <Token_List data> ]
+ *
+ * This is only for debugging purposes useful.
+ *
+ * Asserts:
+ *      container != NULL
+ *      container->next_free_element < index_token_list
+ *
+ * @param[in] container Token_List_Container object
+ * @param[in] index_token_list Index of the Token_List object
+ */
+extern void
+Show_Selected_Token_Container_As_Array
+(
+        const struct Token_List_Container* const container,
+        const size_t index_token_list
+);
+
+/**
  * @brief Print the content of all Token_List containers in a Token_List_Container object.
  *
  * This is only for debugging purposes useful.
@@ -165,6 +187,22 @@ Show_Selected_Token_Container
  */
 extern void
 Show_All_Token_Container
+(
+        const struct Token_List_Container* const container
+);
+
+/**
+ * @brief Print the content of all Token_List containers in a Token_List_Container object with the array representation.
+ *
+ * This is only for debugging purposes useful.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ */
+extern void
+Show_All_Token_Container_With_Array_Representation
 (
         const struct Token_List_Container* const container
 );
