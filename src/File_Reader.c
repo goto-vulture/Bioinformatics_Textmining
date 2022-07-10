@@ -675,12 +675,23 @@ Print_Token_List_Status_Infos
 {
     ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
 
+    size_t longest_id = 0;
+    for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
+    {
+        const size_t cur_id_length = strlen (container->token_lists [i].id);
+        if (cur_id_length > longest_id)
+        {
+            longest_id = cur_id_length;
+        }
+    }
+
     printf ("Full token list container size: %zu B (%.3f KB | %.3f MB)\n", Get_Token_Container_Size(container),
             (double) Get_Token_Container_Size(container) / 1024.0,
             (double) Get_Token_Container_Size(container) / 1024.0 / 1024.0);
     printf ("Sum all tokens:                 %" PRIuFAST32 "\n", Count_All_Tokens_In_Token_Container(container));
     printf ("Longest token list:             %zu\n", Get_Lengh_Of_Longest_Token_Container(container));
     printf ("Longest token:                  %zu\n", Get_Lengh_Of_Longest_Token(container));
+    printf ("Longest id:                     %zu\n", longest_id);
     fflush (stdout);
 
     return;
