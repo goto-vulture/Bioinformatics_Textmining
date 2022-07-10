@@ -419,6 +419,7 @@ At_Exit_Function
         void
 )
 {
+    puts ("\n");
     Show_Dynamic_Memory_Status();
     return;
 }
