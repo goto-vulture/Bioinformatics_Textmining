@@ -138,15 +138,15 @@ Create_Token_Container_From_File
             ((size_t) input_file_length + sizeof ("")) * sizeof (char));
 
     // If there is a read error, less than input_file_length bytes are read
-    start = clock();
+    /*start = clock();
     size_t mem_read = fread (input_file_data, 1, (size_t) input_file_length, input_file); // Read full input file
     ASSERT_FMSG(mem_read == (size_t) input_file_length, "Error while reading the file \"%s\" !", file_name);
-    end = clock();
+    end = clock();*/
     used_seconds = DETERMINE_USED_TIME(start, end);
 
-    input_file_data [input_file_length] = '\0';
-    PRINTF_FFLUSH(" done ! (%ld byte | Used time: %3.3fs)\n", input_file_length, used_seconds);
-    FCLOSE_AND_SET_TO_NULL(input_file);
+    //input_file_data [input_file_length] = '\0';
+    //PRINTF_FFLUSH(" done ! (%ld byte | Used time: %3.3fs)\n", input_file_length, used_seconds);
+    //FCLOSE_AND_SET_TO_NULL(input_file);
 
     printf ("\nParsing file \"%s\"\n", file_name);
     uint_fast32_t tokens_found      = 0;
@@ -157,6 +157,11 @@ Create_Token_Container_From_File
     const float max_steps           = 10000.0f;
     float sum_time_used             = 0.0f;
 
+    char* fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
+
+    // Read file line by line
+    while(fgets_res != NULL)
+    {
     const char* current_parsing_position = input_file_data;
     while (*current_parsing_position != '\0')
     {
@@ -316,6 +321,12 @@ Create_Token_Container_From_File
         cJSON_Delete(json);
         json = NULL;
     }
+    // Read next line
+    fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
+    input_file_data [input_file_length] = '\0';
+    }
+
+    FCLOSE_AND_SET_TO_NULL(input_file);
 
     // Don't forget to indicate, that the counter still point to the last used Token_List object
     new_container->next_free_element ++;
