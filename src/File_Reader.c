@@ -116,14 +116,13 @@ Create_Token_Container_From_File
         new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
     }
 
-    clock_t start = 0;
-    clock_t end = 0;
-    float used_seconds = 0.0f;
+    clock_t start       = 0;
+    clock_t end         = 0;
+    float used_seconds  = 0.0f;
 
-    // Try to read the full input_file
+    // Try to open the file
     FILE* input_file = fopen (file_name, "rb");
     ASSERT_FMSG(input_file != NULL, "Cannot open the input file: \"%s\" !", file_name);
-    PRINTF_FFLUSH("Read file \"%s\" ...", file_name);
 
     // Get file size
     int fseek_return = fseek (input_file, 0, SEEK_END);
@@ -137,59 +136,42 @@ Create_Token_Container_From_File
     ASSERT_ALLOC(input_file_data, "Cannot allocate memory for reading the input file !",
             ((size_t) input_file_length + sizeof ("")) * sizeof (char));
 
-    // If there is a read error, less than input_file_length bytes are read
-    /*start = clock();
-    size_t mem_read = fread (input_file_data, 1, (size_t) input_file_length, input_file); // Read full input file
-    ASSERT_FMSG(mem_read == (size_t) input_file_length, "Error while reading the file \"%s\" !", file_name);
-    end = clock();*/
+    uint_fast32_t lines_in_file = 1;
+    PRINTF_FFLUSH("Count lines in file \"%s\" ...", file_name);
+    start = clock ();
+    for (int c = getc(input_file); c != EOF; c = getc(input_file))
+    {
+        if (c == '\n') { ++ lines_in_file; }
+    }
+    end = clock ();
     used_seconds = DETERMINE_USED_TIME(start, end);
+    PRINTF_FFLUSH(" done ! (%" PRIuFAST32 " line%s | Used time: %3.3fs)\n", lines_in_file,
+            (lines_in_file == 1) ? "" : "s", used_seconds);
 
-    //input_file_data [input_file_length] = '\0';
-    //PRINTF_FFLUSH(" done ! (%ld byte | Used time: %3.3fs)\n", input_file_length, used_seconds);
-    //FCLOSE_AND_SET_TO_NULL(input_file);
+    fseek_return = fseek (input_file, 0, SEEK_SET);
+    ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
 
-    printf ("\nParsing file \"%s\"\n", file_name);
+    uint_fast32_t line_counter      = 0;
     uint_fast32_t tokens_found      = 0;
-    uint_fast32_t int_sum_time_used = 0;
-    uint_fast16_t last_percent_done = 0;
-
-    time_t start_percent_done       = 0;
-    const float max_steps           = 10000.0f;
-    float sum_time_used             = 0.0f;
+    const uint_fast32_t print_steps = 1000;
 
     char* fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
 
-    // Read file line by line
+    // ===== ===== ===== BEGIN Read file line by line ===== ===== =====
     while(fgets_res != NULL)
     {
+        ++ line_counter;
     const char* current_parsing_position = input_file_data;
     while (*current_parsing_position != '\0')
     {
         // Parse the file JSON fragment per JSON fragment
         cJSON* json = cJSON_ParseWithOpts(current_parsing_position, (const char**) &current_parsing_position, false);
-        const size_t used_input_file_char = (size_t) (current_parsing_position - input_file_data);
 
-        const uint_fast16_t percent_done =
-                ((uint_fast16_t) used_input_file_char / ((uint_fast16_t) input_file_length / (uint_fast16_t) max_steps));
-        // Show next percent step on termial ?
-        if (percent_done > last_percent_done)
+        // Print process information
+        if ((line_counter % print_steps) == 0)
         {
-            const float time_used       = DETERMINE_USED_TIME(start_percent_done, clock ());
-            const float current_percent = (float) percent_done / (max_steps / 100.0f);
-            const float eta             = (max_steps - (float) percent_done) * time_used;
-            sum_time_used += time_used;
-
-            // Show every second progress information
-            if ((uint_fast32_t) sum_time_used > int_sum_time_used)
-            {
-                PRINTF_FFLUSH ("\r%6.2f %% (ETA: ~ %10.2fs) Time used: %6" PRIuFAST32 "s",
-                        (current_percent > 100.0f) ? 100.0f : current_percent, (eta < 0.0f) ? 0.0f : eta,
-                        (uint_fast32_t) sum_time_used);
-                last_percent_done = percent_done;
-                int_sum_time_used = (uint_fast32_t) sum_time_used;
-            }
-
-            start_percent_done = clock ();
+            PRINTF_FFLUSH("\rRead line: %" PRIuFAST32 " / %" PRIuFAST32,
+                    (line_counter + print_steps <= lines_in_file) ? line_counter : lines_in_file, lines_in_file);
         }
 
         if (! json)
@@ -325,6 +307,7 @@ Create_Token_Container_From_File
     fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
     input_file_data [input_file_length] = '\0';
     }
+    // ===== ===== ===== END Read file line by line ===== ===== =====
 
     FCLOSE_AND_SET_TO_NULL(input_file);
 
