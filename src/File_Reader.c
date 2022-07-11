@@ -161,155 +161,140 @@ Create_Token_Container_From_File
     while(fgets_res != NULL)
     {
         ++ line_counter;
-    const char* current_parsing_position = input_file_data;
-    while (*current_parsing_position != '\0')
-    {
-        // Parse the file JSON fragment per JSON fragment
-        cJSON* json = cJSON_ParseWithOpts(current_parsing_position, (const char**) &current_parsing_position, false);
-
-        // Print process information
-        if ((line_counter % print_steps) == 0)
+        const char* current_parsing_position = input_file_data;
+        while (*current_parsing_position != '\0')
         {
-            PRINTF_FFLUSH("\rRead line: %" PRIuFAST32 " / %" PRIuFAST32,
-                    (line_counter + print_steps <= lines_in_file) ? line_counter : lines_in_file, lines_in_file);
-        }
+            // Parse the file JSON fragment per JSON fragment
+            cJSON* json = cJSON_ParseWithOpts(current_parsing_position, (const char**) &current_parsing_position, false);
 
-        if (! json)
-        {
-            // Sometimes the json pointer is NULL. But an error only occurrs, when an error message is available
-            if (strlen (cJSON_GetErrorPtr()) > 0)
+            // Print process information
+            if ((line_counter % print_steps) == 0)
             {
-                printf("Error before: [%s]\n", cJSON_GetErrorPtr());
+                PRINTF_FFLUSH("\rRead line: %" PRIuFAST32 " / %" PRIuFAST32,
+                        (line_counter + print_steps <= lines_in_file) ? line_counter : lines_in_file, lines_in_file);
             }
-            break;
-        }
-        cJSON* curr = json->child;
 
-        while (curr != NULL)
-        {
-            cJSON* name = cJSON_GetObjectItemCaseSensitive(json, curr->string);
-            if (! name) { continue; }
-            if (! name->string) { continue; }
-
-            // Exists a tokens array ?
-            cJSON* tokens_array = cJSON_GetObjectItemCaseSensitive(name, "tokens");
-            if (! tokens_array) { continue; }
-
-            // Get all tokens from tokens array
-            //const int tokens_array_size = cJSON_GetArraySize(tokens_array);
-            register cJSON* curr_token = tokens_array->child;
-
-            // ===== ===== ===== BEGIN Is it an new dataset ? ===== ===== =====
-            // Is it not the first token list?
-            if (new_container->token_lists [new_container->next_free_element].id != 0)
+            if (! json)
             {
-                // Use the next element in the container
-                new_container->next_free_element ++;
-
-                // Is it necessary to realloc/increase the number of Token_Container ?
-                if (new_container->next_free_element >= new_container->allocated_token_container)
+                // Sometimes the json pointer is NULL. But an error only occurrs, when an error message is available
+                if (strlen (cJSON_GetErrorPtr()) > 0)
                 {
-                    static size_t token_container_realloc_counter = 0;
-                    ++ token_container_realloc_counter;
-                    const size_t old_allocated_token_container = new_container->allocated_token_container;
+                    printf("Error before: [%s]\n", cJSON_GetErrorPtr());
+                }
+                break;
+            }
+            cJSON* curr = json->child;
 
-                    // Adjust the number of Token_List object
-                    struct Token_List* temp_ptr = (struct Token_List*) REALLOC(new_container->token_lists,
-                            (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
-                    ASSERT_ALLOC(temp_ptr, "Cannot reallocate memory for Token_Container objects !",
-                            (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
-                    memset(temp_ptr + old_allocated_token_container, '\0', sizeof (struct Token_List) * TOKEN_CONTAINER_ALLOCATION_STEP_SIZE);
+            while (curr != NULL)
+            {
+                cJSON* name = cJSON_GetObjectItemCaseSensitive(json, curr->string);
+                if (! name) { continue; }
+                if (! name->string) { continue; }
 
-                    new_container->token_lists = temp_ptr;
-                    new_container->allocated_token_container = old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
+                // Exists a tokens array ?
+                cJSON* tokens_array = cJSON_GetObjectItemCaseSensitive(name, "tokens");
+                if (! tokens_array) { continue; }
 
-                    // Create memory for the new Token_List objects
-                    for (size_t i = old_allocated_token_container; i < new_container->allocated_token_container; ++ i)
+                // Get all tokens from tokens array
+                //const int tokens_array_size = cJSON_GetArraySize(tokens_array);
+                register cJSON* curr_token = tokens_array->child;
+
+                // ===== ===== ===== BEGIN Is it an new dataset ? ===== ===== =====
+                // Is it not the first token list?
+                if (new_container->token_lists [new_container->next_free_element].id != 0)
+                {
+                    // Use the next element in the container
+                    new_container->next_free_element ++;
+
+                    // Is it necessary to realloc/increase the number of Token_Container ?
+                    if (new_container->next_free_element >= new_container->allocated_token_container)
                     {
-                        new_container->token_lists [i].data = (char*) MALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-                        ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
-                                MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-                        memset(new_container->token_lists [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+                        static size_t token_container_realloc_counter = 0;
+                        ++ token_container_realloc_counter;
+                        const size_t old_allocated_token_container = new_container->allocated_token_container;
 
-                        new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
-                        new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
+                        // Adjust the number of Token_List object
+                        struct Token_List* temp_ptr = (struct Token_List*) REALLOC(new_container->token_lists,
+                                (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
+                        ASSERT_ALLOC(temp_ptr, "Cannot reallocate memory for Token_Container objects !",
+                                (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
+                        memset(temp_ptr + old_allocated_token_container, '\0', sizeof (struct Token_List) * TOKEN_CONTAINER_ALLOCATION_STEP_SIZE);
+
+                        new_container->token_lists = temp_ptr;
+                        new_container->allocated_token_container = old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
+
+                        // Create memory for the new Token_List objects
+                        for (size_t i = old_allocated_token_container; i < new_container->allocated_token_container; ++ i)
+                        {
+                            new_container->token_lists [i].data = (char*) MALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+                            ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
+                                    MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+                            memset(new_container->token_lists [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+
+                            new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
+                            new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
+                        }
                     }
 
-                    //PRINTF_FFLUSH("Token_Container realloc. From %zu to %zu objects (%zu times)\n",
-                    //        old_allocated_token_container, new_container->allocated_token_container,
-                    //        token_container_realloc_counter);
+                    /*if (strlen (name->string) >= COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].id))
+                    {
+                        ASSERT_MSG(false, "<->");
+                    }
+                    else*/
+                    {
+                        strncpy (new_container->token_lists [new_container->next_free_element].id, name->string, 15);
+                    }
                 }
+                // ===== ===== ===== END Is it an new dataset ? ===== ===== =====
 
-                //long int new_id = 0;
-                //const enum str2int_errno convert_result = str2int(&new_id, name->string, 10);
-                //ASSERT_FMSG(convert_result == STR2INT_SUCCESS, "Cannot convert string \"%s\" to int !",
-                //        name->string);
-                //new_container->token_lists [new_container->next_free_element].id = new_id;
-                /*if (strlen (name->string) >= COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].id))
+                struct Token_List* const current_token_list_obj = &(new_container->token_lists [new_container->next_free_element]);
+
+                // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
+                while (curr_token != NULL)
                 {
-                    ASSERT_MSG(false, "<->");
+                    if (! curr_token->valuestring) { continue; }
+
+                    // Is more memory for the new token in the Token_List necessary ?
+                    if (current_token_list_obj->next_free_element >= current_token_list_obj->allocated_tokens)
+                    {
+                        static size_t tokens_realloc_counter = 0;
+                        ++ tokens_realloc_counter;
+                        const size_t old_tokens_size = current_token_list_obj->allocated_tokens;
+                        const size_t token_size = current_token_list_obj->max_token_length;
+
+                        char* tmp_ptr = (char*) REALLOC(current_token_list_obj->data,
+                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
+                        ASSERT_ALLOC(tmp_ptr, "Cannot reallocate memory for Tokens data !",
+                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
+                        memset(tmp_ptr + (old_tokens_size * token_size), '\0',
+                                (TOKENS_ALLOCATION_STEP_SIZE) * token_size);
+
+                        current_token_list_obj->data = tmp_ptr;
+                        current_token_list_obj->allocated_tokens += TOKENS_ALLOCATION_STEP_SIZE;
+                    }
+
+                    char* res_mem_for_curr_token = Get_Address_Of_Next_Free_Token (current_token_list_obj);
+
+                    // Copy token to the current Token_List
+                    strncpy(res_mem_for_curr_token, curr_token->valuestring, current_token_list_obj->max_token_length - 1);
+                    current_token_list_obj->next_free_element ++;
+                    tokens_found ++;
+
+                    curr_token = curr_token->next;
                 }
-                else*/
-                {
-                    strncpy (new_container->token_lists [new_container->next_free_element].id, name->string, 15);
-                }
+                // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
+
+                curr = curr->next;
             }
-            // ===== ===== ===== END Is it an new dataset ? ===== ===== =====
 
-
-            struct Token_List* const current_token_list_obj = &(new_container->token_lists [new_container->next_free_element]);
-
-            // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
-            while (curr_token != NULL)
-            {
-                if (! curr_token->valuestring) { continue; }
-
-                // Is more memory for the new token in the Token_List necessary ?
-                if (current_token_list_obj->next_free_element >= current_token_list_obj->allocated_tokens)
-                {
-                    static size_t tokens_realloc_counter = 0;
-                    ++ tokens_realloc_counter;
-                    const size_t old_tokens_size = current_token_list_obj->allocated_tokens;
-                    const size_t token_size = current_token_list_obj->max_token_length;
-
-                    char* tmp_ptr = (char*) REALLOC(current_token_list_obj->data,
-                            (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
-                    ASSERT_ALLOC(tmp_ptr, "Cannot reallocate memory for Tokens data !",
-                            (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
-                    memset(tmp_ptr + (old_tokens_size * token_size), '\0',
-                            (TOKENS_ALLOCATION_STEP_SIZE) * token_size);
-
-                    current_token_list_obj->data = tmp_ptr;
-                    current_token_list_obj->allocated_tokens += TOKENS_ALLOCATION_STEP_SIZE;
-
-                    //PRINTF_FFLUSH("Tokens realloc. From %zu to %zu objects (%zu times)\n", old_tokens_size,
-                    //        current_token_list_obj->allocated_tokens, tokens_realloc_counter);
-                }
-
-                char* res_mem_for_curr_token = Get_Address_Of_Next_Free_Token (current_token_list_obj);
-
-                // Copy token to the current Token_List
-                strncpy(res_mem_for_curr_token, curr_token->valuestring, current_token_list_obj->max_token_length - 1);
-                current_token_list_obj->next_free_element ++;
-                tokens_found ++;
-
-                curr_token = curr_token->next;
-            }
-            // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
-
-            curr = curr->next;
+            cJSON_Delete(json);
+            json = NULL;
         }
-
-        cJSON_Delete(json);
-        json = NULL;
-    }
-    // Read next line
-    fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
-    input_file_data [input_file_length] = '\0';
+        // Read next line
+        fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
+        input_file_data [input_file_length] = '\0';
     }
     // ===== ===== ===== END Read file line by line ===== ===== =====
-
-    FCLOSE_AND_SET_TO_NULL(input_file);
 
     // Don't forget to indicate, that the counter still point to the last used Token_List object
     new_container->next_free_element ++;
@@ -319,6 +304,7 @@ Create_Token_Container_From_File
     printf ("\n=> %3.3fs (~ %.3f MB/s) for parsing the whole file (%" PRIuFAST32 " tokens found)\n", used_seconds,
             ((float) input_file_length / 1024.0f / 1024.0f) / used_seconds, tokens_found);
 
+    FCLOSE_AND_SET_TO_NULL(input_file);
     FREE_AND_SET_TO_NULL(input_file_data);
 
     return new_container;
