@@ -150,9 +150,13 @@ Create_Token_Container_From_File
 
     printf ("\nParsing file \"%s\"\n", file_name);
     uint_fast32_t tokens_found      = 0;
+    uint_fast32_t int_sum_time_used = 0;
     uint_fast16_t last_percent_done = 0;
+
     time_t start_percent_done       = 0;
     const float max_steps           = 10000.0f;
+    float sum_time_used             = 0.0f;
+
     const char* current_parsing_position = input_file_data;
     while (*current_parsing_position != '\0')
     {
@@ -168,9 +172,18 @@ Create_Token_Container_From_File
             const float time_used       = DETERMINE_USED_TIME(start_percent_done, clock ());
             const float current_percent = (float) percent_done / (max_steps / 100.0f);
             const float eta             = (max_steps - (float) percent_done) * time_used;
-            PRINTF_FFLUSH ("\r%6.2f %% (ETA: ~ %10.2fs)",
-                    (current_percent > 100.0f) ? 100.0f : current_percent, (eta < 0.0f) ? 0.0f : eta);
-            last_percent_done = percent_done;
+            sum_time_used += time_used;
+
+            // Show every second progress information
+            if ((uint_fast32_t) sum_time_used > int_sum_time_used)
+            {
+                PRINTF_FFLUSH ("\r%6.2f %% (ETA: ~ %10.2fs) Time used: %6" PRIuFAST32 "s",
+                        (current_percent > 100.0f) ? 100.0f : current_percent, (eta < 0.0f) ? 0.0f : eta,
+                        (uint_fast32_t) sum_time_used);
+                last_percent_done = percent_done;
+                int_sum_time_used = (uint_fast32_t) sum_time_used;
+            }
+
             start_percent_done = clock ();
         }
 
