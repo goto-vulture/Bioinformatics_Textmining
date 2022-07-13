@@ -178,8 +178,14 @@ Create_Token_Container_From_File
             // Print process information
             if ((line_counter % print_steps) == 0)
             {
-                PRINTF_FFLUSH("\rRead line: %" PRIuFAST32 " / %" PRIuFAST32,
-                        (line_counter + print_steps <= lines_in_file) ? line_counter : lines_in_file, lines_in_file);
+                // Show only the current status, when the number of the line_counter changed since the last printing
+                static uint_fast32_t last_line_counter = 0;
+                if (last_line_counter != line_counter)
+                {
+                    PRINTF_FFLUSH("\rRead line: %" PRIuFAST32 " / %" PRIuFAST32,
+                            (line_counter + print_steps <= lines_in_file) ? line_counter : lines_in_file, lines_in_file);
+                }
+                last_line_counter = line_counter;
             }
 
             if (! json)
