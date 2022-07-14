@@ -403,7 +403,7 @@ int main (const int argc, const char* argv [])
             if (element_added) { ++ token_added_to_mapping; }
         }
     }
-    printf ("\nAfter token container 1: %" PRIuFAST32 " elements added to mapping\n", token_added_to_mapping);
+    printf ("\nAfter token container 2: %" PRIuFAST32 " elements added to mapping\n", token_added_to_mapping);
 
     // Mehrdimensionaler Container fuer Int-Werte, die fuer die Schnittmengenbestimmung verwendet werden
     const size_t length_of_longest_token_container =
@@ -418,7 +418,6 @@ int main (const int argc, const char* argv [])
             sizeof (uint_fast32_t));
     uint_fast32_t* intersection_values = (uint_fast32_t*) CALLOC(length_of_longest_token_container,
             sizeof (uint_fast32_t));
-    uint_fast32_t count_intersection_values = 0;
 
     size_t next_free_value = 0;
     ASSERT_ALLOC(token_int_values, "Cannot allocate memory for token int mapping values !",
@@ -490,83 +489,105 @@ int main (const int argc, const char* argv [])
         }
     }
 
-    const uint_fast32_t selected_data_array = 1;
-
-    // Schnittmengenbestimmung durchfuehren
-    struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops (source_int_values_1,
-            source_int_values_2->data [selected_data_array], source_int_values_2->arrays_lengths [selected_data_array]);
-
     FILE* result_file = fopen(GLOBAL_CLI_OUTPUT_FILE, "w");
     ASSERT_FMSG(result_file != NULL, "Cannot open/create the result file: \"%s\" !", GLOBAL_CLI_OUTPUT_FILE);
-    size_t count_results = 0;
-    size_t result_pos [100];
-    memset(result_pos, '\0', sizeof(result_pos));
-    size_t next_free_result_pos = 0;
 
-    fprintf(stdout, "Data:\n{ ");
-    fprintf(result_file, "Data:\n{ ");
-    for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_array]; ++ i)
+    // Schnittmengenbestimmung durchfuehren
+    for (uint_fast32_t selected_data_array = 0; selected_data_array < 100; ++ selected_data_array)
     {
-        // Token zum passenden Int-Wert finden -> also Mapping rueckgaengig machen
-        char int_to_token_mem [32];
-        memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
+        fputs("=====\n", stdout);
+        fputs("=====\n", result_file);
 
-        Int_To_Token (token_int_mapping, source_int_values_2->data [selected_data_array][i], int_to_token_mem,
-                sizeof (int_to_token_mem) - 1);
-        fprintf(stdout, "%s", int_to_token_mem);
-        fprintf(result_file, "%s", int_to_token_mem);
+        struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops (source_int_values_1,
+                source_int_values_2->data [selected_data_array], source_int_values_2->arrays_lengths [selected_data_array]);
 
-        if ((i + 1) < source_int_values_2->arrays_lengths [selected_data_array])
-        {
-            fprintf(stdout, ", ");
-            fprintf(result_file, ", ");
-        }
-    }
-    fputs(" }\n\n", stdout);
-    fputs(" }\n\n", result_file);
+        size_t count_results = 0;
+        //size_t result_pos [100];
+        //memset(result_pos, '\0', sizeof(result_pos));
+        //size_t next_free_result_pos = 0;
 
-    for (size_t i = 0; i < intersection_result->number_of_arrays; ++ i)
-    {
-        fprintf(stdout, "Token block: %zu\n[ ", i);
-        fprintf(result_file, "Token block: %zu\n[ ", i);
-        for (size_t i2 = 0; i2 < intersection_result->arrays_lengths [i]; ++ i2)
+        fprintf(stdout, "Data:\n{ ");
+        fprintf(result_file, "Data:\n{ ");
+        for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_array]; ++ i)
         {
             // Token zum passenden Int-Wert finden -> also Mapping rueckgaengig machen
             char int_to_token_mem [32];
             memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
 
-            Int_To_Token (token_int_mapping, intersection_result->data [i][i2], int_to_token_mem,
+            Int_To_Token (token_int_mapping, source_int_values_2->data [selected_data_array][i], int_to_token_mem,
                     sizeof (int_to_token_mem) - 1);
             fprintf(stdout, "%s", int_to_token_mem);
             fprintf(result_file, "%s", int_to_token_mem);
 
-            if ((i2 + 1) < intersection_result->arrays_lengths [i])
+            if ((i + 1) < source_int_values_2->arrays_lengths [selected_data_array])
             {
                 fprintf(stdout, ", ");
                 fprintf(result_file, ", ");
             }
-            count_results ++;
-            result_pos [next_free_result_pos] = i;
-            ++ next_free_result_pos;
         }
-        fputs(" ]\n", stdout);
-        fputs(" ]\n", result_file);
-    }
-    fprintf(stdout, "\nNumber of results: %zu\nPosition(s):\n", count_results);
-    fprintf(result_file, "\nNumber of results: %zu\nPosition(s);\n", count_results);
-    for (size_t i = 0; i < next_free_result_pos; ++ i)
-    {
-        fprintf(stdout, "%zu", result_pos [i]);
-        fprintf(result_file, "%zu", result_pos [i]);
-        if ((i + 1) < next_free_result_pos)
+        fputs(" }\n\n", stdout);
+        fputs(" }\n\n", result_file);
+
+        for (size_t i = 0; i < intersection_result->number_of_arrays; ++ i)
         {
-            fprintf(stdout, ", ");
-            fprintf(result_file, ", ");
+            for (size_t i2 = 0; i2 < intersection_result->arrays_lengths [i]; ++ i2)
+            {
+                if (i2 == 0)
+                {
+                    fprintf(stdout, "Token block: %zu\n[ ", i);
+                    fprintf(result_file, "Token block: %zu\n[ ", i);
+                }
+
+                // Token zum passenden Int-Wert finden -> also Mapping rueckgaengig machen
+                char int_to_token_mem [32];
+                memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
+
+                Int_To_Token (token_int_mapping, intersection_result->data [i][i2], int_to_token_mem,
+                        sizeof (int_to_token_mem) - 1);
+                fprintf(stdout, "%s", int_to_token_mem);
+                fprintf(result_file, "%s", int_to_token_mem);
+
+                if ((i2 + 1) < intersection_result->arrays_lengths [i])
+                {
+                    fprintf(stdout, ", ");
+                    fprintf(result_file, ", ");
+                }
+                else
+                {
+                    fputs(" ]\n", stdout);
+                    fputs(" ]\n", result_file);
+                }
+                count_results ++;
+                //result_pos [next_free_result_pos] = i;
+                //++ next_free_result_pos;
+            }
         }
+        /*fprintf(stdout, "\nNumber of results: %zu\nPosition(s):\n", count_results);
+        fprintf(result_file, "\nNumber of results: %zu\nPosition(s);\n", count_results);
+        for (size_t i = 0; i < next_free_result_pos; ++ i)
+        {
+            fprintf(stdout, "%zu", result_pos [i]);
+            fprintf(result_file, "%zu", result_pos [i]);
+            if ((i + 1) < next_free_result_pos)
+            {
+                fprintf(stdout, ", ");
+                fprintf(result_file, ", ");
+            }
+            else
+            {
+                fprintf(stdout, "\n");
+                fprintf(result_file, "\n");
+            }
+        }*/
+
+        fputs("=====\n", stdout);
+        fputs("=====\n", result_file);
+
+        Delete_Document_Word_List(intersection_result);
+        intersection_result = NULL;
     }
 
     FCLOSE_AND_SET_TO_NULL(result_file);
-
 
     Delete_Token_Container(token_container_input_1);
     token_container_input_1 = NULL;
@@ -578,8 +599,6 @@ int main (const int argc, const char* argv [])
     source_int_values_1 = NULL;
     Delete_Document_Word_List(source_int_values_2);
     source_int_values_2 = NULL;
-    Delete_Document_Word_List(intersection_result);
-    intersection_result = NULL;
 
     FREE_AND_SET_TO_NULL(token_int_values);
     FREE_AND_SET_TO_NULL(intersection_values);
