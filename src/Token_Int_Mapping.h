@@ -41,6 +41,17 @@ extern "C"
 #error "The macro \"C_STR_ARRAYS\" is already defined !"
 #endif /* C_STR_ARRAYS */
 
+/**
+ * @brief Maximum length of a token (inkl. the terminator byte)
+ *
+ * The value is a approximate order of magnitude and could be change in the future.
+ */
+#ifndef MAX_TOKEN_LENGTH
+#define MAX_TOKEN_LENGTH 64
+#else
+#error "The macro \"MAX_TOKEN_LENGTH\" is already defined !"
+#endif /* MAX_TOKEN_LENGTH */
+
 //=====================================================================================================================
 
 struct Token_Int_Mapping

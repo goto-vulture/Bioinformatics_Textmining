@@ -18,19 +18,9 @@
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Print_Tools.h"
+#include "File_Reader.h"
 
 
-
-/**
- * @brief Maximum length of a token (inkl. the terminator byte)
- *
- * The value is a approximate order of magnitude and could be change in the future.
- */
-#ifndef MAX_TOKEN_LENGTH
-#define MAX_TOKEN_LENGTH 32
-#else
-#error "The macro \"MAX_TOKEN_LENGTH\" is already defined !"
-#endif /* MAX_TOKEN_LENGTH */
 
 /**
  * @brief Memory for this number of tokens per C-String.

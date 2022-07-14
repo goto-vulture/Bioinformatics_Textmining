@@ -19,19 +19,9 @@
 #include "Misc.h"
 #include "JSON_Parser/cJSON.h"
 #include "str2int.h"
+#include "Token_Int_Mapping.h"
 
 
-
-/**
- * @brief Maximum length of a token (inkl. the terminator byte)
- *
- * The value is a approximate order of magnitude and could be change in the future.
- */
-#ifndef MAX_TOKEN_LENGTH
-#define MAX_TOKEN_LENGTH 64
-#else
-#error "The macro \"MAX_TOKEN_LENGTH\" is already defined !"
-#endif /* MAX_TOKEN_LENGTH */
 
 /**
  * @brief Number of tokens in a Token_List
