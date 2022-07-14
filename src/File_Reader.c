@@ -13,6 +13,7 @@
 #include "File_Reader.h"
 #include <string.h>
 #include <time.h>
+#include <math.h>
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Print_Tools.h"
@@ -59,6 +60,24 @@ static char*
 Get_Address_Of_Next_Free_Token
 (
         const struct Token_List* const token_list
+);
+
+/**
+ * @brief Calculate the the average of all tokens in the object.
+ *
+ * This information is for debugging and statistical purposes helpful.
+ *
+ * Asserts:
+ *      token_list_container != NULL
+ *
+ * @param[in] token_list_container Token_List_Container object
+ *
+ * @return Average token length
+ */
+static size_t
+Get_Average_Token_Length
+(
+        const struct Token_List_Container* const token_list_container
 );
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -713,13 +732,19 @@ Print_Token_List_Status_Infos
         }
     }
 
+    puts("");
     printf ("Full token list container size: %zu B (%.3f KB | %.3f MB)\n", Get_Token_Container_Size(container),
             (double) Get_Token_Container_Size(container) / 1024.0,
             (double) Get_Token_Container_Size(container) / 1024.0 / 1024.0);
     printf ("Sum all tokens:                 %" PRIuFAST32 "\n", Count_All_Tokens_In_Token_Container(container));
+    printf ("Number of token lists:          %" PRIuFAST32 "\n", container->next_free_element);
+    // Actual every token list has the same max token length !
+    printf ("Max. possible token length:     %zu\n", container->token_lists [0].max_token_length);
+    printf ("Average token length:           %zu\n", Get_Average_Token_Length(container));
     printf ("Longest token list:             %zu\n", Get_Lengh_Of_Longest_Token_Container(container));
     printf ("Longest token:                  %zu\n", Get_Lengh_Of_Longest_Token(container));
     printf ("Longest id:                     %zu\n", longest_id);
+    puts("");
     fflush (stdout);
 
     return;
@@ -746,6 +771,42 @@ Get_Address_Of_Next_Free_Token
     ASSERT_MSG(token_list != NULL, "Token_List is NULL !");
 
     return token_list->data + (token_list->max_token_length * token_list->next_free_element);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Calculate the the average of all tokens in the object.
+ *
+ * This information is for debugging and statistical purposes helpful.
+ *
+ * Asserts:
+ *      token_list_container != NULL
+ *
+ * @param[in] token_list_container Token_List_Container object
+ *
+ * @return Average token length
+ */
+static size_t
+Get_Average_Token_Length
+(
+        const struct Token_List_Container* const token_list_container
+)
+{
+    ASSERT_MSG(token_list_container != NULL, "Token_List_Container is NULL !");
+
+    size_t sum_token_length = 0;
+
+    for (uint_fast32_t i = 0; i < token_list_container->next_free_element; ++ i)
+    {
+        for (uint_fast32_t i2 = 0; i2 < token_list_container->token_lists [i].next_free_element; ++ i2)
+        {
+            sum_token_length += strlen (Get_Token_From_Token_Container(token_list_container, i, i2));
+        }
+    }
+
+    const float result = (float) sum_token_length / (float) Count_All_Tokens_In_Token_Container(token_list_container);
+    return (size_t) ceil (result);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
