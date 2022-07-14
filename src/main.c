@@ -17,19 +17,19 @@
  */
 
 /*
- * C-Version ueberpruefen, um Schluesselwoerter u.U. durch leere Makros bzw. Alternativwerte zu ersetzen
+ * Check the used C version, to replace keywords in the language if necessary. (E.g.: The C version is an older version
+ * and contains some keywords which were included in newer releases of the language.
  *
- * Das Makro __STDC_VERSION__ ist fuer C90 nicht definiert
- * ->   Schluesselwoerter inline und restrict durch leere Markos ersetzen, damit eine Uebersetzung auch mit C90
- *      moeglich ist.
+ * The possiblility is high, that another components in the code exists, which are not compatible with older versions (I
+ * used only the C11 standard while the development)
+ * At least the conflict with the keywords can be solved with the following preprocessor statements.
+ *
+ * The macro __STDC_VERSION__ is for C90 not defined
+ * ->   Replace the keywords inline and restrict with empty marcos to make a translation with the C90 standard possible.
  */
 #ifndef __STDC_VERSION__
     /**
-     * @brief Das Schluesselwort "inline" als Makro definieren, wenn der C90 Standard verwendet wird.
-     *
-     * In diesem Standard existiert "inline" als Schluesselwort noch nicht. Die Uebersetzung wuerde an diesen
-     * Stellen mit einem Fehler abbrechen.
-     * Die Loesung: "inline" wird ein leeres Makro
+     * @brief Define the keyword "inline" as macro to replace them with empty code. (In C90 this keyword don't exists)
      */
     #ifndef inline
         #define inline
@@ -38,11 +38,8 @@
     #endif /* inline */
 
     /**
-     * @brief Das Schluesselwort "restrict" als Makro definieren, wenn der C90 Standard verwendet wird.
-     *
-     * In diesem Standard existiert "restrict" als Schluesselwort noch nicht. Die Uebersetzung wuerde an diesen
-     * Stellen mit einem Fehler abbrechen.
-     * Die Loesung: "restrict" wird ein leeres Makro
+     * @brief Here is the same situation like with the keyword "inline". Define the keyword "restrict" as macro to
+     * replace them with empty code. (In C90 this keyword also don't exists)
      */
     #ifndef restrict
         #define restrict
@@ -51,8 +48,8 @@
     #endif /* restrict */
 
     /**
-     * @brief Die Problematik mit Wahrheitswerten vor C99 loesen, indem "_Bool" in diesen Faellen mittels Makro mit "int"
-     * ersetzt wird.
+     * @brief Solve the problem with boolean values before C99. DIY "_Bool" with a macro. A "_Bool" will be replaced
+     * with "int".
      */
     #ifndef _Bool
         #define _Bool int
@@ -61,7 +58,7 @@
     #endif /* _Bool */
 
     /**
-     * @brief In seltenen Faellen ist "true" als Makro nicht vordefiniert. Z.B. vor C99
+     * @brief In rare situations "true" is not defined (e.g. before C99) -> DIY
      */
     #ifndef true
         #define true 1
@@ -70,7 +67,7 @@
     #endif /* true */
 
     /**
-     * @brief In seltenen Faellen ist "false" als Makro nicht vordefiniert. Z.B. vor C99
+     * @brief In rare situations "false" is not defined (e.g. before C99) -> DIY
      */
     #ifndef false
         #define false 0
@@ -98,7 +95,7 @@
 #endif /* __STDC_VERSION__ */
 
 /**
- * @brief Ein einfache Zeichenkette die anzeigt, dass eine Information nicht vorhanden ist.
+ * @brief A simple string, that shows, if an information was not given.
  */
 #ifndef N_A
     #define N_A "N/A"
@@ -149,14 +146,12 @@ At_Exit_Function
 //=====================================================================================================================
 
 /**
- * @brief main-Funktion des Programms.
+ * @brief main function of the program.
+ * *
+ * @param[in] argc argc parameter
+ * @param[in] argv Number of argc paramer
  *
- * Aktuell werden die CLI-Parameter (noch) nicht verwendet.
- *
- * @param[in] argc argc-Parameter
- * @param[in] argv Anzahl an argc-Parametern
- *
- * @return 0 bei erfolgreicher Ausfuehrung; Ansonsten != 0
+ * @return 0, if the program execution was successful; Else != 0
  */
 int main (const int argc, const char* argv [])
 {
