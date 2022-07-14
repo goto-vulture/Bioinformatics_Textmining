@@ -276,3 +276,42 @@ Intersect_Data_With_Document_Word_List
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Is there data in a Document_Word_List?
+ *
+ * After an intersection variables like "next_free_array" are set to the value of the data, which was used in the
+ * intersection. The reason: in every array could be an intersection result. So these values are necessary. But you
+ * cannot expect, when "next_free_array" is > 0, that then data is in the object. (At lest when the object was created
+ * as result of an intersection process)
+ *
+ * This function closes the gap. It shows, if there are data in an Document_Word_List object.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
+ *
+ * @return true, if there is data in the object, otherwise false
+ */
+extern _Bool
+Is_Data_In_Document_Word_List
+(
+        const struct Document_Word_List* const object
+)
+{
+    _Bool result = false;
+
+    for (uint_fast32_t i = 0; i < object->next_free_array; ++ i)
+    {
+        if (object->arrays_lengths [i] > 0)
+        {
+            result = true;
+            break;
+        }
+    }
+
+    return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
