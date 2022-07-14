@@ -108,6 +108,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <inttypes.h>
+#include <time.h>
 #include "argparse.h"
 #include "CLI_Parameter.h"
 #include "Error_Handling/Dynamic_Memory.h"
@@ -371,6 +372,10 @@ int main (const int argc, const char* argv [])
     }
     // ===== ===== ===== ENDE CLI-Parameter parsen ===== ===== =====
 
+    clock_t start       = 0;
+    clock_t end         = 0;
+    float used_seconds  = 0.0f;
+
     struct Token_List_Container* token_container_input_1 = Create_Token_Container_From_File (GLOBAL_CLI_INPUT_FILE);
     Print_Token_List_Status_Infos (token_container_input_1);
     //Show_All_Token_Container_With_Array_Representation(token_container_input_1);
@@ -492,10 +497,23 @@ int main (const int argc, const char* argv [])
     FILE* result_file = fopen(GLOBAL_CLI_OUTPUT_FILE, "w");
     ASSERT_FMSG(result_file != NULL, "Cannot open/create the result file: \"%s\" !", GLOBAL_CLI_OUTPUT_FILE);
 
+    const uint_fast16_t count_steps     = 1000;
+    const uint_fast32_t number_of_sets  = source_int_values_2->next_free_array;;
+    const uint_fast32_t print_steps     =
+            (((uint_fast32_t) number_of_sets / count_steps) == 0) ? 1 : ((uint_fast32_t) number_of_sets / count_steps);
+    uint_fast32_t set_counter           = 0;
+
     // Schnittmengenbestimmung durchfuehren
-    for (uint_fast32_t selected_data_array = 0; selected_data_array < 100; ++ selected_data_array)
+    start = clock ();
+    for (uint_fast32_t selected_data_array = 0; selected_data_array < source_int_values_2->next_free_array; ++ selected_data_array)
     {
-        fputs("=====\n", stdout);
+        ++ set_counter;
+        if ((set_counter % print_steps) == 0)
+        {
+            PRINTF_FFLUSH("\rCalculate intersections: %" PRIuFAST32 " / %" PRIuFAST32,
+                    (set_counter + print_steps <= number_of_sets) ? set_counter : number_of_sets, number_of_sets);
+        }
+
         fputs("=====\n", result_file);
 
         struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops (source_int_values_1,
@@ -506,7 +524,6 @@ int main (const int argc, const char* argv [])
         //memset(result_pos, '\0', sizeof(result_pos));
         //size_t next_free_result_pos = 0;
 
-        fprintf(stdout, "Data:\n{ ");
         fprintf(result_file, "Data:\n{ ");
         for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_array]; ++ i)
         {
@@ -516,16 +533,13 @@ int main (const int argc, const char* argv [])
 
             Int_To_Token (token_int_mapping, source_int_values_2->data [selected_data_array][i], int_to_token_mem,
                     sizeof (int_to_token_mem) - 1);
-            fprintf(stdout, "%s", int_to_token_mem);
             fprintf(result_file, "%s", int_to_token_mem);
 
             if ((i + 1) < source_int_values_2->arrays_lengths [selected_data_array])
             {
-                fprintf(stdout, ", ");
                 fprintf(result_file, ", ");
             }
         }
-        fputs(" }\n\n", stdout);
         fputs(" }\n\n", result_file);
 
         for (size_t i = 0; i < intersection_result->number_of_arrays; ++ i)
@@ -534,7 +548,6 @@ int main (const int argc, const char* argv [])
             {
                 if (i2 == 0)
                 {
-                    fprintf(stdout, "Token block: %zu\n[ ", i);
                     fprintf(result_file, "Token block: %zu\n[ ", i);
                 }
 
@@ -544,17 +557,14 @@ int main (const int argc, const char* argv [])
 
                 Int_To_Token (token_int_mapping, intersection_result->data [i][i2], int_to_token_mem,
                         sizeof (int_to_token_mem) - 1);
-                fprintf(stdout, "%s", int_to_token_mem);
                 fprintf(result_file, "%s", int_to_token_mem);
 
                 if ((i2 + 1) < intersection_result->arrays_lengths [i])
                 {
-                    fprintf(stdout, ", ");
                     fprintf(result_file, ", ");
                 }
                 else
                 {
-                    fputs(" ]\n", stdout);
                     fputs(" ]\n", result_file);
                 }
                 count_results ++;
@@ -580,12 +590,16 @@ int main (const int argc, const char* argv [])
             }
         }*/
 
-        fputs("=====\n", stdout);
         fputs("=====\n", result_file);
 
         Delete_Document_Word_List(intersection_result);
         intersection_result = NULL;
     }
+    end = clock ();
+    used_seconds = DETERMINE_USED_TIME(start, end);
+    printf ("\n=> %3.3fs (~ %.3f calc/s) for calculation of all intersections.\n", used_seconds,
+            ((float) number_of_sets) / used_seconds);
+
 
     FCLOSE_AND_SET_TO_NULL(result_file);
 
