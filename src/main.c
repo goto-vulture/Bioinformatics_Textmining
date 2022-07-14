@@ -441,6 +441,9 @@ int main (const int argc, const char* argv [])
         {
             char* token = Get_Token_From_Token_Container (token_container_input_1, i, i2);
             token_int_values [next_free_value] = Token_To_Int(token_int_mapping, token, strlen(token));
+            // Is the current token in the dictionary ?
+            ASSERT_FMSG(token_int_values [next_free_value] != UINT_FAST32_MAX, "Token \"%s\" is not in the dictionary !",
+                    token);
             ++ next_free_value;
         }
 
@@ -472,6 +475,9 @@ int main (const int argc, const char* argv [])
         {
             char* token = Get_Token_From_Token_Container (token_container_input_2, i, i2);
             token_int_values [next_free_value] = Token_To_Int(token_int_mapping, token, strlen(token));
+            // Is the current token in the dictionary ?
+            ASSERT_FMSG(token_int_values [next_free_value] != UINT_FAST32_MAX, "Token \"%s\" is not in the dictionary !",
+                    token);
             ++ next_free_value;
         }
 
