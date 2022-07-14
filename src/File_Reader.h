@@ -30,8 +30,8 @@ extern "C"
 struct Token_List_Container
 {
     /**
-     * @brief This is a container for some tokens. In the current implementation every object represents a line in the
-     * dataset.
+     * @brief This is a container for some tokens. In the current implementation every object represents a dataset for
+     * a specific id.
      */
     struct Token_List
     {
@@ -53,6 +53,7 @@ struct Token_List_Container
          */
         uint_fast32_t next_free_element;
         size_t allocated_tokens;            ///< Allocated number of tokens
+        char id [16];                       ///< ID of the dataset
     }* token_lists;
 
     uint_fast32_t next_free_element;        ///< Next free element in the Token_List array
@@ -62,35 +63,13 @@ struct Token_List_Container
 //=====================================================================================================================
 
 /**
- * @brief Create the token list from a file content.
- *
- * Actual the "parsing mechanism" is very simple. Therefore the program execpts, that the JSON file is already
- * preprocessed.
- *
- * A possible python script for a suitable preprocessed JSON file:
- *
-    import json
-
-    f = open('test_ebm.json')
-
-    data = json.load(f)
-
-    for i in data:
-        print(i)
-        print(data[i]["tokens"])
-        print("")
-
-    f.close()
-
- *
- * The goal of the program is to work directly with JSON files. But this is for the core functionality not necessary.
- * Therefore the priority is not on this feature.
+ * @brief Create the token list from a JSON file.
  *
  * Asserts:
  *      file_name != NULL
  *      strlen(file_name) > 0
  *
- * @param[in] file_name Preprocessed file
+ * @param[in] file_name Input file name
  *
  * @return Address to the new dynamic Token_List_Container
  */
@@ -116,7 +95,6 @@ Delete_Token_Container
 
 /**
  * @brief Read a specific token from the container.
- * @brief Ein bestimmtes Token aus dem Container auslesen.
  *
  * For performance reasons, the memory for each token list is allocated as one memory block. Therefore the address
  * calculation is more complex. This is the reason for this function.
@@ -176,6 +154,60 @@ Show_Selected_Token_Container
 );
 
 /**
+ * @brief Print the content of a Token_List object as array.
+ *
+ * Example for the array representation:
+ *      ID: <Token_List ID>: [ <Token_List data> ]
+ *
+ * This is only for debugging purposes useful.
+ *
+ * Asserts:
+ *      container != NULL
+ *      container->next_free_element < index_token_list
+ *
+ * @param[in] container Token_List_Container object
+ * @param[in] index_token_list Index of the Token_List object
+ */
+extern void
+Show_Selected_Token_Container_As_Array
+(
+        const struct Token_List_Container* const container,
+        const size_t index_token_list
+);
+
+/**
+ * @brief Print the content of all Token_List containers in a Token_List_Container object.
+ *
+ * This is only for debugging purposes useful.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ */
+extern void
+Show_All_Token_Container
+(
+        const struct Token_List_Container* const container
+);
+
+/**
+ * @brief Print the content of all Token_List containers in a Token_List_Container object with the array representation.
+ *
+ * This is only for debugging purposes useful.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ */
+extern void
+Show_All_Token_Container_With_Array_Representation
+(
+        const struct Token_List_Container* const container
+);
+
+/**
  * @brief Count all tokens in the whole Token_List_Container object.
  *
  * Asserts:
@@ -192,6 +224,24 @@ Count_All_Tokens_In_Token_Container
 );
 
 /**
+ * @brief Determine the longest token in the whole container and return the value.
+ *
+ * This function need some time, especially when the container holds many tokens.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ *
+ * @return Length of the longest token
+ */
+extern size_t
+Get_Lengh_Of_Longest_Token
+(
+        const struct Token_List_Container* const container
+);
+
+/**
  * @brief Determine the longest Token_List object and return the value.
  *
  * Asserts:
@@ -203,6 +253,20 @@ Count_All_Tokens_In_Token_Container
  */
 extern size_t
 Get_Lengh_Of_Longest_Token_Container
+(
+        const struct Token_List_Container* const container
+);
+
+/**
+ * @brief Print several container information.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ */
+extern void
+Print_Token_List_Status_Infos
 (
         const struct Token_List_Container* const container
 );
