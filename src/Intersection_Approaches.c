@@ -192,10 +192,13 @@ Intersection_Approach_2_Nested_Loops
                     // Has the array, which display, if a value is already in the intersection, enough memory ?
                     if (data [i3] > size_multiple_guard)
                     {
-                        size_multiple_guard += MULTIPLE_GUARD_ALLOC_STEP;
+                        //size_multiple_guard += MULTIPLE_GUARD_ALLOC_STEP;
+                        const size_t old_size_multiple_guard = size_multiple_guard;
+                        size_multiple_guard = data [i3] + 1;
                         multiple_guard = (_Bool*) REALLOC(multiple_guard, size_multiple_guard * sizeof (_Bool));
                         ASSERT_ALLOC(multiple_guard, "Cannot increase the memory for the multiple guard !",
                                 size_multiple_guard * sizeof (_Bool));
+                        memset(multiple_guard + old_size_multiple_guard, '\0', size_multiple_guard - old_size_multiple_guard);
                     }
 
                     if (multiple_guard [data [i3]] == false)
