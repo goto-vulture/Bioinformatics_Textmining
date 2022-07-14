@@ -132,7 +132,7 @@ Create_Token_Container_From_File
     fseek_return = fseek (input_file, 0, SEEK_SET);
     ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
 
-    char* input_file_data = (char*) MALLOC (((size_t) input_file_length + sizeof ("")) * sizeof (char));
+    char* input_file_data = (char*) CALLOC (((size_t) input_file_length + sizeof ("")), sizeof (char));
     ASSERT_ALLOC(input_file_data, "Cannot allocate memory for reading the input file !",
             ((size_t) input_file_length + sizeof ("")) * sizeof (char));
 
@@ -148,7 +148,12 @@ Create_Token_Container_From_File
         if (c == '\n') { ++ lines_in_file; }
         if ((char_counter % print_steps_count_lines) == 0)
         {
-            PRINTF_FFLUSH("\rCount lines in file \"%s\": %" PRIuFAST32, file_name, lines_in_file);
+            static uint_fast32_t last_line_counter = 0;
+            if (last_line_counter != lines_in_file)
+            {
+                PRINTF_FFLUSH("\rCount lines in file \"%s\": %" PRIuFAST32, file_name, lines_in_file);
+            }
+            last_line_counter = lines_in_file;
         }
     }
     end = clock ();
@@ -163,10 +168,21 @@ Create_Token_Container_From_File
     uint_fast32_t tokens_found      = 0;
     const uint_fast32_t print_steps = ((lines_in_file / count_steps) == 0) ? 1 : (lines_in_file / count_steps);
 
-    char* fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
+    //char* fgets_res = fgets (input_file_data, input_file_length, input_file);
+    size_t char_read = 0;
+    for (int c = getc(input_file); c != EOF; c = getc(input_file), ++ char_read)
+    {
+        if (c == '\n')
+        {
+            input_file_data [char_read] = '\0';
+            input_file_data [input_file_length] = '\0';
+            break;
+        }
+        input_file_data [char_read] = (char) c;
+    }
 
     // ===== ===== ===== BEGIN Read file line by line ===== ===== =====
-    while(fgets_res != NULL)
+    while(char_read > 0)
     {
         ++ line_counter;
         const char* current_parsing_position = input_file_data;
@@ -193,7 +209,8 @@ Create_Token_Container_From_File
                 // Sometimes the json pointer is NULL. But an error only occurrs, when an error message is available
                 if (strlen (cJSON_GetErrorPtr()) > 0)
                 {
-                    printf("Error before: [%s]\n", cJSON_GetErrorPtr());
+                    printf("Error before: [%s] %" PRIuFAST32 ":%lu\n", cJSON_GetErrorPtr(), line_counter,
+                            current_parsing_position - input_file_data);
                 }
                 break;
             }
@@ -305,8 +322,19 @@ Create_Token_Container_From_File
             json = NULL;
         }
         // Read next line
-        fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
-        input_file_data [input_file_length] = '\0';
+        char_read = 0;
+        for (int c = getc(input_file); c != EOF; c = getc(input_file), ++ char_read)
+        {
+            if (c == '\n')
+            {
+                input_file_data [char_read] = '\0';
+                input_file_data [input_file_length] = '\0';
+                break;
+            }
+            input_file_data [char_read] = (char) c;
+        }
+        //fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
+        //input_file_data [input_file_length] = '\0';
     }
     // ===== ===== ===== END Read file line by line ===== ===== =====
 
