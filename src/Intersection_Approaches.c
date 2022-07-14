@@ -190,7 +190,7 @@ Intersection_Approach_2_Nested_Loops
                 if (object->data [i][i2] == data [i3])
                 {
                     // Has the array, which display, if a value is already in the intersection, enough memory ?
-                    if (data [i3] > size_multiple_guard)
+                    if (data [i3] >= size_multiple_guard)
                     {
                         //size_multiple_guard += MULTIPLE_GUARD_ALLOC_STEP;
                         const size_t old_size_multiple_guard = size_multiple_guard;
