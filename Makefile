@@ -12,6 +12,9 @@ DOXYGEN_PATH = $(shell command -v $(DOXYGEN) 2> /dev/null)
 # Flags, die sowohl im Debug- als auch im Release-Build, verwendet werden
 CCFLAGS = -std=c11 -pedantic -Wall -Wextra -Wconversion -fmessage-length=0
 
+# Verwendete Libs
+LIBS = -lm
+
 # Weitere hilfreiche Compilerflags
 # Programmabbruch bei Ueberlauf von vorzeichenbehafteten Integers
 # CCFLAGS += -ftrapv => Funktioniert leider nicht wie erhofft :(
@@ -214,7 +217,7 @@ $(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI
 	@echo
 	@echo Linking object files ...
 	@echo
-	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o
+	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o $(LIBS)
 
 ##### BEGINN Die einzelnen Uebersetzungseinheiten #####
 main.o: $(MAIN_C)
