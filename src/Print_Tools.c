@@ -10,6 +10,7 @@
 #include "Print_Tools.h"
 #include <string.h>
 #include <inttypes.h>
+#include <math.h>
 #include "Error_Handling/Assert_Msg.h"
 
 
@@ -85,6 +86,58 @@ extern size_t Count_Number_Of_Digits (const size_t value)
     while (val_cpy /= 10);
 
     return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Determine percentage value. (float input parameter)
+ *
+ * Asserts:
+ *      value != NaN
+ *      value != -Inf
+ *      value != +Inf
+ *      one_hundred_percent != NaN
+ *      one_hundred_percent != -Inf
+ *      one_hundred_percent != +Inf
+ *      one_hundred_percent != 0.0f (NOT IMPLEMENTED DUE FLOAT COMPARISONS !)
+ *
+ * @param[in] value Value
+ * @param[in] one_hundred_percent Value that corresponds to 100%
+ *
+ * @return percentage value
+ */
+extern float Determine_Percent_f (const float value, const float one_hundred_percent)
+{
+    ASSERT_MSG(! isnan(value), "Value is NaN !");
+    ASSERT_MSG(isinf(value) != -1, "Value is -Inf !");
+    ASSERT_MSG(isinf(value) != +1, "Value is +Inf !");
+    ASSERT_MSG(! isnan(one_hundred_percent), "One hundred percent is NaN !");
+    ASSERT_MSG(isinf(one_hundred_percent) != -1, "One hundred percent is -Inf !");
+    ASSERT_MSG(isinf(one_hundred_percent) != +1, "One hundred percent is +Inf !");
+    // ASSERT_MSG(one_hundred_percent != 0.0f, "One hundred percent is 0.0 !");
+
+    return (value / one_hundred_percent) * 100.0f;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Determine percentage value. (size_t input parameter)
+ *
+ * Asserts:
+ *      one_hundred_percent != 0
+ *
+ * @param[in] value Value
+ * @param[in] one_hundred_percent Value that corresponds to 100%
+ *
+ * @return percentage value
+ */
+extern float Determine_Percent (const size_t value, const size_t one_hundred_percent)
+{
+    ASSERT_MSG(one_hundred_percent != 0, "One hundred percent is 0 !");
+
+    return ((float) value / (float) one_hundred_percent) * 100.0f;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
