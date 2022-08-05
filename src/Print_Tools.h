@@ -18,6 +18,7 @@ extern "C"
 
 
 #include <stdio.h>
+#include <time.h>
 
 
 
@@ -181,6 +182,44 @@ extern float Determine_Percent_f (const float value, const float one_hundred_per
  * @return percentage value
  */
 extern float Determine_Percent (const size_t value, const size_t one_hundred_percent);
+
+/**
+ * @brief Determine the expected time left for the calculation.
+ *
+ * Asserts:
+ *      second_value >= first_value
+ *      end_value >= first_value
+ *      end_value >= second_value
+ *
+ * @param[in] first_value First value
+ * @param[in] second_value Second value
+ * @param[in] end_value End value
+ * @param[in] time_between_values Time, that was used in the interval between the first and second value
+ *
+ * @return Expected time left for the calculation
+ */
+extern float Determine_Time_Left (const size_t first_value, const size_t second_value, const size_t end_value,
+        const time_t time_between_values);
+
+/**
+ * @brief Determine the expected average time left for the calculation.
+ *
+ * A average value is useful to avoid a strongly changing expected time.
+ *
+ * Asserts:
+ *      second_value >= first_value
+ *      end_value >= first_value
+ *      end_value >= second_value
+ *
+ * @param[in] first_value First value
+ * @param[in] second_value Second value
+ * @param[in] end_value End value
+ * @param[in] time_between_values Time, that was used in the interval between the first and second value
+ *
+ * @return Expected average time left for the calculation
+ */
+extern float Determine_Time_Left_Average (const size_t first_value, const size_t second_value, const size_t end_value,
+        const time_t time_between_values);
 
 
 

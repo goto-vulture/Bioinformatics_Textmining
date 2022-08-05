@@ -141,3 +141,81 @@ extern float Determine_Percent (const size_t value, const size_t one_hundred_per
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Determine the expected time left for the calculation.
+ *
+ * Asserts:
+ *      second_value >= first_value
+ *      end_value >= first_value
+ *      end_value >= second_value
+ *
+ * @param[in] first_value First value
+ * @param[in] second_value Second value
+ * @param[in] end_value End value
+ * @param[in] time_between_values Time, that was used in the interval between the first and second value
+ *
+ * @return Expected time left for the calculation
+ */
+extern float Determine_Time_Left (const size_t first_value, const size_t second_value, const size_t end_value,
+        const time_t time_between_values)
+{
+    ASSERT_FMSG(second_value >= first_value, "First value (%zu) is larger than the second value (%zu) !", first_value,
+            second_value);
+    ASSERT_FMSG(end_value >= first_value, "First value (%zu) is larger than the end value (%zu) !", first_value,
+            end_value);
+    ASSERT_FMSG(end_value >= second_value, "Second value (%zu) is larger than the end value (%zu) !", second_value,
+            end_value);
+
+    const size_t values_left = end_value - second_value;
+    const size_t diff_values = second_value - first_value;
+
+    return (((float) values_left / (float) diff_values) * (float) time_between_values) / CLOCKS_PER_SEC;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Determine the expected average time left for the calculation.
+ *
+ * A average value is useful to avoid a strongly changing expected time.
+ *
+ * Asserts:
+ *      second_value >= first_value
+ *      end_value >= first_value
+ *      end_value >= second_value
+ *
+ * @param[in] first_value First value
+ * @param[in] second_value Second value
+ * @param[in] end_value End value
+ * @param[in] time_between_values Time, that was used in the interval between the first and second value
+ *
+ * @return Expected average time left for the calculation
+ */
+extern float Determine_Time_Left_Average (const size_t first_value, const size_t second_value, const size_t end_value,
+        const time_t time_between_values)
+{
+    ASSERT_FMSG(second_value >= first_value, "First value (%zu) is larger than the second value (%zu) !", first_value,
+            second_value);
+    ASSERT_FMSG(end_value >= first_value, "First value (%zu) is larger than the end value (%zu) !", first_value,
+            end_value);
+    ASSERT_FMSG(end_value >= second_value, "Second value (%zu) is larger than the end value (%zu) !", second_value,
+            end_value);
+
+    static uint_fast32_t value_counter  = 0;
+    static float time_left_counter      = 0.0f;
+    static float last_return_value      = 0.0f;
+    const uint_fast8_t mod_value        = 10;   // The mod value also tries to avoid strongly changing expected times
+
+    ++ value_counter;
+    time_left_counter += Determine_Time_Left(first_value, second_value, end_value, time_between_values);
+
+    if ((value_counter % mod_value) == 0)
+    {
+        last_return_value = time_left_counter / (float) value_counter;
+    }
+
+    return last_return_value;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
