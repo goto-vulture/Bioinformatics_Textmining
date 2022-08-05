@@ -53,7 +53,7 @@ struct Token_List_Container
          */
         uint_fast32_t next_free_element;
         size_t allocated_tokens;            ///< Allocated number of tokens
-        char id [16];                       ///< ID of the dataset
+        char dataset_id [16];               ///< ID of the dataset
     }* token_lists;
 
     uint_fast32_t next_free_element;        ///< Next free element in the Token_List array

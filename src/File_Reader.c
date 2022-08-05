@@ -241,7 +241,7 @@ Create_Token_Container_From_File
 
                 // ===== ===== ===== BEGIN Is it an new dataset ? ===== ===== =====
                 // Is it not the first token list?
-                if (new_container->token_lists [new_container->next_free_element].id != 0)
+                if (new_container->token_lists [new_container->next_free_element].dataset_id != 0)
                 {
                     // Use the next element in the container
                     new_container->next_free_element ++;
@@ -282,7 +282,7 @@ Create_Token_Container_From_File
                     }
                     else*/
                     {
-                        strncpy (new_container->token_lists [new_container->next_free_element].id, name->string, 15);
+                        strncpy (new_container->token_lists [new_container->next_free_element].dataset_id, name->string, 15);
                     }
                 }
                 // ===== ===== ===== END Is it an new dataset ? ===== ===== =====
@@ -494,7 +494,7 @@ Show_Selected_Token_Container
 
     const size_t token_size = container->token_lists [index_token_list].max_token_length;
 
-    printf ("Container: %zu (ID: %s)\n", index_token_list, container->token_lists [index_token_list].id);
+    printf ("Container: %zu (Dataset ID: %s)\n", index_token_list, container->token_lists [index_token_list].dataset_id);
     for (size_t i = 0; i < container->token_lists [index_token_list].next_free_element; ++ i)
     {
         printf ("%4zu: %s\n", i, &(container->token_lists [index_token_list].data [i * token_size]));
@@ -534,7 +534,7 @@ Show_Selected_Token_Container_As_Array
 
     const size_t token_size = container->token_lists [index_token_list].max_token_length;
 
-    printf ("ID: %s [ ", container->token_lists [index_token_list].id);
+    printf ("Dataset ID: %s [ ", container->token_lists [index_token_list].dataset_id);
     for (size_t i = 0; i < container->token_lists [index_token_list].next_free_element; ++ i)
     {
         printf ("\"%s\"", &(container->token_lists [index_token_list].data [i * token_size]));
@@ -722,13 +722,13 @@ Print_Token_List_Status_Infos
 {
     ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
 
-    size_t longest_id = 0;
+    size_t longest_dataset_id = 0;
     for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
     {
-        const size_t cur_id_length = strlen (container->token_lists [i].id);
-        if (cur_id_length > longest_id)
+        const size_t cur_id_length = strlen (container->token_lists [i].dataset_id);
+        if (cur_id_length > longest_dataset_id)
         {
-            longest_id = cur_id_length;
+            longest_dataset_id = cur_id_length;
         }
     }
 
@@ -743,7 +743,7 @@ Print_Token_List_Status_Infos
     printf ("Average token length:           %zu\n", Get_Average_Token_Length(container));
     printf ("Longest token list:             %zu\n", Get_Lengh_Of_Longest_Token_Container(container));
     printf ("Longest token:                  %zu\n", Get_Lengh_Of_Longest_Token(container));
-    printf ("Longest id:                     %zu\n", longest_id);
+    printf ("Longest dataset id:             %zu\n", longest_dataset_id);
     puts("");
     fflush (stdout);
 
