@@ -342,7 +342,7 @@ int main (const int argc, const char* argv [])
     }
     if (GLOBAL_CLI_INPUT_FILE != NULL)
     {
-        printf ("Input file: \"%s\"\n", GLOBAL_CLI_INPUT_FILE);
+        printf ("Input file 1: \"%s\"\n", GLOBAL_CLI_INPUT_FILE);
         Check_CLI_Parameter_CLI_INPUT_FILE();
     }
     else
@@ -352,7 +352,7 @@ int main (const int argc, const char* argv [])
     }
     if (GLOBAL_CLI_INPUT_FILE2 != NULL)
     {
-        printf ("Input file2: \"%s\"\n", GLOBAL_CLI_INPUT_FILE2);
+        printf ("Input file 2: \"%s\"\n", GLOBAL_CLI_INPUT_FILE2);
         Check_CLI_Parameter_CLI_INPUT_FILE2();
     }
     else
@@ -362,7 +362,7 @@ int main (const int argc, const char* argv [])
     }
     if (GLOBAL_CLI_OUTPUT_FILE != NULL)
     {
-        printf ("Output file: \"%s\"\n", GLOBAL_CLI_OUTPUT_FILE);
+        printf ("Output file:  \"%s\"\n", GLOBAL_CLI_OUTPUT_FILE);
         Check_CLI_Parameter_CLI_OUTPUT_FILE();
     }
     else
@@ -370,6 +370,7 @@ int main (const int argc, const char* argv [])
         PUTS_FFLUSH ("Missing output file. Option: [-o / --output]");
         exit(EXIT_FAILURE);
     }
+    puts("");
     // ===== ===== ===== ENDE CLI-Parameter parsen ===== ===== =====
 
     clock_t start       = 0;
