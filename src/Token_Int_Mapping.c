@@ -161,28 +161,31 @@ Add_Token_To_Mapping
         ++ token_to_int_realloc_counter;
 
         const size_t old_size = object->allocated_c_strings_in_array;
+        const size_t new_size = old_size + C_STR_ALLOCATION_STEP_SIZE;
 
         // For all C-Strings the memory will be extended
         for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
         {
-            char* tmp_ptr = (char*) REALLOC(object->c_str_arrays [i],
-                    (old_size + C_STR_ALLOCATION_STEP_SIZE) * MAX_TOKEN_LENGTH);
-            ASSERT_ALLOC(tmp_ptr, "Cannot reallocate memory for token to int mapping data !",
-                    (old_size + C_STR_ALLOCATION_STEP_SIZE) * MAX_TOKEN_LENGTH);
-            memset(tmp_ptr, '\0', (old_size + C_STR_ALLOCATION_STEP_SIZE) * MAX_TOKEN_LENGTH);
+            char* tmp_ptr = (char*) REALLOC(object->c_str_arrays [i], new_size * MAX_TOKEN_LENGTH *
+                    sizeof (char));
+            ASSERT_ALLOC(tmp_ptr, "Cannot reallocate memory for token to int mapping data !", new_size * MAX_TOKEN_LENGTH);
+            memset(tmp_ptr + (old_size * MAX_TOKEN_LENGTH), '\0', C_STR_ALLOCATION_STEP_SIZE * MAX_TOKEN_LENGTH *
+                    sizeof (char));
 
-            uint_fast32_t* tmp_ptr_2 = (uint_fast32_t*) REALLOC(object->int_mapping [i],
-                    (old_size + C_STR_ALLOCATION_STEP_SIZE) * MAX_TOKEN_LENGTH);
-            ASSERT_ALLOC(tmp_ptr_2, "Cannot reallocate memory for token to int mapping data !",
-                    (old_size + C_STR_ALLOCATION_STEP_SIZE) * MAX_TOKEN_LENGTH);
+            uint_fast32_t* tmp_ptr_2 = (uint_fast32_t*) REALLOC(object->int_mapping [i], new_size * MAX_TOKEN_LENGTH *
+                    sizeof (uint_fast32_t));
+            ASSERT_ALLOC(tmp_ptr_2, "Cannot reallocate memory for token to int mapping data !", new_size * MAX_TOKEN_LENGTH);
+            memset(tmp_ptr_2 + (old_size * MAX_TOKEN_LENGTH), '\0', C_STR_ALLOCATION_STEP_SIZE * MAX_TOKEN_LENGTH *
+                    sizeof (uint_fast32_t));
 
             object->c_str_arrays [i] = tmp_ptr;
             object->int_mapping [i] = tmp_ptr_2;
-            object->allocated_c_strings_in_array += C_STR_ALLOCATION_STEP_SIZE;
         }
 
-        PRINTF_FFLUSH("Token to int realloc. From %zu to %zu objects (%zu times)\n", old_size,
-                old_size + C_STR_ALLOCATION_STEP_SIZE, token_to_int_realloc_counter);
+        object->allocated_c_strings_in_array = new_size;
+
+        PRINTF_FFLUSH("Token to int realloc. From %zu to %zu objects (%zu times)\n", old_size, new_size,
+                token_to_int_realloc_counter);
     }
 
     char* to_str = object->c_str_arrays [chosen_c_string_array];
