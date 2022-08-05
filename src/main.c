@@ -517,9 +517,10 @@ int main (const int argc, const char* argv [])
         ++ set_counter;
         if ((set_counter % print_steps) == 0)
         {
-            PRINTF_FFLUSH("\rCalculate intersections: %*" PRIuFAST32 " / %" PRIuFAST32,
+            PRINTF_FFLUSH("\rCalculate intersections: %*" PRIuFAST32 " / %" PRIuFAST32 " (%.4f %%)",
                     (int) Count_Number_Of_Digits (number_of_sets),
-                    (set_counter + print_steps <= number_of_sets) ? set_counter : number_of_sets, number_of_sets);
+                    (set_counter + print_steps <= number_of_sets) ? set_counter : number_of_sets, number_of_sets,
+                            (set_counter + print_steps <= number_of_sets) ? Determine_Percent(set_counter, number_of_sets) : 100.0f);
         }
 
         struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops (source_int_values_1,

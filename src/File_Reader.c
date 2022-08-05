@@ -207,8 +207,10 @@ Create_Token_Container_From_File
                 static uint_fast32_t last_line_counter = 0;
                 if (last_line_counter != line_counter)
                 {
-                    PRINTF_FFLUSH("\rRead line: %*" PRIuFAST32 " / %" PRIuFAST32, (int) Count_Number_Of_Digits(lines_in_file),
-                            (line_counter + print_steps <= lines_in_file) ? line_counter : lines_in_file, lines_in_file);
+                    PRINTF_FFLUSH("\rRead line: %*" PRIuFAST32 " / %" PRIuFAST32 " (%.4f %%)",
+                            (int) Count_Number_Of_Digits(lines_in_file),
+                            (line_counter + print_steps <= lines_in_file) ? line_counter : lines_in_file, lines_in_file,
+                                    (line_counter + print_steps <= lines_in_file) ? Determine_Percent(line_counter, lines_in_file) : 100.0f);
                 }
                 last_line_counter = line_counter;
             }
