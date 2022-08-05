@@ -504,7 +504,7 @@ int main (const int argc, const char* argv [])
     FILE* result_file = fopen(GLOBAL_CLI_OUTPUT_FILE, "w");
     ASSERT_FMSG(result_file != NULL, "Cannot open/create the result file: \"%s\" !", GLOBAL_CLI_OUTPUT_FILE);
 
-    const uint_fast16_t count_steps     = 1000;
+    const uint_fast16_t count_steps     = 65000;
     const uint_fast32_t number_of_sets  = source_int_values_2->next_free_array;;
     const uint_fast32_t print_steps     =
             (((uint_fast32_t) number_of_sets / count_steps) == 0) ? 1 : ((uint_fast32_t) number_of_sets / count_steps);
@@ -517,7 +517,8 @@ int main (const int argc, const char* argv [])
         ++ set_counter;
         if ((set_counter % print_steps) == 0)
         {
-            PRINTF_FFLUSH("\rCalculate intersections: %" PRIuFAST32 " / %" PRIuFAST32,
+            PRINTF_FFLUSH("\rCalculate intersections: %*" PRIuFAST32 " / %" PRIuFAST32,
+                    (int) Count_Number_Of_Digits (number_of_sets),
                     (set_counter + print_steps <= number_of_sets) ? set_counter : number_of_sets, number_of_sets);
         }
 
