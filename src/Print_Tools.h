@@ -148,7 +148,7 @@ extern void Print_2D_String_Array (const char* const restrict drawing [], const 
  *
  * @return The number of digits in the given value
  */
-extern size_t Count_Number_Of_Digits (size_t value);
+extern size_t Count_Number_Of_Digits (const size_t value);
 
 
 
