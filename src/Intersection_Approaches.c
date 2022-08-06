@@ -98,7 +98,6 @@ Compare_Function
  *
  * Asserts:
  *      data != NULL
- *      data_size > 0
  *
  * @param[in] data Data in which is searched
  * @param[in] data_size Size of the data
@@ -123,7 +122,6 @@ Binary_Search
  *
  * Asserts:
  *      data != NULL
- *      data_size > 0
  *
  * @param[in] data Data which will be sorted (ascending)
  * @param[in] data_size Size of the data
@@ -446,7 +444,6 @@ Compare_Function
  *
  * Asserts:
  *      data != NULL
- *      data_size > 0
  *
  * @param[in] data Dta in which is searched
  * @param[in] data_size Size of the data
@@ -463,7 +460,8 @@ Binary_Search
 )
 {
     ASSERT_MSG(data != NULL, "data is NULL !");
-    ASSERT_MSG(data_size != 0, "data size is 0 !");
+    // ASSERT_MSG(data_size != 0, "data size is 0 !");
+    if (data_size == 0) { return false; }
 
     _Bool result = false;
 
@@ -501,7 +499,6 @@ Binary_Search
  *
  * Asserts:
  *      data != NULL
- *      data_size > 0
  *
  * @param[in] data Data which will be sorted (ascending)
  * @param[in] data_size Size of the data
@@ -514,7 +511,8 @@ Heapsort
 )
 {
     ASSERT_MSG(data != NULL, "data is NULL !");
-    ASSERT_MSG(data_size != 0, "data size is 0 !");
+    // ASSERT_MSG(data_size != 0, "data size is 0 !");
+    if (data_size == 0) { return; }
 
     uint_fast32_t value     = 0;
     uint_fast32_t parent    = 0;
