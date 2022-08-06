@@ -371,7 +371,7 @@ Find_Intersection_Data
     ASSERT_MSG(data_length > 0, "Data length is 0 !");
 
     // Array, which display, if a value is already in the intersection
-    size_t size_multiple_guard = MULTIPLE_GUARD_ALLOC_STEP;
+    size_t size_multiple_guard = (data_length > MULTIPLE_GUARD_ALLOC_STEP) ? data_length : MULTIPLE_GUARD_ALLOC_STEP;
 
     _Bool* multiple_guard = (_Bool*) CALLOC(size_multiple_guard, sizeof (_Bool));
     ASSERT_ALLOC(multiple_guard, "Cannot create the multiple guard !", size_multiple_guard * sizeof (_Bool));
@@ -386,12 +386,15 @@ Find_Intersection_Data
             if (Binary_Search(object->data[i], object->arrays_lengths [i], data [i2]) == true)
             {
                 // Has the array, which display, if a value is already in the intersection, enough memory ?
-                if (data [i2] > size_multiple_guard)
+                if (data [i2] >= size_multiple_guard)
                 {
-                    size_multiple_guard += MULTIPLE_GUARD_ALLOC_STEP;
+                    //size_multiple_guard += MULTIPLE_GUARD_ALLOC_STEP;
+                    const size_t old_size_multiple_guard = size_multiple_guard;
+                    size_multiple_guard = data [i2] + 1;
                     multiple_guard = (_Bool*) REALLOC(multiple_guard, size_multiple_guard * sizeof (_Bool));
                     ASSERT_ALLOC(multiple_guard, "Cannot increase the memory for the multiple guard !",
                             size_multiple_guard * sizeof (_Bool));
+                    memset(multiple_guard + old_size_multiple_guard, '\0', size_multiple_guard - old_size_multiple_guard);
                 }
 
                 if (multiple_guard [data [i2]] == false)
