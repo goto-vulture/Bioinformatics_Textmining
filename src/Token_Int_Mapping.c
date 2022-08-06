@@ -181,8 +181,8 @@ Add_Token_To_Mapping
 
         object->allocated_c_strings_in_array [chosen_c_string_array] = new_size;
 
-        PRINTF_FFLUSH("Token to int realloc. From %zu to %zu objects (%zu times)\n", old_size, new_size,
-                token_to_int_realloc_counter);
+        //PRINTF_FFLUSH("Token to int realloc. From %zu to %zu objects (%zu times)\n", old_size, new_size,
+        //        token_to_int_realloc_counter);
     }
 
     char* start_to_str = object->c_str_arrays [chosen_c_string_array];
