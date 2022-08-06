@@ -188,7 +188,8 @@ Add_Token_To_Mapping
                 token_to_int_realloc_counter);
     }
 
-    char* to_str = object->c_str_arrays [chosen_c_string_array];
+    char* start_to_str = object->c_str_arrays [chosen_c_string_array];
+    char* to_str = start_to_str;
     uint_fast32_t* int_mapping_array = object->int_mapping [chosen_c_string_array];
 
     // Is the new token already in the list ?
@@ -196,14 +197,17 @@ Add_Token_To_Mapping
     for (uint_fast32_t i = 0; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
     {
         // Before the comparison: Have the strings the same length ?
-        if (new_token_length != strlen(&(to_str [i * MAX_TOKEN_LENGTH]))) { continue; }
+        //if (new_token_length != strlen(&(to_str [i * MAX_TOKEN_LENGTH]))) { continue; }
 
-        if (strncmp (new_token, &(to_str [i * MAX_TOKEN_LENGTH]), new_token_length) == 0)
+        //if (strncmp (new_token, &(to_str [i * MAX_TOKEN_LENGTH]), new_token_length) == 0)
+        if (strncmp (new_token, to_str, new_token_length) == 0)
         {
             token_already_in_list = true;
             break;
         }
+        to_str += MAX_TOKEN_LENGTH;
     }
+    to_str = start_to_str;
 
     if (! token_already_in_list)
     {
@@ -214,11 +218,19 @@ Add_Token_To_Mapping
         to_str [((object->c_str_array_lengths [chosen_c_string_array] + 1) * MAX_TOKEN_LENGTH) - 1] = '\0';
         object->c_str_array_lengths [chosen_c_string_array] ++;
 
-        uint_fast32_t count_c_str_array_lengths = 0;
-        for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
-        {
-            count_c_str_array_lengths += object->c_str_array_lengths [i];
-        }
+        /*
+         * The integer numbers are distributed in blocks.
+         * E.g.:
+         * C_STR_ARRAYS = 100:
+         *
+         * Range object->int_mapping [0]:   0 -  99
+         * Range object->int_mapping [1]: 100 - 199
+         * Range object->int_mapping [2]: 200 - 299
+         * ...
+         */
+        uint_fast32_t count_c_str_array_lengths =
+                object->c_str_array_lengths [chosen_c_string_array] + (chosen_c_string_array * C_STR_ARRAYS);
+
         int_mapping_array [object->c_str_array_lengths [chosen_c_string_array] - 1] = count_c_str_array_lengths;
     }
 
@@ -294,13 +306,15 @@ Token_To_Int
     for (; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
     {
         // Before the comparison: Have the strings the same length ?
-        if (search_token_length != strlen(&(c_string_array [i * MAX_TOKEN_LENGTH]))) { continue; }
+        //if (search_token_length != strlen(&(c_string_array [i * MAX_TOKEN_LENGTH]))) { continue; }
 
-        if (strncmp (search_token, &(c_string_array [i * MAX_TOKEN_LENGTH]), search_token_length) == 0)
+        //if (strncmp (search_token, &(c_string_array [i * MAX_TOKEN_LENGTH]), search_token_length) == 0)
+        if (strncmp (search_token, c_string_array, search_token_length) == 0)
         {
             token_found = true;
             break;
         }
+        c_string_array += MAX_TOKEN_LENGTH;
     }
 
     // If the token is in the list, get the mapped integer value
@@ -316,6 +330,17 @@ Token_To_Int
 
 /**
  * @brief Reverse the mapping. int -> token
+ *
+ * The integer numbers are distributed in blocks.
+ * E.g.:
+ * C_STR_ARRAYS = 100:
+ *
+ * Range object->int_mapping [0]:   0 -  99
+ * Range object->int_mapping [1]: 100 - 199
+ * Range object->int_mapping [2]: 200 - 299
+ * ...
+ *
+ * So the int value indicates in which array is the corresponding c string
  *
  * Asserts:
  *      object != NULL
@@ -343,19 +368,16 @@ Int_To_Token
     ASSERT_MSG(result_token_memory != NULL, "The result token memory is NULL !");
     ASSERT_MSG(result_token_memory_size > 0, "The length of the result token memory is 0 !");
 
-    // In the reverse process we have no further knowlede where the token might be. So it is necessary to search in
-    // every C-String
-    for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
-    {
-        for (size_t i2 = 0; i2 < object->c_str_array_lengths [i]; ++ i2)
-        {
-            char* c_string_array = object->c_str_arrays [i];
+    const uint_fast32_t chosen_c_string_array = token_int_value / C_STR_ARRAYS;
 
-            if (object->int_mapping [i][i2] == token_int_value)
-            {
-                strncpy(result_token_memory, &(c_string_array [i2 * MAX_TOKEN_LENGTH]), result_token_memory_size - 1);
-                break;
-            }
+    const char* c_string_array = object->c_str_arrays [chosen_c_string_array];
+
+    for (size_t i2 = 0; i2 < object->c_str_array_lengths [chosen_c_string_array]; ++ i2)
+    {
+        if (object->int_mapping [chosen_c_string_array][i2] == token_int_value)
+        {
+            strncpy(result_token_memory, &(c_string_array [i2 * MAX_TOKEN_LENGTH]), result_token_memory_size - 1);
+            break;
         }
     }
 

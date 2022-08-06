@@ -152,11 +152,14 @@ Create_Token_Container_From_File
             (((uint_fast32_t) input_file_length / count_steps) == 0) ? 1 : ((uint_fast32_t) input_file_length / count_steps);
 
     start = clock ();
-    for (int c = getc(input_file); c != EOF; c = getc(input_file), ++ char_counter)
+    uint_fast32_t char_since_last_status_print = 0;
+    for (int c = getc(input_file); c != EOF; c = getc(input_file), ++ char_counter, ++ char_since_last_status_print)
     {
         if (c == '\n') { ++ lines_in_file; }
-        if ((char_counter % print_steps_count_lines) == 0)
+        //if ((char_counter % print_steps_count_lines) == 0)
+        if (char_since_last_status_print == print_steps_count_lines)
         {
+            char_since_last_status_print = 0;
             static uint_fast32_t last_line_counter = 0;
             if (last_line_counter != lines_in_file)
             {

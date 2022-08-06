@@ -174,6 +174,17 @@ Token_To_Int
 /**
  * @brief Reverse the mapping. int -> token
  *
+ * The integer numbers are distributed in blocks.
+ * E.g.:
+ * C_STR_ARRAYS = 100:
+ *
+ * Range object->int_mapping [0]:   0 -  99
+ * Range object->int_mapping [1]: 100 - 199
+ * Range object->int_mapping [2]: 200 - 299
+ * ...
+ *
+ * So the int value indicates in which array is the corresponding c string
+ *
  * Asserts:
  *      object != NULL
  *      token_int_value != UINT_FAST32_MAX
