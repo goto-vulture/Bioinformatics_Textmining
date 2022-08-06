@@ -70,7 +70,7 @@ struct Token_Int_Mapping
      * @brief Allocated number of tokens for every C-String. This means, that every C-String has the same allocated
      * size !
      */
-    size_t allocated_c_strings_in_array;
+    size_t allocated_c_strings_in_array [C_STR_ARRAYS];
 
     /**
      * @brief Used number of tokens per C-String.

@@ -85,9 +85,9 @@ Create_Token_Int_Mapping
         new_object->int_mapping [i] = (uint_fast32_t*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (uint_fast32_t) * MAX_TOKEN_LENGTH);
         ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
                 C_STR_ALLOCATION_STEP_SIZE * sizeof (uint_fast32_t) * MAX_TOKEN_LENGTH);
-    }
 
-    new_object->allocated_c_strings_in_array = C_STR_ALLOCATION_STEP_SIZE;
+        new_object->allocated_c_strings_in_array [i] = C_STR_ALLOCATION_STEP_SIZE;
+    }
 
     return new_object;
 }
@@ -155,36 +155,31 @@ Add_Token_To_Mapping
     const uint_fast32_t chosen_c_string_array = Pseudo_Hash_Function (new_token, new_token_length);
 
     // Is more memory necessary to hold the new token ? Yes: Realloc the memory
-    if (object->c_str_array_lengths [chosen_c_string_array] >= object->allocated_c_strings_in_array)
+    if (object->c_str_array_lengths [chosen_c_string_array] >= object->allocated_c_strings_in_array [chosen_c_string_array])
     {
         static size_t token_to_int_realloc_counter = 0;
         ++ token_to_int_realloc_counter;
 
-        const size_t old_size = object->allocated_c_strings_in_array;
+        const size_t old_size = object->allocated_c_strings_in_array [chosen_c_string_array];
         const size_t new_size = old_size + C_STR_ALLOCATION_STEP_SIZE;
+        const size_t new_c_string_array_size    = new_size * MAX_TOKEN_LENGTH * sizeof (char);
+        const size_t new_int_mapping_array_size = new_size * MAX_TOKEN_LENGTH * sizeof (uint_fast32_t);
 
-        // For all C-Strings the memory will be extended
-        for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
-        {
-            char* tmp_ptr = (char*) REALLOC(object->c_str_arrays [i], new_size * MAX_TOKEN_LENGTH *
-                    sizeof (char));
-            ASSERT_ALLOC(tmp_ptr, "Cannot reallocate memory for token to int mapping data !", new_size * MAX_TOKEN_LENGTH *
-                    sizeof (char));
-            memset(tmp_ptr + (old_size * MAX_TOKEN_LENGTH), '\0', C_STR_ALLOCATION_STEP_SIZE * MAX_TOKEN_LENGTH *
-                    sizeof (char));
+        // Reallocate the c strings and the int mapping memory
+        char* tmp_ptr = (char*) REALLOC(object->c_str_arrays [chosen_c_string_array], new_c_string_array_size);
+        ASSERT_ALLOC(tmp_ptr, "Cannot reallocate memory for token to int mapping data !", new_c_string_array_size);
+        memset(tmp_ptr + (old_size * MAX_TOKEN_LENGTH), '\0', C_STR_ALLOCATION_STEP_SIZE * MAX_TOKEN_LENGTH *
+                sizeof (char));
 
-            uint_fast32_t* tmp_ptr_2 = (uint_fast32_t*) REALLOC(object->int_mapping [i], new_size * MAX_TOKEN_LENGTH *
-                    sizeof (uint_fast32_t));
-            ASSERT_ALLOC(tmp_ptr_2, "Cannot reallocate memory for token to int mapping data !", new_size * MAX_TOKEN_LENGTH *
-                    sizeof (uint_fast32_t));
-            memset(tmp_ptr_2 + (old_size * MAX_TOKEN_LENGTH), '\0', C_STR_ALLOCATION_STEP_SIZE * MAX_TOKEN_LENGTH *
-                    sizeof (uint_fast32_t));
+        uint_fast32_t* tmp_ptr_2 = (uint_fast32_t*) REALLOC(object->int_mapping [chosen_c_string_array], new_int_mapping_array_size);
+        ASSERT_ALLOC(tmp_ptr_2, "Cannot reallocate memory for token to int mapping data !", new_int_mapping_array_size);
+        memset(tmp_ptr_2 + (old_size * MAX_TOKEN_LENGTH), '\0', C_STR_ALLOCATION_STEP_SIZE * MAX_TOKEN_LENGTH *
+                sizeof (uint_fast32_t));
 
-            object->c_str_arrays [i] = tmp_ptr;
-            object->int_mapping [i] = tmp_ptr_2;
-        }
+        object->c_str_arrays [chosen_c_string_array]    = tmp_ptr;
+        object->int_mapping [chosen_c_string_array]     = tmp_ptr_2;
 
-        object->allocated_c_strings_in_array = new_size;
+        object->allocated_c_strings_in_array [chosen_c_string_array] = new_size;
 
         PRINTF_FFLUSH("Token to int realloc. From %zu to %zu objects (%zu times)\n", old_size, new_size,
                 token_to_int_realloc_counter);
