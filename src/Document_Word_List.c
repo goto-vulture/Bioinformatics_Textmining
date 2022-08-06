@@ -232,7 +232,7 @@ Get_Document_Word_List_Size
 
     size_t result = object->number_of_arrays * object->max_array_length * sizeof (uint_fast32_t);
     result += sizeof (struct Document_Word_List);
-    result += object->number_of_arrays + sizeof (uint_fast32_t*);
+    result += object->number_of_arrays * sizeof (uint_fast32_t*);
 
     return result;
 }
