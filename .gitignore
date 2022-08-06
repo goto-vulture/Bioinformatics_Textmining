@@ -30,6 +30,9 @@ src/Error_Handling/*.gch
 # Profiling Daten von oprofile
 oprofile_data/
 
+# Profiling Daten von Perf
+perf.data*
+
 # Von doxygen erstellte Dokumentation
 Documentation/
 
