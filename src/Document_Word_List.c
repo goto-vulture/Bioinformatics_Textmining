@@ -213,6 +213,37 @@ Show_Data_From_Document_Word_List
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Print attributes of a Document_Word_List to stdout.
+ *
+ * This function is for debugging purposes.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
+ */
+extern void
+Show_Attributes_From_Document_Word_List
+(
+        const struct Document_Word_List* const object
+)
+{
+    ASSERT_MSG(object != NULL, "Object is NULL !");
+
+    const int formatter_int = (int) MAX(Count_Number_Of_Digits(object->number_of_arrays),
+                Count_Number_Of_Digits(object->max_array_length));
+
+    puts ("> Attributes <");
+    printf ("Intersection data: %s\n", (object->intersection_data /* == true */) ? "YES" : "NO");
+    printf ("Number of arrays:  %*zu\n", formatter_int, object->number_of_arrays);
+    printf ("Max. array length: %*zu\n", formatter_int, object->max_array_length);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Printh data and the attribute information of a Document_Word_List to stdout.
  *
  * This function is for debugging purposes.
@@ -231,14 +262,7 @@ Show_Data_And_Attributes_From_Document_Word_List
     ASSERT_MSG(object != NULL, "Object is NULL !");
 
     Show_Data_From_Document_Word_List(object);
-
-    const int formatter_int = (int) MAX(Count_Number_Of_Digits(object->number_of_arrays),
-            Count_Number_Of_Digits(object->max_array_length));
-
-    puts ("> Attributes <");
-    printf ("Intersection data: %s\n", (object->intersection_data /* == true */) ? "YES" : "NO");
-    printf ("Number of arrays:  %*zu\n", formatter_int, object->number_of_arrays);
-    printf ("Max. array length: %*zu\n", formatter_int, object->max_array_length);
+    Show_Attributes_From_Document_Word_List(object);
 
     return;
 }

@@ -140,6 +140,22 @@ Show_Data_From_Document_Word_List
 );
 
 /**
+ * @brief Print attributes of a Document_Word_List to stdout.
+ *
+ * This function is for debugging purposes.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
+ */
+extern void
+Show_Attributes_From_Document_Word_List
+(
+        const struct Document_Word_List* const object
+);
+
+/**
  * @brief Printh data and the attribute information of a Document_Word_List to stdout.
  *
  * This function is for debugging purposes.
