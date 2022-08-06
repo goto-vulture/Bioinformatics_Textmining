@@ -168,13 +168,15 @@ Add_Token_To_Mapping
         {
             char* tmp_ptr = (char*) REALLOC(object->c_str_arrays [i], new_size * MAX_TOKEN_LENGTH *
                     sizeof (char));
-            ASSERT_ALLOC(tmp_ptr, "Cannot reallocate memory for token to int mapping data !", new_size * MAX_TOKEN_LENGTH);
+            ASSERT_ALLOC(tmp_ptr, "Cannot reallocate memory for token to int mapping data !", new_size * MAX_TOKEN_LENGTH *
+                    sizeof (char));
             memset(tmp_ptr + (old_size * MAX_TOKEN_LENGTH), '\0', C_STR_ALLOCATION_STEP_SIZE * MAX_TOKEN_LENGTH *
                     sizeof (char));
 
             uint_fast32_t* tmp_ptr_2 = (uint_fast32_t*) REALLOC(object->int_mapping [i], new_size * MAX_TOKEN_LENGTH *
                     sizeof (uint_fast32_t));
-            ASSERT_ALLOC(tmp_ptr_2, "Cannot reallocate memory for token to int mapping data !", new_size * MAX_TOKEN_LENGTH);
+            ASSERT_ALLOC(tmp_ptr_2, "Cannot reallocate memory for token to int mapping data !", new_size * MAX_TOKEN_LENGTH *
+                    sizeof (uint_fast32_t));
             memset(tmp_ptr_2 + (old_size * MAX_TOKEN_LENGTH), '\0', C_STR_ALLOCATION_STEP_SIZE * MAX_TOKEN_LENGTH *
                     sizeof (uint_fast32_t));
 
