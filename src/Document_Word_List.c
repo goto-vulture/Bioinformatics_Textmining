@@ -213,6 +213,33 @@ Show_Data_From_Document_Word_List
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Determine the full memory usage in byte.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] container Document_Word_List object
+ *
+ * @return Size of the full object in bytes
+ */
+extern size_t
+Get_Document_Word_List_Size
+(
+        const struct Document_Word_List* const object
+)
+{
+    ASSERT_MSG(object != NULL, "Object is NULL !");
+
+    size_t result = object->number_of_arrays * object->max_array_length * sizeof (uint_fast32_t);
+    result += sizeof (struct Document_Word_List);
+    result += object->number_of_arrays + sizeof (uint_fast32_t*);
+
+    return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Print attributes of a Document_Word_List to stdout.
  *
  * This function is for debugging purposes.
@@ -233,6 +260,10 @@ Show_Attributes_From_Document_Word_List
     const int formatter_int = (int) MAX(Count_Number_Of_Digits(object->number_of_arrays),
                 Count_Number_Of_Digits(object->max_array_length));
 
+    puts("");
+    printf ("Full document word list container size: %zu B (%.3f KB | %.3f MB)\n", Get_Document_Word_List_Size(object),
+            (double) Get_Document_Word_List_Size(object) / 1024.0,
+            (double) Get_Document_Word_List_Size(object) / 1024.0 / 1024.0);
     puts ("> Attributes <");
     printf ("Intersection data: %s\n", (object->intersection_data /* == true */) ? "YES" : "NO");
     printf ("Number of arrays:  %*zu\n", formatter_int, object->number_of_arrays);

@@ -140,6 +140,22 @@ Show_Data_From_Document_Word_List
 );
 
 /**
+ * @brief Determine the full memory usage in byte.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Document_Word_List object
+ *
+ * @return Size of the full object in bytes
+ */
+extern size_t
+Get_Document_Word_List_Size
+(
+        const struct Document_Word_List* const container
+);
+
+/**
  * @brief Print attributes of a Document_Word_List to stdout.
  *
  * This function is for debugging purposes.
