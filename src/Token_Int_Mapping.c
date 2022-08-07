@@ -197,10 +197,14 @@ Add_Token_To_Mapping
         //if (new_token_length != strlen(&(to_str [i * MAX_TOKEN_LENGTH]))) { continue; }
 
         //if (strncmp (new_token, &(to_str [i * MAX_TOKEN_LENGTH]), new_token_length) == 0)
-        if (strncmp (new_token, to_str, new_token_length) == 0)
+        // Pre check the first char to avoid strncmp calls
+        if (new_token [0] == to_str [0])
         {
-            token_already_in_list = true;
-            break;
+            if (strncmp (new_token, to_str, new_token_length) == 0)
+            {
+                token_already_in_list = true;
+                break;
+            }
         }
         to_str += MAX_TOKEN_LENGTH;
     }
@@ -306,10 +310,14 @@ Token_To_Int
         //if (search_token_length != strlen(&(c_string_array [i * MAX_TOKEN_LENGTH]))) { continue; }
 
         //if (strncmp (search_token, &(c_string_array [i * MAX_TOKEN_LENGTH]), search_token_length) == 0)
-        if (strncmp (search_token, c_string_array, search_token_length) == 0)
+        // Pre check the first char to avoid strncmp calls
+        if (search_token [0] == c_string_array [0])
         {
-            token_found = true;
-            break;
+            if (strncmp (search_token, c_string_array, search_token_length) == 0)
+            {
+                token_found = true;
+                break;
+            }
         }
         c_string_array += MAX_TOKEN_LENGTH;
     }
