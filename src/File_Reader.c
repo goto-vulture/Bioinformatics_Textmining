@@ -80,6 +80,28 @@ Get_Average_Token_Length
         const struct Token_List_Container* const token_list_container
 );
 
+/**
+ * @brief Read the next line from the file and return the number of char, that were read.
+ *
+ * Asserts:
+ *      input_file != NULL
+ *      input_file_data != NULL
+ *      input_file_data_length > 0
+ *
+ * @param[in] input_file Input file pointer
+ * @param[in] input_file_data Buffer for the new input file data
+ * @param[in] input_file_data_length Length of the input file buffer
+ *
+ * @return Number of char, that were read
+ */
+static size_t
+Read_Next_Line
+(
+        FILE* restrict input_file,
+        char* const restrict input_file_data,
+        const long int input_file_data_length
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -180,18 +202,8 @@ Create_Token_Container_From_File
     uint_fast32_t tokens_found      = 0;
     const uint_fast32_t print_steps = ((lines_in_file / count_steps) == 0) ? 1 : (lines_in_file / count_steps);
 
-    //char* fgets_res = fgets (input_file_data, input_file_length, input_file);
-    size_t char_read = 0;
-    for (int c = getc(input_file); c != EOF; c = getc(input_file), ++ char_read)
-    {
-        if (c == '\n')
-        {
-            input_file_data [char_read] = '\0';
-            input_file_data [input_file_length] = '\0';
-            break;
-        }
-        input_file_data [char_read] = (char) c;
-    }
+    // Read the first line from the file
+    size_t char_read = Read_Next_Line (input_file, input_file_data, input_file_length);
 
     // ===== ===== ===== BEGIN Read file line by line ===== ===== =====
     while(char_read > 0)
@@ -336,17 +348,7 @@ Create_Token_Container_From_File
             json = NULL;
         }
         // Read next line
-        char_read = 0;
-        for (int c = getc(input_file); c != EOF; c = getc(input_file), ++ char_read)
-        {
-            if (c == '\n')
-            {
-                input_file_data [char_read] = '\0';
-                input_file_data [input_file_length] = '\0';
-                break;
-            }
-            input_file_data [char_read] = (char) c;
-        }
+        char_read = Read_Next_Line (input_file, input_file_data, input_file_length);
         //fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
         //input_file_data [input_file_length] = '\0';
     }
@@ -815,3 +817,44 @@ Get_Average_Token_Length
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Read the next line from the file and return the number of char, that were read.
+ *
+ * Asserts:
+ *      input_file != NULL
+ *      input_file_data != NULL
+ *      input_file_data_length > 0
+ *
+ * @param[in] input_file Input file pointer
+ * @param[in] input_file_data Buffer for the new input file data
+ * @param[in] input_file_data_length Length of the input file buffer
+ *
+ * @return Number of char, that were read
+ */
+static size_t
+Read_Next_Line
+(
+        FILE* restrict input_file,
+        char* const restrict input_file_data,
+        const long int input_file_data_length
+)
+{
+    size_t char_read = 0;
+
+    for (int c = getc(input_file); c != EOF; c = getc(input_file), ++ char_read)
+    {
+        if (c == '\n')
+        {
+            input_file_data [char_read] = '\0';
+            input_file_data [input_file_data_length] = '\0';
+            break;
+        }
+        input_file_data [char_read] = (char) c;
+    }
+
+    return char_read;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
