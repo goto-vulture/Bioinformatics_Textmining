@@ -29,7 +29,7 @@ extern "C"
  * The effect is, that the output will be appear on the terminal directly.
  */
 #ifndef PRINTF_FFLUSH
-    #define PRINTF_FFLUSH(format_string, ...)                   \
+    #define PRINTF_FFLUSH(format_string, ...)                                                                           \
     printf (format_string, __VA_ARGS__); fflush (stdout);
 #else
     #error "The macro \"PRINTF_FFLUSH\" is already defined !"
@@ -41,23 +41,23 @@ extern "C"
  * @brief Same as the macro "PRINTF_FFLUSH". But here with file streams.
  */
 #ifndef FPRINTF_FFLUSH
-    #define FPRINTF_FFLUSH(file, format_string, ...)                                                        \
-    if (file != stdout && file != stderr)                                                                   \
-    {                                                                                                       \
-        const int return_value_fprintf = fprintf (file, format_string, __VA_ARGS__);                        \
-        if (return_value_fprintf < 0)                                                                       \
-        {                                                                                                   \
-            fprintf (stderr, "I/O error ! fprintf returned %d !", return_value_fprintf); fflush (stderr);   \
-        }                                                                                                   \
-        const int return_value_fflush = fflush (file);                                                      \
-        if (return_value_fflush == EOF)                                                                     \
-        {                                                                                                   \
-            fprintf (stderr, "I/O error ! fflush returned EOF !"); fflush (stderr);                         \
-        }                                                                                                   \
-    }                                                                                                       \
-    else                                                                                                    \
-    {                                                                                                       \
-        PRINTF_FFLUSH (format_string, __VA_ARGS__);                                                         \
+    #define FPRINTF_FFLUSH(file, format_string, ...)                                                                    \
+    if (file != stdout && file != stderr)                                                                               \
+    {                                                                                                                   \
+        const int return_value_fprintf = fprintf (file, format_string, __VA_ARGS__);                                    \
+        if (return_value_fprintf < 0)                                                                                   \
+        {                                                                                                               \
+            fprintf (stderr, "I/O error ! fprintf returned %d !", return_value_fprintf); fflush (stderr);               \
+        }                                                                                                               \
+        const int return_value_fflush = fflush (file);                                                                  \
+        if (return_value_fflush == EOF)                                                                                 \
+        {                                                                                                               \
+            fprintf (stderr, "I/O error ! fflush returned EOF !"); fflush (stderr);                                     \
+        }                                                                                                               \
+    }                                                                                                                   \
+    else                                                                                                                \
+    {                                                                                                                   \
+        PRINTF_FFLUSH (format_string, __VA_ARGS__);                                                                     \
     }
 #else
     #error "The macro \"FPRINTF_FFLUSH\" is already defined !"
@@ -72,7 +72,7 @@ extern "C"
  * with the macro "PRINTF_FFLUSH".
  */
 #ifndef PRINTF_NO_VA_ARGS_FFLUSH
-    #define PRINTF_NO_VA_ARGS_FFLUSH(format_string)             \
+    #define PRINTF_NO_VA_ARGS_FFLUSH(format_string)                                                                     \
     printf (format_string); fflush (stdout);
 #else
     #error "The macro \"PRINTF_NO_VA_ARGS_FFLUSH\" is already defined !"
@@ -84,23 +84,23 @@ extern "C"
  * @brief Same as the macro "PRINTF_NO_VA_ARGS_FFLUSH". But here with a file stream.
  */
 #ifndef FPRINTF_NO_VA_ARGS_FFLUSH
-    #define FPRINTF_FFLUSH_NO_VA_ARGS(file, format_string)                                                  \
-    if (file != stdout && file != stderr)                                                                   \
-    {                                                                                                       \
-        const int return_value_fprintf = fprintf (file, format_string);                                     \
-        if (return_value_fprintf < 0)                                                                       \
-        {                                                                                                   \
-            fprintf (stderr, "I/O error ! fprintf returned %d !", return_value_fprintf); fflush (stderr);   \
-        }                                                                                                   \
-        const int return_value_fflush = fflush (file);                                                      \
-        if (return_value_fflush == EOF)                                                                     \
-        {                                                                                                   \
-            fprintf (stderr, "I/O error ! fflush returned EOF !"); fflush (stderr);                         \
-        }                                                                                                   \
-    }                                                                                                       \
-    else                                                                                                    \
-    {                                                                                                       \
-        PRINTF_NO_VA_ARGS_FFLUSH (format_string);                                                           \
+    #define FPRINTF_FFLUSH_NO_VA_ARGS(file, format_string)                                                              \
+    if (file != stdout && file != stderr)                                                                               \
+    {                                                                                                                   \
+        const int return_value_fprintf = fprintf (file, format_string);                                                 \
+        if (return_value_fprintf < 0)                                                                                   \
+        {                                                                                                               \
+            fprintf (stderr, "I/O error ! fprintf returned %d !", return_value_fprintf); fflush (stderr);               \
+        }                                                                                                               \
+        const int return_value_fflush = fflush (file);                                                                  \
+        if (return_value_fflush == EOF)                                                                                 \
+        {                                                                                                               \
+            fprintf (stderr, "I/O error ! fflush returned EOF !"); fflush (stderr);                                     \
+        }                                                                                                               \
+    }                                                                                                                   \
+    else                                                                                                                \
+    {                                                                                                                   \
+        PRINTF_NO_VA_ARGS_FFLUSH (format_string);                                                                       \
     }
 #else
     #error "The macro \"FPRINTF_NO_VA_ARGS_FFLUSH\" is already defined !"
@@ -112,7 +112,7 @@ extern "C"
  * @brief Same as the macro "PRINTF_FFLUSH". But here with a automatíc newline at the end.
  */
 #ifndef PUTS_FFLUSH
-    #define PUTS_FFLUSH(string)                                 \
+    #define PUTS_FFLUSH(string)                                                                                         \
     puts (string); fflush (stdout);
 #else
     #error "The macro \"PUTS_FFLUSH\" is already defined !"
@@ -126,23 +126,23 @@ extern "C"
  * Important: fputs() adds NO newline at the end of the string ! puts() do this !
  */
 #ifndef FPUTS_FFLUSH
-    #define FPUTS_FFLUSH(file, string)                                                                  \
-    if (file != stdout && file != stderr)                                                               \
-    {                                                                                                   \
-        const int return_value_fputs = fputs (file, string);                                            \
-        if (return_value_fprintf == EOF)                                                                \
-        {                                                                                               \
-            fprintf (stderr, "I/O error ! fputs returned %d !", return_value_fputs); fflush (stderr);   \
-        }                                                                                               \
-        const int return_value_fflush = fflush (file);                                                  \
-        if (return_value_fflush == EOF)                                                                 \
-        {                                                                                               \
-            fprintf (stderr, "I/O error ! fflush returned EOF !"); fflush (stderr);                     \
-        }                                                                                               \
-    }                                                                                                   \
-    else                                                                                                \
-    {                                                                                                   \
-        PRINTF_NO_VA_ARGS_FFLUSH (format_string);                                                       \
+    #define FPUTS_FFLUSH(file, string)                                                                                  \
+    if (file != stdout && file != stderr)                                                                               \
+    {                                                                                                                   \
+        const int return_value_fputs = fputs (file, string);                                                            \
+        if (return_value_fprintf == EOF)                                                                                \
+        {                                                                                                               \
+            fprintf (stderr, "I/O error ! fputs returned %d !", return_value_fputs); fflush (stderr);                   \
+        }                                                                                                               \
+        const int return_value_fflush = fflush (file);                                                                  \
+        if (return_value_fflush == EOF)                                                                                 \
+        {                                                                                                               \
+            fprintf (stderr, "I/O error ! fflush returned EOF !"); fflush (stderr);                                     \
+        }                                                                                                               \
+    }                                                                                                                   \
+    else                                                                                                                \
+    {                                                                                                                   \
+        PRINTF_NO_VA_ARGS_FFLUSH (format_string);                                                                       \
     }
 #else
     #error "The macro \"FPUTS_FFLUSH\" is already defined !"
@@ -156,7 +156,7 @@ extern "C"
  * Approach: the line length of 96 is not exceeded.
  */
 #ifndef CLEAN_LINE
-    #define CLEAN_LINE()                                                                                        \
+    #define CLEAN_LINE()                                                                                                \
     printf ("\r"); PRINT_X_TIMES_SAME_CHAR(' ', 96) fflush (stdout);
 #else
     #error "The macro \"CLEAN_LINE\" is already defined !"
@@ -179,7 +179,7 @@ extern "C"
  * @brief Print x times the same char to stdout. (With flush at the end of the process)
  */
 #ifndef PRINT_X_TIMES_SAME_CHAR
-#define PRINT_X_TIMES_SAME_CHAR(character, times) \
+#define PRINT_X_TIMES_SAME_CHAR(character, times)                                                                       \
     for (size_t i = 0; i < (times); ++ i) { printf ("%c", (character)); } fflush (stdout);
 #else
     #error "The macro \"PRINT_X_TIMES_SAME_CHAR\" is already defined !"

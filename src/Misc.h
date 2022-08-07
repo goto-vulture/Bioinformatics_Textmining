@@ -47,10 +47,10 @@ extern "C"
  * => For the usage of a format string: See the macro "TO_STRING_HELPER_VA_ARGS"
  */
 #ifndef TO_STRING_HELPER
-#define TO_STRING_HELPER(new_string)                                                                    \
-        if (remaining_memory == 0) { goto no_remaining_memory; }                                        \
-        used_char = (size_t) snprintf (string_memory + next_free_byte, remaining_memory, new_string);   \
-        next_free_byte += used_char;                                                                    \
+#define TO_STRING_HELPER(new_string)                                                                                    \
+        if (remaining_memory == 0) { goto no_remaining_memory; }                                                        \
+        used_char = (size_t) snprintf (string_memory + next_free_byte, remaining_memory, new_string);                   \
+        next_free_byte += used_char;                                                                                    \
         remaining_memory -= used_char;
 #else
 #error "The macro \"TO_STRING_HELPER\" is already defined !"
