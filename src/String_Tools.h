@@ -24,6 +24,16 @@ extern "C"
 
 
 
+//---------------------------------------------------------------------------------------------------------------------
+
+#ifndef IS_STRING_LENGTH_ZERO
+#define IS_STRING_LENGTH_ZERO(c_string) ((c_string) [0] == '\0') ///< Simple check, if a C-String has the length zero
+#else
+#error "The macro \"IS_STRING_LENGTH_ZERO\" is already defined !"
+#endif /* IS_STRING_LENGTH_ZERO */
+
+//---------------------------------------------------------------------------------------------------------------------
+
 /**
  * @brief Copy a C-String and convert all upper-case char to lower-case.
  *
@@ -139,19 +149,6 @@ Multi_strncat
 		const size_t destination_size,
 		const int count,
 		...
-);
-
-/**
- * @brief Has a string the size zero ?
- *
- * @param[in] c_string C-String
- *
- * @return true, if the C-String is empty, false otherwise
- */
-extern _Bool
-Is_String_Length_Zero
-(
-        const char* const c_string
 );
 
 
