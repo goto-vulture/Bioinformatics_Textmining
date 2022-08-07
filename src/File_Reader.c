@@ -167,44 +167,20 @@ Create_Token_Container_From_File
     ASSERT_ALLOC(input_file_data, "Cannot allocate memory for reading the input file !",
             ((size_t) input_file_length + sizeof ("")) * sizeof (char));
 
-    uint_fast32_t lines_in_file                 = 1;
-    uint_fast32_t char_counter                  = 0;
-    const uint_fast8_t count_steps              = 200;
-    const uint_fast32_t print_steps_count_lines =
-            (((uint_fast32_t) input_file_length / count_steps) == 0) ? 1 : ((uint_fast32_t) input_file_length / count_steps);
-
-    start = clock ();
-    uint_fast32_t char_since_last_status_print = 0;
-    for (int c = getc(input_file); c != EOF; c = getc(input_file), ++ char_counter, ++ char_since_last_status_print)
-    {
-        if (c == '\n') { ++ lines_in_file; }
-        //if ((char_counter % print_steps_count_lines) == 0)
-        if (char_since_last_status_print == print_steps_count_lines)
-        {
-            char_since_last_status_print = 0;
-            static uint_fast32_t last_line_counter = 0;
-            if (last_line_counter != lines_in_file)
-            {
-                PRINTF_FFLUSH("\rCount lines in file \"%s\": %" PRIuFAST32, file_name, lines_in_file);
-            }
-            last_line_counter = lines_in_file;
-        }
-    }
-    end = clock ();
-    used_seconds = DETERMINE_USED_TIME(start, end);
-    PRINTF_FFLUSH("\nFound %" PRIuFAST32 " line%s (Used time: %3.3fs)\n", lines_in_file,
-            (lines_in_file == 1) ? "" : "s", used_seconds);
-
-    fseek_return = fseek (input_file, 0, SEEK_SET);
-    ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
-
     uint_fast32_t line_counter      = 0;
     uint_fast32_t tokens_found      = 0;
-    const uint_fast32_t print_steps = ((lines_in_file / count_steps) == 0) ? 1 : (lines_in_file / count_steps);
+    const uint_fast8_t count_steps  = 200;
+    const size_t unsigned_input_file_length = (uint_fast64_t) input_file_length;
+    const uint_fast32_t print_steps = ((unsigned_input_file_length / count_steps) == 0) ?
+            1 : (unsigned_input_file_length / count_steps);
 
     // Read the first line from the file
     size_t char_read = Read_Next_Line (input_file, input_file_data, input_file_length);
 
+    size_t sum_char_read = char_read;
+    size_t char_read_before_last_output = char_read;
+
+    start = clock();
     // ===== ===== ===== BEGIN Read file line by line ===== ===== =====
     while(char_read > 0)
     {
@@ -216,18 +192,15 @@ Create_Token_Container_From_File
             cJSON* json = cJSON_ParseWithOpts(current_parsing_position, (const char**) &current_parsing_position, false);
 
             // Print process information
-            if ((line_counter % print_steps) == 0)
+            if (char_read_before_last_output >= print_steps)
             {
-                // Show only the current status, when the number of the line_counter changed since the last printing
-                static uint_fast32_t last_line_counter = 0;
-                if (last_line_counter != line_counter)
-                {
-                    PRINTF_FFLUSH("\rRead line: %*" PRIuFAST32 " / %" PRIuFAST32 " (%.4f %%)",
-                            (int) Count_Number_Of_Digits(lines_in_file),
-                            (line_counter + print_steps <= lines_in_file) ? line_counter : lines_in_file, lines_in_file,
-                                    (line_counter + print_steps <= lines_in_file) ? Determine_Percent(line_counter, lines_in_file) : 100.0f);
-                }
-                last_line_counter = line_counter;
+                char_read_before_last_output -= print_steps;
+                const int digits = (int) Count_Number_Of_Digits(unsigned_input_file_length);
+                const float percent = Determine_Percent(sum_char_read, unsigned_input_file_length);
+
+                PRINTF_FFLUSH("\rRead file: %*" PRIuFAST32 " KByte (%3.2f %%)",
+                        (digits > 3) ? digits - 3 : 3, sum_char_read / 1024,
+                        (percent > 100.0f) ? 100.0f : percent);
             }
 
             if (! json)
@@ -349,6 +322,8 @@ Create_Token_Container_From_File
         }
         // Read next line
         char_read = Read_Next_Line (input_file, input_file_data, input_file_length);
+        sum_char_read += char_read;
+        char_read_before_last_output += char_read;
         //fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
         //input_file_data [input_file_length] = '\0';
     }
