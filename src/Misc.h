@@ -4,6 +4,8 @@
  * @brief Here are some macros defined, that cannot be classified for a specific translation unit. E.g.: The size
  * determination of a static defined array.
  *
+ * And here are also helpful functions, that fits in no specific translation unit.
+ *
  * @date 14.03.2021
  * @author x86 / Gyps
  */
@@ -15,6 +17,10 @@
 extern "C"
 {
 #endif /* __cplusplus */
+
+
+
+#include <time.h>
 
 
 
@@ -130,6 +136,85 @@ extern "C"
 #endif /* DETERMINE_USED_TIME */
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Count number of digits in a value.
+ *
+ * @param[in] value Value
+ *
+ * @return The number of digits in the given value
+ */
+extern size_t Count_Number_Of_Digits (const size_t value);
+
+/**
+ * @brief Determine percentage value. (float input parameter)
+ *
+ * Asserts:
+ *      value != NaN
+ *      value != -Inf
+ *      value != +Inf
+ *      one_hundred_percent != NaN
+ *      one_hundred_percent != -Inf
+ *      one_hundred_percent != +Inf
+ *      one_hundred_percent != 0.0f (NOT IMPLEMENTED DUE FLOAT COMPARISONS !)
+ *
+ * @param[in] value Value
+ * @param[in] one_hundred_percent Value that corresponds to 100%
+ *
+ * @return percentage value
+ */
+extern float Determine_Percent_f (const float value, const float one_hundred_percent);
+
+/**
+ * @brief Determine percentage value. (size_t input parameter)
+ *
+ * Asserts:
+ *      one_hundred_percent != 0
+ *
+ * @param[in] value Value
+ * @param[in] one_hundred_percent Value that corresponds to 100%
+ *
+ * @return percentage value
+ */
+extern float Determine_Percent (const size_t value, const size_t one_hundred_percent);
+
+/**
+ * @brief Determine the expected time left for the calculation.
+ *
+ * Asserts:
+ *      second_value >= first_value
+ *      end_value >= first_value
+ *      end_value >= second_value
+ *
+ * @param[in] first_value First value
+ * @param[in] second_value Second value
+ * @param[in] end_value End value
+ * @param[in] time_between_values Time, that was used in the interval between the first and second value
+ *
+ * @return Expected time left for the calculation
+ */
+extern float Determine_Time_Left (const size_t first_value, const size_t second_value, const size_t end_value,
+        const time_t time_between_values);
+
+/**
+ * @brief Determine the expected average time left for the calculation.
+ *
+ * A average value is useful to avoid a strongly changing expected time.
+ *
+ * Asserts:
+ *      second_value >= first_value
+ *      end_value >= first_value
+ *      end_value >= second_value
+ *
+ * @param[in] first_value First value
+ * @param[in] second_value Second value
+ * @param[in] end_value End value
+ * @param[in] time_between_values Time, that was used in the interval between the first and second value
+ *
+ * @return Expected average time left for the calculation
+ */
+extern float Determine_Time_Left_Average (const size_t first_value, const size_t second_value, const size_t end_value,
+        const time_t time_between_values);
 
 
 
