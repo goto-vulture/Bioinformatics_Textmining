@@ -141,6 +141,19 @@ Multi_strncat
 		...
 );
 
+/**
+ * @brief Has a string the size zero ?
+ *
+ * @param[in] c_string C-String
+ *
+ * @return true, if the C-String is empty, false otherwise
+ */
+extern _Bool
+Is_String_Length_Zero
+(
+        const char* const c_string
+);
+
 
 
 #ifdef __cplusplus
