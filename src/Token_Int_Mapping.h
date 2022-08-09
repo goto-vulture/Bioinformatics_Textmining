@@ -114,6 +114,26 @@ Delete_Token_Int_Mapping
  * The return value is an flag and indicates whether the operation was successful. The process is not successful, if
  * the token already exists in the mapping table. In this case there will be NO duplicate in the mapping table.
  *
+ *
+ * How the mapping integers works:
+ * The first two digits are equal with the integer mapping array index.
+ *
+ * The reason:
+ * For the reverse mapping process (int -> token) it is necessary, that in the integer values the corresponding
+ * integer mapping array index is coded. This will be done with the first two digits. You know with a int
+ * value - e.g. a 1942 - that this value can only occur in the integer mapping array with the index 42.
+ *
+ * Okay. But for adding a token in the mapping we need to encode the knowledge of our chosen C-String array in
+ * the mapped integer value.
+ *
+ * The idea:
+ * - Find the maximum value in the selected integer mapping array. In our example: 1942
+ * - Remove the encoding:                                           1942 / 100 (C_STR_ARRAYS)   -> 19
+ * - Increment the value:                                           19 + 1                      -> 20
+ * - Shift the value two digits (in decimal system) to the left:    20 * 100 (C_STR_ARRAYS)     -> 2000
+ * - Add the encoding (the chosen C-String array):                  2000 + 42                   -> 2042
+ *
+ *
  * Asserts:
  *      object != NULL
  *      new_token != NULL
@@ -174,16 +194,13 @@ Token_To_Int
 /**
  * @brief Reverse the mapping. int -> token
  *
- * The integer numbers are distributed in blocks.
- * E.g.:
- * C_STR_ARRAYS = 100:
+ * In the integer numbers the corresponding index for the integer mapping array is encoded in the first two digits of
+ * the integer value.
  *
- * Range object->int_mapping [0]:   0 -  99
- * Range object->int_mapping [1]: 100 - 199
- * Range object->int_mapping [2]: 200 - 299
- * ...
+ * E.g.: The value 2911 can only appear in the integer mapping array with the index 11. It is NOT necessary to search in
+ *       all arrays.
  *
- * So the int value indicates in which array is the corresponding c string
+ * So the int value indicates in which array is the corresponding C-String
  *
  * Asserts:
  *      object != NULL

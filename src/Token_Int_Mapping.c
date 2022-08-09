@@ -82,6 +82,7 @@ Create_Token_Int_Mapping
         new_object->c_str_arrays [i] = (char*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (char) * MAX_TOKEN_LENGTH);
         ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
                 C_STR_ALLOCATION_STEP_SIZE * sizeof (char) * MAX_TOKEN_LENGTH);
+
         new_object->int_mapping [i] = (uint_fast32_t*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (uint_fast32_t) * MAX_TOKEN_LENGTH);
         ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
                 C_STR_ALLOCATION_STEP_SIZE * sizeof (uint_fast32_t) * MAX_TOKEN_LENGTH);
@@ -128,6 +129,26 @@ Delete_Token_Int_Mapping
  *
  * The return value is an flag and indicates whether the operation was successful. The process is not successful, if
  * the token already exists in the mapping table. In this case there will be NO duplicate in the mapping table.
+ *
+ *
+ * How the mapping integers works:
+ * The first two digits are equal with the integer mapping array index.
+ *
+ * The reason:
+ * For the reverse mapping process (int -> token) it is necessary, that in the integer values the corresponding
+ * integer mapping array index is coded. This will be done with the first two digits. You know with a int
+ * value - e.g. a 1942 - that this value can only occur in the integer mapping array with the index 42.
+ *
+ * Okay. But for adding a token in the mapping we need to encode the knowledge of our chosen C-String array in
+ * the mapped integer value.
+ *
+ * The idea:
+ * - Find the maximum value in the selected integer mapping array. In our example: 1942
+ * - Remove the encoding:                                           1942 / 100 (C_STR_ARRAYS)   -> 19
+ * - Increment the value:                                           19 + 1                      -> 20
+ * - Shift the value two digits (in decimal system) to the left:    20 * 100 (C_STR_ARRAYS)     -> 2000
+ * - Add the encoding (the chosen C-String array):                  2000 + 42                   -> 2042
+ *
  *
  * Asserts:
  *      object != NULL
@@ -213,26 +234,32 @@ Add_Token_To_Mapping
     if (! token_already_in_list)
     {
         strncpy (&(to_str [object->c_str_array_lengths [chosen_c_string_array] * MAX_TOKEN_LENGTH]),
-                new_token, ((new_token_length >= MAX_TOKEN_LENGTH) ? MAX_TOKEN_LENGTH - 1 : new_token_length));
+                new_token, MAX_TOKEN_LENGTH - 1);// ((new_token_length >= MAX_TOKEN_LENGTH) ? MAX_TOKEN_LENGTH - 1 : new_token_length));
 
         // Gurantee a zero byte at the end
-        to_str [((object->c_str_array_lengths [chosen_c_string_array] + 1) * MAX_TOKEN_LENGTH) - 1] = '\0';
+        //to_str [((object->c_str_array_lengths [chosen_c_string_array] + 1) * MAX_TOKEN_LENGTH) - 1] = '\0';
+
+        // Find the max. mapping integer in the chosen array
+        uint_fast32_t max_mapping_int_in_chosen_array = 0;
+        /*for (uint_fast32_t i = 0; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
+        {
+            if (int_mapping_array [i] > max_mapping_int_in_chosen_array)
+            {
+                max_mapping_int_in_chosen_array = int_mapping_array [i];
+            }
+        }*/
+        max_mapping_int_in_chosen_array /= C_STR_ARRAYS;            // Remove encoding
+        ++ max_mapping_int_in_chosen_array;                         // Increment value
+        max_mapping_int_in_chosen_array *= C_STR_ARRAYS;            // Shift two digits (in decimal system) to the left
+        max_mapping_int_in_chosen_array += chosen_c_string_array;   // Add the encoding in the fist two digits
+        // For a detailed description about the encoding system: See the function comment !
+
+                /*object->c_str_array_lengths [chosen_c_string_array] + (chosen_c_string_array * C_STR_ARRAYS);
+        if (count_c_str_array_lengths / C_STR_ARRAYS >= C_STR_ARRAYS)
+            printf ("\n%d || %d\n", count_c_str_array_lengths, count_c_str_array_lengths / C_STR_ARRAYS);*/
+
+        int_mapping_array [object->c_str_array_lengths [chosen_c_string_array]] = max_mapping_int_in_chosen_array;
         object->c_str_array_lengths [chosen_c_string_array] ++;
-
-        /*
-         * The integer numbers are distributed in blocks.
-         * E.g.:
-         * C_STR_ARRAYS = 100:
-         *
-         * Range object->int_mapping [0]:   0 -  99
-         * Range object->int_mapping [1]: 100 - 199
-         * Range object->int_mapping [2]: 200 - 299
-         * ...
-         */
-        uint_fast32_t count_c_str_array_lengths =
-                object->c_str_array_lengths [chosen_c_string_array] + (chosen_c_string_array * C_STR_ARRAYS);
-
-        int_mapping_array [object->c_str_array_lengths [chosen_c_string_array] - 1] = count_c_str_array_lengths;
     }
 
     return ! token_already_in_list;
@@ -336,16 +363,13 @@ Token_To_Int
 /**
  * @brief Reverse the mapping. int -> token
  *
- * The integer numbers are distributed in blocks.
- * E.g.:
- * C_STR_ARRAYS = 100:
+ * In the integer numbers the corresponding index for the integer mapping array is encoded in the first two digits of
+ * the integer value.
  *
- * Range object->int_mapping [0]:   0 -  99
- * Range object->int_mapping [1]: 100 - 199
- * Range object->int_mapping [2]: 200 - 299
- * ...
+ * E.g.: The value 2911 can only appear in the integer mapping array with the index 11. It is NOT necessary to search in
+ *       all arrays.
  *
- * So the int value indicates in which array is the corresponding c string
+ * So the int value indicates in which array is the corresponding C-String
  *
  * Asserts:
  *      object != NULL
@@ -373,7 +397,12 @@ Int_To_Token
     ASSERT_MSG(result_token_memory != NULL, "The result token memory is NULL !");
     ASSERT_MSG(result_token_memory_size > 0, "The length of the result token memory is 0 !");
 
-    const uint_fast32_t chosen_c_string_array = token_int_value / C_STR_ARRAYS;
+    // Use the encoded information (the first two digits) to find the corresponding index for the integer mapping array
+    // The idea: With this, it is not necessary to search in the whole mapping data to find the specific information
+    //           Especially when the mapped integer is not in the list, it will costs many computation time
+    const uint_fast32_t chosen_c_string_array = token_int_value % C_STR_ARRAYS;
+    if (chosen_c_string_array >= C_STR_ARRAYS)
+        printf ("\n%d | %d\n", chosen_c_string_array, token_int_value);
 
     const char* c_string_array = object->c_str_arrays [chosen_c_string_array];
 
