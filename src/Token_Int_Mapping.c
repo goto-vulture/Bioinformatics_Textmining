@@ -83,9 +83,9 @@ Create_Token_Int_Mapping
         ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
                 C_STR_ALLOCATION_STEP_SIZE * sizeof (char) * MAX_TOKEN_LENGTH);
 
-        new_object->int_mapping [i] = (uint_fast32_t*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (uint_fast32_t) * MAX_TOKEN_LENGTH);
+        new_object->int_mapping [i] = (uint_fast32_t*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (uint_fast32_t) * 1);
         ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
-                C_STR_ALLOCATION_STEP_SIZE * sizeof (uint_fast32_t) * MAX_TOKEN_LENGTH);
+                C_STR_ALLOCATION_STEP_SIZE * sizeof (uint_fast32_t) * 1); // NO MAX_TOKEN_LENGTH !
 
         new_object->allocated_c_strings_in_array [i] = C_STR_ALLOCATION_STEP_SIZE;
     }
@@ -184,7 +184,7 @@ Add_Token_To_Mapping
         const size_t old_size = object->allocated_c_strings_in_array [chosen_c_string_array];
         const size_t new_size = old_size + C_STR_ALLOCATION_STEP_SIZE;
         const size_t new_c_string_array_size    = new_size * MAX_TOKEN_LENGTH * sizeof (char);
-        const size_t new_int_mapping_array_size = new_size * MAX_TOKEN_LENGTH * sizeof (uint_fast32_t);
+        const size_t new_int_mapping_array_size = new_size * 1 * sizeof (uint_fast32_t); // NO MAX_TOKEN_LENGTH !
 
         // Reallocate the c strings and the int mapping memory
         char* tmp_ptr = (char*) REALLOC(object->c_str_arrays [chosen_c_string_array], new_c_string_array_size);
@@ -194,8 +194,7 @@ Add_Token_To_Mapping
 
         uint_fast32_t* tmp_ptr_2 = (uint_fast32_t*) REALLOC(object->int_mapping [chosen_c_string_array], new_int_mapping_array_size);
         ASSERT_ALLOC(tmp_ptr_2, "Cannot reallocate memory for token to int mapping data !", new_int_mapping_array_size);
-        memset(tmp_ptr_2 + (old_size * MAX_TOKEN_LENGTH), '\0', C_STR_ALLOCATION_STEP_SIZE * MAX_TOKEN_LENGTH *
-                sizeof (uint_fast32_t));
+        memset(tmp_ptr_2 + (old_size), '\0', C_STR_ALLOCATION_STEP_SIZE * 1 * sizeof (uint_fast32_t)); // NO MAX_TOKEN_LENGTH !
 
         object->c_str_arrays [chosen_c_string_array]    = tmp_ptr;
         object->int_mapping [chosen_c_string_array]     = tmp_ptr_2;
