@@ -400,8 +400,6 @@ Int_To_Token
     // The idea: With this, it is not necessary to search in the whole mapping data to find the specific information
     //           Especially when the mapped integer is not in the list, it will costs many computation time
     const uint_fast32_t chosen_c_string_array = token_int_value % C_STR_ARRAYS;
-    if (chosen_c_string_array >= C_STR_ARRAYS)
-        printf ("\n%d | %d\n", chosen_c_string_array, token_int_value);
 
     const char* c_string_array = object->c_str_arrays [chosen_c_string_array];
 
