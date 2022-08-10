@@ -67,8 +67,8 @@ struct Token_Int_Mapping
     uint_fast32_t* int_mapping [C_STR_ARRAYS];          ///< Mapping integers
 
     /**
-     * @brief Allocated number of tokens for every C-String. This means, that every C-String has the same allocated
-     * size !
+     * @brief Allocated number of tokens for the C-String. This means, that every C-String has individual allocation
+     * sizes !
      */
     size_t allocated_c_strings_in_array [C_STR_ARRAYS];
 
