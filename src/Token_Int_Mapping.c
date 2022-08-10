@@ -35,6 +35,13 @@
 #endif /* C_STR_ALLOCATION_STEP_SIZE */
 
 /**
+ * @brief Check, whether the macro values are valid.
+ */
+#if __STDC_VERSION__ >= 201112L
+_Static_assert(C_STR_ALLOCATION_STEP_SIZE > 0, "The marco \"C_STR_ALLOCATION_STEP_SIZE\" is zero !");
+#endif /* __STDC_VERSION__ */
+
+/**
  * @brief A very very very simple "hash function".
  *
  * This function is used to calculate a number for distributing the tokens in different C-Strings.
