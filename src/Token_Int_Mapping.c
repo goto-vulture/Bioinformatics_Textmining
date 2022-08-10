@@ -248,13 +248,13 @@ Add_Token_To_Mapping
 
         // Find the max. mapping integer in the chosen array
         uint_fast32_t max_mapping_int_in_chosen_array = 0;
-        /*for (uint_fast32_t i = 0; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
+        for (uint_fast32_t i = 0; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
         {
             if (int_mapping_array [i] > max_mapping_int_in_chosen_array)
             {
                 max_mapping_int_in_chosen_array = int_mapping_array [i];
             }
-        }*/
+        }
         max_mapping_int_in_chosen_array /= C_STR_ARRAYS;            // Remove encoding
         ++ max_mapping_int_in_chosen_array;                         // Increment value
         max_mapping_int_in_chosen_array *= C_STR_ARRAYS;            // Shift two digits (in decimal system) to the left
