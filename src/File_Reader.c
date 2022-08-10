@@ -180,6 +180,7 @@ Create_Token_Container_From_File
     size_t char_read_before_last_output = char_read;
 
     start = clock();
+    ASSERT_MSG(start != (clock_t)(-1), "Time values are not available on this system ! Return value: (clock_t)(-1) !");
     // ===== ===== ===== BEGIN Read file line by line ===== ===== =====
     while(char_read > 0)
     {
@@ -332,6 +333,7 @@ Create_Token_Container_From_File
     new_container->next_free_element ++;
 
     end = clock ();
+    ASSERT_MSG(end != (clock_t)(-1), "Time values are not available on this system ! Return value: (clock_t)(-1) !");
     used_seconds = DETERMINE_USED_TIME(start, end);
     printf ("\n=> %3.3fs (~ %.3f MB/s) for parsing the whole file (%" PRIuFAST32 " tokens found)\n", used_seconds,
             ((float) input_file_length / 1024.0f / 1024.0f) / used_seconds, tokens_found);

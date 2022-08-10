@@ -244,9 +244,11 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
 
     // If there is a read error, less than input_file_length bytes are read
     start = clock();
+    ASSERT_MSG(start != (clock_t)(-1), "Time values are not available on this system ! Return value: (clock_t)(-1) !");
     size_t mem_read = fread (input_file_data, 1, (size_t) input_file_length, input_file); // Read full input file
     ASSERT_FMSG(mem_read == (size_t) input_file_length, "Error while reading the file \"%s\" !", input_file_name);
     end = clock();
+    ASSERT_MSG(end != (clock_t)(-1), "Time values are not available on this system ! Return value: (clock_t)(-1) !");
     used_seconds = DETERMINE_USED_TIME(start, end);
 
     input_file_data [input_file_length] = '\0';
@@ -273,9 +275,11 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
 
     // If there is a read error, less than input_file_length bytes are read
     start = clock ();
+    ASSERT_MSG(start != (clock_t)(-1), "Time values are not available on this system ! Return value: (clock_t)(-1) !");
     mem_read = fread (test_file_data, 1, (size_t) test_file_length, test_file); // Read full test file
     ASSERT_FMSG(mem_read == (size_t) test_file_length, "Error while reading the file \"%s\" !", test_file_name);
     end = clock ();
+    ASSERT_MSG(end != (clock_t)(-1), "Time values are not available on this system ! Return value: (clock_t)(-1) !");
     used_seconds = DETERMINE_USED_TIME(start, end);
 
     test_file_data [test_file_length] = '\0';
@@ -283,6 +287,7 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
     FCLOSE_AND_SET_TO_NULL(test_file);
 
     start = clock ();
+    ASSERT_MSG(start != (clock_t)(-1), "Time values are not available on this system ! Return value: (clock_t)(-1) !");;
 
     // Allocate memory for the parsing result and execute the parsing process
     // For the sake of simplicity, I assume that the double length of the expected result is enough
@@ -412,6 +417,7 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
     }
 
     end = clock ();
+    ASSERT_MSG(end != (clock_t)(-1), "Time values are not available on this system ! Return value: (clock_t)(-1) !");
     used_seconds = DETERMINE_USED_TIME(start, end);
     printf ("=> %3.3fs for parsing the whole file (%" PRIuFAST32 " tokens found)\n", used_seconds, tokens_found);
 
