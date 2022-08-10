@@ -19,6 +19,7 @@
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Print_Tools.h"
 #include "File_Reader.h"
+#include "Misc.h"
 
 
 
@@ -284,13 +285,35 @@ Show_C_Str_Array_Usage
 {
     ASSERT_MSG(object != NULL, "Token_Int_Mapping object is NULL !");
 
-    uint_fast32_t sum_token = 0;
+    // Find the maximum values (used elements and allocated sizes)
+    size_t max_allocated                = 0;
+    size_t max_used                     = 0;
+    uint_fast32_t sum_allocated_tokens  = 0;
+    uint_fast32_t sum_tokens            = 0;
     for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
     {
-        printf ("Array %3zu: %4" PRIuFAST32 "\n", i, object->c_str_array_lengths [i]);
-        sum_token += object->c_str_array_lengths [i];
+        if (object->allocated_c_strings_in_array [i] > max_allocated)
+        {
+            max_allocated = object->allocated_c_strings_in_array [i];
+        }
+        if (object->c_str_array_lengths [i] > max_used)
+        {
+            max_used = object->c_str_array_lengths [i];
+        }
+        sum_allocated_tokens += object->allocated_c_strings_in_array [i];
+        sum_tokens += object->c_str_array_lengths [i];
     }
-    printf ("Sum tokens: %" PRIuFAST32 "\n\n", sum_token);
+
+    for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
+    {
+        printf ("[%2zu] allocated: %*zu | used: %*" PRIuFAST32 " (%.2f %% used)\n", i,
+                (int) Count_Number_Of_Digits(max_allocated), max_allocated, (int) Count_Number_Of_Digits(max_used),
+                object->c_str_array_lengths [i], Determine_Percent(object->c_str_array_lengths [i],
+                        object->allocated_c_strings_in_array [i]));
+    }
+    printf ("Sum allocated tokens: %" PRIuFAST32 "\n", sum_allocated_tokens);
+    printf ("Sum used tokens:      %" PRIuFAST32 " (%.2f %% used)\n\n", sum_tokens,
+            Determine_Percent(sum_tokens, sum_allocated_tokens));
 
     return;
 }
