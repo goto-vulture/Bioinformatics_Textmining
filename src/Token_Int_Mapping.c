@@ -328,6 +328,48 @@ Show_C_Str_Array_Usage
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Print information about the allocated memory size and the used memory size.
+ *
+ * This function is especially useful in the debugging.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Token_Int_Mapping object
+ */
+extern void
+Show_Memory_Usage
+(
+        const struct Token_Int_Mapping* const object
+)
+{
+    ASSERT_MSG(object != NULL, "Token_Int_Mapping object is NULL !");
+
+    size_t allocated_memory = sizeof (struct Token_Int_Mapping);
+    size_t used_memory      = sizeof (struct Token_Int_Mapping);
+    for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
+    {
+        allocated_memory += object->allocated_c_strings_in_array [i] * MAX_TOKEN_LENGTH * sizeof (char);
+        allocated_memory += object->allocated_c_strings_in_array [i] * sizeof (uint_fast32_t);
+        used_memory += object->c_str_array_lengths [i] * MAX_TOKEN_LENGTH * sizeof (char);
+        used_memory += object->c_str_array_lengths [i] * sizeof (uint_fast32_t);
+    }
+
+    const int field_size = (int) ((Count_Number_Of_Digits(allocated_memory) > Count_Number_Of_Digits(used_memory)) ?
+            Count_Number_Of_Digits(allocated_memory) : Count_Number_Of_Digits(used_memory));
+
+    printf ("Allocated Token_Int_Mapping size: %*zu B (%.3f KB | %.3f MB)\n", field_size, allocated_memory,
+            (double) allocated_memory / 1024.0, (double) allocated_memory / 1024.0 / 1024.0);
+    printf ("Used Token_Int_Mapping size:      %*zu B (%.3f KB | %.3f MB) (used: %.2f %%)\n", field_size, used_memory,
+            (double) used_memory / 1024.0, (double) used_memory / 1024.0 / 1024.0,
+            Determine_Percent(used_memory, allocated_memory));
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Determine the integer value for the given token. (token -> int)
  *
  * Asserts:

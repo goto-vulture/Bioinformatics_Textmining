@@ -52,6 +52,14 @@ extern "C"
 #error "The macro \"MAX_TOKEN_LENGTH\" is already defined !"
 #endif /* MAX_TOKEN_LENGTH */
 
+/**
+ * @brief Check, whether the macro values are valid.
+ */
+#if __STDC_VERSION__ >= 201112L
+_Static_assert(C_STR_ARRAYS > 0, "The marco \"C_STR_ARRAYS\" is zero !");
+_Static_assert(MAX_TOKEN_LENGTH > 0, "The marco \"MAX_TOKEN_LENGTH\" is zero !");
+#endif /* __STDC_VERSION__ */
+
 //=====================================================================================================================
 
 struct Token_Int_Mapping
@@ -165,6 +173,22 @@ Add_Token_To_Mapping
  */
 extern void
 Show_C_Str_Array_Usage
+(
+        const struct Token_Int_Mapping* const object
+);
+
+/**
+ * @brief Print information about the allocated memory size and the used memory size.
+ *
+ * This function is especially useful in the debugging.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Token_Int_Mapping object
+ */
+extern void
+Show_Memory_Usage
 (
         const struct Token_Int_Mapping* const object
 );
