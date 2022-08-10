@@ -322,6 +322,8 @@ Show_C_Str_Array_Usage
     printf ("Sum used tokens:      %" PRIuFAST32 " (%.2f %% used)\n\n", sum_tokens,
             Determine_Percent(sum_tokens, sum_allocated_tokens));
 
+    Show_Memory_Usage(object);
+
     return;
 }
 
