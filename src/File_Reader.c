@@ -236,7 +236,6 @@ Create_Token_Container_From_File
                 // Get all tokens from tokens array
                 //const int tokens_array_size = cJSON_GetArraySize(tokens_array);
                 register cJSON* curr_token = tokens_array->child;
-                if (! curr_token) { continue; }
 
                 // ===== ===== ===== BEGIN Realloc necessary ? ===== ===== =====
                 // Is it necessary to realloc/increase the number of Token_Container ?
