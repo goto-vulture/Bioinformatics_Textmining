@@ -18,6 +18,7 @@ extern "C"
 
 
 #include <stdio.h>
+#include <inttypes.h>
 
 
 
@@ -202,6 +203,17 @@ extern "C"
  * @param[in] dim_2 Groesse der Second array dimension (Max numer of char per C-String)
  */
 extern void Print_2D_String_Array (const char* const restrict drawing [], const size_t dim_1, const size_t dim_2);
+
+/**
+ * @brief Print an array of uint_fast32_t variables to stdout.
+ *
+ * Asserts:
+ *      array != NULL
+ *
+ * @param[in] array array with the data
+ * @param[in] array_length length of the array
+ */
+extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const size_t array_length);
 
 
 

@@ -65,3 +65,32 @@ extern void Print_2D_String_Array (const char* const restrict drawing [], const 
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Print an array of uint_fast32_t variables to stdout.
+ *
+ * Asserts:
+ *      array != NULL
+ *
+ * @param[in] array array with the data
+ * @param[in] array_length length of the array
+ */
+extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const size_t array_length)
+{
+    ASSERT_MSG(array != NULL, "array is NULL !");
+
+    printf ("[ ");
+    for (size_t i = 0; i < array_length; ++ i)
+    {
+        printf ("%" PRIuFAST32, array [i]);
+        if ((i + 1) < array_length)
+        {
+            printf (", ");
+        }
+    }
+    puts (" ]");
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
