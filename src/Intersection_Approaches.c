@@ -359,6 +359,7 @@ Intersection_Approach_2_Nested_Loops_2_Raw_Data_Arrays
             if (data_1 [d1] == data_2 [d2])
             {
                 intersection_result->data [0][intersection_result->arrays_lengths [0]] = data_1 [d1];
+                ++ intersection_result->arrays_lengths [0];
             }
         }
     }
