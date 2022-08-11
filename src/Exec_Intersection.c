@@ -16,6 +16,7 @@
 #include "Misc.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Error_Handling/Assert_Msg.h"
+#include "Print_Tools.h"
 
 
 
@@ -153,7 +154,7 @@ Exec_Intersection
     fprintf (result_file, "> Second file: %s\n\n", GLOBAL_CLI_INPUT_FILE2);
 
     const uint_fast16_t count_steps     = 65000;
-    const uint_fast32_t number_of_sets  = source_int_values_2->next_free_array;;
+    const uint_fast32_t number_of_sets  = source_int_values_2->next_free_array;
     const uint_fast32_t print_steps     =
             (((uint_fast32_t) number_of_sets / count_steps) == 0) ? 1 : ((uint_fast32_t) number_of_sets / count_steps);
     uint_fast32_t set_counter           = 0;
@@ -165,67 +166,88 @@ Exec_Intersection
 
     // Determine the intersections
     start = clock();
-    for (uint_fast32_t selected_data_array = 0; selected_data_array < source_int_values_2->next_free_array;
-            ++ selected_data_array)
+    for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
+            ++ selected_data_2_array)
     {
-        ++ set_counter;
-        // Program exit after a fixed value
-        // This is only for debugging purposes to avoid a complete program execution
-        if (set_counter == 25000) { exit(1); }
-
-        // Determine the current intersection
-        // The second array (source_int_values_2->data [selected_data_array]) will be used for every data array in
-        // source_int_values_1 !
-        struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops (source_int_values_1,
-                source_int_values_2->data [selected_data_array], source_int_values_2->arrays_lengths [selected_data_array]);
-
-        // Show only the data block, if there are intersection results
-        if (Is_Data_In_Document_Word_List(intersection_result))
+        for (uint_fast32_t selected_data_1_array = 0; selected_data_1_array < source_int_values_1->next_free_array;
+                ++ selected_data_1_array)
         {
-            fprintf (result_file, "Tokens list %zu (in second file):\n{ ", selected_data_array + 1);
-            for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_array]; ++ i)
+            ++ set_counter;
+            ++ count_results;
+            // Program exit after a fixed value
+            // This is only for debugging purposes to avoid a complete program execution
+            //if (Determine_Percent(selected_data_2_array, source_int_values_2->next_free_array) > 10.0f) { exit(1); }
+
+            // Print calculation steps
+            if (set_counter == 25000)
             {
-                // Reverse the mapping to get the original token (int -> token)
-                char int_to_token_mem [MAX_TOKEN_LENGTH];
-                memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
+                set_counter = 0;
 
-                Int_To_Token (token_int_mapping, source_int_values_2->data [selected_data_array][i], int_to_token_mem,
-                        sizeof (int_to_token_mem) - 1);
-                fputs(int_to_token_mem, result_file);
-
-                if ((i + 1) < source_int_values_2->arrays_lengths [selected_data_array])
-                {
-                    fputs(", ", result_file);
-                }
+                PRINTF_FFLUSH("\rCalculate intersections (%.4f %%)", Determine_Percent(selected_data_2_array, source_int_values_2->next_free_array));
             }
-            fputs(" }\n\n", result_file);
 
-            for (size_t i = 0; i < intersection_result->number_of_arrays; ++ i)
+            // Determine the current intersection
+            // The second array (source_int_values_2->data [selected_data_array]) will be used for every data array in
+            // source_int_values_1 !
+            //struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops (source_int_values_1,
+            //        source_int_values_2->data [selected_data_2_array], source_int_values_2->arrays_lengths [selected_data_2_array]);
+            struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops_2_Raw_Data_Arrays
+                    (source_int_values_1->data [selected_data_1_array],
+                            source_int_values_1->arrays_lengths [selected_data_1_array],
+                            source_int_values_2->data [selected_data_2_array],
+                            source_int_values_2->arrays_lengths [selected_data_2_array],
+                            token_container_input_1->token_lists [selected_data_1_array].dataset_id,
+                            token_container_input_2->token_lists [selected_data_2_array].dataset_id);
+
+            // Show only the data block, if there are intersection results
+            if (Is_Data_In_Document_Word_List(intersection_result))
             {
-                for (size_t i2 = 0; i2 < intersection_result->arrays_lengths [i]; ++ i2)
+                fprintf (result_file, "Token list \"%s\" (from second file): { ", intersection_result->dataset_id_2);
+                for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_2_array]; ++ i)
                 {
-                    if (i2 == 0)
-                    {
-                        fprintf(result_file, "Token block %zu: ", i);
-                    }
-
                     // Reverse the mapping to get the original token (int -> token)
                     char int_to_token_mem [MAX_TOKEN_LENGTH];
                     memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
 
-                    Int_To_Token (token_int_mapping, intersection_result->data [i][i2], int_to_token_mem,
+                    Int_To_Token (token_int_mapping, source_int_values_2->data [selected_data_2_array][i], int_to_token_mem,
                             sizeof (int_to_token_mem) - 1);
                     fputs(int_to_token_mem, result_file);
-                    fputs("\n", result_file);
 
-                    ++ count_results;
+                    if ((i + 1) < source_int_values_2->arrays_lengths [selected_data_2_array])
+                    {
+                        fputs(", ", result_file);
+                    }
                 }
-            }
-            fputs("\n\n\n", result_file);
-        }
+                fputs(" }\n", result_file);
 
-        Delete_Document_Word_List(intersection_result);
-        intersection_result = NULL;
+                fputs("Found tokens in:\n", result_file);
+                for (size_t i = 0; i < intersection_result->number_of_arrays; ++ i)
+                {
+                    for (size_t i2 = 0; i2 < intersection_result->arrays_lengths [i]; ++ i2)
+                    {
+                        if (i2 == 0)
+                        {
+                            fprintf(result_file, "\t\"%s\": ", intersection_result->dataset_id_1);
+                        }
+
+                        // Reverse the mapping to get the original token (int -> token)
+                        char int_to_token_mem [MAX_TOKEN_LENGTH];
+                        memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
+
+                        Int_To_Token (token_int_mapping, intersection_result->data [i][i2], int_to_token_mem,
+                                sizeof (int_to_token_mem) - 1);
+                        fputs(int_to_token_mem, result_file);
+                        fputs(", ", result_file);
+
+                        ++ count_results;
+                    }
+                }
+                fputs("\n\n", result_file);
+            }
+
+            Delete_Document_Word_List(intersection_result);
+            intersection_result = NULL;
+        }
     }
     end = clock();
     used_seconds = DETERMINE_USED_TIME(start, end);
