@@ -199,7 +199,7 @@ Intersection_Approach_2_Nested_Loops
                         memset(multiple_guard + old_size_multiple_guard, '\0', size_multiple_guard - old_size_multiple_guard);
                     }
 
-                    if (multiple_guard [data [i3]] == false)
+                    //if (multiple_guard [data [i3]] == false)
                     {
                         intersection_result->data [i][intersection_result->arrays_lengths [i]] = data [i3];
                         intersection_result->arrays_lengths [i] ++;
@@ -300,6 +300,79 @@ Intersection_Approach_HeapSort_And_Binary_Search
     }
 
     Find_Intersection_Data (intersection_result, object, data, data_length);
+
+    return intersection_result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Determine intersections with a naive approach (Compare everyone with everyone -> to nested loops).
+ *
+ * ATTENTION: Here are two raw data arrays used. NO Document_Word_List as one of the input parameter.
+ *
+ * Asserts:
+ *      data_1 != NULL
+ *      data_1_length = 0
+ *      data_2 != NULL
+ *      data_2_length = 0
+ *
+ * @param[in] data_1 Data, that will be used for the intersection with the second data array
+ * @param[in] data_1_length Number of the elements in the first data array
+ * @param[in] data_2 Data, that will be used for the intersection with the first data array
+ * @param[in] data_2_length Number of the elements in the second data array
+ * @param[in] id_1 ID of the first data array
+ * @param[in] id_2 ID of the second data array
+ *
+ * @return New dynamic object containing the intersection result
+ */
+extern struct Document_Word_List*
+Intersection_Approach_2_Nested_Loops_2_Raw_Data_Arrays
+(
+    const uint_fast32_t* const restrict data_1,
+    const size_t data_1_length,
+    const uint_fast32_t* const restrict data_2,
+    const size_t data_2_length,
+    const char* const restrict id_1,
+    const char* const restrict id_2
+)
+{
+    ASSERT_MSG(data_1 != NULL, "Data 1 is NULL !");
+    ASSERT_MSG(data_1_length > 0, "Length of the data 1 is 0 !");
+    ASSERT_MSG(data_2 != NULL, "Data 2 is NULL !");
+    ASSERT_MSG(data_2_length > 0, "Length of the data 2 is 0 !");
+
+    // This result contains only one array, because two raw data arrays will be used for the intersection
+    struct Document_Word_List* intersection_result = Create_Document_Word_List(1, MAX(data_1_length, data_2_length));
+
+    // Array, which display, if a value is already in the intersection
+    size_t size_multiple_guard = MAX(data_1_length, data_2_length);
+
+    _Bool* multiple_guard = (_Bool*) CALLOC(size_multiple_guard, sizeof (_Bool));
+    ASSERT_ALLOC(multiple_guard, "Cannot create the multiple guard !", size_multiple_guard * sizeof (_Bool));
+
+    // Calculate intersection
+    for (size_t d1 = 0; d1 < data_1_length; ++ d1)
+    {
+        for (size_t d2 = 0; d2 < data_2_length; ++ d2)
+        {
+            if (data_1 [d1] == data_2 [d2])
+            {
+                intersection_result->data [0][intersection_result->arrays_lengths [0]] = data_1 [d1];
+            }
+        }
+    }
+    intersection_result->intersection_data = true;
+    if (id_1 != NULL)
+    {
+        strncpy (intersection_result->dataset_id_1, id_1, COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_1) - 1);
+    }
+    if (id_2 != NULL)
+    {
+        strncpy (intersection_result->dataset_id_2, id_2, COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_2) - 1);
+    }
+
+    FREE_AND_SET_TO_NULL(multiple_guard);
 
     return intersection_result;
 }
