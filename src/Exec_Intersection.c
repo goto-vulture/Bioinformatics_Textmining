@@ -175,12 +175,15 @@ Exec_Intersection
     // Counter of all calls were done since the execution was started
     size_t call_counter                                 = 0;
 
-    clock_t start       = 0;
-    clock_t end         = 0;
-    float used_seconds  = 0.0f;
+    clock_t start           = 0;
+    clock_t end             = 0;
+    clock_t interval_start  = 0;
+    clock_t interval_end    = 0;
+    float used_seconds      = 0.0f;
 
     // Determine the intersections
     start = clock();
+    interval_start = clock();
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
     {
@@ -198,9 +201,13 @@ Exec_Intersection
             // Print calculation steps
             if (print_counter == print_steps)
             {
+                interval_end = clock();
                 print_counter = 0;
-                PRINTF_FFLUSH("\rCalculate intersections (%.4f %%)", Determine_Percent(call_counter,
-                        number_of_intersection_calls));
+
+                PRINTF_FFLUSH("\rCalculate intersections (%.4f %% | %.2f sec.)", Determine_Percent(call_counter,
+                        number_of_intersection_calls), Determine_Time_Left(call_counter - print_steps, call_counter,
+                                number_of_intersection_calls, interval_end - interval_start));
+                interval_start = clock();
             }
 
             // Determine the current intersection
