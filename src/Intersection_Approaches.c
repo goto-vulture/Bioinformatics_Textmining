@@ -345,11 +345,11 @@ Intersection_Approach_2_Nested_Loops_2_Raw_Data_Arrays
     // This result contains only one array, because two raw data arrays will be used for the intersection
     struct Document_Word_List* intersection_result = Create_Document_Word_List(1, MAX(data_1_length, data_2_length));
 
-    // Array, which display, if a value is already in the intersection
-    size_t size_multiple_guard = MAX(data_1_length, data_2_length);
-
-    _Bool* multiple_guard = (_Bool*) CALLOC(size_multiple_guard, sizeof (_Bool));
-    ASSERT_ALLOC(multiple_guard, "Cannot create the multiple guard !", size_multiple_guard * sizeof (_Bool));
+    // Arrays, which display, if a value is already in the intersection
+    _Bool* multiple_guard_data_1 = (_Bool*) CALLOC(data_1_length, sizeof (_Bool));
+    ASSERT_ALLOC(multiple_guard_data_1, "Cannot create the multiple guard for data 1 !", data_1_length * sizeof (_Bool));
+    _Bool* multiple_guard_data_2 = (_Bool*) CALLOC(data_2_length, sizeof (_Bool));
+    ASSERT_ALLOC(multiple_guard_data_2, "Cannot create the multiple guard for data 2 !", data_2_length * sizeof (_Bool));
 
     // Calculate intersection
     for (size_t d1 = 0; d1 < data_1_length; ++ d1)
@@ -358,8 +358,14 @@ Intersection_Approach_2_Nested_Loops_2_Raw_Data_Arrays
         {
             if (data_1 [d1] == data_2 [d2])
             {
-                intersection_result->data [0][intersection_result->arrays_lengths [0]] = data_1 [d1];
-                ++ intersection_result->arrays_lengths [0];
+                // Was the current value already inserted in the intersection result ?
+                if (multiple_guard_data_1 [d1] == false && multiple_guard_data_2 [d2] == false)
+                {
+                    intersection_result->data [0][intersection_result->arrays_lengths [0]] = data_1 [d1];
+                    ++ intersection_result->arrays_lengths [0];
+                    multiple_guard_data_1 [d1] = true;
+                    multiple_guard_data_2 [d2] = true;
+                }
             }
         }
     }
@@ -373,7 +379,8 @@ Intersection_Approach_2_Nested_Loops_2_Raw_Data_Arrays
         strncpy (intersection_result->dataset_id_2, id_2, COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_2) - 1);
     }
 
-    FREE_AND_SET_TO_NULL(multiple_guard);
+    FREE_AND_SET_TO_NULL(multiple_guard_data_1);
+    FREE_AND_SET_TO_NULL(multiple_guard_data_2);
 
     return intersection_result;
 }
