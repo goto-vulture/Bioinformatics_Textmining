@@ -46,6 +46,8 @@ struct Document_Word_List
     size_t number_of_arrays;        ///< Number of arrays
 
     _Bool intersection_data;        ///< Was this object created as intersection result ?
+    char dataset_id_1 [16];         ///< First ID of the dataset (only valid data, when the object is intersection data)
+    char dataset_id_2 [16];         ///< Second ID of the dataset (only valid data, when the object is intersection data)
 };
 
 //=====================================================================================================================
