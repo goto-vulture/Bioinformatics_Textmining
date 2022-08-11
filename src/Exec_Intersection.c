@@ -182,8 +182,9 @@ Exec_Intersection
     float used_seconds      = 0.0f;
 
     // Determine the intersections
-    start = clock();
-    interval_start = clock();
+    CLOCK_WITH_RETURN_CHECK(start);
+    CLOCK_WITH_RETURN_CHECK(interval_start);
+
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
     {
@@ -201,13 +202,13 @@ Exec_Intersection
             // Print calculation steps
             if (print_counter == print_steps)
             {
-                interval_end = clock();
+                CLOCK_WITH_RETURN_CHECK(interval_end);
                 print_counter = 0;
 
                 PRINTF_FFLUSH("\rCalculate intersections (%.4f %% | %.2f sec.)", Determine_Percent(call_counter,
                         number_of_intersection_calls), Determine_Time_Left(call_counter - print_steps, call_counter,
                                 number_of_intersection_calls, interval_end - interval_start));
-                interval_start = clock();
+                CLOCK_WITH_RETURN_CHECK(interval_start)
             }
 
             // Determine the current intersection
@@ -277,8 +278,8 @@ Exec_Intersection
     }
     // Label for a debugging end of the calculations
 abort_label:
+    CLOCK_WITH_RETURN_CHECK(end);
 
-    end = clock();
     used_seconds = DETERMINE_USED_TIME(start, end);
     printf ("\n=> %3.3fs (~ %.3f calc/s) for calculation of all intersections.\n", used_seconds,
             ((float) number_of_intersection_calls) / used_seconds);

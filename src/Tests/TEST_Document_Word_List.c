@@ -248,13 +248,13 @@ static void Use_All_Intersection_Modes
     };
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(used_modes); ++ i)
     {
-        const clock_t begin = clock();
-        ASSERT_MSG(begin != (clock_t)(-1), "Time values are not available on this system ! Return value: (clock_t)(-1) !");
+        clock_t begin = (clock_t) -1;
+        CLOCK_WITH_RETURN_CHECK(begin);
         struct Document_Word_List* intersection_data =
                 Intersect_Data_With_Document_Word_List(data_2, data_1->data [0], data_1->arrays_lengths[0],
                         used_modes [i]);
-        const clock_t end = clock();
-        ASSERT_MSG(end != (clock_t)(-1), "Time values are not available on this system ! Return value: (clock_t)(-1) !");
+        clock_t end = (clock_t) -1;
+        CLOCK_WITH_RETURN_CHECK(end);
 
         printf ("Mode: ");
         switch (used_modes [i])

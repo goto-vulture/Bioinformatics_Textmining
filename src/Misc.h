@@ -138,6 +138,23 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief clock() call with a check of the return value.
+ */
+#ifndef CLOCK_WITH_RETURN_CHECK
+#define CLOCK_WITH_RETURN_CHECK(time_value)                                                                             \
+    time_value = clock();                                                                                               \
+    if (time_value == (clock_t) -1)                                                                                     \
+    {                                                                                                                   \
+        ASSERT_MSG(time_value != (clock_t)(-1),                                                                         \
+                "Time values are not available on this system ! Return value: (clock_t)(-1) !");                        \
+    }
+#else
+#error "The macro \"CLOCK_WITH_RETURN_CHECK\" is already defined !"
+#endif /* CLOCK_WITH_RETURN_CHECK */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Count number of digits in a value.
  *
  * @param[in] value Value
