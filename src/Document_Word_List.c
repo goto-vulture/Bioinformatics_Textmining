@@ -389,12 +389,23 @@ Is_Data_In_Document_Word_List
 
     _Bool result = false;
 
-    for (uint_fast32_t i = 0; i < object->next_free_array; ++ i)
+    // For the test is one exception: When the object only contains one array or when the object uses the first array
+    if (object->next_free_array == 0 && object->number_of_arrays > 0)
     {
-        if (object->arrays_lengths [i] > 0)
+        if (object->arrays_lengths [0] > 0)
         {
             result = true;
-            break;
+        }
+    }
+    else
+    {
+        for (uint_fast32_t i = 0; i < object->next_free_array; ++ i)
+        {
+            if (object->arrays_lengths [i] > 0)
+            {
+                result = true;
+                break;
+            }
         }
     }
 
