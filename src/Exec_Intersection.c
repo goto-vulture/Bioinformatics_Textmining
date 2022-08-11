@@ -31,12 +31,22 @@
  * - Use the token int mapping for the creation of a mapped token container (Two Document_Word_List)
  * - Create the intersections and save the information in the output file
  *
+ * There will be NO input value tests, because NaN, +Inf, ... are good possibilities to say the function, that the
+ * calculation should not stopped before the calculation is completed.
+ *
+ * Every invalid value will be interpreted in this way!
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param[in] abort_progress_percent After this progress percent value the process will be stopped
+ *
  * @return Status value (0: Success; != 0 Error)
  */
 extern int
 Exec_Intersection
 (
-        void
+        const float abort_progress_percent
 )
 {
     int result = 0;
@@ -177,9 +187,13 @@ Exec_Intersection
         for (uint_fast32_t selected_data_1_array = 0; selected_data_1_array < source_int_values_1->next_free_array;
                 ++ selected_data_1_array)
         {
-            // Program exit after a fixed value
+            // Program exit after a given progress
             // This is only for debugging purposes to avoid a complete program execution
-            //if (Determine_Percent(selected_data_2_array, source_int_values_2->next_free_array) > 10.0f) { exit(1); }
+            if (Determine_Percent(call_counter, number_of_intersection_calls) > abort_progress_percent)
+            {
+                PRINTF_FFLUSH("\nCalculation stopped intended after %.4f %% !\n", abort_progress_percent);
+                goto abort_label;
+            }
 
             // Print calculation steps
             if (print_counter == print_steps)
@@ -254,6 +268,9 @@ Exec_Intersection
             intersection_result = NULL;
         }
     }
+    // Label for a debugging end of the calculations
+abort_label:
+
     end = clock();
     used_seconds = DETERMINE_USED_TIME(start, end);
     printf ("\n=> %3.3fs (~ %.3f calc/s) for calculation of all intersections.\n", used_seconds,

@@ -240,7 +240,7 @@ int main (const int argc, const char* argv [])
     puts("");
 
     // Execute the intersection process
-    Exec_Intersection();
+    Exec_Intersection(5.0f);
 
     return EXIT_SUCCESS;
 }

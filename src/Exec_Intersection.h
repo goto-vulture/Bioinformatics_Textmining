@@ -24,12 +24,22 @@ extern "C"
  * - Use the token int mapping for the creation of a mapped token container (Two Document_Word_List)
  * - Create the intersections and save the information in the output file
  *
+ * There will be NO input value tests, because NaN, +Inf, ... are good possibilities to say the function, that the
+ * calculation should not stopped before the calculation is completed.
+ *
+ * Every invalid value will be interpreted in this way!
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param[in] abort_progress_percent After this progress percent value the process will be stopped
+ *
  * @return Status value (0: Success; != 0 Error)
  */
 extern int
 Exec_Intersection
 (
-        void
+        const float abort_progress_percent
 );
 
 
