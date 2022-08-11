@@ -86,6 +86,7 @@
     _Static_assert(CHAR_BIT == 8, "A char must be exact 8 bit long !");
     _Static_assert(sizeof(size_t) >= 4, "The type \"size_t\" needs to be at least 4 byte wide !");
     _Static_assert(sizeof(time_t) >= 4, "The type \"time_t\" needs to be at least 4 byte wide !");
+    _Static_assert(sizeof(clock_t) >= 4, "The type \"clock_t\" needs to be at least 4 byte wide !");
     _Static_assert(sizeof(int) >= 4, "The type \"int\" needs to be at least 4 byte wide !");
     _Static_assert(sizeof(long int) >= 8, "The type \"long int\" needs to be at least 4 byte wide !");
     _Static_assert(sizeof(void*) >= 4, "The type \"void*\" needs to be at least 4 byte wide !");
@@ -164,6 +165,7 @@ int main (const int argc, const char* argv [])
     ASSERT_MSG(CHAR_BIT == 8, "A char must be exact 8 bit long !");
     ASSERT_MSG(sizeof(size_t) >= 4, "The type \"size_t\" needs to be at least 4 byte wide !");
     ASSERT_MSG(sizeof(time_t) >= 4, "The type \"time_t\" needs to be at least 4 byte wide !");
+    ASSERT_MSG(sizeof(clock_t) >= 4, "The type \"clock_t\" needs to be at least 4 byte wide !");
     ASSERT_MSG(sizeof(int) >= 4, "The type \"int\" needs to be at least 4 byte wide !");
     ASSERT_MSG(sizeof(long int) >= 8, "The type \"long int\" needs to be at least 4 byte wide !");
     ASSERT_MSG(sizeof(void*) >= 4, "The type \"void*\" needs to be at least 4 byte wide !");
