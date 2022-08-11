@@ -153,16 +153,21 @@ Exec_Intersection
     fprintf (result_file, "> First file:  %s\n", GLOBAL_CLI_INPUT_FILE);
     fprintf (result_file, "> Second file: %s\n\n", GLOBAL_CLI_INPUT_FILE2);
 
-    const uint_fast16_t count_steps     = 65000;
-    const uint_fast32_t number_of_sets  = source_int_values_2->next_free_array;
-    const uint_fast32_t print_steps     =
-            (((uint_fast32_t) number_of_sets / count_steps) == 0) ? 1 : ((uint_fast32_t) number_of_sets / count_steps);
-    uint_fast32_t set_counter           = 0;
+    const uint_fast16_t count_steps                     = 65000;
+    const uint_fast32_t number_of_intersection_calls    = source_int_values_2->next_free_array *
+            source_int_values_1->next_free_array;
+    const uint_fast32_t print_steps                     =
+            (((uint_fast32_t) number_of_intersection_calls / count_steps) == 0) ?
+                    1 : ((uint_fast32_t) number_of_intersection_calls / count_steps);
+
+    // How many calls were done since the last calculation step was printed ?
+    uint_fast32_t print_counter                         = 0;
+    // Counter of all calls were done since the execution was started
+    size_t call_counter                                 = 0;
 
     clock_t start       = 0;
     clock_t end         = 0;
     float used_seconds  = 0.0f;
-    size_t count_results = 0;
 
     // Determine the intersections
     start = clock();
@@ -172,18 +177,16 @@ Exec_Intersection
         for (uint_fast32_t selected_data_1_array = 0; selected_data_1_array < source_int_values_1->next_free_array;
                 ++ selected_data_1_array)
         {
-            ++ set_counter;
-            ++ count_results;
             // Program exit after a fixed value
             // This is only for debugging purposes to avoid a complete program execution
             //if (Determine_Percent(selected_data_2_array, source_int_values_2->next_free_array) > 10.0f) { exit(1); }
 
             // Print calculation steps
-            if (set_counter == 25000)
+            if (print_counter == print_steps)
             {
-                set_counter = 0;
-
-                PRINTF_FFLUSH("\rCalculate intersections (%.4f %%)", Determine_Percent(selected_data_2_array, source_int_values_2->next_free_array));
+                print_counter = 0;
+                PRINTF_FFLUSH("\rCalculate intersections (%.4f %%)", Determine_Percent(call_counter,
+                        number_of_intersection_calls));
             }
 
             // Determine the current intersection
@@ -198,6 +201,8 @@ Exec_Intersection
                             source_int_values_2->arrays_lengths [selected_data_2_array],
                             token_container_input_1->token_lists [selected_data_1_array].dataset_id,
                             token_container_input_2->token_lists [selected_data_2_array].dataset_id);
+            ++ call_counter;
+            ++ print_counter;
 
             // Show only the data block, if there are intersection results
             if (Is_Data_In_Document_Word_List(intersection_result))
@@ -239,7 +244,7 @@ Exec_Intersection
                         fputs(int_to_token_mem, result_file);
                         fputs(", ", result_file);
 
-                        ++ count_results;
+                        ++ call_counter;
                     }
                 }
                 fputs("\n\n", result_file);
@@ -252,7 +257,7 @@ Exec_Intersection
     end = clock();
     used_seconds = DETERMINE_USED_TIME(start, end);
     printf ("\n=> %3.3fs (~ %.3f calc/s) for calculation of all intersections.\n", used_seconds,
-            ((float) number_of_sets) / used_seconds);
+            ((float) number_of_intersection_calls) / used_seconds);
 
 
 
