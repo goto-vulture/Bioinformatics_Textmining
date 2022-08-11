@@ -281,16 +281,16 @@ abort_label:
     FCLOSE_AND_SET_TO_NULL(result_file);
     FREE_AND_SET_TO_NULL(token_int_values);
 
+    Delete_Document_Word_List(source_int_values_1);
+    source_int_values_1 = NULL;
+    Delete_Document_Word_List(source_int_values_2);
+    source_int_values_2 = NULL;
     Delete_Token_Container(token_container_input_1);
     token_container_input_1 = NULL;
     Delete_Token_Container(token_container_input_2);
     token_container_input_2 = NULL;
     Delete_Token_Int_Mapping(token_int_mapping);
     token_int_mapping = NULL;
-    Delete_Token_Container(token_container_input_1);
-    token_container_input_1 = NULL;
-    Delete_Token_Container(token_container_input_2);
-    token_container_input_2 = NULL;
 
     return result;
 }
