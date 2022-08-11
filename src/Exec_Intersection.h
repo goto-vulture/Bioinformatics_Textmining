@@ -18,6 +18,12 @@ extern "C"
 /**
  * @brief Execute the intersection process.
  *
+ * Execution steps:
+ * - Read files and extract the tokens                                      (Two Token_List_Container)
+ * - Create a token int mapping list                                        (One Token_Int_Mapping)
+ * - Use the token int mapping for the creation of a mapped token container (Two Document_Word_List)
+ * - Create the intersections and save the information in the output file
+ *
  * @return Status value (0: Success; != 0 Error)
  */
 extern int
