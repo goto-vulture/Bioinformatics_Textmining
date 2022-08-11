@@ -385,6 +385,8 @@ Is_Data_In_Document_Word_List
         const struct Document_Word_List* const object
 )
 {
+    ASSERT_MSG(object != NULL, "Object is NULL !");
+
     _Bool result = false;
 
     for (uint_fast32_t i = 0; i < object->next_free_array; ++ i)
