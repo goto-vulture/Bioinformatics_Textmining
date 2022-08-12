@@ -49,6 +49,11 @@ extern _Bool Is_Word_In_Stop_Word_List
     case ENG:
         selected_stop_word_list = GLOBAL_eng_stop_words;
         break;
+        // This case statement is not necessary, because the assert at the begin of the function already did the check
+        // Some compilers create a [-Wswitch-enum] warning, if not all enum values are used in a switch case statement
+    case NO_LANGUAGE:
+        ASSERT_MSG(false, "No language selected !");
+        break;
 
     default:
         ASSERT_MSG(false, "switch case default path executed !");
