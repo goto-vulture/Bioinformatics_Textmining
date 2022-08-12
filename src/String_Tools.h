@@ -55,9 +55,6 @@ String_To_Lower
  * There might be a functiom "strncasecmp()" on your system with the same functionality. But this is an GNU extention
  * and no potable C code.
  *
- * Asserts:
- *      strlen (string_1) == strlen (string_2)
- *
  * @param[in] string_1 First C-String
  * @param[in] string_2 Second C-String
  *
