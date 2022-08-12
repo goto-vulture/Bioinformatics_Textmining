@@ -58,7 +58,9 @@ String_To_Lower
  * and no potable C code.
  *
  * @param[in] string_1 First C-String
+ * @param[in] string_1_length Length of the first C-String
  * @param[in] string_2 Second C-String
+ * @param[in] string_2_length Length of the second C-String
  *
  * @return 0, if the C-String equals, else != 0
  */
@@ -66,12 +68,14 @@ extern int
 Compare_Strings_Case_Insensitive
 (
         const char* const restrict string_1,
-        const char* const restrict string_2
+        const size_t string_1_length,
+        const char* const restrict string_2,
+        const size_t string_2_length
 )
 {
     int result = 0;
 
-    if (strlen(string_1) == strlen(string_2))
+    if (string_1_length == string_2_length)
     {
         for (size_t i = 0;; ++ i)
         {

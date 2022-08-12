@@ -6,6 +6,7 @@
  */
 
 #include "Stop_Words.h"
+#include <string.h>
 #include "../Error_Handling/Assert_Msg.h"
 #include "../String_Tools.h"
 
@@ -62,7 +63,8 @@ extern _Bool Is_Word_In_Stop_Word_List
     // Search the string in the stop word list
     while (*selected_stop_word_list != NULL)
     {
-        if (Compare_Strings_Case_Insensitive(c_string, *selected_stop_word_list) == 0)
+        if (Compare_Strings_Case_Insensitive(c_string, c_string_length,
+                *selected_stop_word_list, strlen (*selected_stop_word_list)) == 0)
         {
             result = true;
             break;
