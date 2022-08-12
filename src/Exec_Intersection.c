@@ -248,26 +248,27 @@ Exec_Intersection
                 fputs(" }\n", result_file);
 
                 fputs("Found tokens in:\n", result_file);
-                for (size_t i = 0; i < intersection_result->number_of_arrays; ++ i)
+                // In the intersection result is always only one array ! Therefore a second loop is not necessary
+                for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
                 {
-                    for (size_t i2 = 0; i2 < intersection_result->arrays_lengths [i]; ++ i2)
+                    if (i == 0)
                     {
-                        if (i2 == 0)
-                        {
-                            fprintf(result_file, "\t\"%s\": ", intersection_result->dataset_id_1);
-                        }
-
-                        // Reverse the mapping to get the original token (int -> token)
-                        char int_to_token_mem [MAX_TOKEN_LENGTH];
-                        memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
-
-                        Int_To_Token (token_int_mapping, intersection_result->data [i][i2], int_to_token_mem,
-                                sizeof (int_to_token_mem) - 1);
-                        fputs(int_to_token_mem, result_file);
-                        fputs(", ", result_file);
-
-                        ++ call_counter;
+                        fprintf(result_file, "\t\"%s\": ", intersection_result->dataset_id_1);
                     }
+
+                    // Reverse the mapping to get the original token (int -> token)
+                    char int_to_token_mem [MAX_TOKEN_LENGTH];
+                    memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
+
+                    Int_To_Token (token_int_mapping, intersection_result->data [0][i], int_to_token_mem,
+                            sizeof (int_to_token_mem) - 1);
+                    fputs(int_to_token_mem, result_file);
+                    if ((i + 1) < intersection_result->arrays_lengths [0])
+                    {
+                        fputs(", ", result_file);
+                    }
+
+                    ++ call_counter;
                 }
                 fputs("\n\n", result_file);
             }
