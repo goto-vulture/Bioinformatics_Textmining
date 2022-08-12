@@ -17,6 +17,7 @@
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Error_Handling/Assert_Msg.h"
 #include "Print_Tools.h"
+#include "Stop_Words/Stop_Words.h"
 
 
 
@@ -226,8 +227,41 @@ Exec_Intersection
             ++ call_counter;
             ++ print_counter;
 
+            // Remove stop words from the result
+            for (size_t i = 0; i < intersection_result->number_of_arrays; ++ i)
+            {
+                for (size_t i2 = 0; i2 < intersection_result->arrays_lengths [i]; ++ i2)
+                {
+                    // Reverse the mapping to get the original token (int -> token)
+                    char int_to_token_mem [MAX_TOKEN_LENGTH];
+                    memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
+
+                    Int_To_Token (token_int_mapping, intersection_result->data [i][i2], int_to_token_mem,
+                            sizeof (int_to_token_mem) - 1);
+                    // Is the token in the list with the stop words ?
+                    if (Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
+                    {
+                        // Override the mapped int value
+                        intersection_result->data [i][i2] = UINT_FAST32_MAX;
+                    }
+                }
+            }
+
+            // How many objects left after removing stop words
+            size_t tokens_left = 0;
+            for (size_t i = 0; i < intersection_result->number_of_arrays; ++ i)
+            {
+                for (size_t i2 = 0; i2 < intersection_result->arrays_lengths [i]; ++ i2)
+                {
+                    if (intersection_result->data [i][i2] != UINT_FAST32_MAX)
+                    {
+                        ++ tokens_left;
+                    }
+                }
+            }
+
             // Show only the data block, if there are intersection results
-            if (Is_Data_In_Document_Word_List(intersection_result))
+            if (Is_Data_In_Document_Word_List(intersection_result) && tokens_left > 0)
             {
                 fprintf (result_file, "Token list \"%s\" (from second file): { ", intersection_result->dataset_id_2);
                 for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_2_array]; ++ i)
@@ -255,6 +289,10 @@ Exec_Intersection
                         if (i2 == 0)
                         {
                             fprintf(result_file, "\t\"%s\": ", intersection_result->dataset_id_1);
+                        }
+                        if (intersection_result->data [i][i2] == UINT_FAST32_MAX)
+                        {
+                            continue;
                         }
 
                         // Reverse the mapping to get the original token (int -> token)
