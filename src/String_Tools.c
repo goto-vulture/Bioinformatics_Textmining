@@ -57,11 +57,10 @@ String_To_Lower
  * There might be a functiom "strncasecmp()" on your system with the same functionality. But this is an GNU extention
  * and no potable C code.
  *
- * Asserts:
- *      strlen (string_1) == strlen (string_2)
- *
  * @param[in] string_1 First C-String
+ * @param[in] string_1_length Length of the first C-String
  * @param[in] string_2 Second C-String
+ * @param[in] string_2_length Length of the second C-String
  *
  * @return 0, if the C-String equals, else != 0
  */
@@ -69,23 +68,36 @@ extern int
 Compare_Strings_Case_Insensitive
 (
         const char* const restrict string_1,
-        const char* const restrict string_2
+        const size_t string_1_length,
+        const char* const restrict string_2,
+        const size_t string_2_length
 )
 {
-    // If the length of the input C-Strings are not equal, than a equalness is not possible !
-    if (strlen (string_1) != strlen (string_2)) { return -1; }
+    int result = 0;
 
-    char string_1_lowercase [255];
-    char string_2_lowercase [255];
-    memset (string_1_lowercase, '\0', sizeof (string_1_lowercase));
-    memset (string_2_lowercase, '\0', sizeof (string_2_lowercase));
+    if (string_1_length == string_2_length)
+    {
+        for (size_t i = 0;; ++ i)
+        {
+            // If a string end was found, stop the comparisons
+            if (string_1 [i] == '\0')
+            // Alternative: if (string_2 [i] == '\0')
+            {
+                break;
+            }
+            if (tolower(string_1 [i]) != tolower(string_2 [i]))
+            {
+                result = -1;
+                break;
+            }
+        }
+    }
+    else
+    {
+        result = -1;
+    }
 
-    // Convert all alpha-char to lower-case char.
-    String_To_Lower(string_1, string_1_lowercase, COUNT_ARRAY_ELEMENTS(string_1_lowercase));
-    String_To_Lower(string_2, string_2_lowercase, COUNT_ARRAY_ELEMENTS(string_2_lowercase));
-
-    // Compare the modified C-Strings
-    return strncmp (string_1_lowercase, string_2_lowercase, strlen (string_1_lowercase));
+    return result;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
