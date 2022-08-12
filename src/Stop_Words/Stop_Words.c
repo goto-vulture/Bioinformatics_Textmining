@@ -7,6 +7,7 @@
 
 #include "Stop_Words.h"
 #include "../Error_Handling/Assert_Msg.h"
+#include "../String_Tools.h"
 
 
 
@@ -51,6 +52,17 @@ extern _Bool Is_Word_In_Stop_Word_List
 
     default:
         ASSERT_MSG(false, "switch case default path executed !");
+    }
+
+    // Search the string in the stop word list
+    while (*selected_stop_word_list != NULL)
+    {
+        if (Compare_Strings_Case_Insensitive(c_string, *selected_stop_word_list) == 0)
+        {
+            result = true;
+            break;
+        }
+        ++ selected_stop_word_list;
     }
 
     return result;
