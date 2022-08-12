@@ -229,7 +229,7 @@ Exec_Intersection
             // Show only the data block, if there are intersection results
             if (Is_Data_In_Document_Word_List(intersection_result))
             {
-                fprintf (result_file, "Token list \"%s\" (from second file): { ", intersection_result->dataset_id_2);
+                fprintf (result_file, "Token list \"%s\" (second file): { ", intersection_result->dataset_id_2);
                 for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_2_array]; ++ i)
                 {
                     // Reverse the mapping to get the original token (int -> token)
