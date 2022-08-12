@@ -249,14 +249,11 @@ Exec_Intersection
 
             // How many objects left after removing stop words
             size_t tokens_left = 0;
-            for (size_t i = 0; i < intersection_result->number_of_arrays; ++ i)
+            for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
             {
-                for (size_t i2 = 0; i2 < intersection_result->arrays_lengths [i]; ++ i2)
+                if (intersection_result->data [0][i] != UINT_FAST32_MAX)
                 {
-                    if (intersection_result->data [i][i2] != UINT_FAST32_MAX)
-                    {
-                        ++ tokens_left;
-                    }
+                    ++ tokens_left;
                 }
             }
 
@@ -283,6 +280,7 @@ Exec_Intersection
 
                 fputs("Found tokens in:\n", result_file);
                 // In the intersection result is always only one array ! Therefore a second loop is not necessary
+                size_t tokens_wrote = 0;
                 for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
                 {
                     if (i == 0)
@@ -301,9 +299,13 @@ Exec_Intersection
                     Int_To_Token (token_int_mapping, intersection_result->data [0][i], int_to_token_mem,
                             sizeof (int_to_token_mem) - 1);
                     fputs(int_to_token_mem, result_file);
-                    fputs(", ", result_file);
+                    if ((tokens_wrote + 1) < tokens_left)
+                    {
+                        fputs(", ", result_file);
+                    }
 
                     ++ call_counter;
+                    ++ tokens_wrote;
                 }
                 fputs("\n\n", result_file);
             }
