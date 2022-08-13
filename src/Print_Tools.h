@@ -215,6 +215,27 @@ extern void Print_2D_String_Array (const char* const restrict drawing [], const 
  */
 extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const size_t array_length);
 
+/**
+ * @brief Print process information with a user defined function, if new process output is to print.
+ *
+ * To avoid too many print operations the counter will be decreased, when a output operation was done.
+ *
+ * Asserts:
+ *      print_function != NULL
+ *
+ * @param[in] print_step_size Minimum size of the counter to output the current process information
+ * @param[in] counter Counter Counter since the last process print
+ * @param[in] actual Actual process
+ * @param[in] hundred_percent Value that represents a process of 100 % (In other words: the value, that will appear
+ *      when the operation is done)
+ * @param[in] print_function This is the function, that will be called, when process information are to be printed
+ *
+ * @return The new counter
+ */
+extern size_t Process_Printer (const size_t print_step_size, const size_t counter, const size_t actual,
+        const size_t hundred_percent,
+        void (*print_function) (const size_t actual, const size_t hundred_percent));
+
 
 
 #ifdef __cplusplus

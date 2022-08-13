@@ -110,6 +110,13 @@ Read_Next_Line
         const long int input_file_data_length
 );
 
+static void
+Read_File_Process_Print_Function
+(
+        const size_t actual,
+        const size_t hundred_percent
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -199,16 +206,9 @@ Create_Token_Container_From_File
             cJSON* json = cJSON_ParseWithOpts(current_parsing_position, (const char**) &current_parsing_position, false);
 
             // Print process information
-            if (char_read_before_last_output >= print_steps)
-            {
-                char_read_before_last_output -= print_steps;
-                const int digits    = (int) Count_Number_Of_Digits(unsigned_input_file_length);
-                const float percent = Determine_Percent(sum_char_read, unsigned_input_file_length);
-
-                PRINTF_FFLUSH("\rRead file: %*" PRIuFAST32 " KByte (%3.2f %%)",
-                        (digits > 3) ? digits - 3 : 3, sum_char_read / 1024,
-                        (percent > 100.0f) ? 100.0f : percent);
-            }
+            char_read_before_last_output = Process_Printer(print_steps, char_read_before_last_output,
+                    sum_char_read, unsigned_input_file_length,
+                    Read_File_Process_Print_Function);
 
             if (! json)
             {
@@ -834,3 +834,24 @@ Read_Next_Line
 
 //---------------------------------------------------------------------------------------------------------------------
 
+static void
+Read_File_Process_Print_Function
+(
+        const size_t actual,
+        const size_t hundred_percent
+)
+{
+    const size_t sum_char_read = actual;
+    const size_t unsigned_input_file_length = hundred_percent;
+
+    const int digits    = (int) Count_Number_Of_Digits(unsigned_input_file_length);
+    const float percent = Determine_Percent(sum_char_read, unsigned_input_file_length);
+
+    PRINTF_FFLUSH("\rRead file: %*" PRIuFAST32 " KByte (%3.2f %%)",
+            (digits > 3) ? digits - 3 : 3, sum_char_read / 1024,
+            (percent > 100.0f) ? 100.0f : percent);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------

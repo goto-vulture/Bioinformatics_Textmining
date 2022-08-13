@@ -94,3 +94,41 @@ extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const s
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Print process information with a user defined function, if new process output is to print.
+ *
+ * To avoid too many print operations the counter will be decreased, when a output operation was done.
+ *
+ * Asserts:
+ *      print_function != NULL
+ *
+ * @param[in] print_step_size Minimum size of the counter to output the current process information
+ * @param[in] counter Counter Counter since the last process print
+ * @param[in] actual Actual process
+ * @param[in] hundred_percent Value that represents a process of 100 % (In other words: the value, that will appear
+ *      when the operation is done)
+ * @param[in] print_function This is the function, that will be called, when process information are to be printed
+ *
+ * @return The new counter
+ */
+extern size_t Process_Printer (const size_t print_step_size, const size_t counter, const size_t actual,
+        const size_t hundred_percent,
+        void (*print_function) (const size_t actual, const size_t hundred_percent))
+{
+    ASSERT_MSG(print_function != NULL, "print_function is NULL !");
+
+    size_t new_counter = counter;
+
+    if (counter >= print_step_size)
+    {
+        print_function(actual, hundred_percent);
+
+        // Update counter (The if statement before is also a underflow check)
+        new_counter -= print_step_size;
+    }
+
+    return new_counter;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
