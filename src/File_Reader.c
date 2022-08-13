@@ -113,8 +113,12 @@ Read_Next_Line
 static void
 Read_File_Process_Print_Function
 (
+        const size_t print_step_size,
+        const size_t counter,
         const size_t actual,
-        const size_t hundred_percent
+        const size_t hundred_percent,
+        const clock_t interval_begin,
+        const clock_t interval_end
 );
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -837,8 +841,12 @@ Read_Next_Line
 static void
 Read_File_Process_Print_Function
 (
+        const size_t print_step_size,
+        const size_t counter,
         const size_t actual,
-        const size_t hundred_percent
+        const size_t hundred_percent,
+        const clock_t interval_begin,
+        const clock_t interval_end
 )
 {
     const size_t sum_char_read = actual;
@@ -846,11 +854,12 @@ Read_File_Process_Print_Function
 
     const int digits    = (int) Count_Number_Of_Digits(unsigned_input_file_length);
     const float percent = Determine_Percent(sum_char_read, unsigned_input_file_length);
+    const float time_left = Determine_Time_Left(counter - print_step_size, counter,
+                hundred_percent, interval_end - interval_begin);
 
-    PRINTF_FFLUSH("\rRead file: %*" PRIuFAST32 " KByte (%3.2f %%)",
+    PRINTF_FFLUSH("\rRead file: %*" PRIuFAST32 " KByte (%3.2f %% | %.2f sec.)   \r",
             (digits > 3) ? digits - 3 : 3, sum_char_read / 1024,
-            (percent > 100.0f) ? 100.0f : percent);
-
+            (percent > 100.0f) ? 100.0f : percent, time_left);
     return;
 }
 

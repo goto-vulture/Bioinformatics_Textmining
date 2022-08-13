@@ -24,8 +24,12 @@
 static void
 Exec_Intersection_Process_Print_Function
 (
+        const size_t print_step_size,
+        const size_t counter,
         const size_t actual,
-        const size_t hundred_percent
+        const size_t hundred_percent,
+        const clock_t interval_begin,
+        const clock_t interval_end
 );
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -185,13 +189,10 @@ Exec_Intersection
 
     clock_t start           = 0;
     clock_t end             = 0;
-    clock_t interval_start  = 0;
-    clock_t interval_end    = 0;
     float used_seconds      = 0.0f;
 
     // Determine the intersections
     CLOCK_WITH_RETURN_CHECK(start);
-    CLOCK_WITH_RETURN_CHECK(interval_start);
 
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
@@ -211,16 +212,6 @@ Exec_Intersection
             print_counter = Process_Printer(print_steps, print_counter,
                     call_counter, number_of_intersection_calls,
                     Exec_Intersection_Process_Print_Function);
-            /*if (print_counter == print_steps)
-            {
-                CLOCK_WITH_RETURN_CHECK(interval_end);
-                print_counter = 0;
-
-                PRINTF_FFLUSH("\rCalculate intersections (%.4f %% | %.2f sec.)", Determine_Percent(call_counter,
-                        number_of_intersection_calls), Determine_Time_Left(call_counter - print_steps, call_counter,
-                                number_of_intersection_calls, interval_end - interval_start));
-                CLOCK_WITH_RETURN_CHECK(interval_start)
-            }*/
 
             // Determine the current intersection
             // The second array (source_int_values_2->data [selected_data_array]) will be used for every data array in
@@ -356,13 +347,19 @@ abort_label:
 static void
 Exec_Intersection_Process_Print_Function
 (
+        const size_t print_step_size,
+        const size_t counter,
         const size_t actual,
-        const size_t hundred_percent
+        const size_t hundred_percent,
+        const clock_t interval_begin,
+        const clock_t interval_end
 )
 {
     const float percent = Determine_Percent(actual, hundred_percent);
+    const float time_left = Determine_Time_Left(counter - print_step_size, counter,
+            hundred_percent, interval_end - interval_begin);
 
-    PRINTF_FFLUSH("\rCalculate intersections (%.4f %%)", percent);
+    PRINTF_FFLUSH("\rCalculate intersections (%.4f %% | %.2f sec.)   \r", percent, time_left);
 
     return;
 }

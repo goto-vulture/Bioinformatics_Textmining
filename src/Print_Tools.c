@@ -11,6 +11,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include "Error_Handling/Assert_Msg.h"
+#include "Misc.h"
 
 
 
@@ -114,15 +115,20 @@ extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const s
  */
 extern size_t Process_Printer (const size_t print_step_size, const size_t counter, const size_t actual,
         const size_t hundred_percent,
-        void (*print_function) (const size_t actual, const size_t hundred_percent))
+        void (*print_function) (const size_t print_step_size, const size_t counter, const size_t actual,
+                const size_t hundred_percent, const clock_t interval_begin, const clock_t interval_end))
 {
     ASSERT_MSG(print_function != NULL, "print_function is NULL !");
 
+    static clock_t interval_begin = 0;
+    static clock_t interval_end = 0;
     size_t new_counter = counter;
 
     if (counter >= print_step_size)
     {
-        print_function(actual, hundred_percent);
+        CLOCK_WITH_RETURN_CHECK(interval_end);
+        print_function(print_step_size, counter, actual, hundred_percent, interval_begin, interval_end);
+        CLOCK_WITH_RETURN_CHECK(interval_begin);
 
         // Update counter (The if statement before is also a underflow check)
         new_counter -= print_step_size;
