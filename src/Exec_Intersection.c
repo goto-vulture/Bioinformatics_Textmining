@@ -21,6 +21,13 @@
 
 
 
+static void
+Exec_Intersection_Process_Print_Function
+(
+        const size_t actual,
+        const size_t hundred_percent
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -201,7 +208,10 @@ Exec_Intersection
             }
 
             // Print calculation steps
-            if (print_counter == print_steps)
+            print_counter = Process_Printer(print_steps, print_counter,
+                    call_counter, number_of_intersection_calls,
+                    Exec_Intersection_Process_Print_Function);
+            /*if (print_counter == print_steps)
             {
                 CLOCK_WITH_RETURN_CHECK(interval_end);
                 print_counter = 0;
@@ -210,7 +220,7 @@ Exec_Intersection
                         number_of_intersection_calls), Determine_Time_Left(call_counter - print_steps, call_counter,
                                 number_of_intersection_calls, interval_end - interval_start));
                 CLOCK_WITH_RETURN_CHECK(interval_start)
-            }
+            }*/
 
             // Determine the current intersection
             // The second array (source_int_values_2->data [selected_data_array]) will be used for every data array in
@@ -339,6 +349,22 @@ abort_label:
     token_int_mapping = NULL;
 
     return result;
+}
+
+//=====================================================================================================================
+
+static void
+Exec_Intersection_Process_Print_Function
+(
+        const size_t actual,
+        const size_t hundred_percent
+)
+{
+    const float percent = Determine_Percent(actual, hundred_percent);
+
+    PRINTF_FFLUSH("\rCalculate intersections (%.4f %%)", percent);
+
+    return;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
