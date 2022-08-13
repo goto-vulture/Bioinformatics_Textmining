@@ -229,22 +229,19 @@ Exec_Intersection
             ++ print_counter;
 
             // Remove stop words from the result
-            for (size_t i = 0; i < intersection_result->number_of_arrays; ++ i)
+            for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
             {
-                for (size_t i2 = 0; i2 < intersection_result->arrays_lengths [i]; ++ i2)
-                {
-                    // Reverse the mapping to get the original token (int -> token)
-                    char int_to_token_mem [MAX_TOKEN_LENGTH];
-                    memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
+                // Reverse the mapping to get the original token (int -> token)
+                char int_to_token_mem [MAX_TOKEN_LENGTH];
+                memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
 
-                    Int_To_Token (token_int_mapping, intersection_result->data [i][i2], int_to_token_mem,
-                            sizeof (int_to_token_mem) - 1);
-                    // Is the token in the list with the stop words ?
-                    if (Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
-                    {
-                        // Override the mapped int value
-                        intersection_result->data [i][i2] = UINT_FAST32_MAX;
-                    }
+                Int_To_Token (token_int_mapping, intersection_result->data [0][i], int_to_token_mem,
+                        sizeof (int_to_token_mem) - 1);
+                // Is the token in the list with the stop words ?
+                if (Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
+                {
+                    // Override the mapped int value
+                    intersection_result->data [0][i] = UINT_FAST32_MAX;
                 }
             }
 
