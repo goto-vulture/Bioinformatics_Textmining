@@ -242,6 +242,7 @@ Add_Token_To_Mapping
     {
         strncpy (&(to_str [object->c_str_array_lengths [chosen_c_string_array] * MAX_TOKEN_LENGTH]),
                 new_token, MAX_TOKEN_LENGTH - 1);// ((new_token_length >= MAX_TOKEN_LENGTH) ? MAX_TOKEN_LENGTH - 1 : new_token_length));
+        to_str [object->c_str_array_lengths [chosen_c_string_array] * MAX_TOKEN_LENGTH + MAX_TOKEN_LENGTH - 1] = '\0';
 
         // Gurantee a zero byte at the end
         //to_str [((object->c_str_array_lengths [chosen_c_string_array] + 1) * MAX_TOKEN_LENGTH) - 1] = '\0';
@@ -482,6 +483,7 @@ Int_To_Token
         if (object->int_mapping [chosen_c_string_array][i2] == token_int_value)
         {
             strncpy(result_token_memory, &(c_string_array [i2 * MAX_TOKEN_LENGTH]), result_token_memory_size - 1);
+            result_token_memory [result_token_memory_size - 1] = '\0';
             break;
         }
     }

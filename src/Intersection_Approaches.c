@@ -373,10 +373,12 @@ Intersection_Approach_2_Nested_Loops_2_Raw_Data_Arrays
     if (id_1 != NULL)
     {
         strncpy (intersection_result->dataset_id_1, id_1, COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_1) - 1);
+        intersection_result->dataset_id_1 [COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_1) - 1] = '\0';
     }
     if (id_2 != NULL)
     {
         strncpy (intersection_result->dataset_id_2, id_2, COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_2) - 1);
+        intersection_result->dataset_id_2 [COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_2) - 1] = '\0';
     }
 
     FREE_AND_SET_TO_NULL(multiple_guard_data_1);

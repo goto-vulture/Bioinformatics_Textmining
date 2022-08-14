@@ -277,7 +277,12 @@ Create_Token_Container_From_File
                 }
                 else*/
                 {
-                    strncpy (new_container->token_lists [new_container->next_free_element].dataset_id, name->string, 15);
+                    const size_t dataset_id_length =
+                            COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].dataset_id);
+
+                    strncpy (new_container->token_lists [new_container->next_free_element].dataset_id, name->string,
+                            dataset_id_length - 1);
+                    new_container->token_lists [new_container->next_free_element].dataset_id [dataset_id_length - 1] = '\0';
                 }
                 // ===== ===== ===== END Realloc necessary ? ===== ===== =====
 
