@@ -216,17 +216,19 @@ Add_Token_To_Mapping
     char* start_to_str = object->c_str_arrays [chosen_c_string_array];
     char* to_str = start_to_str;
     uint_fast32_t* int_mapping_array = object->int_mapping [chosen_c_string_array];
+    const uint_fast32_t c_str_array_length = object->c_str_array_lengths [chosen_c_string_array];
 
     // Is the new token already in the list ?
     _Bool token_already_in_list = false;
-    for (uint_fast32_t i = 0; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
+    for (uint_fast32_t i = 0; i < c_str_array_length; ++ i)
     {
         // Before the comparison: Have the strings the same length ?
         //if (new_token_length != strlen(&(to_str [i * MAX_TOKEN_LENGTH]))) { continue; }
 
         //if (strncmp (new_token, &(to_str [i * MAX_TOKEN_LENGTH]), new_token_length) == 0)
         // Pre check the first char to avoid strncmp calls
-        if (new_token [0] == to_str [0])
+        //if (new_token [0] == to_str [0])
+        if (*new_token == *to_str)
         {
             if (strncmp (new_token, to_str, new_token_length) == 0)
             {
@@ -249,7 +251,7 @@ Add_Token_To_Mapping
 
         // Find the max. mapping integer in the chosen array
         uint_fast32_t max_mapping_int_in_chosen_array = 0;
-        for (uint_fast32_t i = 0; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
+        for (uint_fast32_t i = 0; i < c_str_array_length; ++ i)
         {
             if (int_mapping_array [i] > max_mapping_int_in_chosen_array)
             {
@@ -403,16 +405,18 @@ Token_To_Int
     _Bool token_found = false;
     uint_fast32_t i = 0;
     char* c_string_array = object->c_str_arrays [chosen_c_string_array];
+    const uint_fast32_t c_str_array_length = object->c_str_array_lengths [chosen_c_string_array];
 
     // Search in the C-String, where the token would be, when it is already in the mapping list
-    for (; i < object->c_str_array_lengths [chosen_c_string_array]; ++ i)
+    for (; i < c_str_array_length; ++ i)
     {
         // Before the comparison: Have the strings the same length ?
         //if (search_token_length != strlen(&(c_string_array [i * MAX_TOKEN_LENGTH]))) { continue; }
 
         //if (strncmp (search_token, &(c_string_array [i * MAX_TOKEN_LENGTH]), search_token_length) == 0)
         // Pre check the first char to avoid strncmp calls
-        if (search_token [0] == c_string_array [0])
+        // if (search_token [0] == c_string_array [0])
+        if (*search_token == *c_string_array)
         {
             if (strncmp (search_token, c_string_array, search_token_length) == 0)
             {
