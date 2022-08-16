@@ -54,6 +54,8 @@ Create_Document_Word_List
     ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (uint_fast32_t*) * number_of_arrays);
 
     // Inner dimension
+    // ToDo: Dynamic length of every data array. The current situation is, that all arrays get the worest case size
+    // The result is, that with the test data the object needs ~ 3 GB RAM :o
     for (uint_fast32_t i = 0; i < number_of_arrays; ++ i)
     {
         new_object->data [i] = (uint_fast32_t*) CALLOC(max_array_length, sizeof (uint_fast32_t));
