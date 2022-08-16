@@ -182,14 +182,14 @@ int main (const int argc, const char* argv [])
     {
             OPT_HELP(),
 
-            OPT_GROUP("Hauptfunktionen"),
-            OPT_STRING('i', "input", &GLOBAL_CLI_INPUT_FILE, "Erste Eingabedatei", NULL, 0, 0),
-            OPT_STRING('j', "input2", &GLOBAL_CLI_INPUT_FILE2, "Zweite Eingabedatei", NULL, 0, 0),
-            OPT_STRING('o', "output", &GLOBAL_CLI_OUTPUT_FILE, "Ausgabedatei", NULL, 0, 0),
+            OPT_GROUP("Main functions"),
+            OPT_STRING('i', "input", &GLOBAL_CLI_INPUT_FILE, "First input file", NULL, 0, 0),
+            OPT_STRING('j', "input2", &GLOBAL_CLI_INPUT_FILE2, "Second input file", NULL, 0, 0),
+            OPT_STRING('o', "output", &GLOBAL_CLI_OUTPUT_FILE, "Output file", NULL, 0, 0),
 
-            OPT_GROUP("Debug- / Testfunktionen"),
+            OPT_GROUP("Debug / test functions"),
             OPT_BOOLEAN('T', "run_all_test_functions", &GLOBAL_RUN_ALL_TEST_FUNCTIONS,
-                    "Ausfuehrung aller Testfunktionen", NULL, 0, 0),
+                    "Execute all test functions", NULL, 0, 0),
             OPT_FLOAT('A', "abort", &GLOBAL_ABORT_PROCESS_PERCENT,
                      "At which percent the calculation should be aborted ?", NULL, 0, 0),
 
