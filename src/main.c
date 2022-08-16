@@ -215,6 +215,7 @@ int main (const int argc, const char* argv [])
     if (! isnan(GLOBAL_ABORT_PROCESS_PERCENT))
     {
         Check_CLI_Parameter_GLOBAL_ABORT_PROCESS_PERCENT();
+        printf ("Abort percent value: %f\n", GLOBAL_ABORT_PROCESS_PERCENT);
     }
     if (GLOBAL_CLI_INPUT_FILE != NULL)
     {
