@@ -110,6 +110,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include <time.h>
+#include <math.h>
 #include "argparse.h"
 #include "CLI_Parameter.h"
 #include "Error_Handling/Dynamic_Memory.h"
@@ -189,6 +190,8 @@ int main (const int argc, const char* argv [])
             OPT_GROUP("Debug- / Testfunktionen"),
             OPT_BOOLEAN('T', "run_all_test_functions", &GLOBAL_RUN_ALL_TEST_FUNCTIONS,
                     "Ausfuehrung aller Testfunktionen", NULL, 0, 0),
+            OPT_FLOAT('A', "abort", &GLOBAL_ABORT_PROCESS_PERCENT,
+                     "At which percent the calculation should be aborted ?", NULL, 0, 0),
 
             OPT_END()
     };
@@ -208,6 +211,10 @@ int main (const int argc, const char* argv [])
         TEST_REPORT();
 
         return (tt_fails != 0) ? EXIT_FAILURE : EXIT_SUCCESS;
+    }
+    if (! isnan(GLOBAL_ABORT_PROCESS_PERCENT))
+    {
+        Check_CLI_Parameter_GLOBAL_ABORT_PROCESS_PERCENT();
     }
     if (GLOBAL_CLI_INPUT_FILE != NULL)
     {
@@ -242,7 +249,7 @@ int main (const int argc, const char* argv [])
     puts("");
 
     // Execute the intersection process
-    Exec_Intersection(5.0f);
+    Exec_Intersection((isnan(GLOBAL_ABORT_PROCESS_PERCENT)) ? GLOBAL_ABORT_PROCESS_PERCENT : NAN);
 
     return EXIT_SUCCESS;
 }

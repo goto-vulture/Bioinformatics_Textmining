@@ -13,6 +13,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "Print_Tools.h"
 #include "Error_Handling/Dynamic_Memory.h"
 
@@ -33,6 +34,7 @@ const char* GLOBAL_CLI_INPUT_FILE = NULL;
 const char* GLOBAL_CLI_INPUT_FILE2 = NULL;
 const char* GLOBAL_CLI_OUTPUT_FILE = NULL;
 _Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS = false;
+float GLOBAL_ABORT_PROCESS_PERCENT = NAN;
 
 
 
@@ -116,6 +118,41 @@ void Check_CLI_Parameter_CLI_OUTPUT_FILE (void)
     }
 
     FCLOSE_AND_SET_TO_NULL(output_file);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Testfunction for the abort percent value.
+ */
+void Check_CLI_Parameter_GLOBAL_ABORT_PROCESS_PERCENT (void)
+{
+    if (isinf(GLOBAL_ABORT_PROCESS_PERCENT) == -1)
+    {
+        FPRINTF_FFLUSH_NO_VA_ARGS(stderr, "Abort percent value is -Inf !\n")
+        exit (1);
+    }
+    if (isinf(GLOBAL_ABORT_PROCESS_PERCENT) == +1)
+    {
+        FPRINTF_FFLUSH_NO_VA_ARGS(stderr, "Abort percent value is +Inf !\n")
+        exit (1);
+    }
+    // A isnan check is not necessary because a NaN value is the default value of this parameter and indicates, that no
+    // abort percent value was given with the CLI parameter
+    /*if (isnanf(GLOBAL_ABORT_PROCESS_PERCENT))
+    {
+        FPRINTF_FFLUSH_NO_VA_ARGS(stderr, "Abort percent value is NaN !\n")
+        exit (1);
+    }*/
+
+    if (GLOBAL_ABORT_PROCESS_PERCENT < 0.0f || GLOBAL_ABORT_PROCESS_PERCENT > 100.0f)
+    {
+        FPRINTF_FFLUSH(stderr, "Abort percent value (%f) is not in a percent range \n",
+                GLOBAL_ABORT_PROCESS_PERCENT)
+        exit (1);
+    }
 
     return;
 }

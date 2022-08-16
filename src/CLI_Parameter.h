@@ -39,6 +39,12 @@ extern const char* GLOBAL_CLI_OUTPUT_FILE; ///< Output file
 
 extern _Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS; ///< Run all test functions ?
 
+/**
+ * @brief On which percent in the calculation should be aborted ? This is for development and debugging purposes useful
+ * to limit the calculation process.
+ */
+extern float GLOBAL_ABORT_PROCESS_PERCENT;
+
 
 
 /**
@@ -55,6 +61,11 @@ extern void Check_CLI_Parameter_CLI_INPUT_FILE2 (void);
  * @brief Testfunktion fuer den CLI Parameter, der die Ausgabedatei beschreibt.
  */
 extern void Check_CLI_Parameter_CLI_OUTPUT_FILE (void);
+
+/**
+ * @brief Testfunction for the abort percent value.
+ */
+extern void Check_CLI_Parameter_GLOBAL_ABORT_PROCESS_PERCENT (void);
 
 
 
