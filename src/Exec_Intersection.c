@@ -205,6 +205,7 @@ Exec_Intersection
     CLOCK_WITH_RETURN_CHECK(start);
 
     uint_fast32_t last_used_selected_data_2_array = UINT_FAST32_MAX;
+    _Bool first_object_in_file = true;
 
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
@@ -273,9 +274,13 @@ Exec_Intersection
                 if (selected_data_2_array != last_used_selected_data_2_array)
                 {
                     last_used_selected_data_2_array = selected_data_2_array;
-                    //fprintf (result_file, "Token list \"%s\" (second file): { ", intersection_result->dataset_id_2);
-                    //fprintf (result_file, "\"%s\" (second file): { ", intersection_result->dataset_id_2);
-                    fprintf (result_file, "\n\"%s\": { ", intersection_result->dataset_id_2);
+
+                    // Close the last object if necessary
+                    if (! first_object_in_file)
+                    {
+                        fputs ("\n},", result_file);
+                    }
+                    fprintf (result_file, "\n\"%s\":\n{\n\t\"tokens\": [", intersection_result->dataset_id_2);
                     for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_2_array]; ++ i)
                     {
                         // Reverse the mapping to get the original token (int -> token)
@@ -284,14 +289,15 @@ Exec_Intersection
 
                         Int_To_Token (token_int_mapping, source_int_values_2->data [selected_data_2_array][i], int_to_token_mem,
                                 sizeof (int_to_token_mem) - 1);
-                        fputs(int_to_token_mem, result_file);
+                        fprintf(result_file, "\"%s\"", int_to_token_mem);
 
                         if ((i + 1) < source_int_values_2->arrays_lengths [selected_data_2_array])
                         {
                             fputs(", ", result_file);
                         }
                     }
-                    fputs(" }\n", result_file);
+                    fputs("],\n\t\"intersections\":\n\t{\n", result_file);
+                    first_object_in_file = false;
                 }
 
                 //fputs("Found tokens in:\n", result_file);
@@ -301,7 +307,7 @@ Exec_Intersection
                 {
                     if (i == 0)
                     {
-                        fprintf(result_file, "\t\"%s\": ", intersection_result->dataset_id_1);
+                        fprintf(result_file, "\t\t\"%s\": [", intersection_result->dataset_id_1);
                     }
                     if (intersection_result->data [0][i] == UINT_FAST32_MAX)
                     {
@@ -314,16 +320,19 @@ Exec_Intersection
 
                     Int_To_Token (token_int_mapping, intersection_result->data [0][i], int_to_token_mem,
                             sizeof (int_to_token_mem) - 1);
-                    fputs(int_to_token_mem, result_file);
+                    fprintf (result_file, "\"%s\"", int_to_token_mem);
                     if ((tokens_wrote + 1) < tokens_left)
                     {
                         fputs(", ", result_file);
+                    }
+                    else
+                    {
+                        fputs ("],\n", result_file);
                     }
 
                     ++ intersection_call_counter;
                     ++ tokens_wrote;
                 }
-                fputs("\n", result_file);
             }
 
             Delete_Document_Word_List(intersection_result);
