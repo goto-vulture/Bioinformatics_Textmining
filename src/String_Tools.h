@@ -146,10 +146,10 @@ Contain_String_Only_Null_Symbols
 extern size_t
 Multi_strncat
 (
-		char* const restrict destination,
-		const size_t destination_size,
-		const int count,
-		...
+        char* const restrict destination,
+        const size_t destination_size,
+        const int count,
+        ...
 );
 
 
