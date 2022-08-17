@@ -58,6 +58,9 @@ struct Token_List_Container
 
     uint_fast32_t next_free_element;        ///< Next free element in the Token_List array
     size_t allocated_token_container;       ///< Allocated number of Token_List objects
+
+    size_t malloc_calloc_calls;             ///< How many malloc / calloc calls were done with this object ?
+    size_t realloc_calls;                   ///< How many realloc calls were done with this object ?
 };
 
 //=====================================================================================================================

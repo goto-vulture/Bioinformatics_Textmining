@@ -147,12 +147,14 @@ Create_Token_Container_From_File
     struct Token_List_Container* new_container =
             (struct Token_List_Container*) CALLOC(1, sizeof (struct Token_List_Container));
     ASSERT_ALLOC(new_container, "Cannot create new Token_Container !", 1 * sizeof (struct Token_List_Container));
+    new_container->malloc_calloc_calls ++;
 
     // Create the inner container
     new_container->allocated_token_container = TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
     new_container->token_lists = (struct Token_List*) CALLOC(new_container->allocated_token_container, sizeof (struct Token_List));
     ASSERT_ALLOC(new_container->token_lists, "Cannot create new Token objects !", new_container->allocated_token_container *
             sizeof (struct Token_List));
+    new_container->malloc_calloc_calls ++;
 
     // Allocate memory for the inner container
     for (size_t i = 0; i < new_container->allocated_token_container; ++ i)
@@ -161,6 +163,7 @@ Create_Token_Container_From_File
         ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
                 MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
         // memset(new_container->tokens [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+        new_container->malloc_calloc_calls ++;
 
         new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
         new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
@@ -185,6 +188,7 @@ Create_Token_Container_From_File
     char* input_file_data = (char*) CALLOC (((size_t) input_file_length + sizeof ("")), sizeof (char));
     ASSERT_ALLOC(input_file_data, "Cannot allocate memory for reading the input file !",
             ((size_t) input_file_length + sizeof ("")) * sizeof (char));
+    new_container->malloc_calloc_calls ++;
 
     uint_fast32_t line_counter              = 0;
     uint_fast32_t tokens_found              = 0;
@@ -254,6 +258,7 @@ Create_Token_Container_From_File
                     ASSERT_ALLOC(temp_ptr, "Cannot reallocate memory for Token_Container objects !",
                             (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
                     memset(temp_ptr + old_allocated_token_container, '\0', sizeof (struct Token_List) * TOKEN_CONTAINER_ALLOCATION_STEP_SIZE);
+                    new_container->realloc_calls ++;
 
                     new_container->token_lists = temp_ptr;
                     new_container->allocated_token_container = old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
@@ -265,6 +270,7 @@ Create_Token_Container_From_File
                         ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
                                 MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
                         memset(new_container->token_lists [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+                        new_container->malloc_calloc_calls ++;
 
                         new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
                         new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
@@ -736,6 +742,8 @@ Print_Token_List_Status_Infos
     printf ("Longest token list:             %zu\n", Get_Lengh_Of_Longest_Token_Container(container));
     printf ("Longest token:                  %zu\n", Get_Lengh_Of_Longest_Token(container));
     printf ("Longest dataset id:             %zu\n", longest_dataset_id);
+    printf ("Malloc / calloc calls:          %zu\n", container->malloc_calloc_calls);
+    printf ("Realloc calls:                  %zu\n", container->realloc_calls);
     puts("");
     fflush (stdout);
 

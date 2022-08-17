@@ -46,6 +46,7 @@ struct Document_Word_List
     size_t max_array_length;        ///< Max length of all data arrays
     size_t number_of_arrays;        ///< Number of arrays
 
+    size_t malloc_calloc_calls;     ///< How many malloc / calloc calls were done with this object ?
     size_t realloc_calls;           ///< How many realloc calls were done with this object ?
 
     _Bool intersection_data;        ///< Was this object created as intersection result ?

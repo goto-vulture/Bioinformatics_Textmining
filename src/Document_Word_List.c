@@ -104,13 +104,16 @@ Create_Document_Word_List
 
     struct Document_Word_List* new_object = (struct Document_Word_List*) CALLOC(1, sizeof (struct Document_Word_List));
     ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List));
+    new_object->malloc_calloc_calls ++;
 
     // Outer dimension
     new_object->data = (uint_fast32_t**) CALLOC(number_of_arrays, sizeof (uint_fast32_t*));
     ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (uint_fast32_t*) * number_of_arrays);
+    new_object->malloc_calloc_calls ++;
 
     new_object->allocated_array_size = (size_t*) CALLOC(number_of_arrays, sizeof (size_t));
     ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (size_t) * number_of_arrays);
+    new_object->malloc_calloc_calls ++;
 
     // Inner dimension
     for (uint_fast32_t i = 0; i < number_of_arrays; ++ i)
@@ -118,12 +121,14 @@ Create_Document_Word_List
         new_object->data [i] = (uint_fast32_t*) CALLOC(INT_ALLOCATION_STEP_SIZE, sizeof (uint_fast32_t));
         ASSERT_ALLOC(new_object->data [i], "Cannot create new Document_Word_List !",
                 sizeof (uint_fast32_t) * INT_ALLOCATION_STEP_SIZE);
+        new_object->malloc_calloc_calls ++;
         new_object->allocated_array_size [i] = INT_ALLOCATION_STEP_SIZE;
     }
 
     // Length list
     new_object->arrays_lengths = (size_t*) CALLOC(number_of_arrays, sizeof (size_t));
     ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (size_t) * number_of_arrays);
+    new_object->malloc_calloc_calls ++;
 
     new_object->max_array_length = INT_ALLOCATION_STEP_SIZE;
     new_object->number_of_arrays = number_of_arrays;
@@ -337,10 +342,11 @@ Show_Attributes_From_Document_Word_List
             (double) Get_Document_Word_List_Size(object) / 1024.0,
             (double) Get_Document_Word_List_Size(object) / 1024.0 / 1024.0);
     puts ("> Attributes <");
-    printf ("Intersection data: %s\n", (object->intersection_data /* == true */) ? "YES" : "NO");
-    printf ("Number of arrays:  %*zu\n", formatter_int, object->number_of_arrays);
-    printf ("Max. array length: %*zu\n", formatter_int, object->max_array_length);
-    printf ("Realloc calls:     %*zu\n", formatter_int, object->realloc_calls);
+    printf ("Intersection data:     %s\n", (object->intersection_data /* == true */) ? "YES" : "NO");
+    printf ("Number of arrays:      %*zu\n", formatter_int, object->number_of_arrays);
+    printf ("Max. array length:     %*zu\n", formatter_int, object->max_array_length);
+    printf ("Malloc / calloc calls: %*zu\n", formatter_int, object->malloc_calloc_calls);
+    printf ("Realloc calls:         %*zu\n", formatter_int, object->realloc_calls);
 
     return;
 }
