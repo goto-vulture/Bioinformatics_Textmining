@@ -21,6 +21,48 @@
 
 
 
+/**
+ * @brief Append the data from a Token_List_Container object (-> data from a input file) to the Token_Int_Mapping.
+ *
+ * Asserts:
+ *      token_list_container != NULL
+ *      token_int_mapping != NULL
+ *
+ * @param token_list_container Token_List_Container object (information from a input file)
+ * @param token_int_mapping Token_Int_Mapping
+ *
+ * @return Number of token that were added to the Token_Int_Mapping
+ */
+static uint_fast32_t
+Append_Token_List_Container_Data_To_Token_Int_Mapping
+(
+        const struct Token_List_Container* const restrict token_list_container,
+        struct Token_Int_Mapping* const restrict token_int_mapping
+);
+
+/**
+ * @brief This function fills the Document_Word_List with data. But this data are the mapped integer values. The mapping
+ * information will be uses from the given Token_Int_Mapping.
+ *
+ * This will prepare the Document_Word_List for the intersection process.
+ *
+ * Asserts:
+ *      token_int_mapping != NULL
+ *      token_list_container != NULL
+ *      document_word_list != NULL
+ *
+ * @param token_int_mapping Token_Int_Mapping object (contains the used mapping information)
+ * @param token_list_container Token_List_Container object (contains tokens from a input file)
+ * @param document_word_list Document_Word_List object (result object for the mapped data)
+ */
+static void
+Append_Token_Int_Mapping_Data_To_Document_Word_List
+(
+        const struct Token_Int_Mapping* const restrict token_int_mapping,
+        const struct Token_List_Container* const restrict token_list_container,
+        struct Document_Word_List* const restrict document_word_list
+);
+
 static void
 Exec_Intersection_Process_Print_Function
 (
@@ -99,29 +141,12 @@ Exec_Intersection
     struct Token_Int_Mapping* token_int_mapping = Create_Token_Int_Mapping ();
 
     // ... and fill them with all tokens (Content from the first file)
-    uint_fast32_t token_added_to_mapping = 0;
-    _Bool element_added = false;
-    for (uint_fast32_t i = 0; i < token_container_input_1->next_free_element; ++ i)
-    {
-        for (uint_fast32_t i2 = 0; i2 < token_container_input_1->token_lists [i].next_free_element; ++ i2)
-        {
-            char* token = Get_Token_From_Token_Container (token_container_input_1, i, i2);
-            element_added = Add_Token_To_Mapping(token_int_mapping, token, strlen(token));
-            if (element_added) { ++ token_added_to_mapping; }
-        }
-    }
-
+    uint_fast32_t token_added_to_mapping =
+            Append_Token_List_Container_Data_To_Token_Int_Mapping (token_container_input_1, token_int_mapping);
     printf ("\nAfter token container 1: %" PRIuFAST32 " elements added to token int mapping\n", token_added_to_mapping);
     // Content from the second file
-    for (uint_fast32_t i = 0; i < token_container_input_2->next_free_element; ++ i)
-    {
-        for (uint_fast32_t i2 = 0; i2 < token_container_input_2->token_lists [i].next_free_element; ++ i2)
-        {
-            char* token = Get_Token_From_Token_Container (token_container_input_2, i, i2);
-            element_added = Add_Token_To_Mapping(token_int_mapping, token, strlen(token));
-            if (element_added) { ++ token_added_to_mapping; }
-        }
-    }
+    token_added_to_mapping +=
+            Append_Token_List_Container_Data_To_Token_Int_Mapping (token_container_input_2, token_int_mapping);
     printf ("After token container 2: %" PRIuFAST32 " elements added to token int mapping\n", token_added_to_mapping);
 
 
@@ -142,59 +167,10 @@ Exec_Intersection
     struct Document_Word_List* source_int_values_2 =
             Create_Document_Word_List(token_container_input_2->next_free_element, length_of_longest_token_container);
 
-    // Temp memory for appending data in a block
-    // This avoids appending operations for each single value
-    uint_fast32_t* token_int_values = (uint_fast32_t*) CALLOC(length_of_longest_token_container,
-            sizeof (uint_fast32_t));
-    ASSERT_ALLOC(token_int_values, "Cannot allocate memory for token int mapping values !",
-            length_of_longest_token_container * sizeof (uint_fast32_t));
-
-    size_t next_free_value = 0;
-
-    for (uint_fast32_t i = 0; i < token_container_input_1->next_free_element; ++ i)
-    {
-        memset(token_int_values, '\0', length_of_longest_token_container * sizeof (uint_fast32_t));
-        next_free_value = 0;
-
-        // Map token to int
-        for (uint_fast32_t i2 = 0; i2 < token_container_input_1->token_lists [i].next_free_element; ++ i2)
-        {
-            char* token = Get_Token_From_Token_Container (token_container_input_1, i, i2);
-            token_int_values [next_free_value] = Token_To_Int(token_int_mapping, token, strlen(token));
-            // Is the current token in the dictionary ?
-            ASSERT_FMSG(token_int_values [next_free_value] != UINT_FAST32_MAX, "Token \"%s\" is not in the dictionary !",
-                    token);
-            ++ next_free_value;
-        }
-
-        // Append data
-        if (next_free_value > 0)
-        {
-            Append_Data_To_Document_Word_List(source_int_values_1, token_int_values, next_free_value);
-        }
-    }
-    for (uint_fast32_t i = 0; i < token_container_input_2->next_free_element; ++ i)
-    {
-        memset(token_int_values, '\0', length_of_longest_token_container * sizeof (uint_fast32_t));
-        next_free_value = 0;
-
-        // Map token to int
-        for (uint_fast32_t i2 = 0; i2 < token_container_input_2->token_lists [i].next_free_element; ++ i2)
-        {
-            char* token = Get_Token_From_Token_Container (token_container_input_2, i, i2);
-            token_int_values [next_free_value] = Token_To_Int(token_int_mapping, token, strlen(token));
-            // Is the current token in the dictionary ?
-            ASSERT_FMSG(token_int_values [next_free_value] != UINT_FAST32_MAX, "Token \"%s\" is not in the dictionary !",
-                    token);
-            ++ next_free_value;
-        }
-
-        // Append data
-        if (next_free_value > 0)
-        {
-            Append_Data_To_Document_Word_List(source_int_values_2, token_int_values, next_free_value);
-        }
-    }
+    Append_Token_Int_Mapping_Data_To_Document_Word_List(token_int_mapping, token_container_input_1,
+            source_int_values_1);
+    Append_Token_Int_Mapping_Data_To_Document_Word_List(token_int_mapping, token_container_input_2,
+            source_int_values_2);
 
     Show_Attributes_From_Document_Word_List(source_int_values_1);
     Show_Attributes_From_Document_Word_List(source_int_values_2);
@@ -357,7 +333,6 @@ abort_label:
 
 
     FCLOSE_AND_SET_TO_NULL(result_file);
-    FREE_AND_SET_TO_NULL(token_int_values);
 
     Delete_Document_Word_List(source_int_values_1);
     source_int_values_1 = NULL;
@@ -374,6 +349,113 @@ abort_label:
 }
 
 //=====================================================================================================================
+
+/**
+ * @brief Append the data from a Token_List_Container object (-> data from a input file) to the Token_Int_Mapping.
+ *
+ * Asserts:
+ *      token_list_container != NULL
+ *      token_int_mapping != NULL
+ *
+ * @param token_list_container Token_List_Container object (information from a input file)
+ * @param token_int_mapping Token_Int_Mapping
+ *
+ * @return Number of token that were added to the Token_Int_Mapping
+ */
+static uint_fast32_t
+Append_Token_List_Container_Data_To_Token_Int_Mapping
+(
+        const struct Token_List_Container* const restrict token_list_container,
+        struct Token_Int_Mapping* const restrict token_int_mapping
+)
+{
+    ASSERT_MSG(token_list_container != NULL, "Token_List_Container is NULL !");
+    ASSERT_MSG(token_int_mapping != NULL, "Token_Int_Mapping is NULL !");
+
+    uint_fast32_t token_added_to_mapping = 0;
+
+    _Bool element_added = false;
+    for (uint_fast32_t i = 0; i < token_list_container->next_free_element; ++ i)
+    {
+        for (uint_fast32_t i2 = 0; i2 < token_list_container->token_lists [i].next_free_element; ++ i2)
+        {
+            char* token = Get_Token_From_Token_Container (token_list_container, i, i2);
+            element_added = Add_Token_To_Mapping(token_int_mapping, token, strlen(token));
+            if (element_added) { ++ token_added_to_mapping; }
+        }
+    }
+
+    return token_added_to_mapping;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief This function fills the Document_Word_List with data. But this data are the mapped integer values. The mapping
+ * information will be uses from the given Token_Int_Mapping.
+ *
+ * This will prepare the Document_Word_List for the intersection process.
+ *
+ * Asserts:
+ *      token_int_mapping != NULL
+ *      token_list_container != NULL
+ *      document_word_list != NULL
+ *
+ * @param token_int_mapping Token_Int_Mapping object (contains the used mapping information)
+ * @param token_list_container Token_List_Container object (contains tokens from a input file)
+ * @param document_word_list Document_Word_List object (result object for the mapped data)
+ */
+static void
+Append_Token_Int_Mapping_Data_To_Document_Word_List
+(
+        const struct Token_Int_Mapping* const restrict token_int_mapping,
+        const struct Token_List_Container* const restrict token_list_container,
+        struct Document_Word_List* const restrict document_word_list
+)
+{
+    ASSERT_MSG(token_int_mapping != NULL, "Token_Int_Mapping is NULL !");
+    ASSERT_MSG(token_list_container != NULL, "Token_List_Container is NULL !");
+    ASSERT_MSG(document_word_list != NULL, "Document_Word_List is NULL !");
+
+    const size_t length_of_longest_token_container = Get_Lengh_Of_Longest_Token_Container(token_list_container);
+
+    // Temp memory for appending data in a block
+    // This avoids appending operations for each single value
+    uint_fast32_t* token_int_values = (uint_fast32_t*) CALLOC(length_of_longest_token_container,
+            sizeof (uint_fast32_t));
+    ASSERT_ALLOC(token_int_values, "Cannot allocate memory for token int mapping values !",
+            length_of_longest_token_container * sizeof (uint_fast32_t));
+
+    uint_fast32_t next_free_value = 0;
+
+    for (uint_fast32_t i = 0; i < token_list_container->next_free_element; ++ i)
+    {
+        memset(token_int_values, '\0', length_of_longest_token_container * sizeof (uint_fast32_t));
+        next_free_value = 0;
+
+        // Map token to int
+        for (uint_fast32_t i2 = 0; i2 < token_list_container->token_lists [i].next_free_element; ++ i2)
+        {
+            char* token = Get_Token_From_Token_Container (token_list_container, i, i2);
+            token_int_values [next_free_value] = Token_To_Int(token_int_mapping, token, strlen(token));
+            // Is the current token in the dictionary ?
+            ASSERT_FMSG(token_int_values [next_free_value] != UINT_FAST32_MAX, "Token \"%s\" is not in the dictionary !",
+                    token);
+            ++ next_free_value;
+        }
+
+        // Append data
+        if (next_free_value > 0)
+        {
+            Append_Data_To_Document_Word_List(document_word_list, token_int_values, next_free_value);
+        }
+    }
+    FREE_AND_SET_TO_NULL(token_int_values);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 static void
 Exec_Intersection_Process_Print_Function
