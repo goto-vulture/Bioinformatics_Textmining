@@ -22,6 +22,60 @@
 
 
 
+/**
+ * @brief Allocation step size for the inner data arrays. (For the real data; not for management objects)
+ */
+#ifndef INT_ALLOCATION_STEP_SIZE
+#define INT_ALLOCATION_STEP_SIZE 75
+#else
+#error "The macro \"INT_ALLOCATION_STEP_SIZE\" is already defined !"
+#endif /* INT_ALLOCATION_STEP_SIZE */
+
+/**
+ * @brief Check, whether the macro value are valid.
+ */
+#if __STDC_VERSION__ >= 201112L
+_Static_assert(INT_ALLOCATION_STEP_SIZE > 0, "The marco \"INT_ALLOCATION_STEP_SIZE\" is zero !");
+#endif /* __STDC_VERSION__ */
+
+/**
+ * @brief Increase the size of a data array.
+ *
+ * increase_number_of_objects is NOT the sum of the array objects ! It is the number of new objects ! This sounds
+ * trivial with the name "increase_number_of_objects". But it should be 100% clear for everyone.
+ *
+ * Asserts:
+ *      object != NULL
+ *      data_array_index < object->number_of_arrays
+ *      increase_number_of_objects > 0
+ *
+ * @param[in] object The Document_Word_List
+ * @param[in] data_array_index Index of the data array
+ * @param[in] increase_number_of_objects Number of new objects
+ */
+static void Increase_Data_Array_Size
+(
+        struct Document_Word_List* const object,
+        const size_t data_array_index,
+        const size_t increase_number_of_objects
+);
+
+/**
+ * @brief Increase the size of a data array with the INT_ALLOCATION_STEP_SIZE macro.
+ *
+ * Asserts:
+ *      object != NULL
+ *      data_array_index < object->number_of_arrays
+ *
+ * @param[in] object The Document_Word_List
+ * @param[in] data_array_index Index of the data array
+ */
+static inline void Increase_Data_Array_Size_Allocation_Step_Size
+(
+        struct Document_Word_List* const object,
+        const size_t data_array_index
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -43,6 +97,8 @@ Create_Document_Word_List
         const size_t max_array_length
 )
 {
+    // Avoid a unused warning
+    (void) Increase_Data_Array_Size_Allocation_Step_Size;
     ASSERT_MSG(number_of_arrays != 0, "Number of arrays is 0 !");
     ASSERT_MSG(max_array_length != 0, "Max array length is 0 !");
 
@@ -53,21 +109,23 @@ Create_Document_Word_List
     new_object->data = (uint_fast32_t**) CALLOC(number_of_arrays, sizeof (uint_fast32_t*));
     ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (uint_fast32_t*) * number_of_arrays);
 
+    new_object->allocated_array_size = (size_t*) CALLOC(number_of_arrays, sizeof (size_t));
+    ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (size_t) * number_of_arrays);
+
     // Inner dimension
-    // ToDo: Dynamic length of every data array. The current situation is, that all arrays get the worest case size
-    // The result is, that with the test data the object needs ~ 3 GB RAM :o
     for (uint_fast32_t i = 0; i < number_of_arrays; ++ i)
     {
-        new_object->data [i] = (uint_fast32_t*) CALLOC(max_array_length, sizeof (uint_fast32_t));
+        new_object->data [i] = (uint_fast32_t*) CALLOC(INT_ALLOCATION_STEP_SIZE, sizeof (uint_fast32_t));
         ASSERT_ALLOC(new_object->data [i], "Cannot create new Document_Word_List !",
-                sizeof (uint_fast32_t) * max_array_length);
+                sizeof (uint_fast32_t) * INT_ALLOCATION_STEP_SIZE);
+        new_object->allocated_array_size [i] = INT_ALLOCATION_STEP_SIZE;
     }
 
     // Length list
     new_object->arrays_lengths = (size_t*) CALLOC(number_of_arrays, sizeof (size_t));
     ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (size_t) * number_of_arrays);
 
-    new_object->max_array_length = max_array_length;
+    new_object->max_array_length = INT_ALLOCATION_STEP_SIZE;
     new_object->number_of_arrays = number_of_arrays;
     new_object->next_free_array = 0;
 
@@ -98,6 +156,7 @@ Delete_Document_Word_List
     // Outer dimension
     FREE_AND_SET_TO_NULL(object->data);
 
+    FREE_AND_SET_TO_NULL(object->allocated_array_size)
     FREE_AND_SET_TO_NULL(object->arrays_lengths);
     FREE_AND_SET_TO_NULL(object);
 
@@ -130,10 +189,17 @@ Append_Data_To_Document_Word_List
     ASSERT_MSG(new_data != NULL, "New data is NULL !");
     ASSERT_MSG(data_length != 0, "New data length is 0 !");
 
-    ASSERT_FMSG(data_length <= object->max_array_length, "New data is too large ! Value %zu; max. valid: %zu",
-            data_length, object->max_array_length);
+    //ASSERT_FMSG(data_length <= object->max_array_length, "New data is too large ! Value %zu; max. valid: %zu",
+    //        data_length, object->max_array_length);
     ASSERT_FMSG(object->number_of_arrays > (size_t) object->next_free_array, "All arrays are in use ! (%zu arrays)",
             object->number_of_arrays);
+
+    // Increase data, if necessary
+    if (data_length > object->allocated_array_size [object->next_free_array])
+    {
+        Increase_Data_Array_Size(object, object->next_free_array,
+                data_length - object->allocated_array_size [object->next_free_array]);
+    }
 
     // Copy the new data
     memcpy (object->data [object->next_free_array], new_data, sizeof (uint_fast32_t) * data_length);
@@ -232,7 +298,11 @@ Get_Document_Word_List_Size
 {
     ASSERT_MSG(object != NULL, "Object is NULL !");
 
-    size_t result = object->number_of_arrays * object->max_array_length * sizeof (uint_fast32_t);
+    size_t result = sizeof (size_t) * object->number_of_arrays;
+    for (size_t i = 0; i < object->number_of_arrays; ++ i)
+    {
+        result += object->allocated_array_size [i] * sizeof (uint_fast32_t);
+    }
     result += sizeof (struct Document_Word_List);
     result += object->number_of_arrays * sizeof (uint_fast32_t*);
 
@@ -270,6 +340,7 @@ Show_Attributes_From_Document_Word_List
     printf ("Intersection data: %s\n", (object->intersection_data /* == true */) ? "YES" : "NO");
     printf ("Number of arrays:  %*zu\n", formatter_int, object->number_of_arrays);
     printf ("Max. array length: %*zu\n", formatter_int, object->max_array_length);
+    printf ("Realloc calls:     %*zu\n", formatter_int, object->realloc_calls);
 
     return;
 }
@@ -412,6 +483,82 @@ Is_Data_In_Document_Word_List
     }
 
     return result;
+}
+
+//=====================================================================================================================
+
+/**
+ * @brief Increase the size of a data array.
+ *
+ * increase_number_of_objects is NOT the sum of the array objects ! It is the number of new objects ! This sounds
+ * trivial with the name "increase_number_of_objects". But it should be 100% clear for everyone.
+ *
+ * Asserts:
+ *      object != NULL
+ *      data_array_index < object->number_of_arrays
+ *      increase_number_of_objects > 0
+ *
+ * @param[in] object The Document_Word_List
+ * @param[in] data_array_index Index of the data array
+ * @param[in] increase_number_of_objects Number of new objects
+ */
+static void Increase_Data_Array_Size
+(
+        struct Document_Word_List* const object,
+        const size_t data_array_index,
+        const size_t increase_number_of_objects
+)
+{
+    ASSERT_MSG(object != NULL, "Object is NULL !");
+    ASSERT_FMSG(data_array_index < object->number_of_arrays, "Data array index is invald ! Got: %zu; max valid: %zu !",
+            data_array_index, object->number_of_arrays - 1);
+    ASSERT_MSG(increase_number_of_objects > 0, "Number of increase objects ins 0 !");
+
+    ++ object->realloc_calls;
+
+    size_t* tmp_ptr = (size_t*) REALLOC(object->data [data_array_index],
+            (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (uint_fast32_t));
+    ASSERT_ALLOC(tmp_ptr, "Cannot increase the data array size !",
+            (object->allocated_array_size + increase_number_of_objects) * sizeof (uint_fast32_t))
+    object->data [data_array_index] = tmp_ptr;
+    memset (&(object->data [data_array_index][object->allocated_array_size [data_array_index]]), '\0',
+            increase_number_of_objects * sizeof (uint_fast32_t));
+    object->allocated_array_size [data_array_index] += increase_number_of_objects;
+
+    // If the new allocated array size bigger than the saved max allocated size
+    if (object->allocated_array_size [data_array_index] > object->max_array_length)
+    {
+        object->max_array_length = object->allocated_array_size [data_array_index];
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Increase the size of a data array with the INT_ALLOCATION_STEP_SIZE macro.
+ *
+ * Asserts:
+ *      object != NULL
+ *      data_array_index < object->number_of_arrays
+ *
+ * @param[in] object The Document_Word_List
+ * @param[in] data_array_index Index of the data array
+ */
+static inline void Increase_Data_Array_Size_Allocation_Step_Size
+(
+        struct Document_Word_List* const object,
+        const size_t data_array_index
+)
+{
+    ASSERT_MSG(object != NULL, "Object is NULL !");
+    ASSERT_FMSG(data_array_index < object->number_of_arrays, "Data array index is invald ! Got: %zu; max valid: %zu !",
+            data_array_index, object->number_of_arrays - 1);
+
+    Increase_Data_Array_Size(object, data_array_index, INT_ALLOCATION_STEP_SIZE);
+
+    return;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
