@@ -210,7 +210,7 @@ Exec_Intersection
     fprintf (result_file, "> First file:  %s\n", GLOBAL_CLI_INPUT_FILE);
     fprintf (result_file, "> Second file: %s\n\n", GLOBAL_CLI_INPUT_FILE2);
 
-    const uint_fast16_t count_steps                     = 1;
+    const uint_fast16_t count_steps                     = 10000;
     const uint_fast32_t number_of_intersection_calls    = source_int_values_2->next_free_array *
             source_int_values_1->next_free_array;
     const uint_fast32_t print_steps                     =
