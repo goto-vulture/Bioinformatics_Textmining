@@ -197,6 +197,10 @@ Exec_Intersection
         }
     }
 
+    Show_Attributes_From_Document_Word_List(source_int_values_1);
+    Show_Attributes_From_Document_Word_List(source_int_values_2);
+    puts("");
+
 
 
     // >>> Create the intersections and save the information in the output file <<<
