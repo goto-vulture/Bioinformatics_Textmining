@@ -36,7 +36,7 @@
 static uint_fast32_t
 Append_Token_List_Container_Data_To_Token_Int_Mapping
 (
-        const struct Token_List_Container* const restrict token_list_container,
+        const struct Token_List_Container* const token_list_container,
         struct Token_Int_Mapping* const restrict token_int_mapping
 );
 
@@ -327,8 +327,9 @@ abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
 
     const float used_seconds = DETERMINE_USED_TIME(start, end);
-    printf ("\n=> %3.3fs (~ %.3f calc/s) for calculation of all intersections.\n", used_seconds,
-            ((float) number_of_intersection_calls) / used_seconds);
+    printf ("\n=> %3.3fs (~ %.3f calc/s) for calculation of all intersections.\n",
+            Replace_NaN_And_Inf_With_Zero(used_seconds),
+            Replace_NaN_And_Inf_With_Zero (((float) number_of_intersection_calls) / used_seconds));
 
 
 
@@ -467,7 +468,7 @@ Exec_Intersection_Process_Print_Function
         const clock_t interval_end
 )
 {
-    const size_t call_counter_interval_begin    = actual;
+    const size_t call_counter_interval_begin    = (actual > hundred_percent) ? hundred_percent : actual;
     const size_t all_calls                      = hundred_percent;
     const size_t call_counter_interval_end      = (call_counter_interval_begin + print_step_size > all_calls) ?
             all_calls : (call_counter_interval_begin + print_step_size);
@@ -476,7 +477,8 @@ Exec_Intersection_Process_Print_Function
     const float time_left   = Determine_Time_Left(call_counter_interval_begin, call_counter_interval_end,
             all_calls, interval_end - interval_begin);
 
-    PRINTF_FFLUSH("Calculate intersections (%3.2f %% | %.2f sec.)   \r", percent, time_left);
+    PRINTF_FFLUSH("Calculate intersections (%3.2f %% | %.2f sec.)   \r", Replace_NaN_And_Inf_With_Zero(percent),
+            Replace_NaN_And_Inf_With_Zero(time_left));
 
     return;
 }

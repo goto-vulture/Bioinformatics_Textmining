@@ -170,3 +170,21 @@ extern float Determine_Time_Left_Average (const size_t first_value, const size_t
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Simple thing: When the input is NaN oder +/-Inf the function returns 0.0f.
+ *
+ * @param input test float value
+ *
+ * @return 0.0 if input is NaN or +/-Inf, otherwise the value itself
+ */
+extern inline float Replace_NaN_And_Inf_With_Zero (const float input)
+{
+    float result = input;
+
+    if (isnan(input) || isinf(input) != 0) { result = 0.0; }
+
+    return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------

@@ -860,7 +860,7 @@ Read_File_Process_Print_Function
         const clock_t interval_end
 )
 {
-    const size_t char_read_interval_begin   = actual;
+    const size_t char_read_interval_begin   = (actual > hundred_percent) ? hundred_percent : actual;
     const size_t input_file_length          = hundred_percent;
     const size_t char_read_interval_end     = (char_read_interval_begin + print_step_size > input_file_length) ?
             input_file_length : (char_read_interval_begin + print_step_size);
@@ -872,7 +872,8 @@ Read_File_Process_Print_Function
 
     PRINTF_FFLUSH("Read file: %*" PRIuFAST32 " KByte (%3.2f %% | %.2f sec.)   \r",
             (digits > 3) ? digits - 3 : 3, char_read_interval_begin / 1024,
-            (percent > 100.0f) ? 100.0f : percent, time_left);
+                    Replace_NaN_And_Inf_With_Zero((percent > 100.0f) ? 100.0f : percent),
+                    Replace_NaN_And_Inf_With_Zero(time_left));
     return;
 }
 
