@@ -22,6 +22,7 @@ extern "C"
 
 
 extern const char* GLOBAL_eng_stop_words [];    ///< Array with common English stop words
+extern size_t GLOBAL_eng_stop_words_length;     ///< Number of strings in the english stop word list
 
 
 
@@ -30,9 +31,9 @@ extern const char* GLOBAL_eng_stop_words [];    ///< Array with common English s
  */
 enum Stop_Word_Language
 {
-    NO_LANGUAGE = 0,    /**< NO_LANGUAGE */
+    NO_LANGUAGE = 0,    ///< NO_LANGUAGE
 
-    ENG                 /**< ENG */
+    ENG                 ///< ENG
 };
 
 

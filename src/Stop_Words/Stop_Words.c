@@ -17,7 +17,7 @@ const char* GLOBAL_eng_stop_words [] =
 #include "Stop_Words_English.txt"
         , NULL // The NULL pointer marks the end of the C-String array
 };
-
+size_t GLOBAL_eng_stop_words_length = 0;
 
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -49,6 +49,15 @@ extern _Bool Is_Word_In_Stop_Word_List
     {
     case ENG:
         selected_stop_word_list = GLOBAL_eng_stop_words;
+        if (GLOBAL_eng_stop_words_length == 0)
+        {
+            while (*selected_stop_word_list != NULL)
+            {
+                ++ selected_stop_word_list;
+                ++ GLOBAL_eng_stop_words_length;
+            }
+            selected_stop_word_list = GLOBAL_eng_stop_words;
+        }
         break;
         // This case statement is not necessary, because the assert at the begin of the function already did the check
         // Some compilers create a [-Wswitch-enum] warning, if not all enum values are used in a switch case statement
@@ -61,15 +70,14 @@ extern _Bool Is_Word_In_Stop_Word_List
     }
 
     // Search the string in the stop word list
-    while (*selected_stop_word_list != NULL)
+    for (size_t i = 0; i < GLOBAL_eng_stop_words_length; ++ i)
     {
         if (Compare_Strings_Case_Insensitive(c_string, c_string_length,
-                *selected_stop_word_list, strlen (*selected_stop_word_list)) == 0)
+                selected_stop_word_list [i], strlen (selected_stop_word_list [i])) == 0)
         {
             result = true;
             break;
         }
-        ++ selected_stop_word_list;
     }
 
     return result;

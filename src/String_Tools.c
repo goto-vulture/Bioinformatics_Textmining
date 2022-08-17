@@ -77,7 +77,7 @@ Compare_Strings_Case_Insensitive
 
     if (string_1_length == string_2_length)
     {
-        for (size_t i = 0;; ++ i)
+        for (size_t i = 0; i < string_1_length; ++ i)
         {
             // If a string end was found, stop the comparisons
             if (string_1 [i] == '\0')
@@ -85,10 +85,23 @@ Compare_Strings_Case_Insensitive
             {
                 break;
             }
-            if (tolower(string_1 [i]) != tolower(string_2 [i]))
+            // Check the char, if there are letters or digits and compare them as lower case letters
+            else if (isalnum(string_1 [i]) && isalnum(string_2 [i]))
             {
-                result = -1;
-                break;
+                if (tolower(string_1 [i]) != tolower(string_2 [i]))
+                {
+                    result = -1;
+                    break;
+                }
+            }
+            // Compare the char, if there are punctuation char (No letters or digits)
+            else if (ispunct(string_1 [i]) && ispunct(string_2 [i]))
+            {
+                if (string_1 [i] != string_2 [i])
+                {
+                    result = -1;
+                    break;
+                }
             }
         }
     }
