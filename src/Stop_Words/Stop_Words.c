@@ -82,8 +82,14 @@ extern _Bool Is_Word_In_Stop_Word_List
     }
     // A simple number is also a stop word
     // To determine a number: try to run a str to int cast successfully
-    long int conversion_result = 0;
-    if (str2int(&conversion_result, c_string, 10) == STR2INT_SUCCESS)
+    long int conversion_result_int = 0;
+    if (str2int(&conversion_result_int, c_string, 10) == STR2INT_SUCCESS)
+    {
+        result = true;
+    }
+    // Try to run a str to double cast successfully
+    double conversion_result_double = 0.0;
+    if (str2double(&conversion_result_double, c_string) == STR2DOUBLE_SUCCESS)
     {
         result = true;
     }
