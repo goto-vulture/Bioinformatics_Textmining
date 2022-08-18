@@ -86,6 +86,7 @@ extern _Bool Is_Word_In_Stop_Word_List
     if (str2int(&conversion_result_int, c_string, 10) == STR2INT_SUCCESS)
     {
         result = true;
+        return result;
     }
     // Try to run a str to double cast successfully
     double conversion_result_double = 0.0;
