@@ -9,6 +9,7 @@
 #include <string.h>
 #include "../Error_Handling/Assert_Msg.h"
 #include "../String_Tools.h"
+#include "../str2int.h"
 
 
 
@@ -78,6 +79,13 @@ extern _Bool Is_Word_In_Stop_Word_List
             result = true;
             break;
         }
+    }
+    // A simple number is also a stop word
+    // To determine a number: try to run a str to int cast successfully
+    long int conversion_result = 0;
+    if (str2int(&conversion_result, c_string, 10) == STR2INT_SUCCESS)
+    {
+        result = true;
     }
 
     return result;
