@@ -187,6 +187,46 @@ Append_Data_In_Two_Dim_C_String_Array
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Append data to the current c string.
+ *
+ * The current c string is at index object->next_free_c_str, or - in the case that object->next_free_c_str is zero - the
+ * current c string is at index object->next_free_c_str.
+ *
+ * Asserts:
+ *      object != NULL
+ *      append_data != NULL
+ *      append_data_length > 0
+ *
+ * @param[in] object The Two_Dim_C_String_Array object
+ * @param[in] append_data New data
+ * @param[in] append_data_length New data length
+ */
+extern void
+Append_Data_To_Current_String_In_Two_Dim_C_String_Array
+(
+        struct Two_Dim_C_String_Array* const restrict object,
+        const char* const restrict append_data,
+        const size_t append_data_length
+)
+{
+    ASSERT_MSG (object != NULL, "Object is NULL !");
+    ASSERT_MSG(append_data != NULL, "Append data is NULL !");
+    ASSERT_MSG(append_data_length > 0, "Append data length is 0 !");
+
+    // Delegate it to the standard append function
+    Append_Data_In_Two_Dim_C_String_Array
+    (
+            object,
+            (object->next_free_c_str == 0) ? 0 : object->next_free_c_str,
+            append_data, append_data_length
+    );
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Append a new c string. This means, that the next free c string will get the new data.
  *
  * Asserts:
