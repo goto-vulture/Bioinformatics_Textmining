@@ -18,8 +18,16 @@
 #include "Error_Handling/Assert_Msg.h"
 #include "Print_Tools.h"
 #include "Stop_Words/Stop_Words.h"
+#include "JSON_Parser/cJSON.h"
 
 
+
+#ifndef cJSON_NOT_NULL
+#define cJSON_NOT_NULL(cJSON_object)                                                                                    \
+    ASSERT_MSG(cJSON_object != NULL, "Creation of a cJSON object for exporting data as JSON file failed !");
+#else
+#error "The macro \"cJSON_NOT_NULL\" is already defined !"
+#endif /* cJSON_NOT_NULL */
 
 /**
  * @brief Append the data from a Token_List_Container object (-> data from a input file) to the Token_Int_Mapping.
@@ -198,6 +206,14 @@ Exec_Intersection
     // Counter of all calls were done since the execution was started
     size_t intersection_call_counter                    = 0;
 
+    // Objects for exporting the intersection results as JSON file
+    cJSON* dataset_id_2 = NULL;
+    cJSON* token        = NULL;
+    cJSON* tokens_array = NULL;
+
+    cJSON* export_results = cJSON_CreateObject();
+    cJSON_NOT_NULL(export_results);
+
     clock_t start           = 0;
     clock_t end             = 0;
 
@@ -205,11 +221,16 @@ Exec_Intersection
     CLOCK_WITH_RETURN_CHECK(start);
 
     uint_fast32_t last_used_selected_data_2_array = UINT_FAST32_MAX;
-    _Bool first_object_in_file = true;
 
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
     {
+        cJSON* intersections = cJSON_CreateObject();
+        cJSON_NOT_NULL(intersections);
+        cJSON* outer_object = cJSON_CreateObject();
+        cJSON_NOT_NULL(outer_object);
+        _Bool data_found = false;
+
         for (uint_fast32_t selected_data_1_array = 0; selected_data_1_array < source_int_values_1->next_free_array;
                 ++ selected_data_1_array)
         {
@@ -241,6 +262,7 @@ Exec_Intersection
             ++ intersection_call_counter;
             ++ intersection_calls_before_last_output;
 
+
             // Remove stop words from the result
             for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
             {
@@ -271,16 +293,16 @@ Exec_Intersection
             // Show only the data block, if there are intersection results
             if (Is_Data_In_Document_Word_List(intersection_result) && tokens_left > 0)
             {
+                data_found = true;
                 if (selected_data_2_array != last_used_selected_data_2_array)
                 {
                     last_used_selected_data_2_array = selected_data_2_array;
 
-                    // Close the last object if necessary
-                    if (! first_object_in_file)
-                    {
-                        fputs ("\n},", result_file);
-                    }
-                    fprintf (result_file, "\n\"%s\":\n{\n\t\"tokens\": [", intersection_result->dataset_id_2);
+                    dataset_id_2 = cJSON_CreateString(intersection_result->dataset_id_2);
+                    tokens_array = cJSON_CreateArray();
+                    cJSON_NOT_NULL(tokens_array);
+                    cJSON_AddItemToObject(outer_object, "tokens", tokens_array);
+
                     for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_2_array]; ++ i)
                     {
                         // Reverse the mapping to get the original token (int -> token)
@@ -289,25 +311,22 @@ Exec_Intersection
 
                         Int_To_Token (token_int_mapping, source_int_values_2->data [selected_data_2_array][i], int_to_token_mem,
                                 sizeof (int_to_token_mem) - 1);
-                        fprintf(result_file, "\"%s\"", int_to_token_mem);
-
-                        if ((i + 1) < source_int_values_2->arrays_lengths [selected_data_2_array])
-                        {
-                            fputs(", ", result_file);
-                        }
+                        token = cJSON_CreateString(int_to_token_mem);
+                        cJSON_NOT_NULL(token);
+                        cJSON_AddItemToArray(tokens_array, token);
                     }
-                    fputs("],\n\t\"intersections\":\n\t{\n", result_file);
-                    first_object_in_file = false;
                 }
 
-                //fputs("Found tokens in:\n", result_file);
+                tokens_array = cJSON_CreateArray();
+
+                //fputs("Found tokens_array in:\n", result_file);
                 // In the intersection result is always only one array ! Therefore a second loop is not necessary
                 size_t tokens_wrote = 0;
                 for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
                 {
                     if (i == 0)
                     {
-                        fprintf(result_file, "\t\t\"%s\": [", intersection_result->dataset_id_1);
+                        cJSON_AddItemToObject(intersections, intersection_result->dataset_id_1, tokens_array);
                     }
                     if (intersection_result->data [0][i] == UINT_FAST32_MAX)
                     {
@@ -320,15 +339,9 @@ Exec_Intersection
 
                     Int_To_Token (token_int_mapping, intersection_result->data [0][i], int_to_token_mem,
                             sizeof (int_to_token_mem) - 1);
-                    fprintf (result_file, "\"%s\"", int_to_token_mem);
-                    if ((tokens_wrote + 1) < tokens_left)
-                    {
-                        fputs(", ", result_file);
-                    }
-                    else
-                    {
-                        fputs ("],\n", result_file);
-                    }
+                    token = cJSON_CreateString(int_to_token_mem);
+                    cJSON_NOT_NULL(token);
+                    cJSON_AddItemToArray(tokens_array, token);
 
                     ++ intersection_call_counter;
                     ++ tokens_wrote;
@@ -337,6 +350,13 @@ Exec_Intersection
 
             Delete_Document_Word_List(intersection_result);
             intersection_result = NULL;
+        } // Inner loop end
+
+        // Only append the objects from the current outer loop run, when data was found in the inner loop
+        if (data_found)
+        {
+            cJSON_AddItemToObject(outer_object, "Intersections", intersections);
+            cJSON_AddItemToObject(export_results, cJSON_GetStringValue(dataset_id_2), outer_object);
         }
     }
     // Label for a debugging end of the calculations
@@ -348,9 +368,18 @@ abort_label:
             Replace_NaN_And_Inf_With_Zero(used_seconds),
             Replace_NaN_And_Inf_With_Zero (((float) number_of_intersection_calls) / used_seconds));
 
-
-
+    char* json_export_str = cJSON_Print(export_results);
+    const size_t result_str_length = strlen (json_export_str);
+    fputs(json_export_str, result_file);
+    printf ("=> Result file size: %zu B (%.3f KB | %.3f MB)\n", result_str_length,
+            (double) result_str_length / 1024.0, (double) result_str_length / 1024.0 / 1024.0);
     FCLOSE_AND_SET_TO_NULL(result_file);
+
+    // NO FREE_AND_SET_TO_NULL, because this object was not created with MALLOC or CALLOC. The counter for the dynamic
+    // memory calls would be manipulated with the macro usage
+    free (json_export_str);
+    json_export_str = NULL;
+    cJSON_free(export_results);
 
     Delete_Document_Word_List(source_int_values_1);
     source_int_values_1 = NULL;
@@ -501,3 +530,9 @@ Exec_Intersection_Process_Print_Function
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+
+
+#ifdef cJSON_NOT_NULL
+#undef cJSON_NOT_NULL
+#endif /* cJSON_NOT_NULL */
