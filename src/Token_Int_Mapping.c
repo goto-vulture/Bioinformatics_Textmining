@@ -535,9 +535,7 @@ Pseudo_Hash_Function
 
 //---------------------------------------------------------------------------------------------------------------------
 
-#ifdef MAX_TOKEN_LENGTH
-#undef MAX_TOKEN_LENGTH
-#endif /* MAX_TOKEN_LENGTH */
+
 
 #ifdef C_STR_ALLOCATION_STEP_SIZE
 #undef C_STR_ALLOCATION_STEP_SIZE

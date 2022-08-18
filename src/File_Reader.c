@@ -878,3 +878,13 @@ Read_File_Process_Print_Function
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+
+
+#ifdef TOKENS_ALLOCATION_STEP_SIZE
+#undef TOKENS_ALLOCATION_STEP_SIZE
+#endif /* TOKENS_ALLOCATION_STEP_SIZE */
+
+#ifdef TOKEN_CONTAINER_ALLOCATION_STEP_SIZE
+#undef TOKEN_CONTAINER_ALLOCATION_STEP_SIZE
+#endif /* TOKEN_CONTAINER_ALLOCATION_STEP_SIZE */

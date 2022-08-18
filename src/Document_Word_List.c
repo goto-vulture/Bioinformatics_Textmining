@@ -568,3 +568,9 @@ static inline void Increase_Data_Array_Size_Allocation_Step_Size
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+
+
+#ifdef INT_ALLOCATION_STEP_SIZE
+#undef INT_ALLOCATION_STEP_SIZE
+#endif /* INT_ALLOCATION_STEP_SIZE */
