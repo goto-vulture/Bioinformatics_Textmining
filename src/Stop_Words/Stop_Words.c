@@ -7,6 +7,7 @@
 
 #include "Stop_Words.h"
 #include <string.h>
+#include <ctype.h>
 #include "../Error_Handling/Assert_Msg.h"
 #include "../String_Tools.h"
 #include "../str2int.h"
@@ -70,29 +71,33 @@ extern _Bool Is_Word_In_Stop_Word_List
         ASSERT_MSG(false, "switch case default path executed !");
     }
 
-    // Search the string in the stop word list
-    for (size_t i = 0; i < GLOBAL_eng_stop_words_length; ++ i)
+    // If a token only contains one not alpha char, than it cannot be a valid token
+    if (! isalpha(c_string [0]) && c_string [1] == '\0')
     {
-        if (Compare_Strings_Case_Insensitive(c_string, c_string_length,
-                selected_stop_word_list [i], strlen (selected_stop_word_list [i])) == 0)
-        {
-            result = true;
-            break;
-        }
+        return true;
     }
     // A simple number is also a stop word
     // To determine a number: try to run a str to int cast successfully
     long int conversion_result_int = 0;
     if (str2int(&conversion_result_int, c_string, 10) == STR2INT_SUCCESS)
     {
-        result = true;
-        return result;
+        return true;
     }
     // Try to run a str to double cast successfully
     double conversion_result_double = 0.0;
     if (str2double(&conversion_result_double, c_string) == STR2DOUBLE_SUCCESS)
     {
-        result = true;
+        return true;
+    }
+
+    // Search the string in the stop word list
+    for (size_t i = 0; i < GLOBAL_eng_stop_words_length; ++ i)
+    {
+        if (Compare_Strings_Case_Insensitive(c_string, c_string_length,
+                selected_stop_word_list [i], strlen (selected_stop_word_list [i])) == 0)
+        {
+            return true;
+        }
     }
 
     return result;

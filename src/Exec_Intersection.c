@@ -325,13 +325,8 @@ Exec_Intersection
                 const char* int_to_token_mem = Int_To_Token_Static_Mem(token_int_mapping,
                         intersection_result->data [0][i]);
 
-                // If a token only contains one not alpha char, than it cannot be a valid token
-                if (! isalpha(int_to_token_mem [0]) && int_to_token_mem [1] == '\0')
-                {
-                    intersection_result->data [0][i] = UINT_FAST32_MAX;
-                }
                 // Is the token in the list with the stop words ?
-                else if (Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
+                if (Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
                 {
                     // Override the mapped int value
                     intersection_result->data [0][i] = UINT_FAST32_MAX;
