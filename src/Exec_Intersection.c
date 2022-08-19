@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #include "CLI_Parameter.h"
 #include "File_Reader.h"
 #include "Token_Int_Mapping.h"
@@ -53,6 +54,25 @@
 #else
 #error "The macro \"cJSON_NEW_STR_CHECK\" is already defined !"
 #endif /* cJSON_NEW_STR_CHECK */
+
+/**
+ * @brief Add general information to the export cJSON object.
+ *
+ * General information are:
+ *      - Input file 1
+ *      - Input file 2
+ *      - Creation time (ctime format)
+ *
+ * Asserts:
+ *      export_results != NULL
+ *
+ * @param export_results The main cJSON pointer for the export JSON file
+ */
+static void
+Add_General_Information_To_Export_File
+(
+        cJSON* const export_results
+);
 
 /**
  * @brief Append the data from a Token_List_Container object (-> data from a input file) to the Token_Int_Mapping.
@@ -215,10 +235,6 @@ Exec_Intersection
     FILE* result_file = fopen(GLOBAL_CLI_OUTPUT_FILE, "w");
     ASSERT_FMSG(result_file != NULL, "Cannot open/create the result file: \"%s\" !", GLOBAL_CLI_OUTPUT_FILE);
 
-    // Print file information in the result file
-    fprintf (result_file, "> First file:  %s\n", GLOBAL_CLI_INPUT_FILE);
-    fprintf (result_file, "> Second file: %s\n", GLOBAL_CLI_INPUT_FILE2);
-
     const uint_fast16_t count_steps                     = 10000;
     const uint_fast32_t number_of_intersection_calls    = source_int_values_2->next_free_array *
             source_int_values_1->next_free_array;
@@ -244,6 +260,7 @@ Exec_Intersection
 
     cJSON* export_results = cJSON_CreateObject();
     cJSON_NOT_NULL(export_results);
+    Add_General_Information_To_Export_File(export_results);
 
     clock_t start           = 0;
     clock_t end             = 0;
@@ -443,6 +460,61 @@ abort_label:
 }
 
 //=====================================================================================================================
+
+/**
+ * @brief Add general information to the export cJSON object.
+ *
+ * General information are:
+ *      - Input file 1
+ *      - Input file 2
+ *      - Creation time (ctime format)
+ *
+ * Asserts:
+ *      export_results != NULL
+ *
+ * @param export_results The main cJSON pointer for the export JSON file
+ */
+static void
+Add_General_Information_To_Export_File
+(
+        cJSON* const export_results
+)
+{
+    ASSERT_MSG(export_results != NULL, "Main cJSON result pointer is NULL !");
+
+    // Insert some general infos to the export file
+    cJSON* general_infos    = cJSON_CreateObject();
+    cJSON_NOT_NULL(general_infos);
+    cJSON* first_file       = cJSON_CreateString(GLOBAL_CLI_INPUT_FILE);
+    cJSON_NOT_NULL(first_file);
+    cJSON* second_file      = cJSON_CreateString(GLOBAL_CLI_INPUT_FILE2);
+    cJSON_NOT_NULL(second_file);
+
+    // Creation time
+    const time_t raw_time = time(NULL);
+    ASSERT_MSG(raw_time != (time_t) -1, "Current calendar time is not available !");
+    const struct tm* const converted_time = localtime(&raw_time);
+    ASSERT_MSG(converted_time != NULL, "time_t cannot be represented as a broken-down time !");
+
+    char time_string [100];
+    time_string [0] = '\1'; // Necessary to detect problems in the strftime call
+    const size_t ret = strftime(time_string, COUNT_ARRAY_ELEMENTS(time_string), "%c", converted_time);
+    // This way of checking the strftime call is described in the strftime documentation !
+    ASSERT_MSG(!(ret == 0 && time_string [0] != '\0'), "Something went wrong in the strftime call.")
+    time_string [ret] = '\0';
+
+    cJSON* creation_time    = cJSON_CreateString(time_string);
+    cJSON_NOT_NULL(creation_time);
+
+    cJSON_AddItemToObject(general_infos, "First file", first_file);
+    cJSON_AddItemToObject(general_infos, "Second file", second_file);
+    cJSON_AddItemToObject(general_infos, "Creation time", creation_time);
+    cJSON_AddItemToObject(export_results, "General infos", general_infos);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 /**
  * @brief Append the data from a Token_List_Container object (-> data from a input file) to the Token_Int_Mapping.
