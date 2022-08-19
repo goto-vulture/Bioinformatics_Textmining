@@ -29,6 +29,30 @@
 #error "The macro \"cJSON_NOT_NULL\" is already defined !"
 #endif /* cJSON_NOT_NULL */
 
+#ifndef cJSON_NEW_OBJ_CHECK
+#define cJSON_NEW_OBJ_CHECK(cJSON_object)                                                                               \
+    cJSON_object = cJSON_CreateObject();                                                                                \
+    cJSON_NOT_NULL(cJSON_object);
+#else
+#error "The macro \"cJSON_NEW_OBJ_CHECK\" is already defined !"
+#endif /* cJSON_NEW_OBJ_CHECK */
+
+#ifndef cJSON_NEW_ARR_CHECK
+#define cJSON_NEW_ARR_CHECK(cJSON_object)                                                                               \
+    cJSON_object = cJSON_CreateArray();                                                                                 \
+    cJSON_NOT_NULL(cJSON_object);
+#else
+#error "The macro \"cJSON_NEW_ARR_CHECK\" is already defined !"
+#endif /* cJSON_NEW_ARR_CHECK */
+
+#ifndef cJSON_NEW_STR_CHECK
+#define cJSON_NEW_STR_CHECK(cJSON_object, str)                                                                          \
+    cJSON_object = cJSON_CreateString(str);                                                                             \
+    cJSON_NOT_NULL(cJSON_object);
+#else
+#error "The macro \"cJSON_NEW_STR_CHECK\" is already defined !"
+#endif /* cJSON_NEW_STR_CHECK */
+
 /**
  * @brief Append the data from a Token_List_Container object (-> data from a input file) to the Token_Int_Mapping.
  *
@@ -206,10 +230,16 @@ Exec_Intersection
     // Counter of all calls were done since the execution was started
     size_t intersection_call_counter                    = 0;
 
+    char dataset_id_1 [16];
+    memset(dataset_id_1, '\0', sizeof (dataset_id_1));
+    char dataset_id_2 [16];
+    memset(dataset_id_2, '\0', sizeof (dataset_id_2));
+
     // Objects for exporting the intersection results as JSON file
-    cJSON* dataset_id_2 = NULL;
-    cJSON* token        = NULL;
-    cJSON* tokens_array = NULL;
+    cJSON* token            = NULL;
+    cJSON* tokens_array     = NULL;
+    cJSON* intersections    = NULL;
+    cJSON* outer_object     = NULL;
 
     cJSON* export_results = cJSON_CreateObject();
     cJSON_NOT_NULL(export_results);
@@ -225,10 +255,8 @@ Exec_Intersection
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
     {
-        cJSON* intersections = cJSON_CreateObject();
-        cJSON_NOT_NULL(intersections);
-        cJSON* outer_object = cJSON_CreateObject();
-        cJSON_NOT_NULL(outer_object);
+        cJSON_NEW_OBJ_CHECK(intersections);
+        cJSON_NEW_OBJ_CHECK(outer_object);
         _Bool data_found = false;
 
         for (uint_fast32_t selected_data_1_array = 0; selected_data_1_array < source_int_values_1->next_free_array;
@@ -262,6 +290,15 @@ Exec_Intersection
             ++ intersection_call_counter;
             ++ intersection_calls_before_last_output;
 
+            // Copy the two dataset IDs and use them for the export JSON file
+            // memset(dataset_id_1, '\0', sizeof (dataset_id_1));
+            // strncpy do the memset for the c string
+            strncpy (dataset_id_1, intersection_result->dataset_id_1, COUNT_ARRAY_ELEMENTS(dataset_id_1) - 1);
+            dataset_id_1 [COUNT_ARRAY_ELEMENTS(dataset_id_1) - 1] = '\0';
+            // memset(dataset_id_2, '\0', sizeof (dataset_id_2));
+            // strncpy do the memset for the c string
+            strncpy (dataset_id_2, intersection_result->dataset_id_2, COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1);
+            dataset_id_2 [COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1] = '\0';
 
             // Remove stop words from the result
             for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
@@ -297,10 +334,8 @@ Exec_Intersection
                 if (selected_data_2_array != last_used_selected_data_2_array)
                 {
                     last_used_selected_data_2_array = selected_data_2_array;
-
-                    dataset_id_2 = cJSON_CreateString(intersection_result->dataset_id_2);
-                    tokens_array = cJSON_CreateArray();
-                    cJSON_NOT_NULL(tokens_array);
+    
+                    cJSON_NEW_ARR_CHECK(tokens_array);
                     cJSON_AddItemToObject(outer_object, "tokens", tokens_array);
 
                     for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_2_array]; ++ i)
@@ -311,13 +346,13 @@ Exec_Intersection
 
                         Int_To_Token (token_int_mapping, source_int_values_2->data [selected_data_2_array][i], int_to_token_mem,
                                 sizeof (int_to_token_mem) - 1);
-                        token = cJSON_CreateString(int_to_token_mem);
+                        cJSON_NEW_STR_CHECK(token, int_to_token_mem);
                         cJSON_NOT_NULL(token);
                         cJSON_AddItemToArray(tokens_array, token);
                     }
                 }
 
-                tokens_array = cJSON_CreateArray();
+                cJSON_NEW_ARR_CHECK(tokens_array);
 
                 //fputs("Found tokens_array in:\n", result_file);
                 // In the intersection result is always only one array ! Therefore a second loop is not necessary
@@ -326,7 +361,7 @@ Exec_Intersection
                 {
                     if (i == 0)
                     {
-                        cJSON_AddItemToObject(intersections, intersection_result->dataset_id_1, tokens_array);
+                        cJSON_AddItemToObject(intersections, dataset_id_1, tokens_array);
                     }
                     if (intersection_result->data [0][i] == UINT_FAST32_MAX)
                     {
@@ -339,8 +374,7 @@ Exec_Intersection
 
                     Int_To_Token (token_int_mapping, intersection_result->data [0][i], int_to_token_mem,
                             sizeof (int_to_token_mem) - 1);
-                    token = cJSON_CreateString(int_to_token_mem);
-                    cJSON_NOT_NULL(token);
+                    cJSON_NEW_STR_CHECK(token, int_to_token_mem);
                     cJSON_AddItemToArray(tokens_array, token);
 
                     ++ intersection_call_counter;
@@ -356,7 +390,17 @@ Exec_Intersection
         if (data_found)
         {
             cJSON_AddItemToObject(outer_object, "Intersections", intersections);
-            cJSON_AddItemToObject(export_results, cJSON_GetStringValue(dataset_id_2), outer_object);
+            cJSON_AddItemToObject(export_results, dataset_id_2, outer_object);
+        }
+        // Delete the new cJSON object from the current outer loop call to avoid memory leaks
+        // cJSON_Delete (that will be used for freeing the resources) do this only for cJSOn objects, that are added to
+        // the main object !
+        else
+        {
+            cJSON_free(intersections);
+            intersections = NULL;
+            cJSON_free(outer_object);
+            outer_object = NULL;
         }
     }
     // Label for a debugging end of the calculations
@@ -368,7 +412,7 @@ abort_label:
             Replace_NaN_And_Inf_With_Zero(used_seconds),
             Replace_NaN_And_Inf_With_Zero (((float) number_of_intersection_calls) / used_seconds));
 
-    char* json_export_str = cJSON_Print(export_results);
+    char* json_export_str = cJSON_Print(export_results); //< Create the JSON string for the export file
     const size_t result_str_length = strlen (json_export_str);
     fputs(json_export_str, result_file);
     printf ("=> Result file size: %zu B (%.3f KB | %.3f MB)\n", result_str_length,
@@ -379,7 +423,11 @@ abort_label:
     // memory calls would be manipulated with the macro usage
     free (json_export_str);
     json_export_str = NULL;
-    cJSON_free(export_results);
+    cJSON_Delete(export_results);
+    export_results = NULL;
+
+    if (intersections != NULL)  { cJSON_free(intersections); intersections = NULL;  }
+    if (outer_object != NULL)   { cJSON_free(outer_object); outer_object = NULL;    }
 
     Delete_Document_Word_List(source_int_values_1);
     source_int_values_1 = NULL;
@@ -536,3 +584,15 @@ Exec_Intersection_Process_Print_Function
 #ifdef cJSON_NOT_NULL
 #undef cJSON_NOT_NULL
 #endif /* cJSON_NOT_NULL */
+
+#ifdef cJSON_NEW_OBJ_CHECK
+#undef cJSON_NEW_OBJ_CHECK
+#endif /* cJSON_NEW_OBJ_CHECK */
+
+#ifdef cJSON_NEW_ARR_CHECK
+#undef cJSON_NEW_ARR_CHECK
+#endif /* cJSON_NEW_ARR_CHECK */
+
+#ifdef cJSON_NEW_STR_CHECK
+#undef cJSON_NEW_STR_CHECK
+#endif /* cJSON_NEW_STR_CHECK */
