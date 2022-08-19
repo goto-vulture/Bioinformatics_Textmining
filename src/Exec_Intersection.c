@@ -10,6 +10,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+#include <math.h>
 #include "CLI_Parameter.h"
 #include "File_Reader.h"
 #include "Token_Int_Mapping.h"
@@ -117,6 +118,16 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
 );
 
 static void
+Exec_Add_Token_To_Mapping_Process_Print_Function
+(
+        const size_t print_step_size,
+        const size_t actual,
+        const size_t hundred_percent,
+        const clock_t interval_begin,
+        const clock_t interval_end
+);
+
+static void
 Exec_Intersection_Process_Print_Function
 (
         const size_t print_step_size,
@@ -200,7 +211,7 @@ Exec_Intersection
     // Content from the second file
     token_added_to_mapping +=
             Append_Token_List_Container_Data_To_Token_Int_Mapping (token_container_input_2, token_int_mapping);
-    printf ("After token container 2: %" PRIuFAST32 " elements added to token int mapping\n", token_added_to_mapping);
+    printf ("\nAfter token container 2: %" PRIuFAST32 " elements added to token int mapping\n", token_added_to_mapping);
 
 
 
@@ -533,6 +544,17 @@ Append_Token_List_Container_Data_To_Token_Int_Mapping
     ASSERT_MSG(token_list_container != NULL, "Token_List_Container is NULL !");
     ASSERT_MSG(token_int_mapping != NULL, "Token_Int_Mapping is NULL !");
 
+    const uint_fast8_t count_steps = 100;
+    uint_fast32_t inner_loop_runs = 0;
+    for (uint_fast32_t i = 0; i < token_list_container->next_free_element; ++ i)
+    {
+        inner_loop_runs += token_list_container->token_lists [i].next_free_element;
+    }
+    const uint_fast32_t print_steps = (((uint_fast32_t) inner_loop_runs / count_steps) == 0) ? 1 :
+            ((uint_fast32_t) inner_loop_runs / count_steps);
+    uint_fast32_t inner_loop_runs_before_last_print = 0;
+    uint_fast32_t inner_loop_counter = 0;
+
     uint_fast32_t token_added_to_mapping = 0;
 
     _Bool element_added = false;
@@ -540,9 +562,17 @@ Append_Token_List_Container_Data_To_Token_Int_Mapping
     {
         for (uint_fast32_t i2 = 0; i2 < token_list_container->token_lists [i].next_free_element; ++ i2)
         {
+            // Print calculation steps
+            inner_loop_runs_before_last_print = Process_Printer(print_steps, inner_loop_runs_before_last_print,
+                    inner_loop_counter, inner_loop_runs,
+                    Exec_Add_Token_To_Mapping_Process_Print_Function);
+
             char* token = Get_Token_From_Token_Container (token_list_container, i, i2);
             element_added = Add_Token_To_Mapping(token_int_mapping, token, strlen(token));
             if (element_added) { ++ token_added_to_mapping; }
+
+            ++ inner_loop_counter;
+            ++ inner_loop_runs_before_last_print;
         }
     }
 
@@ -612,6 +642,33 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
         }
     }
     FREE_AND_SET_TO_NULL(token_int_values);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+static void
+Exec_Add_Token_To_Mapping_Process_Print_Function
+(
+        const size_t print_step_size,
+        const size_t actual,
+        const size_t hundred_percent,
+        const clock_t interval_begin,
+        const clock_t interval_end
+)
+{
+    const size_t call_counter_interval_begin    = (actual > hundred_percent) ? hundred_percent : actual;
+    const size_t all_calls                      = hundred_percent;
+    const size_t call_counter_interval_end      = (call_counter_interval_begin + print_step_size > all_calls) ?
+            all_calls : (call_counter_interval_begin + print_step_size);
+
+    const float percent     = Determine_Percent(call_counter_interval_begin, all_calls);
+    const float time_left   = Determine_Time_Left(call_counter_interval_begin, call_counter_interval_end,
+            all_calls, interval_end - interval_begin);
+
+    PRINTF_FFLUSH("Add data to token int mapping (%3.2f %% | %.2f sec.)   \r",
+            ceil(Replace_NaN_And_Inf_With_Zero(percent)), Replace_NaN_And_Inf_With_Zero(time_left));
 
     return;
 }
