@@ -29,7 +29,7 @@
  * It is also the allocation step size, if a reallocation is necessary.
  */
 #ifndef C_STR_ALLOCATION_STEP_SIZE
-#define C_STR_ALLOCATION_STEP_SIZE 350
+#define C_STR_ALLOCATION_STEP_SIZE 100
 #else
 #error "The macro \"C_STR_ALLOCATION_STEP_SIZE\" is already defined !"
 #endif /* C_STR_ALLOCATION_STEP_SIZE */

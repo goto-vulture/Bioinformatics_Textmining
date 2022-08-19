@@ -26,7 +26,7 @@
  * @brief Allocation step size for the inner data arrays. (For the real data; not for management objects)
  */
 #ifndef INT_ALLOCATION_STEP_SIZE
-#define INT_ALLOCATION_STEP_SIZE 75
+#define INT_ALLOCATION_STEP_SIZE 5
 #else
 #error "The macro \"INT_ALLOCATION_STEP_SIZE\" is already defined !"
 #endif /* INT_ALLOCATION_STEP_SIZE */

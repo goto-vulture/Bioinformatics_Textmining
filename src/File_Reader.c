@@ -30,7 +30,7 @@
  * It is also the allocation step size, if a reallocation is necessary.
  */
 #ifndef TOKENS_ALLOCATION_STEP_SIZE
-#define TOKENS_ALLOCATION_STEP_SIZE 5
+#define TOKENS_ALLOCATION_STEP_SIZE 2
 #else
 #error "The macro \"TOKENS_ALLOCATION_STEP_SIZE\" is already defined !"
 #endif /* TOKENS_ALLOCATION_STEP_SIZE */
@@ -41,7 +41,7 @@
  * It is also the allocation step size, if a reallocation is necessary.
  */
 #ifndef TOKEN_CONTAINER_ALLOCATION_STEP_SIZE
-#define TOKEN_CONTAINER_ALLOCATION_STEP_SIZE 5
+#define TOKEN_CONTAINER_ALLOCATION_STEP_SIZE 2
 #else
 #error "The macro \"TOKEN_CONTAINER_ALLOCATION_STEP_SIZE\" is already defined !"
 #endif /* TOKEN_CONTAINER_ALLOCATION_STEP_SIZE */
