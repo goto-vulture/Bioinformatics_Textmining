@@ -71,8 +71,10 @@ extern _Bool Is_Word_In_Stop_Word_List
         ASSERT_MSG(false, "switch case default path executed !");
     }
 
-    // If a token only contains one not alpha char, than it cannot be a valid token
-    if (! isalpha(c_string [0]) && c_string [1] == '\0')
+    // If a token starts with a char, that is no alphabetic char, it cannot be a valid token -> So it will be in every
+    // case interpreted as stop word
+    // If the token only has the length 1, then it is also interpreted as stop word.
+    if (! isalpha(c_string [0]) || c_string [1] == '\0')
     {
         return true;
     }
