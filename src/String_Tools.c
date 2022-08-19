@@ -52,62 +52,52 @@ String_To_Lower
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Compare two C-Strings case insensitive.
- *
- * There might be a functiom "strncasecmp()" on your system with the same functionality. But this is an GNU extention
- * and no potable C code.
- *
- * @param[in] string_1 First C-String
- * @param[in] string_1_length Length of the first C-String
- * @param[in] string_2 Second C-String
- * @param[in] string_2_length Length of the second C-String
- *
- * @return 0, if the C-String equals, else != 0
- */
+* @brief Compare two C-Strings case insensitive.
+*
+* There might be a functiom "strncasecmp()" on your system with the same functionality. But this is an GNU extention
+* and no potable C code.
+*
+* @param[in] string_1 First C-String
+* @param[in] string_1_length Length of the first C-String
+* @param[in] string_2 Second C-String
+* @param[in] string_2_length Length of the second C-String
+*
+* @return 0, if the C-String equals, else != 0
+*/
 extern int
 Compare_Strings_Case_Insensitive
 (
-        const char* const restrict string_1,
-        const size_t string_1_length,
-        const char* const restrict string_2,
-        const size_t string_2_length
+       const char* const restrict string_1,
+       const size_t string_1_length,
+       const char* const restrict string_2,
+       const size_t string_2_length
 )
 {
     int result = 0;
 
     if (string_1_length == string_2_length)
     {
-        for (size_t i = 0; i < string_1_length; ++ i)
-        {
-            // If a string end was found, stop the comparisons
-            if (string_1 [i] == '\0')
-            // Alternative: if (string_2 [i] == '\0')
-            {
-                break;
-            }
-            // Check the char, if there are letters or digits and compare them as lower case letters
-            else if (isalnum(string_1 [i]) && isalnum(string_2 [i]))
-            {
-                if (tolower(string_1 [i]) != tolower(string_2 [i]))
-                {
-                    result = -1;
-                    break;
-                }
-            }
-            // Compare the char, if there are punctuation char (No letters or digits)
-            else if (ispunct(string_1 [i]) && ispunct(string_2 [i]))
-            {
-                if (string_1 [i] != string_2 [i])
-                {
-                    result = -1;
-                    break;
-                }
-            }
-        }
+       for (size_t i = 0; i < string_1_length; ++ i)
+       {
+           // If a string end was found, stop the comparisons
+           if (string_1 [i] == '\0')
+           // Alternative: if (string_2 [i] == '\0')
+           {
+               break;
+           }
+
+           // This simple test is enough, because tolower() returns the input parameter unchanged, if this is not an
+           // alpha char
+           if (tolower(string_1 [i]) != tolower(string_2 [i]))
+           {
+               result = -1;
+               break;
+           }
+       }
     }
     else
     {
-        result = -1;
+       result = -1;
     }
 
     return result;
