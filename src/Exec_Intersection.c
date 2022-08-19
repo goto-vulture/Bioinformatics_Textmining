@@ -8,6 +8,7 @@
 #include "Exec_Intersection.h"
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "CLI_Parameter.h"
 #include "File_Reader.h"
 #include "Token_Int_Mapping.h"
@@ -309,8 +310,13 @@ Exec_Intersection
 
                 Int_To_Token (token_int_mapping, intersection_result->data [0][i], int_to_token_mem,
                         sizeof (int_to_token_mem) - 1);
+                // If a token only contains one not alpha char, than it cannot be a valid token
+                if (! isalpha(int_to_token_mem [0]) && int_to_token_mem [1] == '\0')
+                {
+                    intersection_result->data [0][i] = UINT_FAST32_MAX;
+                }
                 // Is the token in the list with the stop words ?
-                if (Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
+                else if (Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
                 {
                     // Override the mapped int value
                     intersection_result->data [0][i] = UINT_FAST32_MAX;
