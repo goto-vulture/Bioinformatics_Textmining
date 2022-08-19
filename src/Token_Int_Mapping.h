@@ -3,8 +3,8 @@
  *
  * @brief The Token_Int_Mapping is an object, which maps a token to a unique unsigned value.
  *
- * This process is for the determination of a intersection not required. But with larger datasets it will be improve
- * the performace, because the intersection process needs only to compare (unsigned) int values rather than full
+ * This process is for the determination of a intersection not required. But with larger data sets it will be improve
+ * the performance, because the intersection process needs only to compare (unsigned) int values rather than full
  * C-Strings char by char.
  *
  * Of course after the intersection it is necessary to invert the mapping. (This could be done with "Int_To_Token()")
@@ -232,7 +232,7 @@ Token_To_Int
  *      result_token_memory != NULL
  *      result_token_memory_size > 0
  *
- * @param[in] object Token_Int_Mapping objckt
+ * @param[in] object Token_Int_Mapping object
  * @param[in] token_int_value Mapped integer
  * @param[out] result_token_memory Memory, where the result token starts
  * @param[in] result_token_memory_size length of the result token
@@ -254,7 +254,7 @@ Int_To_Token
  * Asserts:
  *      N/A (Int_To_Token() do the checks)
  *
- * @param[in] object Token_Int_Mapping objckt
+ * @param[in] object Token_Int_Mapping object
  * @param[in] token_int_value Mapped integer
  *
  * @return Pointer to the modified static array

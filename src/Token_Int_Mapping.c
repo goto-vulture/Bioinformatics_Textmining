@@ -3,8 +3,8 @@
  *
  * @brief The Token_Int_Mapping is an object, which maps a token to a unique unsigned value.
  *
- * This process is for the determination of a intersection not required. But with larger datasets it will be improve
- * the performace, because the intersection process needs only to compare (unsigned) int values rather than full
+ * This process is for the determination of a intersection not required. But with larger data sets it will be improve
+ * the performance, because the intersection process needs only to compare (unsigned) int values rather than full
  * C-Strings char by char.
  *
  * Of course after the intersection it is necessary to invert the mapping. (This could be done with "Int_To_Token()")
@@ -246,7 +246,7 @@ Add_Token_To_Mapping
                 new_token, MAX_TOKEN_LENGTH - 1);// ((new_token_length >= MAX_TOKEN_LENGTH) ? MAX_TOKEN_LENGTH - 1 : new_token_length));
         to_str [object->c_str_array_lengths [chosen_c_string_array] * MAX_TOKEN_LENGTH + MAX_TOKEN_LENGTH - 1] = '\0';
 
-        // Gurantee a zero byte at the end
+        // Guarantee a zero byte at the end
         //to_str [((object->c_str_array_lengths [chosen_c_string_array] + 1) * MAX_TOKEN_LENGTH) - 1] = '\0';
 
         // Find the max. mapping integer in the chosen array
@@ -455,7 +455,7 @@ Token_To_Int
  *      result_token_memory != NULL
  *      result_token_memory_size > 0
  *
- * @param[in] object Token_Int_Mapping objckt
+ * @param[in] object Token_Int_Mapping object
  * @param[in] token_int_value Mapped integer
  * @param[out] result_token_memory Memory, where the result token starts
  * @param[in] result_token_memory_size length of the result token
@@ -471,7 +471,7 @@ Int_To_Token
 {
     ASSERT_MSG(object != NULL, "Token_Int_Mapping object is NULL !");
     ASSERT_MSG(token_int_value != UINT_FAST32_MAX, "Token integer value is UINT_FAST32_MAX ! This value indicates "
-            "errors and therefor cannot be a valid input !");
+            "errors and therefore cannot be a valid input !");
     ASSERT_MSG(result_token_memory != NULL, "The result token memory is NULL !");
     ASSERT_MSG(result_token_memory_size > 0, "The length of the result token memory is 0 !");
 
@@ -503,7 +503,7 @@ Int_To_Token
  * Asserts:
  *      N/A (Int_To_Token() do the checks)
  *
- * @param[in] object Token_Int_Mapping objckt
+ * @param[in] object Token_Int_Mapping object
  * @param[in] token_int_value Mapped integer
  *
  * @return Pointer to the modified static array
