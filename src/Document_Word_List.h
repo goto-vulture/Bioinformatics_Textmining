@@ -129,6 +129,13 @@ Append_One_Value_To_Document_Word_List
         const uint_fast32_t new_value
 );
 
+extern void
+Put_One_Value_To_Document_Word_List
+(
+        struct Document_Word_List* const object,
+        const uint_fast32_t new_value
+);
+
 /**
  * @brief Printh data of a Document_Word_List to stdout.
  *

@@ -244,6 +244,40 @@ Append_One_Value_To_Document_Word_List
     return;
 }
 
+/**
+ * @brief Put one value to a Document_Word_List.
+ *
+ * The new value will be appended to the next free data array. Instead of Append_One_Value_To_Document_Word_List, the
+ * new value will NOT be interpreted as new data set !
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
+ * @param[in] new_value New value
+ */
+extern void
+Put_One_Value_To_Document_Word_List
+(
+        struct Document_Word_List* const object,
+        const uint_fast32_t new_value
+)
+{
+    ASSERT_MSG(object != NULL, "Object is NULL !");
+
+    const uint_fast32_t next_free_array = object->next_free_array;
+
+    // Is enough memory available ?
+    if (object->allocated_array_size [next_free_array] <= object->arrays_lengths [next_free_array])
+    {
+        Increase_Data_Array_Size_Allocation_Step_Size(object, next_free_array);
+    }
+    object->data [next_free_array][object->arrays_lengths [next_free_array]] = new_value;
+    object->arrays_lengths [next_free_array] ++;
+
+    return;
+}
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
