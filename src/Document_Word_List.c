@@ -219,12 +219,11 @@ Append_Data_To_Document_Word_List
 /**
  * @brief Add one value to a Document_Word_List.
  *
- * ! Caution: If you use this function the container handels this singe value as an data set with the length of one.
+ * ! Caution: If you use this function the container interprets this single value as an data set with the length of one.
  * The effect is, that one array in the container will be used like an full array !
  *
  * Asserts:
  *      object != NULL
- *      new_data != NULL
  *
  * @param[in] object Document_Word_List
  * @param[in] new_value New value
@@ -243,6 +242,8 @@ Append_One_Value_To_Document_Word_List
 
     return;
 }
+
+//---------------------------------------------------------------------------------------------------------------------
 
 /**
  * @brief Put one value to a Document_Word_List.
