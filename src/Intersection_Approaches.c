@@ -352,19 +352,21 @@ Intersection_Approach_2_Nested_Loops_2_Raw_Data_Arrays
     ASSERT_ALLOC(multiple_guard_data_2, "Cannot create the multiple guard for data 2 !", data_2_length * sizeof (_Bool));
 
     // Calculate intersection
-    for (size_t d1 = 0; d1 < data_1_length; ++ d1)
+    for (register size_t d1 = 0; d1 < data_1_length; ++ d1)
     {
-        for (size_t d2 = 0; d2 < data_2_length; ++ d2)
+        for (register size_t d2 = 0; d2 < data_2_length; ++ d2)
         {
             if (data_1 [d1] == data_2 [d2])
             {
+                register _Bool* const multiple_guard_data_1_d1 = &(multiple_guard_data_1 [d1]);
+                register _Bool* const multiple_guard_data_2_d2 = &(multiple_guard_data_2 [d2]);
                 // Was the current value already inserted in the intersection result ?
-                if (multiple_guard_data_1 [d1] == false && multiple_guard_data_2 [d2] == false)
+                if (! *multiple_guard_data_1_d1 && ! *multiple_guard_data_2_d2)
                 {
                     intersection_result->data [0][intersection_result->arrays_lengths [0]] = data_1 [d1];
                     ++ intersection_result->arrays_lengths [0];
-                    multiple_guard_data_1 [d1] = true;
-                    multiple_guard_data_2 [d2] = true;
+                    *multiple_guard_data_1_d1 = true;
+                    *multiple_guard_data_2_d2 = true;
                 }
             }
         }
