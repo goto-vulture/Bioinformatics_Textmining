@@ -305,11 +305,9 @@ Exec_Intersection
             for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
             {
                 // Reverse the mapping to get the original token (int -> token)
-                char int_to_token_mem [MAX_TOKEN_LENGTH];
-                memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
+                const char* int_to_token_mem = Int_To_Token_Static_Mem(token_int_mapping,
+                        intersection_result->data [0][i]);
 
-                Int_To_Token (token_int_mapping, intersection_result->data [0][i], int_to_token_mem,
-                        sizeof (int_to_token_mem) - 1);
                 // If a token only contains one not alpha char, than it cannot be a valid token
                 if (! isalpha(int_to_token_mem [0]) && int_to_token_mem [1] == '\0')
                 {
@@ -347,11 +345,9 @@ Exec_Intersection
                     for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_2_array]; ++ i)
                     {
                         // Reverse the mapping to get the original token (int -> token)
-                        char int_to_token_mem [MAX_TOKEN_LENGTH];
-                        memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
+                        const char* int_to_token_mem = Int_To_Token_Static_Mem(token_int_mapping,
+                                source_int_values_2->data [selected_data_2_array][i]);
 
-                        Int_To_Token (token_int_mapping, source_int_values_2->data [selected_data_2_array][i], int_to_token_mem,
-                                sizeof (int_to_token_mem) - 1);
                         cJSON_NEW_STR_CHECK(token, int_to_token_mem);
                         cJSON_NOT_NULL(token);
                         cJSON_AddItemToArray(tokens_array, token);
@@ -375,11 +371,8 @@ Exec_Intersection
                     }
 
                     // Reverse the mapping to get the original token (int -> token)
-                    char int_to_token_mem [MAX_TOKEN_LENGTH];
-                    memset (int_to_token_mem, '\0', sizeof (int_to_token_mem));
-
-                    Int_To_Token (token_int_mapping, intersection_result->data [0][i], int_to_token_mem,
-                            sizeof (int_to_token_mem) - 1);
+                    const char* int_to_token_mem = Int_To_Token_Static_Mem(token_int_mapping,
+                            intersection_result->data [0][i]);
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
                     cJSON_AddItemToArray(tokens_array, token);
 

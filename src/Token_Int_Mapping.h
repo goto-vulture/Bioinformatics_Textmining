@@ -246,6 +246,26 @@ Int_To_Token
         const size_t result_token_memory_size
 );
 
+/**
+ * @brief This function is comparable with the Int_To_Token() function. But it uses a static array as result memory.
+ *
+ * With the address and the length of the static memory this function delegates the data to Int_To_Token().
+ *
+ * Asserts:
+ *      N/A (Int_To_Token() do the checks)
+ *
+ * @param[in] object Token_Int_Mapping objckt
+ * @param[in] token_int_value Mapped integer
+ *
+ * @return Pointer to the modified static array
+ */
+extern const char*
+Int_To_Token_Static_Mem
+(
+        const struct Token_Int_Mapping* const object,
+        const uint_fast32_t token_int_value
+);
+
 
 
 #ifdef __cplusplus
