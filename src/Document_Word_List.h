@@ -128,6 +128,18 @@ Append_One_Value_To_Document_Word_List
         const uint_fast32_t new_value
 );
 
+/**
+ * @brief Put one value to a Document_Word_List.
+ *
+ * The new value will be appended to the next free data array. Instead of Append_One_Value_To_Document_Word_List, the
+ * new value will NOT be interpreted as new data set !
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
+ * @param[in] new_value New value
+ */
 extern void
 Put_One_Value_To_Document_Word_List
 (
