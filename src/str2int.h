@@ -22,7 +22,7 @@ extern "C"
 
 
 /**
- * @brief Errorcodes for the str2int() usage.
+ * @brief Error codes for the str2int() usage.
  */
 enum str2int_errno
 {
@@ -31,6 +31,29 @@ enum str2int_errno
     STR2INT_UNDERFLOW,      ///< Underflow occured
     STR2INT_INCONVERTIBLE   ///< C-String is not convertable
 };
+
+/**
+ * @brief Error codes for the str2uint() usage.
+ *
+ * These are the same error codes like in str2int_errno. The only reason for this type: to follow the name conversions.
+ */
+enum str2uint_errno
+{
+    STR2UINT_SUCCESS = 0,   ///< Conversion was successful
+    STR2UINT_OVERFLOW,      ///< Overflow occured
+    STR2UINT_UNDERFLOW,     ///< Underflow occured
+    STR2UINT_INCONVERTIBLE  ///< C-String is not convertable
+};
+
+/**
+ * @brief Error codes for the str2double() usage.
+ */
+enum str2double_errno
+{
+    STR2DOUBLE_SUCCESS = 0,     ///< Conversion was successful
+    STR2DOUBLE_INCONVERTIBLE    ///< C-String is not convertable
+};
+
 
 
 
@@ -48,6 +71,10 @@ enum str2int_errno
  */
 extern enum str2int_errno str2int (long int* out, const char* input_string, const int base);
 
+extern enum str2uint_errno str2uint (unsigned long int* out, const char* input_string, const int base);
+
+extern enum str2double_errno str2double (double* out, const char* input_string);
+
 /**
  * @brief Convert a C-String to a integer with a width of at least 32 bits.
  *
@@ -61,6 +88,12 @@ extern enum str2int_errno str2int (long int* out, const char* input_string, cons
  * @return The integer representation of the input C-String or LONG_MIN in case of errors
  */
 extern long int str2int_wo_errno (const char* input_string, const int base);
+
+extern unsigned long int str2uint_wo_errno (const char* input_string, const int base);
+
+extern double str2d_wo_errno (const char* input_string);
+
+
 
 
 

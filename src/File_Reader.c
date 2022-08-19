@@ -13,25 +13,16 @@
 #include "File_Reader.h"
 #include <string.h>
 #include <time.h>
+#include <math.h>
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Print_Tools.h"
 #include "Misc.h"
 #include "JSON_Parser/cJSON.h"
 #include "str2int.h"
+#include "Token_Int_Mapping.h"
 
 
-
-/**
- * @brief Maximum length of a token (inkl. the terminator byte)
- *
- * The value is a approximate order of magnitude and could be change in the future.
- */
-#ifndef MAX_TOKEN_LENGTH
-#define MAX_TOKEN_LENGTH 64
-#else
-#error "The macro \"MAX_TOKEN_LENGTH\" is already defined !"
-#endif /* MAX_TOKEN_LENGTH */
 
 /**
  * @brief Number of tokens in a Token_List
@@ -56,6 +47,14 @@
 #endif /* TOKEN_CONTAINER_ALLOCATION_STEP_SIZE */
 
 /**
+ * @brief Check, whether the macro values are valid.
+ */
+#if __STDC_VERSION__ >= 201112L
+_Static_assert(TOKENS_ALLOCATION_STEP_SIZE > 0, "The marco \"TOKENS_ALLOCATION_STEP_SIZE\" is zero !");
+_Static_assert(TOKEN_CONTAINER_ALLOCATION_STEP_SIZE > 0, "The marco \"TOKEN_CONTAINER_ALLOCATION_STEP_SIZE\" is zero !");
+#endif /* __STDC_VERSION__ */
+
+/**
  * @brief Calculate the begin of the next free token in a Token_List.
  *
  * Asserts:
@@ -69,6 +68,56 @@ static char*
 Get_Address_Of_Next_Free_Token
 (
         const struct Token_List* const token_list
+);
+
+/**
+ * @brief Calculate the the average of all tokens in the object.
+ *
+ * This information is for debugging and statistical purposes helpful.
+ *
+ * Asserts:
+ *      token_list_container != NULL
+ *
+ * @param[in] token_list_container Token_List_Container object
+ *
+ * @return Average token length
+ */
+static size_t
+Get_Average_Token_Length
+(
+        const struct Token_List_Container* const token_list_container
+);
+
+/**
+ * @brief Read the next line from the file and return the number of char, that were read.
+ *
+ * Asserts:
+ *      input_file != NULL
+ *      input_file_data != NULL
+ *      input_file_data_length > 0
+ *
+ * @param[in] input_file Input file pointer
+ * @param[in] input_file_data Buffer for the new input file data
+ * @param[in] input_file_data_length Length of the input file buffer
+ *
+ * @return Number of char, that were read
+ */
+static size_t
+Read_Next_Line
+(
+        FILE* restrict input_file,
+        char* const restrict input_file_data,
+        const long int input_file_data_length
+);
+
+static void
+Read_File_Process_Print_Function
+(
+        const size_t print_step_size,
+        const size_t actual,
+        const size_t hundred_percent,
+        const clock_t interval_begin,
+        const clock_t interval_end
 );
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -97,12 +146,14 @@ Create_Token_Container_From_File
     struct Token_List_Container* new_container =
             (struct Token_List_Container*) CALLOC(1, sizeof (struct Token_List_Container));
     ASSERT_ALLOC(new_container, "Cannot create new Token_Container !", 1 * sizeof (struct Token_List_Container));
+    new_container->malloc_calloc_calls ++;
 
     // Create the inner container
     new_container->allocated_token_container = TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
     new_container->token_lists = (struct Token_List*) CALLOC(new_container->allocated_token_container, sizeof (struct Token_List));
     ASSERT_ALLOC(new_container->token_lists, "Cannot create new Token objects !", new_container->allocated_token_container *
             sizeof (struct Token_List));
+    new_container->malloc_calloc_calls ++;
 
     // Allocate memory for the inner container
     for (size_t i = 0; i < new_container->allocated_token_container; ++ i)
@@ -111,6 +162,7 @@ Create_Token_Container_From_File
         ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
                 MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
         // memset(new_container->tokens [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+        new_container->malloc_calloc_calls ++;
 
         new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
         new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
@@ -132,41 +184,26 @@ Create_Token_Container_From_File
     fseek_return = fseek (input_file, 0, SEEK_SET);
     ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
 
-    char* input_file_data = (char*) MALLOC (((size_t) input_file_length + sizeof ("")) * sizeof (char));
+    char* input_file_data = (char*) CALLOC (((size_t) input_file_length + sizeof ("")), sizeof (char));
     ASSERT_ALLOC(input_file_data, "Cannot allocate memory for reading the input file !",
             ((size_t) input_file_length + sizeof ("")) * sizeof (char));
+    new_container->malloc_calloc_calls ++;
 
-    uint_fast32_t lines_in_file                 = 1;
-    uint_fast32_t char_counter                  = 0;
-    const uint_fast8_t count_steps              = 200;
-    const uint_fast32_t print_steps_count_lines =
-            (((uint_fast32_t) input_file_length / count_steps) == 0) ? 1 : ((uint_fast32_t) input_file_length / count_steps);
+    uint_fast32_t line_counter              = 0;
+    uint_fast32_t tokens_found              = 0;
+    const uint_fast8_t count_steps          = 200;
+    const size_t unsigned_input_file_length = (uint_fast64_t) input_file_length;
+    const uint_fast32_t print_steps         = ((unsigned_input_file_length / count_steps) == 0) ?
+            1 : (unsigned_input_file_length / count_steps);
 
-    start = clock ();
-    for (int c = getc(input_file); c != EOF; c = getc(input_file), ++ char_counter)
-    {
-        if (c == '\n') { ++ lines_in_file; }
-        if ((char_counter % print_steps_count_lines) == 0)
-        {
-            PRINTF_FFLUSH("\rCount lines in file \"%s\": %" PRIuFAST32, file_name, lines_in_file);
-        }
-    }
-    end = clock ();
-    used_seconds = DETERMINE_USED_TIME(start, end);
-    PRINTF_FFLUSH("\nFound %" PRIuFAST32 " line%s (Used time: %3.3fs)\n", lines_in_file,
-            (lines_in_file == 1) ? "" : "s", used_seconds);
+    // Read the first line from the file
+    size_t char_read                    = Read_Next_Line (input_file, input_file_data, input_file_length);
+    size_t sum_char_read                = char_read;
+    size_t char_read_before_last_output = 0;
 
-    fseek_return = fseek (input_file, 0, SEEK_SET);
-    ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
-
-    uint_fast32_t line_counter      = 0;
-    uint_fast32_t tokens_found      = 0;
-    const uint_fast32_t print_steps = ((lines_in_file / count_steps) == 0) ? 1 : (lines_in_file / count_steps);
-
-    char* fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
-
+    CLOCK_WITH_RETURN_CHECK(start);
     // ===== ===== ===== BEGIN Read file line by line ===== ===== =====
-    while(fgets_res != NULL)
+    while(char_read > 0)
     {
         ++ line_counter;
         const char* current_parsing_position = input_file_data;
@@ -176,24 +213,17 @@ Create_Token_Container_From_File
             cJSON* json = cJSON_ParseWithOpts(current_parsing_position, (const char**) &current_parsing_position, false);
 
             // Print process information
-            if ((line_counter % print_steps) == 0)
-            {
-                // Show only the current status, when the number of the line_counter changed since the last printing
-                static uint_fast32_t last_line_counter = 0;
-                if (last_line_counter != line_counter)
-                {
-                    PRINTF_FFLUSH("\rRead line: %" PRIuFAST32 " / %" PRIuFAST32,
-                            (line_counter + print_steps <= lines_in_file) ? line_counter : lines_in_file, lines_in_file);
-                }
-                last_line_counter = line_counter;
-            }
+            char_read_before_last_output = Process_Printer(print_steps, char_read_before_last_output,
+                    sum_char_read, unsigned_input_file_length,
+                    Read_File_Process_Print_Function);
 
             if (! json)
             {
                 // Sometimes the json pointer is NULL. But an error only occurrs, when an error message is available
                 if (strlen (cJSON_GetErrorPtr()) > 0)
                 {
-                    printf("Error before: [%s]\n", cJSON_GetErrorPtr());
+                    printf("Error before: [%s] %" PRIuFAST32 ":%lu\n", cJSON_GetErrorPtr(), line_counter,
+                            current_parsing_position - input_file_data);
                 }
                 break;
             }
@@ -213,53 +243,53 @@ Create_Token_Container_From_File
                 //const int tokens_array_size = cJSON_GetArraySize(tokens_array);
                 register cJSON* curr_token = tokens_array->child;
 
-                // ===== ===== ===== BEGIN Is it an new dataset ? ===== ===== =====
-                // Is it not the first token list?
-                if (new_container->token_lists [new_container->next_free_element].id != 0)
+                // ===== ===== ===== BEGIN Realloc necessary ? ===== ===== =====
+                // Is it necessary to realloc/increase the number of Token_Container ?
+                if (new_container->next_free_element >= new_container->allocated_token_container)
                 {
-                    // Use the next element in the container
-                    new_container->next_free_element ++;
+                    static size_t token_container_realloc_counter = 0;
+                    ++ token_container_realloc_counter;
+                    const size_t old_allocated_token_container = new_container->allocated_token_container;
 
-                    // Is it necessary to realloc/increase the number of Token_Container ?
-                    if (new_container->next_free_element >= new_container->allocated_token_container)
+                    // Adjust the number of Token_List object
+                    struct Token_List* temp_ptr = (struct Token_List*) REALLOC(new_container->token_lists,
+                            (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
+                    ASSERT_ALLOC(temp_ptr, "Cannot reallocate memory for Token_Container objects !",
+                            (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
+                    memset(temp_ptr + old_allocated_token_container, '\0', sizeof (struct Token_List) * TOKEN_CONTAINER_ALLOCATION_STEP_SIZE);
+                    new_container->realloc_calls ++;
+
+                    new_container->token_lists = temp_ptr;
+                    new_container->allocated_token_container = old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
+
+                    // Create memory for the new Token_List objects
+                    for (size_t i = old_allocated_token_container; i < new_container->allocated_token_container; ++ i)
                     {
-                        static size_t token_container_realloc_counter = 0;
-                        ++ token_container_realloc_counter;
-                        const size_t old_allocated_token_container = new_container->allocated_token_container;
+                        new_container->token_lists [i].data = (char*) MALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+                        ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
+                                MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+                        memset(new_container->token_lists [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+                        new_container->malloc_calloc_calls ++;
 
-                        // Adjust the number of Token_List object
-                        struct Token_List* temp_ptr = (struct Token_List*) REALLOC(new_container->token_lists,
-                                (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
-                        ASSERT_ALLOC(temp_ptr, "Cannot reallocate memory for Token_Container objects !",
-                                (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
-                        memset(temp_ptr + old_allocated_token_container, '\0', sizeof (struct Token_List) * TOKEN_CONTAINER_ALLOCATION_STEP_SIZE);
-
-                        new_container->token_lists = temp_ptr;
-                        new_container->allocated_token_container = old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
-
-                        // Create memory for the new Token_List objects
-                        for (size_t i = old_allocated_token_container; i < new_container->allocated_token_container; ++ i)
-                        {
-                            new_container->token_lists [i].data = (char*) MALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-                            ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
-                                    MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-                            memset(new_container->token_lists [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-
-                            new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
-                            new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
-                        }
-                    }
-
-                    /*if (strlen (name->string) >= COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].id))
-                    {
-                        ASSERT_MSG(false, "<->");
-                    }
-                    else*/
-                    {
-                        strncpy (new_container->token_lists [new_container->next_free_element].id, name->string, 15);
+                        new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
+                        new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
                     }
                 }
-                // ===== ===== ===== END Is it an new dataset ? ===== ===== =====
+
+                /*if (strlen (name->string) >= COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].id))
+                {
+                    ASSERT_MSG(false, "<->");
+                }
+                else*/
+                {
+                    const size_t dataset_id_length =
+                            COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].dataset_id);
+
+                    strncpy (new_container->token_lists [new_container->next_free_element].dataset_id, name->string,
+                            dataset_id_length - 1);
+                    new_container->token_lists [new_container->next_free_element].dataset_id [dataset_id_length - 1] = '\0';
+                }
+                // ===== ===== ===== END Realloc necessary ? ===== ===== =====
 
                 struct Token_List* const current_token_list_obj = &(new_container->token_lists [new_container->next_free_element]);
 
@@ -299,21 +329,25 @@ Create_Token_Container_From_File
                 // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
 
                 curr = curr->next;
+
+                // Use next element in the container
+                new_container->next_free_element ++;
             }
 
             cJSON_Delete(json);
             json = NULL;
         }
+
         // Read next line
-        fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
-        input_file_data [input_file_length] = '\0';
+        char_read                       = Read_Next_Line (input_file, input_file_data, input_file_length);
+        sum_char_read                   += char_read;
+        char_read_before_last_output    += char_read;
+        //fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
+        //input_file_data [input_file_length] = '\0';
     }
     // ===== ===== ===== END Read file line by line ===== ===== =====
 
-    // Don't forget to indicate, that the counter still point to the last used Token_List object
-    new_container->next_free_element ++;
-
-    end = clock ();
+    CLOCK_WITH_RETURN_CHECK(end);
     used_seconds = DETERMINE_USED_TIME(start, end);
     printf ("\n=> %3.3fs (~ %.3f MB/s) for parsing the whole file (%" PRIuFAST32 " tokens found)\n", used_seconds,
             ((float) input_file_length / 1024.0f / 1024.0f) / used_seconds, tokens_found);
@@ -457,7 +491,7 @@ Show_Selected_Token_Container
 
     const size_t token_size = container->token_lists [index_token_list].max_token_length;
 
-    printf ("Container: %zu (ID: %s)\n", index_token_list, container->token_lists [index_token_list].id);
+    printf ("Container: %zu (Dataset ID: %s)\n", index_token_list, container->token_lists [index_token_list].dataset_id);
     for (size_t i = 0; i < container->token_lists [index_token_list].next_free_element; ++ i)
     {
         printf ("%4zu: %s\n", i, &(container->token_lists [index_token_list].data [i * token_size]));
@@ -497,7 +531,7 @@ Show_Selected_Token_Container_As_Array
 
     const size_t token_size = container->token_lists [index_token_list].max_token_length;
 
-    printf ("ID: %s [ ", container->token_lists [index_token_list].id);
+    printf ("Dataset ID: %s [ ", container->token_lists [index_token_list].dataset_id);
     for (size_t i = 0; i < container->token_lists [index_token_list].next_free_element; ++ i)
     {
         printf ("\"%s\"", &(container->token_lists [index_token_list].data [i * token_size]));
@@ -685,23 +719,31 @@ Print_Token_List_Status_Infos
 {
     ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
 
-    size_t longest_id = 0;
+    size_t longest_dataset_id = 0;
     for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
     {
-        const size_t cur_id_length = strlen (container->token_lists [i].id);
-        if (cur_id_length > longest_id)
+        const size_t cur_id_length = strlen (container->token_lists [i].dataset_id);
+        if (cur_id_length > longest_dataset_id)
         {
-            longest_id = cur_id_length;
+            longest_dataset_id = cur_id_length;
         }
     }
 
+    puts("");
     printf ("Full token list container size: %zu B (%.3f KB | %.3f MB)\n", Get_Token_Container_Size(container),
             (double) Get_Token_Container_Size(container) / 1024.0,
             (double) Get_Token_Container_Size(container) / 1024.0 / 1024.0);
     printf ("Sum all tokens:                 %" PRIuFAST32 "\n", Count_All_Tokens_In_Token_Container(container));
+    printf ("Number of token lists:          %" PRIuFAST32 "\n", container->next_free_element);
+    // Actual every token list has the same max token length !
+    printf ("Max. possible token length:     %zu\n", container->token_lists [0].max_token_length);
+    printf ("Average token length:           %zu\n", Get_Average_Token_Length(container));
     printf ("Longest token list:             %zu\n", Get_Lengh_Of_Longest_Token_Container(container));
     printf ("Longest token:                  %zu\n", Get_Lengh_Of_Longest_Token(container));
-    printf ("Longest id:                     %zu\n", longest_id);
+    printf ("Longest dataset id:             %zu\n", longest_dataset_id);
+    printf ("Malloc / calloc calls:          %zu\n", container->malloc_calloc_calls);
+    printf ("Realloc calls:                  %zu\n", container->realloc_calls);
+    puts("");
     fflush (stdout);
 
     return;
@@ -731,3 +773,118 @@ Get_Address_Of_Next_Free_Token
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Calculate the the average of all tokens in the object.
+ *
+ * This information is for debugging and statistical purposes helpful.
+ *
+ * Asserts:
+ *      token_list_container != NULL
+ *
+ * @param[in] token_list_container Token_List_Container object
+ *
+ * @return Average token length
+ */
+static size_t
+Get_Average_Token_Length
+(
+        const struct Token_List_Container* const token_list_container
+)
+{
+    ASSERT_MSG(token_list_container != NULL, "Token_List_Container is NULL !");
+
+    size_t sum_token_length = 0;
+
+    for (uint_fast32_t i = 0; i < token_list_container->next_free_element; ++ i)
+    {
+        for (uint_fast32_t i2 = 0; i2 < token_list_container->token_lists [i].next_free_element; ++ i2)
+        {
+            sum_token_length += strlen (Get_Token_From_Token_Container(token_list_container, i, i2));
+        }
+    }
+
+    const float result = (float) sum_token_length / (float) Count_All_Tokens_In_Token_Container(token_list_container);
+    return (size_t) ceil (result);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Read the next line from the file and return the number of char, that were read.
+ *
+ * Asserts:
+ *      input_file != NULL
+ *      input_file_data != NULL
+ *      input_file_data_length > 0
+ *
+ * @param[in] input_file Input file pointer
+ * @param[in] input_file_data Buffer for the new input file data
+ * @param[in] input_file_data_length Length of the input file buffer
+ *
+ * @return Number of char, that were read
+ */
+static size_t
+Read_Next_Line
+(
+        FILE* restrict input_file,
+        char* const restrict input_file_data,
+        const long int input_file_data_length
+)
+{
+    size_t char_read = 0;
+
+    for (int c = getc(input_file); c != EOF; c = getc(input_file), ++ char_read)
+    {
+        if (c == '\n')
+        {
+            input_file_data [char_read] = '\0';
+            input_file_data [input_file_data_length] = '\0';
+            break;
+        }
+        input_file_data [char_read] = (char) c;
+    }
+
+    return char_read;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+static void
+Read_File_Process_Print_Function
+(
+        const size_t print_step_size,
+        const size_t actual,
+        const size_t hundred_percent,
+        const clock_t interval_begin,
+        const clock_t interval_end
+)
+{
+    const size_t char_read_interval_begin   = (actual > hundred_percent) ? hundred_percent : actual;
+    const size_t input_file_length          = hundred_percent;
+    const size_t char_read_interval_end     = (char_read_interval_begin + print_step_size > input_file_length) ?
+            input_file_length : (char_read_interval_begin + print_step_size);
+
+    const int digits        = (int) Count_Number_Of_Digits(input_file_length);
+    const float percent     = Determine_Percent(char_read_interval_begin, input_file_length);
+    const float time_left   = Determine_Time_Left(char_read_interval_begin, char_read_interval_end, hundred_percent,
+            interval_end - interval_begin);
+
+    PRINTF_FFLUSH("Read file: %*" PRIuFAST32 " KByte (%3.2f %% | %.2f sec.)   \r",
+            (digits > 3) ? digits - 3 : 3, char_read_interval_begin / 1024,
+                    Replace_NaN_And_Inf_With_Zero((percent > 100.0f) ? 100.0f : percent),
+                    Replace_NaN_And_Inf_With_Zero(time_left));
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+
+
+#ifdef TOKENS_ALLOCATION_STEP_SIZE
+#undef TOKENS_ALLOCATION_STEP_SIZE
+#endif /* TOKENS_ALLOCATION_STEP_SIZE */
+
+#ifdef TOKEN_CONTAINER_ALLOCATION_STEP_SIZE
+#undef TOKEN_CONTAINER_ALLOCATION_STEP_SIZE
+#endif /* TOKEN_CONTAINER_ALLOCATION_STEP_SIZE */

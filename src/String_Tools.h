@@ -24,6 +24,16 @@ extern "C"
 
 
 
+//---------------------------------------------------------------------------------------------------------------------
+
+#ifndef IS_STRING_LENGTH_ZERO
+#define IS_STRING_LENGTH_ZERO(c_string) ((c_string) [0] == '\0') ///< Simple check, if a C-String has the length zero
+#else
+#error "The macro \"IS_STRING_LENGTH_ZERO\" is already defined !"
+#endif /* IS_STRING_LENGTH_ZERO */
+
+//---------------------------------------------------------------------------------------------------------------------
+
 /**
  * @brief Copy a C-String and convert all upper-case char to lower-case.
  *
@@ -45,11 +55,10 @@ String_To_Lower
  * There might be a functiom "strncasecmp()" on your system with the same functionality. But this is an GNU extention
  * and no potable C code.
  *
- * Asserts:
- *      strlen (string_1) == strlen (string_2)
- *
  * @param[in] string_1 First C-String
+ * @param[in] string_1_length Length of the first C-String
  * @param[in] string_2 Second C-String
+ * @param[in] string_2_length Length of the second C-String
  *
  * @return 0, if the C-String equals, else != 0
  */
@@ -57,7 +66,9 @@ extern int
 Compare_Strings_Case_Insensitive
 (
         const char* const restrict string_1,
-        const char* const restrict string_2
+        const size_t string_1_length,
+        const char* const restrict string_2,
+        const size_t string_2_length
 );
 
 /**
@@ -135,10 +146,10 @@ Contain_String_Only_Null_Symbols
 extern size_t
 Multi_strncat
 (
-		char* const restrict destination,
-		const size_t destination_size,
-		const int count,
-		...
+        char* const restrict destination,
+        const size_t destination_size,
+        const int count,
+        ...
 );
 
 

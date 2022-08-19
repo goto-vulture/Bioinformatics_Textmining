@@ -103,6 +103,37 @@ Intersection_Approach_HeapSort_And_Binary_Search
     const size_t data_length
 );
 
+/**
+ * @brief Determine intersections with a naive approach (Compare everyone with everyone -> to nested loops).
+ *
+ * ATTENTION: Here are two raw data arrays used. NO Document_Word_List as one of the input parameter.
+ *
+ * Asserts:
+ *      data_1 != NULL
+ *      data_1_length = 0
+ *      data_2 != NULL
+ *      data_2_length = 0
+ *
+ * @param[in] data_1 Data, that will be used for the intersection with the second data array
+ * @param[in] data_1_length Number of the elements in the first data array
+ * @param[in] data_2 Data, that will be used for the intersection with the first data array
+ * @param[in] data_2_length Number of the elements in the second data array
+ * @param[in] id_1 ID of the first data array
+ * @param[in] id_2 ID of the second data array
+ *
+ * @return New dynamic object containing the intersection result
+ */
+extern struct Document_Word_List*
+Intersection_Approach_2_Nested_Loops_2_Raw_Data_Arrays
+(
+    const uint_fast32_t* const restrict data_1,
+    const size_t data_1_length,
+    const uint_fast32_t* const restrict data_2,
+    const size_t data_2_length,
+    const char* const restrict id_1,
+    const char* const restrict id_2
+);
+
 
 
 #ifdef __cplusplus

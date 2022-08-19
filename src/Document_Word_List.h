@@ -42,10 +42,16 @@ struct Document_Word_List
     size_t* arrays_lengths;         ///< 1 dimensional Array with the data length information
 
     uint_fast32_t next_free_array;  ///< Next free array in data
+    size_t* allocated_array_size;   ///< Allocated array size
     size_t max_array_length;        ///< Max length of all data arrays
     size_t number_of_arrays;        ///< Number of arrays
 
+    size_t malloc_calloc_calls;     ///< How many malloc / calloc calls were done with this object ?
+    size_t realloc_calls;           ///< How many realloc calls were done with this object ?
+
     _Bool intersection_data;        ///< Was this object created as intersection result ?
+    char dataset_id_1 [16];         ///< First ID of the dataset (only valid data, when the object is intersection data)
+    char dataset_id_2 [16];         ///< Second ID of the dataset (only valid data, when the object is intersection data)
 };
 
 //=====================================================================================================================
@@ -104,6 +110,26 @@ Append_Data_To_Document_Word_List
 );
 
 /**
+ * @brief Add one value to a Document_Word_List.
+ *
+ * ! Caution: If you use this function the container handels this singe value as an data set with the length of one.
+ * The effect is, that one array in the container will be used like an full array !
+ *
+ * Asserts:
+ *      object != NULL
+ *      new_data != NULL
+ *
+ * @param[in] object Document_Word_List
+ * @param[in] new_value New value
+ */
+extern void
+Append_One_Value_To_Document_Word_List
+(
+        struct Document_Word_List* const object,
+        const uint_fast32_t new_value
+);
+
+/**
  * @brief Printh data of a Document_Word_List to stdout.
  *
  * This function is for debugging purposes.
@@ -115,6 +141,38 @@ Append_Data_To_Document_Word_List
  */
 extern void
 Show_Data_From_Document_Word_List
+(
+        const struct Document_Word_List* const object
+);
+
+/**
+ * @brief Determine the full memory usage in byte.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Document_Word_List object
+ *
+ * @return Size of the full object in bytes
+ */
+extern size_t
+Get_Document_Word_List_Size
+(
+        const struct Document_Word_List* const container
+);
+
+/**
+ * @brief Print attributes of a Document_Word_List to stdout.
+ *
+ * This function is for debugging purposes.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
+ */
+extern void
+Show_Attributes_From_Document_Word_List
 (
         const struct Document_Word_List* const object
 );
@@ -165,6 +223,29 @@ Intersect_Data_With_Document_Word_List
     const size_t data_length,
 
     const enum Intersection_Mode mode
+);
+
+/**
+ * @brief Is there data in a Document_Word_List?
+ *
+ * After an intersection variables like "next_free_array" are set to the value of the data, which was used in the
+ * intersection. The reason: in every array could be an intersection result. So these values are necessary. But you
+ * cannot expect, when "next_free_array" is > 0, that then data is in the object. (At lest when the object was created
+ * as result of an intersection process)
+ *
+ * This function closes the gap. It shows, if there are data in an Document_Word_List object.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
+ *
+ * @return true, if there is data in the object, otherwise false
+ */
+extern _Bool
+Is_Data_In_Document_Word_List
+(
+        const struct Document_Word_List* const object
 );
 
 

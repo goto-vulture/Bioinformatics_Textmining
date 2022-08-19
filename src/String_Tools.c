@@ -52,40 +52,55 @@ String_To_Lower
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Compare two C-Strings case insensitive.
- *
- * There might be a functiom "strncasecmp()" on your system with the same functionality. But this is an GNU extention
- * and no potable C code.
- *
- * Asserts:
- *      strlen (string_1) == strlen (string_2)
- *
- * @param[in] string_1 First C-String
- * @param[in] string_2 Second C-String
- *
- * @return 0, if the C-String equals, else != 0
- */
+* @brief Compare two C-Strings case insensitive.
+*
+* There might be a functiom "strncasecmp()" on your system with the same functionality. But this is an GNU extention
+* and no potable C code.
+*
+* @param[in] string_1 First C-String
+* @param[in] string_1_length Length of the first C-String
+* @param[in] string_2 Second C-String
+* @param[in] string_2_length Length of the second C-String
+*
+* @return 0, if the C-String equals, else != 0
+*/
 extern int
 Compare_Strings_Case_Insensitive
 (
-        const char* const restrict string_1,
-        const char* const restrict string_2
+       const char* const restrict string_1,
+       const size_t string_1_length,
+       const char* const restrict string_2,
+       const size_t string_2_length
 )
 {
-    // If the length of the input C-Strings are not equal, than a equalness is not possible !
-    if (strlen (string_1) != strlen (string_2)) { return -1; }
+    int result = 0;
 
-    char string_1_lowercase [255];
-    char string_2_lowercase [255];
-    memset (string_1_lowercase, '\0', sizeof (string_1_lowercase));
-    memset (string_2_lowercase, '\0', sizeof (string_2_lowercase));
+    if (string_1_length == string_2_length)
+    {
+       for (size_t i = 0; i < string_1_length; ++ i)
+       {
+           // If a string end was found, stop the comparisons
+           if (string_1 [i] == '\0')
+           // Alternative: if (string_2 [i] == '\0')
+           {
+               break;
+           }
 
-    // Convert all alpha-char to lower-case char.
-    String_To_Lower(string_1, string_1_lowercase, COUNT_ARRAY_ELEMENTS(string_1_lowercase));
-    String_To_Lower(string_2, string_2_lowercase, COUNT_ARRAY_ELEMENTS(string_2_lowercase));
+           // This simple test is enough, because tolower() returns the input parameter unchanged, if this is not an
+           // alpha char
+           if (tolower(string_1 [i]) != tolower(string_2 [i]))
+           {
+               result = -1;
+               break;
+           }
+       }
+    }
+    else
+    {
+       result = -1;
+    }
 
-    // Compare the modified C-Strings
-    return strncmp (string_1_lowercase, string_2_lowercase, strlen (string_1_lowercase));
+    return result;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -205,35 +220,35 @@ Contain_String_Only_Null_Symbols
 extern size_t
 Multi_strncat
 (
-		char* const restrict destination,
-		const size_t destination_size,
-		const int count,
-		...
+        char* const restrict destination,
+        const size_t destination_size,
+        const int count,
+        ...
 )
 {
-	if (destination == NULL) 	{ return SIZE_MAX; }
-	if (destination_size <= 1) 	{ return SIZE_MAX; }
-	if (count <= 0)				{ return SIZE_MAX; }
-	memset (destination, '\0', destination_size * sizeof (char));
+    if (destination == NULL)    { return SIZE_MAX; }
+    if (destination_size <= 1)  { return SIZE_MAX; }
+    if (count <= 0)             { return SIZE_MAX; }
+    memset (destination, '\0', destination_size * sizeof (char));
 
-	va_list valist;
-	va_start(valist, count);
+    va_list valist;
+    va_start(valist, count);
 
-	size_t memory_left = destination_size - 1;
+    size_t memory_left = destination_size - 1;
 
-	for (int i = 0; i < count; ++ i)
-	{
-		char* next_string = va_arg(valist, char*);
-		if (next_string == NULL) { break; }
+    for (int i = 0; i < count; ++ i)
+    {
+        char* next_string = va_arg(valist, char*);
+        if (next_string == NULL) { break; }
 
-		strncat (destination, next_string, memory_left);
-		memory_left -= strlen (next_string);
-	}
+        strncat (destination, next_string, memory_left);
+        memory_left -= strlen (next_string);
+    }
 
-	va_end(valist);
+    va_end(valist);
 
-	destination [destination_size - 1] = '\0';
-	return destination_size - memory_left;
+    destination [destination_size - 1] = '\0';
+    return destination_size - memory_left;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
