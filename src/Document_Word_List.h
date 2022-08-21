@@ -14,7 +14,6 @@
 #ifndef DOCUMENT_WORD_LIST_H
 #define DOCUMENT_WORD_LIST_H
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -283,7 +282,6 @@ DocumentWordList_IsDataInObject
 #undef DATASET_ID_LENGTH
 #endif /* DATASET_ID_LENGTH */
 
-// ENDE C++-Kompablitaet herstellen
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
