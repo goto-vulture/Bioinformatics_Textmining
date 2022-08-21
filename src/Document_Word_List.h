@@ -112,7 +112,7 @@ DocumentWordList_AppendData
 /**
  * @brief Add one value to a Document_Word_List.
  *
- * ! Caution: If you use this function the container handels this singe value as an data set with the length of one.
+ * ! Caution: If you use this function the container manages this single value as an data set with the length of one.
  * The effect is, that one array in the container will be used like an full array !
  *
  * Asserts:
@@ -130,7 +130,7 @@ DocumentWordList_AppendOneValueAsNewDataSet
 );
 
 /**
- * @brief Printh data of a Document_Word_List to stdout.
+ * @brief Print data of a Document_Word_List to stdout.
  *
  * This function is for debugging purposes.
  *
@@ -178,7 +178,7 @@ DocumentWordList_ShowAttributes
 );
 
 /**
- * @brief Printh data and the attribute information of a Document_Word_List to stdout.
+ * @brief Print data and the attribute information of a Document_Word_List to stdout.
  *
  * This function is for debugging purposes.
  *
@@ -194,7 +194,7 @@ DocumentWordList_ShowDataAndAttributes
 );
 
 /**
- * @brief Determine intersection with a Document_Word_List and a dataset.
+ * @brief Determine intersection with a Document_Word_List and a data set.
  *
  * You can change the intersection mode with the enum parameter Intersection_Mode. Actual following modes are
  * available
@@ -209,9 +209,9 @@ DocumentWordList_ShowDataAndAttributes
  *      data_length <= object->max_array_length
  *
  * @param[in] object Document_Word_List (1. Set for the intersection calculation)
- * @param[in] data dataset (2. Set for the intersection calculation)
- * @param[in] data_length Size of the dataset
- * @param[in] mode mode for the intersection calculation (Which approach should be used ?)
+ * @param[in] data Data set (2. Set for the intersection calculation)
+ * @param[in] data_length Size of the data set
+ * @param[in] mode Mode for the intersection calculation (Which approach should be used ?)
  *
  * @return New Document_Word_List with the intersections in the respective subsets
  */
