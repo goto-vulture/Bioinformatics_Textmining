@@ -88,7 +88,7 @@
     _Static_assert(sizeof(time_t) >= 4, "The type \"time_t\" needs to be at least 4 byte wide !");
     _Static_assert(sizeof(clock_t) >= 4, "The type \"clock_t\" needs to be at least 4 byte wide !");
     _Static_assert(sizeof(int) >= 4, "The type \"int\" needs to be at least 4 byte wide !");
-    _Static_assert(sizeof(long int) >= 8, "The type \"long int\" needs to be at least 4 byte wide !");
+    _Static_assert(sizeof(long int) >= 8, "The type \"long int\" needs to be at least 8 byte wide !");
     _Static_assert(sizeof(void*) >= 4, "The type \"void*\" needs to be at least 4 byte wide !");
     _Static_assert(sizeof(float) >= 4, "The type \"float\" needs to be at least 4 byte wide !");
     _Static_assert(sizeof(double) >= 4, "The type \"double\" needs to be at least 4 byte wide !");
