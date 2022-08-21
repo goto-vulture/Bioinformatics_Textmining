@@ -22,7 +22,7 @@ extern "C"
 
 
 
-#include <stddef.h>
+#include <stddef.h>                 // size_t
 #include "../Document_Word_List.h"
 
 

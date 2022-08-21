@@ -23,9 +23,8 @@ extern "C"
 
 
 
-#include <inttypes.h>
-#include <stddef.h>
-#include <stdbool.h>
+#include <inttypes.h>   // uint_fast32_t
+#include <stddef.h>     // size_t
 
 
 

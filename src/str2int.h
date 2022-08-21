@@ -17,10 +17,6 @@ extern "C"
 
 
 
-#include <stddef.h>
-
-
-
 /**
  * @brief Error codes for the str2int() usage.
  */

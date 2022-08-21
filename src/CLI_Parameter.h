@@ -19,8 +19,6 @@ extern "C"
 
 
 
-#include <stdbool.h>
-
 
 
 extern const char* const GLOBAL_USAGES []; ///< Description of the CLI interface usage

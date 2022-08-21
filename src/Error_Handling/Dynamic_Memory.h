@@ -23,8 +23,8 @@ extern "C"
 
 
 
-#include <inttypes.h>
-#include <stdlib.h>
+#include <inttypes.h>   // uint_fast64_t
+#include <stdlib.h>     // malloc, calloc
 
 
 // Global variables to count the malloc (), calloc (), realloc () and free () calls
