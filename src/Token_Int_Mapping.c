@@ -75,7 +75,7 @@ Pseudo_Hash_Function
  * @return Pointer to the new object
  */
 extern struct Token_Int_Mapping*
-Create_Token_Int_Mapping
+TokenIntMapping_CreateObject
 (
         void
 )
@@ -112,7 +112,7 @@ Create_Token_Int_Mapping
  * @param[in] object Token_Int_Mapping object
  */
 extern void
-Delete_Token_Int_Mapping
+TokenIntMapping_DeleteObject
 (
         struct Token_Int_Mapping* object
 )
@@ -170,7 +170,7 @@ Delete_Token_Int_Mapping
  * @return Flag, which indicates, whether the operation was successful.
  */
 extern _Bool
-Add_Token_To_Mapping
+TokenIntMapping_AddToken
 (
         struct Token_Int_Mapping* const restrict object,
         const char* const restrict new_token,
@@ -288,7 +288,7 @@ Add_Token_To_Mapping
  * @param[in] object Token_Int_Mapping object
  */
 extern void
-Show_C_Str_Array_Usage
+TokenIntMapping_ShowStringArrayUsage
 (
         const struct Token_Int_Mapping* const object
 )
@@ -325,7 +325,7 @@ Show_C_Str_Array_Usage
     printf ("Sum used tokens:      %" PRIuFAST32 " (%.2f %% used)\n\n", sum_tokens,
             Determine_Percent(sum_tokens, sum_allocated_tokens));
 
-    Show_Memory_Usage(object);
+    TokenIntMapping_ShowMemoryUsage(object);
 
     return;
 }
@@ -343,7 +343,7 @@ Show_C_Str_Array_Usage
  * @param[in] object Token_Int_Mapping object
  */
 extern void
-Show_Memory_Usage
+TokenIntMapping_ShowMemoryUsage
 (
         const struct Token_Int_Mapping* const object
 )
@@ -389,7 +389,7 @@ Show_Memory_Usage
  * @return Mapping integer or UINT_FAST32_MAX, if the token is not in the mapping list
  */
 extern uint_fast32_t
-Token_To_Int
+TokenIntMapping_TokenToInt
 (
         const struct Token_Int_Mapping* const restrict object,
         const char* const restrict search_token,
@@ -461,7 +461,7 @@ Token_To_Int
  * @param[in] result_token_memory_size length of the result token
  */
 extern void
-Int_To_Token
+TokenIntMapping_IntToToken
 (
         const struct Token_Int_Mapping* const restrict object,
         const uint_fast32_t token_int_value,
@@ -509,7 +509,7 @@ Int_To_Token
  * @return Pointer to the modified static array
  */
 extern const char*
-Int_To_Token_Static_Mem
+TokenIntMapping_IntToTokenStaticMem
 (
         const struct Token_Int_Mapping* const object,
         const uint_fast32_t token_int_value
@@ -517,7 +517,7 @@ Int_To_Token_Static_Mem
 {
     static char result_token [MAX_TOKEN_LENGTH];
 
-    Int_To_Token(object, token_int_value, result_token, COUNT_ARRAY_ELEMENTS(result_token) - 1);
+    TokenIntMapping_IntToToken(object, token_int_value, result_token, COUNT_ARRAY_ELEMENTS(result_token) - 1);
 
     return result_token;
 }
