@@ -91,7 +91,7 @@ static inline void Increase_Data_Array_Size_Allocation_Step_Size
  * @return Pointer to the new dynamic allocated Document_Word_List
  */
 extern struct Document_Word_List*
-Create_Document_Word_List
+DocumentWordList_CreateObject
 (
         const size_t number_of_arrays,
         const size_t max_array_length
@@ -148,7 +148,7 @@ Create_Document_Word_List
  * @param[in] object Document_Word_List, which will be deleted
  */
 extern void
-Delete_Document_Word_List
+DocumentWordList_DeleteObject
 (
         struct Document_Word_List* object
 )
@@ -183,7 +183,7 @@ Delete_Document_Word_List
  * @param[in] data_length Length of the new data
  */
 extern void
-Append_Data_To_Document_Word_List
+DocumentWordList_AppendData
 (
         struct Document_Word_List* const object,
         const uint_fast32_t* const new_data,
@@ -230,7 +230,7 @@ Append_Data_To_Document_Word_List
  * @param[in] new_value New value
  */
 extern void
-Append_One_Value_To_Document_Word_List
+DocumentWordList_AppendOneValueAsNewDataSet
 (
         struct Document_Word_List* const object,
         const uint_fast32_t new_value
@@ -239,7 +239,7 @@ Append_One_Value_To_Document_Word_List
     ASSERT_MSG(object != NULL, "Object is NULL !");
 
     // The function redirects the appending. =>  The new value is a dataset with one element
-    Append_Data_To_Document_Word_List(object, &new_value, 1);
+    DocumentWordList_AppendData(object, &new_value, 1);
 
     return;
 }
@@ -257,7 +257,7 @@ Append_One_Value_To_Document_Word_List
  * @param[in] object Document_Word_List
  */
 extern void
-Show_Data_From_Document_Word_List
+DocumentWordList_ShowData
 (
         const struct Document_Word_List* const object
 )
@@ -296,7 +296,7 @@ Show_Data_From_Document_Word_List
  * @return Size of the full object in bytes
  */
 extern size_t
-Get_Document_Word_List_Size
+DocumentWordList_GetAllocatedMemSize
 (
         const struct Document_Word_List* const object
 )
@@ -327,7 +327,7 @@ Get_Document_Word_List_Size
  * @param[in] object Document_Word_List
  */
 extern void
-Show_Attributes_From_Document_Word_List
+DocumentWordList_ShowAttributes
 (
         const struct Document_Word_List* const object
 )
@@ -338,9 +338,9 @@ Show_Attributes_From_Document_Word_List
                 Count_Number_Of_Digits(object->max_array_length));
 
     puts("");
-    printf ("Full document word list container size: %zu B (%.3f KB | %.3f MB)\n", Get_Document_Word_List_Size(object),
-            (double) Get_Document_Word_List_Size(object) / 1024.0,
-            (double) Get_Document_Word_List_Size(object) / 1024.0 / 1024.0);
+    printf ("Full document word list container size: %zu B (%.3f KB | %.3f MB)\n", DocumentWordList_GetAllocatedMemSize(object),
+            (double) DocumentWordList_GetAllocatedMemSize(object) / 1024.0,
+            (double) DocumentWordList_GetAllocatedMemSize(object) / 1024.0 / 1024.0);
     puts ("> Attributes <");
     printf ("Intersection data:     %s\n", (object->intersection_data /* == true */) ? "YES" : "NO");
     printf ("Number of arrays:      %*zu\n", formatter_int, object->number_of_arrays);
@@ -364,15 +364,15 @@ Show_Attributes_From_Document_Word_List
  * @param[in] object Document_Word_List
  */
 extern void
-Show_Data_And_Attributes_From_Document_Word_List
+DocumentWordList_ShowDataAndAttributes
 (
         const struct Document_Word_List* const object
 )
 {
     ASSERT_MSG(object != NULL, "Object is NULL !");
 
-    Show_Data_From_Document_Word_List(object);
-    Show_Attributes_From_Document_Word_List(object);
+    DocumentWordList_ShowData(object);
+    DocumentWordList_ShowAttributes(object);
 
     return;
 }
@@ -402,7 +402,7 @@ Show_Data_And_Attributes_From_Document_Word_List
  * @return New Document_Word_List with the intersections in the respective subsets
  */
 extern struct Document_Word_List*
-Intersect_Data_With_Document_Word_List
+DocumentWordList_IntersectWithData
 (
     const struct Document_Word_List* const restrict object,
     const uint_fast32_t* const restrict data,
@@ -459,7 +459,7 @@ Intersect_Data_With_Document_Word_List
  * @return true, if there is data in the object, otherwise false
  */
 extern _Bool
-Is_Data_In_Document_Word_List
+DocumentWordList_IsDataInObject
 (
         const struct Document_Word_List* const object
 )
