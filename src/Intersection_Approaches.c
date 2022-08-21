@@ -150,7 +150,7 @@ Heapsort
  * @return New dynamic object containing the intersection result to each subset of the word list
  */
 extern struct Document_Word_List*
-Intersection_Approach_2_Nested_Loops
+IntersectionApproach_TwoNestedLoops
 (
     const struct Document_Word_List* const restrict object,
     const uint_fast32_t* const restrict data,
@@ -161,7 +161,7 @@ Intersection_Approach_2_Nested_Loops
     ASSERT_MSG(data != NULL, "Data is NULL !");
     ASSERT_MSG(data_length > 0, "Length of the data is 0 !");
 
-    struct Document_Word_List* intersection_result = Create_Document_Word_List (object->number_of_arrays,
+    struct Document_Word_List* intersection_result = DocumentWordList_CreateObject (object->number_of_arrays,
             object->max_array_length);
     ASSERT_ALLOC(intersection_result, "Cannot create new Document Word List for intersection !",
             sizeof (struct Document_Word_List) + object->number_of_arrays * object->max_array_length *
@@ -236,7 +236,7 @@ Intersection_Approach_2_Nested_Loops
  * @return New dynamic object containing the intersection result to each subset of the word list
  */
 extern struct Document_Word_List*
-Intersection_Approach_QSort_And_Binary_Search
+IntersectionApproach_QSortAndBinarySearch
 (
     const struct Document_Word_List* const restrict object,
     const uint_fast32_t* const restrict data,
@@ -280,7 +280,7 @@ Intersection_Approach_QSort_And_Binary_Search
  * @return New dynamic object containing the intersection result to each subset of the word list
  */
 extern struct Document_Word_List*
-Intersection_Approach_HeapSort_And_Binary_Search
+IntersectionApproach_HeapSortAndBinarySearch
 (
     const struct Document_Word_List* const restrict object,
     const uint_fast32_t* const restrict data,
@@ -327,7 +327,7 @@ Intersection_Approach_HeapSort_And_Binary_Search
  * @return New dynamic object containing the intersection result
  */
 extern struct Document_Word_List*
-Intersection_Approach_2_Nested_Loops_2_Raw_Data_Arrays
+IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 (
     const uint_fast32_t* const restrict data_1,
     const size_t data_1_length,
@@ -343,7 +343,7 @@ Intersection_Approach_2_Nested_Loops_2_Raw_Data_Arrays
     ASSERT_MSG(data_2_length > 0, "Length of the data 2 is 0 !");
 
     // This result contains only one array, because two raw data arrays will be used for the intersection
-    struct Document_Word_List* intersection_result = Create_Document_Word_List(1, MAX(data_1_length, data_2_length));
+    struct Document_Word_List* intersection_result = DocumentWordList_CreateObject(1, MAX(data_1_length, data_2_length));
 
     // Arrays, which display, if a value is already in the intersection
     _Bool* multiple_guard_data_1 = (_Bool*) CALLOC(data_1_length, sizeof (_Bool));
@@ -409,7 +409,7 @@ Init_Intersection
 {
     ASSERT_MSG(object != NULL, "Document_Word_List is NULL !");
 
-    struct Document_Word_List* intersection_result = Create_Document_Word_List (object->number_of_arrays,
+    struct Document_Word_List* intersection_result = DocumentWordList_CreateObject (object->number_of_arrays,
             object->max_array_length);
     ASSERT_ALLOC(intersection_result, "Cannot create new Document Word List for intersection !",
             sizeof (struct Document_Word_List) + object->number_of_arrays * object->max_array_length *

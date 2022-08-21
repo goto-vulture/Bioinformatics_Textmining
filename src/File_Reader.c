@@ -134,7 +134,7 @@ Read_File_Process_Print_Function
  * @return Address to the new dynamic Token_List_Container
  */
 extern struct Token_List_Container*
-Create_Token_Container_From_File
+TokenListContainer_CreateObject
 (
         const char* const file_name
 )
@@ -369,7 +369,7 @@ Create_Token_Container_From_File
  * @param[in] object Delete_Token_Container object
  */
 extern void
-Delete_Token_Container
+TokenListContainer_DeleteObject
 (
         struct Token_List_Container* object
 )
@@ -411,7 +411,7 @@ Delete_Token_Container
  * @return Poiner at the begin of the token. (token is terminated with a null byte !)
  */
 extern char*
-Get_Token_From_Token_Container
+TokenListContainer_GetToken
 (
         const struct Token_List_Container* const container,
         const uint_fast32_t index_token_list,
@@ -443,7 +443,7 @@ Get_Token_From_Token_Container
  * @return Size of the full object in bytes
  */
 extern size_t
-Get_Token_Container_Size
+TokenListContainer_GetAllocatedMemSize
 (
         const struct Token_List_Container* const container
 )
@@ -479,7 +479,7 @@ Get_Token_Container_Size
  * @param[in] index_token_list Index of the Token_List object
  */
 extern void
-Show_Selected_Token_Container
+TokenListContainer_ShowSelectedTokenList
 (
         const struct Token_List_Container* const container,
         const size_t index_token_list
@@ -519,7 +519,7 @@ Show_Selected_Token_Container
  * @param[in] index_token_list Index of the Token_List object
  */
 extern void
-Show_Selected_Token_Container_As_Array
+TokenListContainer_ShowSelectedTokenListAsArray
 (
         const struct Token_List_Container* const container,
         const size_t index_token_list
@@ -559,7 +559,7 @@ Show_Selected_Token_Container_As_Array
  * @param[in] container Token_List_Container object
  */
 extern void
-Show_All_Token_Container
+TokenListContainer_ShowAllTokenLists
 (
         const struct Token_List_Container* const container
 )
@@ -568,7 +568,7 @@ Show_All_Token_Container
 
     for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
     {
-        Show_Selected_Token_Container (container, i);
+        TokenListContainer_ShowSelectedTokenList (container, i);
     }
 
     return;
@@ -587,7 +587,7 @@ Show_All_Token_Container
  * @param[in] container Token_List_Container object
  */
 extern void
-Show_All_Token_Container_With_Array_Representation
+TokenListContainer_ShowAllTokenListsAsArrays
 (
         const struct Token_List_Container* const container
 )
@@ -596,7 +596,7 @@ Show_All_Token_Container_With_Array_Representation
 
     for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
     {
-        Show_Selected_Token_Container_As_Array (container, i);
+        TokenListContainer_ShowSelectedTokenListAsArray (container, i);
     }
 
     return;
@@ -615,7 +615,7 @@ Show_All_Token_Container_With_Array_Representation
  * @return Counted number of whole tokens in the Token_List_Container object
  */
 extern uint_fast32_t
-Count_All_Tokens_In_Token_Container
+TokenListContainer_CountAllTokens
 (
         const struct Token_List_Container* const container
 )
@@ -647,7 +647,7 @@ Count_All_Tokens_In_Token_Container
  * @return Length of the longest token
  */
 extern size_t
-Get_Lengh_Of_Longest_Token
+TokenListContainer_GetLenghOfLongestToken
 (
         const struct Token_List_Container* const container
 )
@@ -681,7 +681,7 @@ Get_Lengh_Of_Longest_Token
  * @return Length of the longest Token_List object
  */
 extern size_t
-Get_Lengh_Of_Longest_Token_Container
+TokenListContainer_GetLenghOfLongestTokenList
 (
         const struct Token_List_Container* const container
 )
@@ -712,7 +712,7 @@ Get_Lengh_Of_Longest_Token_Container
  * @param[in] container Token_List_Container object
  */
 extern void
-Print_Token_List_Status_Infos
+TokenListContainer_ShowAttributes
 (
         const struct Token_List_Container* const container
 )
@@ -730,16 +730,16 @@ Print_Token_List_Status_Infos
     }
 
     puts("");
-    printf ("Full token list container size: %zu B (%.3f KB | %.3f MB)\n", Get_Token_Container_Size(container),
-            (double) Get_Token_Container_Size(container) / 1024.0,
-            (double) Get_Token_Container_Size(container) / 1024.0 / 1024.0);
-    printf ("Sum all tokens:                 %" PRIuFAST32 "\n", Count_All_Tokens_In_Token_Container(container));
+    printf ("Full token list container size: %zu B (%.3f KB | %.3f MB)\n", TokenListContainer_GetAllocatedMemSize(container),
+            (double) TokenListContainer_GetAllocatedMemSize(container) / 1024.0,
+            (double) TokenListContainer_GetAllocatedMemSize(container) / 1024.0 / 1024.0);
+    printf ("Sum all tokens:                 %" PRIuFAST32 "\n", TokenListContainer_CountAllTokens(container));
     printf ("Number of token lists:          %" PRIuFAST32 "\n", container->next_free_element);
     // Actual every token list has the same max token length !
     printf ("Max. possible token length:     %zu\n", container->token_lists [0].max_token_length);
     printf ("Average token length:           %zu\n", Get_Average_Token_Length(container));
-    printf ("Longest token list:             %zu\n", Get_Lengh_Of_Longest_Token_Container(container));
-    printf ("Longest token:                  %zu\n", Get_Lengh_Of_Longest_Token(container));
+    printf ("Longest token list:             %zu\n", TokenListContainer_GetLenghOfLongestTokenList(container));
+    printf ("Longest token:                  %zu\n", TokenListContainer_GetLenghOfLongestToken(container));
     printf ("Longest dataset id:             %zu\n", longest_dataset_id);
     printf ("Malloc / calloc calls:          %zu\n", container->malloc_calloc_calls);
     printf ("Realloc calls:                  %zu\n", container->realloc_calls);
@@ -800,11 +800,11 @@ Get_Average_Token_Length
     {
         for (uint_fast32_t i2 = 0; i2 < token_list_container->token_lists [i].next_free_element; ++ i2)
         {
-            sum_token_length += strlen (Get_Token_From_Token_Container(token_list_container, i, i2));
+            sum_token_length += strlen (TokenListContainer_GetToken(token_list_container, i, i2));
         }
     }
 
-    const float result = (float) sum_token_length / (float) Count_All_Tokens_In_Token_Container(token_list_container);
+    const float result = (float) sum_token_length / (float) TokenListContainer_CountAllTokens(token_list_container);
     return (size_t) ceil (result);
 }
 

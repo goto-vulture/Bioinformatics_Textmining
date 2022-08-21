@@ -71,7 +71,7 @@ Create_Document_Word_List_With_Random_Test_Data
     ASSERT_MSG(number_of_arrays != 0, "Number of arrays is 0 !");
     ASSERT_MSG(max_array_length != 0, "Max array length is 0 !");
 
-    struct Document_Word_List* result_object = Create_Document_Word_List(number_of_arrays, max_array_length);
+    struct Document_Word_List* result_object = DocumentWordList_CreateObject(number_of_arrays, max_array_length);
     ASSERT_ALLOC(result_object, "Cannot create new Document_Word_List with random test data !",
             sizeof (struct Document_Word_List));
 
@@ -122,7 +122,7 @@ Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
             "More specified data per array (%zu) than the max array length (%zu) !", specified_data_length,
             max_array_length);
 
-    struct Document_Word_List* result_object = Create_Document_Word_List(number_of_arrays, max_array_length);
+    struct Document_Word_List* result_object = DocumentWordList_CreateObject(number_of_arrays, max_array_length);
     ASSERT_ALLOC(result_object, "Cannot create new Document_Word_List with random test data !",
             sizeof (struct Document_Word_List));
 
@@ -217,7 +217,7 @@ static void Create_Random_Data
             new_test_data [i2] = (size_t) rand () % (size_t) rand_upper_bound;
             ++ created_test_data;
         }
-        Append_Data_To_Document_Word_List (data_container, new_test_data, used_array_length);
+        DocumentWordList_AppendData (data_container, new_test_data, used_array_length);
         FREE_AND_SET_TO_NULL(new_test_data);
     }
 

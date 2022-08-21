@@ -77,7 +77,7 @@ struct Token_List_Container
  * @return Address to the new dynamic Token_List_Container
  */
 extern struct Token_List_Container*
-Create_Token_Container_From_File
+TokenListContainer_CreateObject
 (
         const char* const file_name
 );
@@ -91,7 +91,7 @@ Create_Token_Container_From_File
  * @param[in] object Delete_Token_Container object
  */
 extern void
-Delete_Token_Container
+TokenListContainer_DeleteObject
 (
         struct Token_List_Container* object
 );
@@ -114,7 +114,7 @@ Delete_Token_Container
  * @return Poiner at the begin of the token. (token is terminated with a null byte !)
  */
 extern char*
-Get_Token_From_Token_Container
+TokenListContainer_GetToken
 (
         const struct Token_List_Container* const container,
         const uint_fast32_t index_token_list,
@@ -132,7 +132,7 @@ Get_Token_From_Token_Container
  * @return Size of the full object in bytes
  */
 extern size_t
-Get_Token_Container_Size
+TokenListContainer_GetAllocatedMemSize
 (
         const struct Token_List_Container* const container
 );
@@ -150,7 +150,7 @@ Get_Token_Container_Size
  * @param[in] index_token_list Index of the Token_List object
  */
 extern void
-Show_Selected_Token_Container
+TokenListContainer_ShowSelectedTokenList
 (
         const struct Token_List_Container* const container,
         const size_t index_token_list
@@ -172,7 +172,7 @@ Show_Selected_Token_Container
  * @param[in] index_token_list Index of the Token_List object
  */
 extern void
-Show_Selected_Token_Container_As_Array
+TokenListContainer_ShowSelectedTokenListAsArray
 (
         const struct Token_List_Container* const container,
         const size_t index_token_list
@@ -189,7 +189,7 @@ Show_Selected_Token_Container_As_Array
  * @param[in] container Token_List_Container object
  */
 extern void
-Show_All_Token_Container
+TokenListContainer_ShowAllTokenLists
 (
         const struct Token_List_Container* const container
 );
@@ -205,7 +205,7 @@ Show_All_Token_Container
  * @param[in] container Token_List_Container object
  */
 extern void
-Show_All_Token_Container_With_Array_Representation
+TokenListContainer_ShowAllTokenListsAsArrays
 (
         const struct Token_List_Container* const container
 );
@@ -221,7 +221,7 @@ Show_All_Token_Container_With_Array_Representation
  * @return Counted number of whole tokens in the Token_List_Container object
  */
 extern uint_fast32_t
-Count_All_Tokens_In_Token_Container
+TokenListContainer_CountAllTokens
 (
         const struct Token_List_Container* const container
 );
@@ -239,7 +239,7 @@ Count_All_Tokens_In_Token_Container
  * @return Length of the longest token
  */
 extern size_t
-Get_Lengh_Of_Longest_Token
+TokenListContainer_GetLenghOfLongestToken
 (
         const struct Token_List_Container* const container
 );
@@ -255,7 +255,7 @@ Get_Lengh_Of_Longest_Token
  * @return Length of the longest Token_List object
  */
 extern size_t
-Get_Lengh_Of_Longest_Token_Container
+TokenListContainer_GetLenghOfLongestTokenList
 (
         const struct Token_List_Container* const container
 );
@@ -269,7 +269,7 @@ Get_Lengh_Of_Longest_Token_Container
  * @param[in] container Token_List_Container object
  */
 extern void
-Print_Token_List_Status_Infos
+TokenListContainer_ShowAttributes
 (
         const struct Token_List_Container* const container
 );

@@ -66,16 +66,16 @@ extern _Bool TEST_Intersection (void)
 
     // Testdata (from the first meeting)
     struct Document_Word_List* test_data [4];
-    test_data [0] = Create_Document_Word_List(3, 4);
+    test_data [0] = DocumentWordList_CreateObject(3, 4);
     ASSERT_ALLOC(test_data [0], "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List) *
             3 * 4 * sizeof (uint_fast32_t));
-    test_data [1] = Create_Document_Word_List(2, 4);
+    test_data [1] = DocumentWordList_CreateObject(2, 4);
     ASSERT_ALLOC(test_data [0], "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List) *
             2 * 4 * sizeof (uint_fast32_t));
-    test_data [2] = Create_Document_Word_List(2, 6);
+    test_data [2] = DocumentWordList_CreateObject(2, 6);
     ASSERT_ALLOC(test_data [0], "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List) *
             2 * 6 * sizeof (uint_fast32_t));
-    test_data [3] = Create_Document_Word_List(1, 5);
+    test_data [3] = DocumentWordList_CreateObject(1, 5);
     ASSERT_ALLOC(test_data [0], "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List) *
             1 * 5 * sizeof (uint_fast32_t));
 
@@ -101,24 +101,24 @@ extern _Bool TEST_Intersection (void)
     };
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(test_0_test_data); ++ i)
     {
-        Append_Data_To_Document_Word_List(test_data [0], test_0_test_data [i], 4);
+        DocumentWordList_AppendData(test_data [0], test_0_test_data [i], 4);
     }
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(test_1_test_data); ++ i)
     {
-        Append_Data_To_Document_Word_List(test_data [1], test_1_test_data [i], 4);
+        DocumentWordList_AppendData(test_data [1], test_1_test_data [i], 4);
     }
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(test_2_test_data); ++ i)
     {
-        Append_Data_To_Document_Word_List(test_data [2], test_2_test_data [i], 6);
+        DocumentWordList_AppendData(test_data [2], test_2_test_data [i], 6);
     }
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(test_3_test_data); ++ i)
     {
-        Append_Data_To_Document_Word_List(test_data [3], test_3_test_data [i], 5);
+        DocumentWordList_AppendData(test_data [3], test_3_test_data [i], 5);
     }
 
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(test_data); ++ i)
     {
-        Show_Data_And_Attributes_From_Document_Word_List(test_data [i]);
+        DocumentWordList_ShowDataAndAttributes(test_data [i]);
         puts("");
     }
 
@@ -128,7 +128,7 @@ extern _Bool TEST_Intersection (void)
     {
         // Determine intersections
         // T 1,1 are the data, which will be used for the calculation
-        intersection_objects [i] = Intersect_Data_With_Document_Word_List(test_data [i + 1],
+        intersection_objects [i] = DocumentWordList_IntersectWithData(test_data [i + 1],
                 test_data [0]->data [0], 4, INTERSECTION_MODE_2_NESTED_LOOPS);
         ASSERT_ALLOC(intersection_objects [i], "Cannot create an intersection object ! Given object size could be wrong !",
                 sizeof (struct Document_Word_List));
@@ -137,19 +137,19 @@ extern _Bool TEST_Intersection (void)
     PUTS_FFLUSH("\n");
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(intersection_objects); ++ i)
     {
-        Show_Data_And_Attributes_From_Document_Word_List(intersection_objects [i]);
+        DocumentWordList_ShowDataAndAttributes(intersection_objects [i]);
         puts("");
     }
 
     // Delete both arrays
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(test_data); ++ i)
     {
-        Delete_Document_Word_List(test_data [i]);
+        DocumentWordList_DeleteObject(test_data [i]);
         test_data [i] = NULL;
     }
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(intersection_objects); ++ i)
     {
-        Delete_Document_Word_List(intersection_objects [i]);
+        DocumentWordList_DeleteObject(intersection_objects [i]);
         intersection_objects[i] = NULL;
     }
 
@@ -179,8 +179,8 @@ extern _Bool TEST_Intersection_With_Random_Data (void)
         // Determine the intersections with all modes and measure the execution time
         Use_All_Intersection_Modes (list_one_with_random_data, list_two_with_random_data);
 
-        Delete_Document_Word_List(list_one_with_random_data);
-        Delete_Document_Word_List(list_two_with_random_data);
+        DocumentWordList_DeleteObject(list_one_with_random_data);
+        DocumentWordList_DeleteObject(list_two_with_random_data);
         list_one_with_random_data = NULL;
         list_two_with_random_data = NULL;
     }
@@ -204,9 +204,9 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
     {
         PRINTF_FFLUSH("%4zu / %4zu\n", i, (size_t) NUMBER_OF_RUNS);
 
-        struct Document_Word_List* list_one_with_specified_data = Create_Document_Word_List(1, 5);
+        struct Document_Word_List* list_one_with_specified_data = DocumentWordList_CreateObject(1, 5);
         const uint_fast32_t array_data [] = { 0, 2, 4, 6, 8 };
-        Append_Data_To_Document_Word_List(list_one_with_specified_data, array_data, COUNT_ARRAY_ELEMENTS(array_data));
+        DocumentWordList_AppendData(list_one_with_specified_data, array_data, COUNT_ARRAY_ELEMENTS(array_data));
 
         struct Document_Word_List* list_two_with_random_data = Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
                 (array_data, COUNT_ARRAY_ELEMENTS(array_data), NUMBER_OF_ARRAYS, (MAX_ARRAY_LENGTH / NUMBER_OF_RUNS) * i, RAND_UPPER_BOUND);
@@ -214,8 +214,8 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
         // Determine the intersections with all modes and measure the execution time
         Use_All_Intersection_Modes(list_one_with_specified_data, list_two_with_random_data);
 
-        Delete_Document_Word_List(list_one_with_specified_data);
-        Delete_Document_Word_List(list_two_with_random_data);
+        DocumentWordList_DeleteObject(list_one_with_specified_data);
+        DocumentWordList_DeleteObject(list_two_with_random_data);
         list_one_with_specified_data = NULL;
         list_two_with_random_data = NULL;
     }
@@ -251,7 +251,7 @@ static void Use_All_Intersection_Modes
         clock_t begin = (clock_t) -1;
         CLOCK_WITH_RETURN_CHECK(begin);
         struct Document_Word_List* intersection_data =
-                Intersect_Data_With_Document_Word_List(data_2, data_1->data [0], data_1->arrays_lengths[0],
+                DocumentWordList_IntersectWithData(data_2, data_1->data [0], data_1->arrays_lengths[0],
                         used_modes [i]);
         clock_t end = (clock_t) -1;
         CLOCK_WITH_RETURN_CHECK(end);
@@ -275,7 +275,7 @@ static void Use_All_Intersection_Modes
 
         //Show_Data_And_Attributes_From_Document_Word_List(intersection_data);
         // puts("");
-        Delete_Document_Word_List(intersection_data);
+        DocumentWordList_DeleteObject(intersection_data);
         intersection_data = NULL;
     }
 

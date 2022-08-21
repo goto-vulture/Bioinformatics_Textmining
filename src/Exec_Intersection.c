@@ -194,15 +194,15 @@ Exec_Intersection
     int result = 0;
 
     // >>> Read files and extract the tokens <<<
-    struct Token_List_Container* token_container_input_1 = Create_Token_Container_From_File (GLOBAL_CLI_INPUT_FILE);
-    Print_Token_List_Status_Infos (token_container_input_1);
-    struct Token_List_Container* token_container_input_2 = Create_Token_Container_From_File (GLOBAL_CLI_INPUT_FILE2);
-    Print_Token_List_Status_Infos (token_container_input_2);
+    struct Token_List_Container* token_container_input_1 = TokenListContainer_CreateObject (GLOBAL_CLI_INPUT_FILE);
+    TokenListContainer_ShowAttributes (token_container_input_1);
+    struct Token_List_Container* token_container_input_2 = TokenListContainer_CreateObject (GLOBAL_CLI_INPUT_FILE2);
+    TokenListContainer_ShowAttributes (token_container_input_2);
 
 
 
     // >>> Create a token int mapping list <<<
-    struct Token_Int_Mapping* token_int_mapping = Create_Token_Int_Mapping ();
+    struct Token_Int_Mapping* token_int_mapping = TokenIntMapping_CreateObject ();
 
     // ... and fill them with all tokens (Content from the first file)
     uint_fast32_t token_added_to_mapping =
@@ -216,8 +216,8 @@ Exec_Intersection
 
 
     // >>> Use the token int mapping for the creation of a mapped token container <<<
-    const size_t length_of_longest_token_container = MAX(Get_Lengh_Of_Longest_Token_Container(token_container_input_1),
-            Get_Lengh_Of_Longest_Token_Container(token_container_input_2));
+    const size_t length_of_longest_token_container = MAX(TokenListContainer_GetLenghOfLongestTokenList(token_container_input_1),
+            TokenListContainer_GetLenghOfLongestTokenList(token_container_input_2));
 
     // token_container_input_1->next_free_element and token_container_input_2->next_free_element
     // are the number of arrays in the two Token_List_Container. The meaning is, that every array in a
@@ -227,17 +227,17 @@ Exec_Intersection
     // is okay.
     // => ! It will be changed for real use cases ! <=
     struct Document_Word_List* source_int_values_1 =
-            Create_Document_Word_List(token_container_input_1->next_free_element, length_of_longest_token_container);
+            DocumentWordList_CreateObject(token_container_input_1->next_free_element, length_of_longest_token_container);
     struct Document_Word_List* source_int_values_2 =
-            Create_Document_Word_List(token_container_input_2->next_free_element, length_of_longest_token_container);
+            DocumentWordList_CreateObject(token_container_input_2->next_free_element, length_of_longest_token_container);
 
     Append_Token_Int_Mapping_Data_To_Document_Word_List(token_int_mapping, token_container_input_1,
             source_int_values_1);
     Append_Token_Int_Mapping_Data_To_Document_Word_List(token_int_mapping, token_container_input_2,
             source_int_values_2);
 
-    Show_Attributes_From_Document_Word_List(source_int_values_1);
-    Show_Attributes_From_Document_Word_List(source_int_values_2);
+    DocumentWordList_ShowAttributes(source_int_values_1);
+    DocumentWordList_ShowAttributes(source_int_values_2);
     puts("");
 
 
@@ -309,7 +309,7 @@ Exec_Intersection
             // source_int_values_1 !
             //struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops (source_int_values_1,
             //        source_int_values_2->data [selected_data_2_array], source_int_values_2->arrays_lengths [selected_data_2_array]);
-            struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops_2_Raw_Data_Arrays
+            struct Document_Word_List* intersection_result = IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
                     (source_int_values_1->data [selected_data_1_array],
                             source_int_values_1->arrays_lengths [selected_data_1_array],
                             source_int_values_2->data [selected_data_2_array],
@@ -333,7 +333,7 @@ Exec_Intersection
             for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
             {
                 // Reverse the mapping to get the original token (int -> token)
-                const char* int_to_token_mem = Int_To_Token_Static_Mem(token_int_mapping,
+                const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
                         intersection_result->data [0][i]);
 
                 // Is the token in the list with the stop words ?
@@ -355,7 +355,7 @@ Exec_Intersection
             }
 
             // Show only the data block, if there are intersection results
-            if (Is_Data_In_Document_Word_List(intersection_result) && tokens_left > 0)
+            if (DocumentWordList_IsDataInObject(intersection_result) && tokens_left > 0)
             {
                 data_found = true;
                 if (selected_data_2_array != last_used_selected_data_2_array)
@@ -368,7 +368,7 @@ Exec_Intersection
                     for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_2_array]; ++ i)
                     {
                         // Reverse the mapping to get the original token (int -> token)
-                        const char* int_to_token_mem = Int_To_Token_Static_Mem(token_int_mapping,
+                        const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
                                 source_int_values_2->data [selected_data_2_array][i]);
 
                         cJSON_NEW_STR_CHECK(token, int_to_token_mem);
@@ -394,7 +394,7 @@ Exec_Intersection
                     }
 
                     // Reverse the mapping to get the original token (int -> token)
-                    const char* int_to_token_mem = Int_To_Token_Static_Mem(token_int_mapping,
+                    const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
                             intersection_result->data [0][i]);
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
                     cJSON_AddItemToArray(tokens_array, token);
@@ -404,7 +404,7 @@ Exec_Intersection
                 }
             }
 
-            Delete_Document_Word_List(intersection_result);
+            DocumentWordList_DeleteObject(intersection_result);
             intersection_result = NULL;
         } // Inner loop end
 
@@ -451,15 +451,15 @@ abort_label:
     if (intersections != NULL)  { cJSON_free(intersections); intersections = NULL;  }
     if (outer_object != NULL)   { cJSON_free(outer_object); outer_object = NULL;    }
 
-    Delete_Document_Word_List(source_int_values_1);
+    DocumentWordList_DeleteObject(source_int_values_1);
     source_int_values_1 = NULL;
-    Delete_Document_Word_List(source_int_values_2);
+    DocumentWordList_DeleteObject(source_int_values_2);
     source_int_values_2 = NULL;
-    Delete_Token_Container(token_container_input_1);
+    TokenListContainer_DeleteObject(token_container_input_1);
     token_container_input_1 = NULL;
-    Delete_Token_Container(token_container_input_2);
+    TokenListContainer_DeleteObject(token_container_input_2);
     token_container_input_2 = NULL;
-    Delete_Token_Int_Mapping(token_int_mapping);
+    TokenIntMapping_DeleteObject(token_int_mapping);
     token_int_mapping = NULL;
 
     return result;
@@ -567,8 +567,8 @@ Append_Token_List_Container_Data_To_Token_Int_Mapping
                     inner_loop_counter, inner_loop_runs,
                     Exec_Add_Token_To_Mapping_Process_Print_Function);
 
-            char* token = Get_Token_From_Token_Container (token_list_container, i, i2);
-            element_added = Add_Token_To_Mapping(token_int_mapping, token, strlen(token));
+            char* token = TokenListContainer_GetToken (token_list_container, i, i2);
+            element_added = TokenIntMapping_AddToken(token_int_mapping, token, strlen(token));
             if (element_added) { ++ token_added_to_mapping; }
 
             ++ inner_loop_counter;
@@ -608,7 +608,7 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
     ASSERT_MSG(token_list_container != NULL, "Token_List_Container is NULL !");
     ASSERT_MSG(document_word_list != NULL, "Document_Word_List is NULL !");
 
-    const size_t length_of_longest_token_container = Get_Lengh_Of_Longest_Token_Container(token_list_container);
+    const size_t length_of_longest_token_container = TokenListContainer_GetLenghOfLongestTokenList(token_list_container);
 
     // Temp memory for appending data in a block
     // This avoids appending operations for each single value
@@ -627,8 +627,8 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
         // Map token to int
         for (uint_fast32_t i2 = 0; i2 < token_list_container->token_lists [i].next_free_element; ++ i2)
         {
-            char* token = Get_Token_From_Token_Container (token_list_container, i, i2);
-            token_int_values [next_free_value] = Token_To_Int(token_int_mapping, token, strlen(token));
+            char* token = TokenListContainer_GetToken (token_list_container, i, i2);
+            token_int_values [next_free_value] = TokenIntMapping_TokenToInt(token_int_mapping, token, strlen(token));
             // Is the current token in the dictionary ?
             ASSERT_FMSG(token_int_values [next_free_value] != UINT_FAST32_MAX, "Token \"%s\" is not in the dictionary !",
                     token);
@@ -638,7 +638,7 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
         // Append data
         if (next_free_value > 0)
         {
-            Append_Data_To_Document_Word_List(document_word_list, token_int_values, next_free_value);
+            DocumentWordList_AppendData(document_word_list, token_int_values, next_free_value);
         }
     }
     FREE_AND_SET_TO_NULL(token_int_values);

@@ -46,7 +46,7 @@ extern "C"
  * @return New dynamic object containing the intersection result to each subset of the word list
  */
 extern struct Document_Word_List*
-Intersection_Approach_2_Nested_Loops
+IntersectionApproach_TwoNestedLoops
 (
     const struct Document_Word_List* const restrict object,
     const uint_fast32_t* const restrict data,
@@ -71,7 +71,7 @@ Intersection_Approach_2_Nested_Loops
  * @return New dynamic object containing the intersection result to each subset of the word list
  */
 extern struct Document_Word_List*
-Intersection_Approach_QSort_And_Binary_Search
+IntersectionApproach_QSortAndBinarySearch
 (
     const struct Document_Word_List* const restrict object,
     const uint_fast32_t* const restrict data,
@@ -96,7 +96,7 @@ Intersection_Approach_QSort_And_Binary_Search
  * @return New dynamic object containing the intersection result to each subset of the word list
  */
 extern struct Document_Word_List*
-Intersection_Approach_HeapSort_And_Binary_Search
+IntersectionApproach_HeapSortAndBinarySearch
 (
     const struct Document_Word_List* const restrict object,
     const uint_fast32_t* const restrict data,
@@ -124,7 +124,7 @@ Intersection_Approach_HeapSort_And_Binary_Search
  * @return New dynamic object containing the intersection result
  */
 extern struct Document_Word_List*
-Intersection_Approach_2_Nested_Loops_2_Raw_Data_Arrays
+IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 (
     const uint_fast32_t* const restrict data_1,
     const size_t data_1_length,
