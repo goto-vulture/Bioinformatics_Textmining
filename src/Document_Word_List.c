@@ -423,13 +423,13 @@ DocumentWordList_IntersectWithData
     switch (mode)
     {
     case INTERSECTION_MODE_2_NESTED_LOOPS:
-        intersection_result = Intersection_Approach_2_Nested_Loops(object, data, data_length);
+        intersection_result = IntersectionApproach_TwoNestedLoops(object, data, data_length);
         break;
     case INTERSECTION_MODE_QSORT_AND_BINARY_SEARCH:
-        intersection_result = Intersection_Approach_QSort_And_Binary_Search(object, data, data_length);
+        intersection_result = IntersectionApproach_QSortAndBinarySearch(object, data, data_length);
         break;
     case INTERSECTION_MODE_HEAPSORT_AND_BINARY_SEARCH:
-        intersection_result = Intersection_Approach_HeapSort_And_Binary_Search(object, data, data_length);
+        intersection_result = IntersectionApproach_HeapSortAndBinarySearch(object, data, data_length);
         break;
     default:
         ASSERT_MSG(false, "Default path executed !");
