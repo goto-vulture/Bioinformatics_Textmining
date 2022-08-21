@@ -25,6 +25,23 @@ extern "C"
 
 
 
+/**
+ * @brief Length of a data set ID.
+ */
+#ifndef DATASET_ID_LENGTH
+#define DATASET_ID_LENGTH 16
+#else
+#error "The macro \"DATASET_ID_LENGTH\" is already defined !"
+#endif /* DATASET_ID_LENGTH */
+
+/**
+ * @brief Check, whether the macro values are valid.
+ */
+#if __STDC_VERSION__ >= 201112L
+_Static_assert(DATASET_ID_LENGTH > 1, "The marco \"DATASET_ID_LENGTH\" needs to be at lest 2 (one char for the ID and "
+        "one for the end symbol ('\0') !");
+#endif /* __STDC_VERSION__ */
+
 //=====================================================================================================================
 
 struct Token_List_Container
@@ -52,8 +69,14 @@ struct Token_List_Container
          * @brief Next free element in the memory. The specific address will be calculated at runtime.
          */
         uint_fast32_t next_free_element;
-        size_t allocated_tokens;            ///< Allocated number of tokens
-        char dataset_id [16];               ///< ID of the dataset
+        size_t allocated_tokens;                ///< Allocated number of tokens
+        /**
+         * @brief ID of the data set
+         *
+         * The ID is in our data sets sometimes a integer, sometimes a string. Therefore it is necessary to save the ID
+         * as char array.
+         */
+        char dataset_id [DATASET_ID_LENGTH];    ///< ID of the dataset
     }* token_lists;
 
     uint_fast32_t next_free_element;        ///< Next free element in the Token_List array
@@ -275,6 +298,10 @@ TokenListContainer_ShowAttributes
 );
 
 
+
+#ifdef DATASET_ID_LENGTH
+#undef DATASET_ID_LENGTH
+#endif /* DATASET_ID_LENGTH */
 
 #ifdef __cplusplus
 }
