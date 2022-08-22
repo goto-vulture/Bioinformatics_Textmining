@@ -222,8 +222,8 @@ TokenListContainer_CreateObject
                 // Sometimes the json pointer is NULL. But an error only occurrs, when an error message is available
                 if (strlen (cJSON_GetErrorPtr()) > 0)
                 {
-                    printf("Error before: [%s] %" PRIuFAST32 ": %d\n", cJSON_GetErrorPtr(), line_counter,
-                            current_parsing_position - input_file_data);
+                    printf("Error before: [%s] %" PRIuFAST32 ": %ld\n", cJSON_GetErrorPtr(), line_counter,
+                            (long int) (current_parsing_position - input_file_data));
                 }
                 break;
             }
