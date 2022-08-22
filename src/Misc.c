@@ -60,11 +60,9 @@ extern size_t Count_Number_Of_Digits (const size_t value)
 extern float Determine_Percent_f (const float value, const float one_hundred_percent)
 {
     ASSERT_MSG(! isnan(value), "Value is NaN !");
-    ASSERT_MSG(isinf(value) != -1, "Value is -Inf !");
-    ASSERT_MSG(isinf(value) != +1, "Value is +Inf !");
+    ASSERT_MSG(isinf(value), "Value is +/-Inf !");
     ASSERT_MSG(! isnan(one_hundred_percent), "One hundred percent is NaN !");
-    ASSERT_MSG(isinf(one_hundred_percent) != -1, "One hundred percent is -Inf !");
-    ASSERT_MSG(isinf(one_hundred_percent) != +1, "One hundred percent is +Inf !");
+    ASSERT_MSG(isinf(one_hundred_percent), "One hundred percent is +/-Inf !");
     // ASSERT_MSG(one_hundred_percent != 0.0f, "One hundred percent is 0.0 !");
 
     return (value / one_hundred_percent) * 100.0f;

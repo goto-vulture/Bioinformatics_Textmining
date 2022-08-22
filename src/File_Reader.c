@@ -192,7 +192,7 @@ TokenListContainer_CreateObject
     uint_fast32_t line_counter              = 0;
     uint_fast32_t tokens_found              = 0;
     const uint_fast8_t count_steps          = 200;
-    const size_t unsigned_input_file_length = (uint_fast64_t) input_file_length;
+    const size_t unsigned_input_file_length = (size_t) input_file_length;
     const uint_fast32_t print_steps         = ((unsigned_input_file_length / count_steps) == 0) ?
             1 : (unsigned_input_file_length / count_steps);
 
@@ -222,7 +222,7 @@ TokenListContainer_CreateObject
                 // Sometimes the json pointer is NULL. But an error only occurrs, when an error message is available
                 if (strlen (cJSON_GetErrorPtr()) > 0)
                 {
-                    printf("Error before: [%s] %" PRIuFAST32 ":%lu\n", cJSON_GetErrorPtr(), line_counter,
+                    printf("Error before: [%s] %" PRIuFAST32 ": %d\n", cJSON_GetErrorPtr(), line_counter,
                             current_parsing_position - input_file_data);
                 }
                 break;

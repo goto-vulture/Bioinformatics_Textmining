@@ -130,14 +130,9 @@ void Check_CLI_Parameter_CLI_OUTPUT_FILE (void)
  */
 void Check_CLI_Parameter_GLOBAL_ABORT_PROCESS_PERCENT (void)
 {
-    if (isinf(GLOBAL_ABORT_PROCESS_PERCENT) == -1)
+    if (isinf(GLOBAL_ABORT_PROCESS_PERCENT))
     {
-        FPRINTF_FFLUSH_NO_VA_ARGS(stderr, "Abort percent value is -Inf !\n")
-        exit (1);
-    }
-    if (isinf(GLOBAL_ABORT_PROCESS_PERCENT) == +1)
-    {
-        FPRINTF_FFLUSH_NO_VA_ARGS(stderr, "Abort percent value is +Inf !\n")
+        FPRINTF_FFLUSH_NO_VA_ARGS(stderr, "Abort percent value is +/-Inf !\n")
         exit (1);
     }
     // A isnan check is not necessary because a NaN value is the default value of this parameter and indicates, that no
