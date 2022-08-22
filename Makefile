@@ -235,6 +235,12 @@ $(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI
 main.o: $(MAIN_C)
 	@echo Build target: $(TARGET).
 	@echo
+ifeq ($(OS), Windows_NT)
+	@echo OS: Windows
+else
+	@echo OS: Linux
+endif
+	@echo
 ifeq ($(RELEASE), 1)
 	@echo Using RELEASE build.
 else
