@@ -235,23 +235,26 @@ $(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI
 main.o: $(MAIN_C)
 	@echo Build target: $(TARGET).
 	@echo
+
+	@echo ">>> Build information <<<"
 ifeq ($(OS), Windows_NT)
 	@echo OS: Windows
 else
 	@echo OS: Linux
 endif
-	@echo
+
 ifeq ($(RELEASE), 1)
-	@echo Using RELEASE build.
+	@echo Type: Release
 else
-	@echo Using DEBUG build.
+	@echo Type: Debug
 endif
-	@echo
+
 ifeq ($(NO_DOCUMENTATION), 1)
-	@echo No documentation will be generated.
+	@echo Documentation: NO
 else
-	@echo Documentation will be generated.
+	@echo Documentation: YES
 endif
+
 	@echo
 	$(CC) $(CCFLAGS) -c $(MAIN_C) $(DYNAMIC_MEMORY_H) $(ALKANE_H)
 
