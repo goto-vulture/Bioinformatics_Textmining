@@ -557,9 +557,16 @@ static cJSON_bool print_number(const cJSON * const item, printbuffer * const out
         return false;
     }
 
+    #include "../OS_Specific_Configurations.h"
 
     /* This checks for NaN and Infinity */
-    if (isnan(d) || isinf(d))
+    // ON 32 bit Windows systems a implicit cast to float will appear. This is in normal cases no problem; but it
+    // produce two conversion warnings => Use explicit casts to avoid this warnings.
+    #ifdef WINDOWS_32
+        if (isnan((float) d) || isinf((float) d))
+    #else
+        if (isnan(d) || isinf(d))
+    #endif /* WINDOWS_32 */
     {
         length = sprintf((char*)number_buffer, "null");
     }
