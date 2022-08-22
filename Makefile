@@ -66,7 +66,7 @@ RELEASE = 0
 
 PROJECT_NAME = Bioinformatics_Textmining
 DOCUMENTATION_PATH = ./Documentation
-NO_DOCUMENTATION = 0
+NO_DOCUMENTATION = 1
 
 # addsuffix, welches einen String am Ende einer Variable anbringt, kann das Ergebnis NICHT einer Variablen zuweisen, wenn diese
 # Variable im Aufruf von addsuffix vorhanden ist !
@@ -123,6 +123,18 @@ ifeq ($(NO_DOCU), 1)
 endif
 ifeq ($(NO_DOCS), 1)
 	NO_DOCUMENTATION = 1
+endif
+
+# Neu:
+# Das Erzeugen der Dokumentation muss explizit angestrossen werden
+ifeq ($(DOCUMENTATION), 1)
+	NO_DOCUMENTATION = 0
+endif
+ifeq ($(DOCU), 1)
+	NO_DOCUMENTATION = 0
+endif
+ifeq ($(DOCS), 1)
+	NO_DOCUMENTATION = 0
 endif
 
 # Unter Windows wird u.a. das Flag "-Wno-pedantic-ms-format" benoetigt, da die MinGW Implementierung nicht standardkonforme
