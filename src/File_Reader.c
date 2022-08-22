@@ -376,10 +376,10 @@ TokenListContainer_DeleteObject
 {
     ASSERT_MSG(object != NULL, "Token_List_Container is NULL !");
 
-    // Delete from inner to the outer objects
-    for (size_t i = 0; i < object->allocated_token_container; ++ i)
+    if (object->token_lists != NULL)
     {
-        if (&(object->token_lists [i]) != NULL)
+        // Delete from inner to the outer objects
+        for (size_t i = 0; i < object->allocated_token_container; ++ i)
         {
             FREE_AND_SET_TO_NULL(object->token_lists [i].data);
         }
