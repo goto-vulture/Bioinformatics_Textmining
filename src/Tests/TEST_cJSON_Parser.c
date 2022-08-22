@@ -331,6 +331,11 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
                 strncat(parsing_result, name->string, parsing_result_mem_left);
                 parsing_result += strlen (name->string);
                 parsing_result_mem_left -= strlen (name->string);
+                
+                // Check, if memory left
+                ASSERT_FMSG(parsing_result_mem_left > 0 && parsing_result_mem_left < parsing_result_length, 
+                        "Not enough memory allocated for the parsing result ! (Allocated size: %zu byte)", 
+                        parsing_result_length);
             }
 
             ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
