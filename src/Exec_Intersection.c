@@ -430,9 +430,10 @@ abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
 
     const float used_seconds = DETERMINE_USED_TIME(start, end);
-    printf ("\n=> %3.3fs (~ %.3f calc/s) for calculation of all intersections.\n",
+    const float intersection_calls_div_abort = ((float) number_of_intersection_calls) * (GLOBAL_ABORT_PROCESS_PERCENT / 100.0f);
+    printf ("\n=> %3.3fs (~ %zu calc/s) for calculation of all intersections.\n",
             Replace_NaN_And_Inf_With_Zero(used_seconds),
-            Replace_NaN_And_Inf_With_Zero (((float) number_of_intersection_calls) / used_seconds));
+            (size_t) Replace_NaN_And_Inf_With_Zero (intersection_calls_div_abort));
 
     char* json_export_str = cJSON_Print(export_results); //< Create the JSON string for the export file
     const size_t result_str_length = strlen (json_export_str);
