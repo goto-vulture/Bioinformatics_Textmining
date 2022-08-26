@@ -264,8 +264,10 @@ Exec_Intersection
     memset(dataset_id_2, '\0', sizeof (dataset_id_2));
 
     // Objects for exporting the intersection results as JSON file
-    cJSON* token            = NULL;
-    cJSON* tokens_array     = NULL;
+    cJSON* src_token        = NULL;     // Token from a source file
+    cJSON* src_tokens_array = NULL;     // Array of tokens, which are from a source file
+    cJSON* token            = NULL;     // Token
+    cJSON* tokens_array     = NULL;     // Array of tokens
     cJSON* intersections    = NULL;
     cJSON* outer_object     = NULL;
 
@@ -364,8 +366,7 @@ Exec_Intersection
                 {
                     last_used_selected_data_2_array = selected_data_2_array;
     
-                    cJSON_NEW_ARR_CHECK(tokens_array);
-                    cJSON_AddItemToObject(outer_object, "tokens", tokens_array);
+                    cJSON_NEW_ARR_CHECK(src_tokens_array);
 
                     for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_2_array]; ++ i)
                     {
@@ -373,10 +374,11 @@ Exec_Intersection
                         const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
                                 source_int_values_2->data [selected_data_2_array][i]);
 
-                        cJSON_NEW_STR_CHECK(token, int_to_token_mem);
-                        cJSON_NOT_NULL(token);
-                        cJSON_AddItemToArray(tokens_array, token);
+                        cJSON_NEW_STR_CHECK(src_token, int_to_token_mem);
+                        cJSON_NOT_NULL(src_token);
+                        cJSON_AddItemToArray(src_tokens_array, src_token);
                     }
+                    cJSON_AddItemToObject(outer_object, "tokens", src_tokens_array);
                 }
 
                 cJSON_NEW_ARR_CHECK(tokens_array);
