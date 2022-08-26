@@ -265,7 +265,9 @@ Exec_Intersection
 
     // Objects for exporting the intersection results as JSON file
     cJSON* src_token        = NULL;     // Token from a source file
+    cJSON* src_token_no_stop_word = NULL;
     cJSON* src_tokens_array = NULL;     // Array of tokens, which are from a source file
+    cJSON* src_tokens_array_wo_stop_words = NULL;
     cJSON* token            = NULL;     // Token
     cJSON* tokens_array     = NULL;     // Array of tokens
     cJSON* intersections_partial_match    = NULL;
@@ -369,6 +371,7 @@ Exec_Intersection
                     last_used_selected_data_2_array = selected_data_2_array;
     
                     cJSON_NEW_ARR_CHECK(src_tokens_array);
+                    cJSON_NEW_ARR_CHECK(src_tokens_array_wo_stop_words);
 
                     for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_2_array]; ++ i)
                     {
@@ -376,11 +379,17 @@ Exec_Intersection
                         const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
                                 source_int_values_2->data [selected_data_2_array][i]);
 
+                        // Is the token a stop word ?
+                        if (! Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
+                        {
+                            cJSON_NEW_STR_CHECK(src_token_no_stop_word, int_to_token_mem);
+                            cJSON_AddItemToArray(src_tokens_array_wo_stop_words, src_token_no_stop_word);
+                        }
                         cJSON_NEW_STR_CHECK(src_token, int_to_token_mem);
-                        cJSON_NOT_NULL(src_token);
                         cJSON_AddItemToArray(src_tokens_array, src_token);
                     }
                     cJSON_AddItemToObject(outer_object, "tokens", src_tokens_array);
+                    cJSON_AddItemToObject(outer_object, "tokens w/o stop words", src_tokens_array_wo_stop_words);
                 }
 
                 cJSON_NEW_ARR_CHECK(tokens_array);
