@@ -358,6 +358,8 @@ Exec_Intersection
             if (DocumentWordList_IsDataInObject(intersection_result) && tokens_left > 0)
             {
                 data_found = true;
+                // "selected_data_2_array" is the counter for the outer loop
+                // This test has the effect, that the tokens array only appear once for each outer element
                 if (selected_data_2_array != last_used_selected_data_2_array)
                 {
                     last_used_selected_data_2_array = selected_data_2_array;
