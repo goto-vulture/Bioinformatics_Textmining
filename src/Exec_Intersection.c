@@ -264,15 +264,17 @@ Exec_Intersection
     memset(dataset_id_2, '\0', sizeof (dataset_id_2));
 
     // Objects for exporting the intersection results as JSON file
-    cJSON* src_token        = NULL;     // Token from a source file
-    cJSON* src_token_no_stop_word = NULL;
-    cJSON* src_tokens_array = NULL;     // Array of tokens, which are from a source file
-    cJSON* src_tokens_array_wo_stop_words = NULL;
-    cJSON* token            = NULL;     // Token
-    cJSON* tokens_array     = NULL;     // Array of tokens
-    cJSON* intersections_partial_match    = NULL;
-    cJSON* intersections_full_match    = NULL;
-    cJSON* outer_object     = NULL;
+    cJSON* src_token                        = NULL; // Token from a source file
+    cJSON* src_token_no_stop_word           = NULL; // Token from a source file (no stop word)
+    cJSON* src_tokens_array                 = NULL; // Array of tokens, which are from a source file
+    cJSON* src_tokens_array_wo_stop_words   = NULL; // Array of tokens, which are from a source file (no stop words)
+    cJSON* token                            = NULL; // Token
+    cJSON* tokens_array                     = NULL; // Array of tokens
+    cJSON* intersections_partial_match      = NULL; // Intersections with a partial match (An intersection does not
+                                                    // contain a full source set)
+    cJSON* intersections_full_match         = NULL; // Intersections with a full match (An intersection contains a full
+                                                    // source set)
+    cJSON* outer_object                     = NULL; // Outer object, that contains the intersections and token arrays
 
     cJSON* export_results = cJSON_CreateObject();
     cJSON_NOT_NULL(export_results);
@@ -369,7 +371,7 @@ Exec_Intersection
                 if (selected_data_2_array != last_used_selected_data_2_array)
                 {
                     last_used_selected_data_2_array = selected_data_2_array;
-    
+
                     cJSON_NEW_ARR_CHECK(src_tokens_array);
                     cJSON_NEW_ARR_CHECK(src_tokens_array_wo_stop_words);
 
