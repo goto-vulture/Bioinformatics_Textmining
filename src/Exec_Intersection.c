@@ -268,7 +268,8 @@ Exec_Intersection
     cJSON* src_tokens_array = NULL;     // Array of tokens, which are from a source file
     cJSON* token            = NULL;     // Token
     cJSON* tokens_array     = NULL;     // Array of tokens
-    cJSON* intersections    = NULL;
+    cJSON* intersections_partial_match    = NULL;
+    cJSON* intersections_full_match    = NULL;
     cJSON* outer_object     = NULL;
 
     cJSON* export_results = cJSON_CreateObject();
@@ -286,7 +287,8 @@ Exec_Intersection
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
     {
-        cJSON_NEW_OBJ_CHECK(intersections);
+        cJSON_NEW_OBJ_CHECK(intersections_partial_match);
+        cJSON_NEW_OBJ_CHECK(intersections_full_match);
         cJSON_NEW_OBJ_CHECK(outer_object);
         _Bool data_found = false;
 
@@ -388,10 +390,6 @@ Exec_Intersection
                 size_t tokens_wrote = 0;
                 for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
                 {
-                    if (i == 0)
-                    {
-                        cJSON_AddItemToObject(intersections, dataset_id_1, tokens_array);
-                    }
                     if (intersection_result->data [0][i] == UINT_FAST32_MAX)
                     {
                         continue;
@@ -406,6 +404,15 @@ Exec_Intersection
                     ++ intersection_call_counter;
                     ++ tokens_wrote;
                 }
+                // Add data to the specific cJSON object
+                if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array))
+                {
+                    cJSON_AddItemToObject(intersections_full_match, dataset_id_1, tokens_array);
+                }
+                else
+                {
+                    cJSON_AddItemToObject(intersections_partial_match, dataset_id_1, tokens_array);
+                }
             }
 
             DocumentWordList_DeleteObject(intersection_result);
@@ -415,7 +422,8 @@ Exec_Intersection
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
         {
-            cJSON_AddItemToObject(outer_object, "Intersections", intersections);
+            cJSON_AddItemToObject(outer_object, "Intersections (partial)", intersections_partial_match);
+            cJSON_AddItemToObject(outer_object, "Intersections (full)", intersections_full_match);
             cJSON_AddItemToObject(export_results, dataset_id_2, outer_object);
         }
         // Delete the new cJSON object from the current outer loop call to avoid memory leaks
@@ -423,8 +431,10 @@ Exec_Intersection
         // the main object !
         else
         {
-            cJSON_free(intersections);
-            intersections = NULL;
+            cJSON_free(intersections_partial_match);
+            intersections_partial_match = NULL;
+            cJSON_free(intersections_full_match);
+            intersections_full_match = NULL;
             cJSON_free(outer_object);
             outer_object = NULL;
         }
@@ -453,7 +463,7 @@ abort_label:
     cJSON_Delete(export_results);
     export_results = NULL;
 
-    if (intersections != NULL)  { cJSON_free(intersections); intersections = NULL;  }
+    if (intersections_partial_match != NULL)  { cJSON_free(intersections_partial_match); intersections_partial_match = NULL;  }
     if (outer_object != NULL)   { cJSON_free(outer_object); outer_object = NULL;    }
 
     DocumentWordList_DeleteObject(source_int_values_1);
