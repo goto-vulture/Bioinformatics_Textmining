@@ -17,7 +17,7 @@ extern "C"
 
 
 
-#include <stddef.h>
+#include <stddef.h>     // size_t
 
 
 

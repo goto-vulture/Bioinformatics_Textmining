@@ -17,9 +17,9 @@ extern "C"
 
 
 
-#include <stdio.h>
-#include <inttypes.h>
-#include <time.h>
+#include <stdio.h>      // printf
+#include <inttypes.h>   // uint_fast32_t
+#include <time.h>       // clock_t
 
 
 

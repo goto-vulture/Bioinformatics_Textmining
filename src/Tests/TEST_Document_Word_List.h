@@ -17,7 +17,7 @@ extern "C"
 
 
 
-#include <stdbool.h>
+//#include <stdbool.h>    // _Bool
 
 
 

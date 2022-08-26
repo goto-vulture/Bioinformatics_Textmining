@@ -23,9 +23,8 @@ extern "C"
 
 
 
-#include <inttypes.h>
-#include <stddef.h>
-#include <stdbool.h>
+#include <inttypes.h>   // uint_fast32_t
+#include <stddef.h>     // size_t
 
 
 
@@ -56,7 +55,7 @@ extern "C"
  * @brief Check, whether the macro values are valid.
  */
 #if __STDC_VERSION__ >= 201112L
-_Static_assert(C_STR_ARRAYS > 0, "The marco \"C_STR_ARRAYS\" is zero !");
+_Static_assert(C_STR_ARRAYS == 100, "The marco \"C_STR_ARRAYS\" needs to be 100 !");
 _Static_assert(MAX_TOKEN_LENGTH > 0, "The marco \"MAX_TOKEN_LENGTH\" is zero !");
 #endif /* __STDC_VERSION__ */
 

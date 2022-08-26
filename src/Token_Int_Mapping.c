@@ -554,7 +554,7 @@ Pseudo_Hash_Function
     // Add char per char
     for (size_t i = 0; i < input_str_length; ++ i)
     {
-        sum_char_in_new_token += (uint_fast32_t) input_str [i];
+        sum_char_in_new_token = (uint_fast32_t) (input_str [i]) + sum_char_in_new_token;
     }
 
     return (sum_char_in_new_token % C_STR_ARRAYS);

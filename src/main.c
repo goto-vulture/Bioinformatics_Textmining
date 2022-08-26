@@ -88,7 +88,12 @@
     _Static_assert(sizeof(time_t) >= 4, "The type \"time_t\" needs to be at least 4 byte wide !");
     _Static_assert(sizeof(clock_t) >= 4, "The type \"clock_t\" needs to be at least 4 byte wide !");
     _Static_assert(sizeof(int) >= 4, "The type \"int\" needs to be at least 4 byte wide !");
-    _Static_assert(sizeof(long int) >= 8, "The type \"long int\" needs to be at least 4 byte wide !");
+
+    // It would be nice, when all systems fits this requirement. But on 32-Bit systems this will fail. Especially for
+    // determining the file size it is important to support files, that are larger than 2 GB (signed variable !).
+    // Anyway you need to accept this restriction ... :(
+    //_Static_assert(sizeof(long int) >= 8, "The type \"long int\" needs to be at least 8 byte wide !");
+
     _Static_assert(sizeof(void*) >= 4, "The type \"void*\" needs to be at least 4 byte wide !");
     _Static_assert(sizeof(float) >= 4, "The type \"float\" needs to be at least 4 byte wide !");
     _Static_assert(sizeof(double) >= 4, "The type \"double\" needs to be at least 4 byte wide !");
@@ -168,7 +173,12 @@ int main (const int argc, const char* argv [])
     ASSERT_MSG(sizeof(time_t) >= 4, "The type \"time_t\" needs to be at least 4 byte wide !");
     ASSERT_MSG(sizeof(clock_t) >= 4, "The type \"clock_t\" needs to be at least 4 byte wide !");
     ASSERT_MSG(sizeof(int) >= 4, "The type \"int\" needs to be at least 4 byte wide !");
-    ASSERT_MSG(sizeof(long int) >= 8, "The type \"long int\" needs to be at least 4 byte wide !");
+
+    // It would be nice, when all systems fits this requirement. But on 32-Bit systems this will fail. Especially for
+    // determining the file size it is important to support files, that are larger than 2 GB (signed variable !).
+    // Anyway you need to accept this restriction ... :(
+    // ASSERT_MSG(sizeof(long int) >=8, "The type \"long int\" needs to be at least 8 byte wide !");
+
     ASSERT_MSG(sizeof(void*) >= 4, "The type \"void*\" needs to be at least 4 byte wide !");
     ASSERT_MSG(sizeof(float) >= 4, "The type \"float\" needs to be at least 4 byte wide !");
     ASSERT_MSG(sizeof(double) >= 4, "The type \"double\" needs to be at least 4 byte wide !");

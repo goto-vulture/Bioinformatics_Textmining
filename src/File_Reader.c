@@ -192,7 +192,7 @@ TokenListContainer_CreateObject
     uint_fast32_t line_counter              = 0;
     uint_fast32_t tokens_found              = 0;
     const uint_fast8_t count_steps          = 200;
-    const size_t unsigned_input_file_length = (uint_fast64_t) input_file_length;
+    const size_t unsigned_input_file_length = (size_t) input_file_length;
     const uint_fast32_t print_steps         = ((unsigned_input_file_length / count_steps) == 0) ?
             1 : (unsigned_input_file_length / count_steps);
 
@@ -222,8 +222,8 @@ TokenListContainer_CreateObject
                 // Sometimes the json pointer is NULL. But an error only occurrs, when an error message is available
                 if (strlen (cJSON_GetErrorPtr()) > 0)
                 {
-                    printf("Error before: [%s] %" PRIuFAST32 ":%lu\n", cJSON_GetErrorPtr(), line_counter,
-                            current_parsing_position - input_file_data);
+                    printf("Error before: [%s] %" PRIuFAST32 ": %ld\n", cJSON_GetErrorPtr(), line_counter,
+                            (long int) (current_parsing_position - input_file_data));
                 }
                 break;
             }
@@ -376,10 +376,10 @@ TokenListContainer_DeleteObject
 {
     ASSERT_MSG(object != NULL, "Token_List_Container is NULL !");
 
-    // Delete from inner to the outer objects
-    for (size_t i = 0; i < object->allocated_token_container; ++ i)
+    if (object->token_lists != NULL)
     {
-        if (&(object->token_lists [i]) != NULL)
+        // Delete from inner to the outer objects
+        for (size_t i = 0; i < object->allocated_token_container; ++ i)
         {
             FREE_AND_SET_TO_NULL(object->token_lists [i].data);
         }

@@ -56,8 +56,7 @@ extern "C"
 
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h>              // printf
 #include "../String_Tools.h"
 
 

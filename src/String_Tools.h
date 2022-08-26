@@ -17,10 +17,10 @@ extern "C"
 
 
 
-#include <stddef.h>
-#include <inttypes.h>
-#include <stdbool.h>
-#include <stdarg.h>
+#include <stddef.h>     // size_t
+#include <inttypes.h>   // uint_fast8_t
+#include <stdbool.h>    // true, false
+#include <stdarg.h>     // va_list
 
 
 

@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
+#include <stdint.h>     // intptr_t
 
 struct argparse;
 struct argparse_option;

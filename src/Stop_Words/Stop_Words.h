@@ -16,8 +16,8 @@ extern "C"
 
 
 
-#include <stdbool.h>
-#include <stddef.h>
+#include <stdbool.h>    // _Bool
+#include <stddef.h>     // size_t
 
 
 

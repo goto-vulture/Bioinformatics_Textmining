@@ -14,7 +14,6 @@
 #ifndef DOCUMENT_WORD_LIST_H
 #define DOCUMENT_WORD_LIST_H
 
-// BEGINN C++-Kompablitaet herstellen
 #ifdef __cplusplus
 extern "C"
 {
@@ -22,10 +21,27 @@ extern "C"
 
 
 
-#include <inttypes.h>
-#include <stddef.h>
+#include <inttypes.h>   // uint_fast32_t
+#include <stddef.h>     // size_t
 
 
+
+/**
+ * @brief Length of a data set ID.
+ */
+#ifndef DATASET_ID_LENGTH
+#define DATASET_ID_LENGTH 16
+#else
+#error "The macro \"DATASET_ID_LENGTH\" is already defined !"
+#endif /* DATASET_ID_LENGTH */
+
+/**
+ * @brief Check, whether the macro values are valid.
+ */
+#if __STDC_VERSION__ >= 201112L
+_Static_assert(DATASET_ID_LENGTH > 1, "The marco \"DATASET_ID_LENGTH\" needs to be at lest 2 (one char for the ID and "
+        "one for the end symbol ('\0') !");
+#endif /* __STDC_VERSION__ */
 
 //=====================================================================================================================
 
@@ -50,10 +66,22 @@ struct Document_Word_List
     size_t realloc_calls;           ///< How many realloc calls were done with this object ?
 
     _Bool intersection_data;        ///< Was this object created as intersection result ?
-    char dataset_id_1 [16];         ///< First ID of the dataset (only valid data, when the object is intersection data)
-    char dataset_id_2 [16];         ///< Second ID of the dataset (only valid data, when the object is intersection data)
-};
 
+    /**
+     * @brief First ID of the data set (only valid data, when the object is intersection data).
+     *
+     * The ID is in our data sets sometimes a integer, sometimes a string. Therefore it is necessary to save the ID as
+     * char array.
+     */
+    char dataset_id_1 [DATASET_ID_LENGTH];
+    /**
+     * @brief Second ID of the data set (only valid data, when the object is intersection data).
+     *
+     * The ID is in our data sets sometimes a integer, sometimes a string. Therefore it is necessary to save the ID as
+     * char array.
+     */
+    char dataset_id_2 [DATASET_ID_LENGTH];
+};
 //=====================================================================================================================
 
 /**
@@ -112,7 +140,7 @@ DocumentWordList_AppendData
 /**
  * @brief Add one value to a Document_Word_List.
  *
- * ! Caution: If you use this function the container handels this singe value as an data set with the length of one.
+ * ! Caution: If you use this function the container manages this single value as an data set with the length of one.
  * The effect is, that one array in the container will be used like an full array !
  *
  * Asserts:
@@ -130,7 +158,7 @@ DocumentWordList_AppendOneValueAsNewDataSet
 );
 
 /**
- * @brief Printh data of a Document_Word_List to stdout.
+ * @brief Print data of a Document_Word_List to stdout.
  *
  * This function is for debugging purposes.
  *
@@ -178,7 +206,7 @@ DocumentWordList_ShowAttributes
 );
 
 /**
- * @brief Printh data and the attribute information of a Document_Word_List to stdout.
+ * @brief Print data and the attribute information of a Document_Word_List to stdout.
  *
  * This function is for debugging purposes.
  *
@@ -194,7 +222,7 @@ DocumentWordList_ShowDataAndAttributes
 );
 
 /**
- * @brief Determine intersection with a Document_Word_List and a dataset.
+ * @brief Determine intersection with a Document_Word_List and a data set.
  *
  * You can change the intersection mode with the enum parameter Intersection_Mode. Actual following modes are
  * available
@@ -209,9 +237,9 @@ DocumentWordList_ShowDataAndAttributes
  *      data_length <= object->max_array_length
  *
  * @param[in] object Document_Word_List (1. Set for the intersection calculation)
- * @param[in] data dataset (2. Set for the intersection calculation)
- * @param[in] data_length Size of the dataset
- * @param[in] mode mode for the intersection calculation (Which approach should be used ?)
+ * @param[in] data Data set (2. Set for the intersection calculation)
+ * @param[in] data_length Size of the data set
+ * @param[in] mode Mode for the intersection calculation (Which approach should be used ?)
  *
  * @return New Document_Word_List with the intersections in the respective subsets
  */
@@ -250,7 +278,10 @@ DocumentWordList_IsDataInObject
 
 
 
-// ENDE C++-Kompablitaet herstellen
+#ifdef DATASET_ID_LENGTH
+#undef DATASET_ID_LENGTH
+#endif /* DATASET_ID_LENGTH */
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

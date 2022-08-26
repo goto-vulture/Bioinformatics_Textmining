@@ -66,7 +66,7 @@ RELEASE = 0
 
 PROJECT_NAME = Bioinformatics_Textmining
 DOCUMENTATION_PATH = ./Documentation
-NO_DOCUMENTATION = 0
+NO_DOCUMENTATION = 1
 
 # addsuffix, welches einen String am Ende einer Variable anbringt, kann das Ergebnis NICHT einer Variablen zuweisen, wenn diese
 # Variable im Aufruf von addsuffix vorhanden ist !
@@ -123,6 +123,18 @@ ifeq ($(NO_DOCU), 1)
 endif
 ifeq ($(NO_DOCS), 1)
 	NO_DOCUMENTATION = 1
+endif
+
+# Neu:
+# Das Erzeugen der Dokumentation muss explizit angestrossen werden
+ifeq ($(DOCUMENTATION), 1)
+	NO_DOCUMENTATION = 0
+endif
+ifeq ($(DOCU), 1)
+	NO_DOCUMENTATION = 0
+endif
+ifeq ($(DOCS), 1)
+	NO_DOCUMENTATION = 0
 endif
 
 # Unter Windows wird u.a. das Flag "-Wno-pedantic-ms-format" benoetigt, da die MinGW Implementierung nicht standardkonforme
@@ -235,17 +247,26 @@ $(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI
 main.o: $(MAIN_C)
 	@echo Build target: $(TARGET).
 	@echo
+
+	@echo ">>> Build information <<<"
+ifeq ($(OS), Windows_NT)
+	@echo OS: Windows
+else
+	@echo OS: Linux
+endif
+
 ifeq ($(RELEASE), 1)
-	@echo Using RELEASE build.
+	@echo Type: Release
 else
-	@echo Using DEBUG build.
+	@echo Type: Debug
 endif
-	@echo
+
 ifeq ($(NO_DOCUMENTATION), 1)
-	@echo No documentation will be generated.
+	@echo Documentation: NO
 else
-	@echo Documentation will be generated.
+	@echo Documentation: YES
 endif
+
 	@echo
 	$(CC) $(CCFLAGS) -c $(MAIN_C) $(DYNAMIC_MEMORY_H) $(ALKANE_H)
 
