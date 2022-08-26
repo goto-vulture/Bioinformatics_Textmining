@@ -510,6 +510,20 @@ Add_General_Information_To_Export_File
     ASSERT_MSG(!(ret == 0 && time_string [0] != '\0'), "Something went wrong in the strftime call.")
     time_string [ret] = '\0';
 
+    // Creation mode (Part match ? Full match ? Part and full match ?)
+    cJSON* creation_mode = cJSON_CreateObject();
+    cJSON_NOT_NULL(creation_mode);
+    cJSON* part_match = cJSON_CreateBool(true);
+    cJSON_NOT_NULL(part_match);
+    cJSON* full_match = cJSON_CreateBool(true);
+    cJSON_NOT_NULL(full_match);
+    cJSON* stop_word_list = cJSON_CreateBool(true);
+    cJSON_NOT_NULL(stop_word_list);
+    cJSON_AddItemToObject(creation_mode, "Part match", part_match);
+    cJSON_AddItemToObject(creation_mode, "Full match", full_match);
+    cJSON_AddItemToObject(creation_mode, "Stop word list used", stop_word_list);
+    cJSON_AddItemToObject(general_infos, "Creation mode", creation_mode);
+
     cJSON* creation_time    = cJSON_CreateString(time_string);
     cJSON_NOT_NULL(creation_time);
 
