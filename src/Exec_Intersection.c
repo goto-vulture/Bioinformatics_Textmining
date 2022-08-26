@@ -475,6 +475,7 @@ abort_label:
     export_results = NULL;
 
     if (intersections_partial_match != NULL)  { cJSON_free(intersections_partial_match); intersections_partial_match = NULL;  }
+    if (intersections_full_match != NULL)  { cJSON_free(intersections_full_match); intersections_full_match = NULL;  }
     if (outer_object != NULL)   { cJSON_free(outer_object); outer_object = NULL;    }
 
     DocumentWordList_DeleteObject(source_int_values_1);
