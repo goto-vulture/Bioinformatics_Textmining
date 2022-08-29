@@ -4,28 +4,60 @@
 \usepackage[T1]{fontenc}    % Fonts mit westeuropäischer Codierung verwenden
 \usepackage[ngerman]{babel} % Neue deutsche Sprache
 \usepackage{fancyhdr}       % Kopf- und Fusszeilen
-\usepackage{showframe}      % Boxen mit Rand visualisieren (nur für das Schreiben des Dokuments brauchbar!)
+%\usepackage{showframe}      % Boxen mit Rand visualisieren (nur für das Schreiben des Dokuments brauchbar!)
+
+\newcommand{\gerquot}[1]{\glqq#1\grqq}
+\newcommand{\dashAndSpace}[0]{\textendash \space}
+\newcommand{\dataSource}[0]{Anjani Dhrangadhariya}
 
 \title{Bioinformatik Textmining}
 \author{Dominik Habermann (108019250645)}
 \date{\today}
 
 % Kopf- und Fussnoten anpassen
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{\theauthor}
-\fancyhead[R]{\thetitle}
-\fancyfoot[C]{\thepage}
+%\pagestyle{fancy}
+%\fancyhf{}
+%\fancyhead[L]{\theauthor}
+%\fancyhead[R]{\thetitle}
+%\fancyfoot[C]{\thepage}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-...
+    Das Praktikums im Bereich der Bioinformatik bestand aus dem Auswerten von großen Datenmengen, die in Form von Textdateien vorlagen.\\
+    Während der Durchführung hat sich herausgestellt, dass die Möglichkeiten der Datenauswertung größer sind als ursprünglich geplant, sodass diese Ausarbeitung lediglich den aktuellen Stand beschreiben kann.\\
+    Der Inhalt des Praktikums besaß seinen Fokus hauptsächlich auf die Methoden der Datenauswertung und weniger auf den biologischen Hintergrund der Daten.\\
+
+    Die Umsetzung erfolgte mittels der Programmiersprache \texttt{C} und die mathematischen Methoden basieren auf angepasste elementare Mengenoperationen. Das Ziel der Auswertung war das Ermitteln des Vorhandenseins von kleinen Wortmengen in den Zusammenfassungen von unterschiedlichsten Ausarbeitungen. Hiermit soll die Relevanz von Ausarbeitungen ermittelt werden.
 \end{abstract}
 
-\section{...}
-...
+\section{Hintergrund}
+    In diesem Kapitel wird beschrieben woher die Daten stammen und was das erhoffte Ziel der Auswertung ist. Zusätzlich dazu werden die verwendeten Technologien genannt und es wird erläutert warum genau diese verwendet wurden.
+    \subsection{Quelle der Daten}
+    Die Daten stammen von der Doktorandin \dataSource, die aktuell in der Schweiz unter Hilfenahme dieser Daten ihre Doktorarbeit verfasst. Bei den Daten handelt es sich um reale Daten, die aus dem Klinikbetrieb stammen.
+    \subsection{Ziel der Auswertung}
+    Das Ziel ist die Sortierung bezüglich der Relevanz von Abschlussarbeiten mittels deren Zusammenfassungen bei gegebenen Wortgruppen. Diese Wortgruppen bestehen aus 1 bis etwa 10 Wörter, die entweder eine Thematik, Chemikalien oder Technologien beschreiben.\\
+    Durch diese Sortierung erhofft man sich einen schnellen Zugriff auf die möglichst am meisten relevanten Quellen. Da es sich bei den vorhandenen Wortgruppen um Mengen in der Größenordnung von vielen Hunderttausenden bis hin zu einigen Millionen handelt, ist selbstverständlich eine Sortierung nur mit der Unterstützung von Computern möglich.
+    \subsection{Verwendete Technologien und Verfahren}
+    ...
+
+\section{Umsetzung}
+    ...
+    \subsection{Konzeptioneller Aufbau}
+    ...
+    \subsection{...}
+    ...
+
+\section{Ergebnisse}
+    ...
+    \subsection{...}
+    ...
+
+\section{Ausblick}
+    ...
+    \subsection{...}
+    ...
 
 \end{document}
