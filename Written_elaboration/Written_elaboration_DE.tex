@@ -4,6 +4,7 @@
 \usepackage[T1]{fontenc}    % Fonts mit westeuropäischer Codierung verwenden
 \usepackage[ngerman]{babel} % Neue deutsche Sprache
 \usepackage{fancyhdr}       % Kopf- und Fusszeilen
+\usepackage{tikz}           % Fuer das Erstellen von einfachen Grafiken
 %\usepackage{showframe}      % Boxen mit Rand visualisieren (nur für das Schreiben des Dokuments brauchbar!)
 
 \newcommand{\gerquot}[1]{\glqq#1\grqq}
@@ -34,19 +35,74 @@
 \end{abstract}
 
 \section{Hintergrund}
-    In diesem Kapitel wird beschrieben woher die Daten stammen und was das erhoffte Ziel der Auswertung ist. Zusätzlich dazu werden die verwendeten Technologien genannt und es wird erläutert warum genau diese verwendet wurden.
+    In diesem Kapitel wird beschrieben woher die Daten stammen und was das erhoffte Ziel der Auswertung ist. Zusätzlich dazu werden die verwendeten Technologien genannt und es wird beschrieben warum genau diese verwendet wurden.
+
     \subsection{Quelle der Daten}
-    Die Daten stammen von der Doktorandin \dataSource, die aktuell in der Schweiz unter Hilfenahme dieser Daten ihre Doktorarbeit verfasst. Bei den Daten handelt es sich um reale Daten, die aus dem Klinikbetrieb stammen.
+        Die Daten stammen von der Doktorandin \dataSource, die aktuell in der Schweiz unter Hilfenahme dieser Daten ihre Doktorarbeit verfasst. Bei den Daten handelt es sich um reale Daten, die aus dem Klinikbetrieb stammen.
+
     \subsection{Ziel der Auswertung}
-    Das Ziel ist die Sortierung bezüglich der Relevanz von Abschlussarbeiten mittels deren Zusammenfassungen bei gegebenen Wortgruppen. Diese Wortgruppen bestehen aus 1 bis etwa 10 Wörter, die entweder eine Thematik, Chemikalien oder Technologien beschreiben.\\
-    Durch diese Sortierung erhofft man sich einen schnellen Zugriff auf die möglichst am meisten relevanten Quellen. Da es sich bei den vorhandenen Wortgruppen um Mengen in der Größenordnung von vielen Hunderttausenden bis hin zu einigen Millionen handelt, ist selbstverständlich eine Sortierung nur mit der Unterstützung von Computern möglich.
-    \subsection{Verwendete Technologien und Verfahren}
-    ...
+        Das Ziel ist die Sortierung bezüglich der Relevanz von Abschlussarbeiten mittels deren Zusammenfassungen bei gegebenen Wortgruppen. Diese Wortgruppen bestehen aus 1 bis etwa 10 Wörter, die entweder eine Thematik, Chemikalien oder Technologien beschreiben.\\
+        Durch diese Sortierung erhofft man sich einen schnellen Zugriff auf die möglichst am meisten relevanten Quellen. Da es sich bei den vorhandenen Wortgruppen um Mengen in der Größenordnung von vielen Hunderttausenden bis hin zu einigen Millionen handelt, ist eine Sortierung nur mit der Unterstützung von Computern möglich.
+
+    \subsection{Verwendete Technologien}
+        \begin{itemize}
+            \item Programmiersprache: \texttt{C} (Standard: \texttt{C11})
+            \item Compiler: GCC (Version: 11.2.0)
+            \item Versionsverwaltungstool: git (Version: 2.34.1)
+            \item IDE: Eclipse for \texttt{C}/\texttt{C++} (Version: 2022-06 (4.24.0))
+            \item Weiteres: u.a. make, Perf, Valgrind, cJSON
+        \end{itemize}
+        Die Wahl der Programmiersprache wurde insbesondere durch die Größen der Eingabedateien beeinflusst. So war bereits zum Projektbeginn bekannt, dass einige der zu verarbeitenden Dateien viele hundert Megabyte groß sind. Um solch eine große Menge an Daten möglichst effizient auswerten zu können, bietet sich eine hardwarenahe Programmiersprache wie \texttt{C} an. Die weiteren Technologien sind gängige Werkzeuge für Projekte, die mittels \texttt{C} oder \texttt{C++} entwickelt werden.
+
 
 \section{Umsetzung}
-    ...
+    Das folgende Kapitel beschreibt den konzeptionellen Aufbau des Auswertungsverfahrens und erläutert die Hintergedanken, die gemacht wurden.
+
     \subsection{Konzeptioneller Aufbau}
-    ...
+        Das einfachste Verfahren, um eine Menge an Informationen nach der Relevanz für bestimmte Eingaben zu sortieren, ist das Bilden der Schnittmenge von der Eingabe mit den zur Verfügung gestellten Informationen. Dabei wird sowohl die Eingabe als auch die bereitgestellten Informationen in Tokens zerlegt. Im vorliegenden Fall sind die Wörter die Tokens.\\
+
+        Aufbau des Auswertungsverfahrens:\\ \\
+
+        \tikzstyle{in_out} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black]%, fill=red!30]
+        \tikzstyle{rect} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+        \tikzstyle{process} = [rectangle, rounded corners, minimum width=0.75cm, minimum height=0.75cm,text centered, draw=black, fill=gray!12.5]
+        \tikzstyle{intersection} = [rectangle, rounded corners, minimum width=5cm, minimum height=1cm, text centered, draw=black]
+        \tikzstyle{arrow} = [thick,->,>=stealth]
+        \begin{tikzpicture}[node distance=2cm]
+            % node[Optionen](Name){Inhalt}
+            \node (Eingabedatei1) [in_out, xshift=0cm] {Eingabedatei 1};
+            \node (Eingabedatei2) [in_out, xshift=4.4cm] {Eingabedatei 2};
+
+            \node (Token_List_Container1) [rect, below of=Eingabedatei1] {Token\_List\_Container 1};
+            \node (Token_List_Container2) [rect, below of=Eingabedatei2] {Token\_List\_Container 2};
+
+            \node (Inv1) [coordinate, below of=Token_List_Container1, xshift=2.2cm, yshift=-0cm, label=Fasse Container zusammen] {};
+            %\node (process1) [process, below of=Inv1, yshift=+0.75cm, text centered] {Duplikate entfernen};
+            %\node (process2) [process, below of=process1, yshift=+0.3cm, text centered, text width=3cm] {Gebe jedem Token eine eindeutige ID};
+
+            \node (Token_Int_Mapping) [rect, below of=Inv1, yshift=-0.25cm] {Token\_Int\_Mapping};
+            \node (Document_Word_List1) [rect, below of=Token_Int_Mapping, xshift=-3cm] {Document\_Word\_List 1};
+            \node (Document_Word_List2) [rect, below of=Token_Int_Mapping, xshift=3cm] {Document\_Word\_List 2};
+
+            \node (Inv2) [coordinate, below of=Document_Word_List1, xshift=3cm, yshift=0.1cm, label=Berechne paarweise Schnittmengen] {};
+            \node (Intersection) [intersection, below of=Inv2, yshift=0.0cm] {Schnittmenge};
+            \node (Document_Word_List_Ergebnis) [rect, below of=Intersection] {Document\_Word\_List Ergebnisobjekt};
+
+            \node (Ausgabedatei) [in_out, below of=Document_Word_List_Ergebnis, yshift=-0.4cm] {Ausgabedatei};
+
+            \draw [arrow] (Eingabedatei1) -- node[anchor=east] {Parse mittels cJSON} (Token_List_Container1);
+            \draw [arrow] (Eingabedatei2) -- node[anchor=west] {Parse mittels cJSON} (Token_List_Container2);
+            \draw [thick] (Token_List_Container1) |- (Inv1);
+            \draw [thick] (Token_List_Container2) |- (Inv1);
+            \draw [arrow] (Inv1) -- node[anchor=west, text centered, text width=3.5cm]{Entferne Duplikate} node[anchor=east, text centered, text width=3.5cm]{Gebe jedem Token eine eindeutige ID} (Token_Int_Mapping);
+            \draw [arrow] (Token_Int_Mapping) -| node[anchor=east] {Token $\rightarrow$ Int} (Document_Word_List1);
+            \draw [arrow] (Token_Int_Mapping) -| node[anchor=west] {Token $\rightarrow$ Int} (Document_Word_List2);
+            \draw [thick] (Document_Word_List1) |- (Inv2);
+            \draw [thick] (Document_Word_List2) |- (Inv2);
+            \draw [arrow] (Inv2) -- (Intersection);
+            \draw [arrow] (Intersection) -- node[anchor=west, text centered, text width=3.5cm] {Bereite Daten vor} (Document_Word_List_Ergebnis);
+            \draw [arrow] (Document_Word_List_Ergebnis) -- node[anchor=west, text centered, text width=3.5cm] {Exportiere Daten mittels cJSON} (Ausgabedatei);
+        \end{tikzpicture}
     \subsection{...}
     ...
 
