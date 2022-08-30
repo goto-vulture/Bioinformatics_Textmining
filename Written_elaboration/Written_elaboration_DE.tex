@@ -5,6 +5,9 @@
 \usepackage[ngerman]{babel} % Neue deutsche Sprache
 \usepackage{fancyhdr}       % Kopf- und Fusszeilen
 \usepackage{tikz}           % Fuer das Erstellen von einfachen Grafiken
+\usepackage{float}          % Fuer den Positionierungsbefehl '[H]'
+\usepackage{fancyhdr}       % Angepasste Header und Footer
+\usepackage{titling}        % Fuer Befehle wie \thetitle
 %\usepackage{showframe}      % Boxen mit Rand visualisieren (nur für das Schreiben des Dokuments brauchbar!)
 
 \newcommand{\gerquot}[1]{\glqq#1\grqq}
@@ -16,12 +19,13 @@
 \date{\today}
 
 % Kopf- und Fussnoten anpassen
-%\pagestyle{fancy}
-%\fancyhf{}
-%\fancyhead[L]{\theauthor}
-%\fancyhead[R]{\thetitle}
-%\fancyfoot[C]{\thepage}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\theauthor}
+\fancyhead[R]{\thetitle}
+\fancyfoot[C]{\thepage}
 
+%%%%% %%%%% %%%%% %%%%% %%%%% \begin{document} %%%%% %%%%% %%%%% %%%%% %%%%%
 \begin{document}
 
 \maketitle
@@ -35,7 +39,7 @@
 \end{abstract}
 
 \section{Hintergrund}
-    In diesem Kapitel wird beschrieben woher die Daten stammen und was das erhoffte Ziel der Auswertung ist. Zusätzlich dazu werden die verwendeten Technologien genannt und es wird beschrieben warum genau diese verwendet wurden.
+    In diesem Kapitel wird beschrieben woher die Daten stammen und was das erhoffte Ziel der Auswertung ist.
 
     \subsection{Quelle der Daten}
         Die Daten stammen von der Doktorandin \dataSource, die aktuell in der Schweiz unter Hilfenahme dieser Daten ihre Doktorarbeit verfasst. Bei den Daten handelt es sich um reale Daten, die aus dem Klinikbetrieb stammen.
@@ -43,6 +47,10 @@
     \subsection{Ziel der Auswertung}
         Das Ziel ist die Sortierung bezüglich der Relevanz von Abschlussarbeiten mittels deren Zusammenfassungen bei gegebenen Wortgruppen. Diese Wortgruppen bestehen aus 1 bis etwa 10 Wörter, die entweder eine Thematik, Chemikalien oder Technologien beschreiben.\\
         Durch diese Sortierung erhofft man sich einen schnellen Zugriff auf die möglichst am meisten relevanten Quellen. Da es sich bei den vorhandenen Wortgruppen um Mengen in der Größenordnung von vielen Hunderttausenden bis hin zu einigen Millionen handelt, ist eine Sortierung nur mit der Unterstützung von Computern möglich.
+
+
+\section{Umsetzung}
+    Das folgende Kapitel nennt die verwendeten Technologien und eine Erklärung warum genau diese verwendet wurden. Dazu kommt der konzeptionelle Aufbau des Auswertungsverfahrens und eine Erläuterung der Hintergedanken, die dabei gemacht wurden.
 
     \subsection{Verwendete Technologien}
         \begin{itemize}
@@ -54,66 +62,79 @@
         \end{itemize}
         Die Wahl der Programmiersprache wurde insbesondere durch die Größen der Eingabedateien beeinflusst. So war bereits zum Projektbeginn bekannt, dass einige der zu verarbeitenden Dateien viele hundert Megabyte groß sind. Um solch eine große Menge an Daten möglichst effizient auswerten zu können, bietet sich eine hardwarenahe Programmiersprache wie \texttt{C} an. Die weiteren Technologien sind gängige Werkzeuge für Projekte, die mittels \texttt{C} oder \texttt{C++} entwickelt werden.
 
-
-\section{Umsetzung}
-    Das folgende Kapitel beschreibt den konzeptionellen Aufbau des Auswertungsverfahrens und erläutert die Hintergedanken, die gemacht wurden.
+    \subsection{Portierbarkeit}
+        Während des gesamten Projektes wurde darauf geachtet, dass der Quellcode portierbar ist und ohne Änderungen auf andere Betriebssysteme und Prozessorarchitekturen übersetzt werden kann. Dies wurde nicht nur durch die Wahl der Programmiersprache erreicht, sondern auch durch die strikte Verwendung des \texttt{C11}-Standards sowie der Standardbibliothek. Betriebssystem-spezifische Codefragmente wurden mittels Präprozessoranweisungen zur Übersetzungszeit auswählbar gemacht.\footnote{Eine Übersetzung ist unter Linux Mint + 21 und unter Windows (8.1 + 10) getestet worden.}
 
     \subsection{Konzeptioneller Aufbau}
-        Das einfachste Verfahren, um eine Menge an Informationen nach der Relevanz für bestimmte Eingaben zu sortieren, ist das Bilden der Schnittmenge von der Eingabe mit den zur Verfügung gestellten Informationen. Dabei wird sowohl die Eingabe als auch die bereitgestellten Informationen in Tokens zerlegt. Im vorliegenden Fall sind die Wörter die Tokens.\\
-
-        Aufbau des Auswertungsverfahrens:\\ \\
+        Das einfachste Verfahren, um eine Menge an Informationen nach der Relevanz für bestimmte Eingaben zu sortieren, ist das Bilden der Schnittmenge von der Eingabe mit den zur Verfügung gestellten Informationen. Dabei wird sowohl die Eingabe als auch die bereitgestellten Informationen in Tokens zerlegt. Im vorliegenden Fall stellen die Wörter die Tokens dar.\\
+        Der grundlegende Aufbau ist in der Grafik \ref{Proammverfahren} dargestellt.
 
         \tikzstyle{in_out} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black]%, fill=red!30]
         \tikzstyle{rect} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black]
         \tikzstyle{process} = [rectangle, rounded corners, minimum width=0.75cm, minimum height=0.75cm,text centered, draw=black, fill=gray!12.5]
-        \tikzstyle{intersection} = [rectangle, rounded corners, minimum width=5cm, minimum height=1cm, text centered, draw=black]
+        \tikzstyle{intersection} = [rectangle, rounded corners, minimum width=4cm, minimum height=1cm, text centered, draw=black]
         \tikzstyle{arrow} = [thick,->,>=stealth]
-        \begin{tikzpicture}[node distance=2cm]
-            % node[Optionen](Name){Inhalt}
-            \node (Eingabedatei1) [in_out, xshift=0cm] {Eingabedatei 1};
-            \node (Eingabedatei2) [in_out, xshift=4.4cm] {Eingabedatei 2};
+        \begin{figure}[H]
+            \begin{tikzpicture}[node distance=2cm]
+                % node[Optionen](Name){Inhalt}
+                \node (Eingabedatei1) [in_out, xshift=0cm] {Eingabedatei 1};
+                \node (Eingabedatei2) [in_out, xshift=4.4cm] {Eingabedatei 2};
 
-            \node (Token_List_Container1) [rect, below of=Eingabedatei1] {Token\_List\_Container 1};
-            \node (Token_List_Container2) [rect, below of=Eingabedatei2] {Token\_List\_Container 2};
+                \node (Token_List_Container1) [rect, below of=Eingabedatei1] {Token\_List\_Container 1};
+                \node (Token_List_Container2) [rect, below of=Eingabedatei2] {Token\_List\_Container 2};
 
-            \node (Inv1) [coordinate, below of=Token_List_Container1, xshift=2.2cm, yshift=-0cm, label=Fasse Container zusammen] {};
-            %\node (process1) [process, below of=Inv1, yshift=+0.75cm, text centered] {Duplikate entfernen};
-            %\node (process2) [process, below of=process1, yshift=+0.3cm, text centered, text width=3cm] {Gebe jedem Token eine eindeutige ID};
+                \node (Inv1) [coordinate, below of=Token_List_Container1, xshift=2.2cm, yshift=-0cm, label=Fasse Container zusammen] {};
 
-            \node (Token_Int_Mapping) [rect, below of=Inv1, yshift=-0.25cm] {Token\_Int\_Mapping};
-            \node (Document_Word_List1) [rect, below of=Token_Int_Mapping, xshift=-3cm] {Document\_Word\_List 1};
-            \node (Document_Word_List2) [rect, below of=Token_Int_Mapping, xshift=3cm] {Document\_Word\_List 2};
+                \node (Token_Int_Mapping) [rect, below of=Inv1, yshift=-0.25cm] {Token\_Int\_Mapping};
+                \node (Document_Word_List1) [rect, below of=Token_Int_Mapping, xshift=-3cm] {Document\_Word\_List 1};
+                \node (Document_Word_List2) [rect, below of=Token_Int_Mapping, xshift=3cm] {Document\_Word\_List 2};
 
-            \node (Inv2) [coordinate, below of=Document_Word_List1, xshift=3cm, yshift=0.1cm, label=Berechne paarweise Schnittmengen] {};
-            \node (Intersection) [intersection, below of=Inv2, yshift=0.0cm] {Schnittmenge};
-            \node (Document_Word_List_Ergebnis) [rect, below of=Intersection] {Document\_Word\_List Ergebnisobjekt};
+                \node (Inv2) [coordinate, below of=Document_Word_List1, xshift=3cm, yshift=0.1cm, label=Berechne paarweise Schnittmengen] {};
+                \node (Intersection) [intersection, below of=Inv2, yshift=0.0cm] {\emph{Schnittmenge}};
+                \node (Document_Word_List_Ergebnis) [rect, below of=Intersection, yshift=-0.4cm] {Document\_Word\_List Ergebnisobjekt};
 
-            \node (Ausgabedatei) [in_out, below of=Document_Word_List_Ergebnis, yshift=-0.4cm] {Ausgabedatei};
+                \node (Ausgabedatei) [in_out, below of=Document_Word_List_Ergebnis, yshift=-0.4cm] {Ausgabedatei};
 
-            \draw [arrow] (Eingabedatei1) -- node[anchor=east] {Parse mittels cJSON} (Token_List_Container1);
-            \draw [arrow] (Eingabedatei2) -- node[anchor=west] {Parse mittels cJSON} (Token_List_Container2);
-            \draw [thick] (Token_List_Container1) |- (Inv1);
-            \draw [thick] (Token_List_Container2) |- (Inv1);
-            \draw [arrow] (Inv1) -- node[anchor=west, text centered, text width=3.5cm]{Entferne Duplikate} node[anchor=east, text centered, text width=3.5cm]{Gebe jedem Token eine eindeutige ID} (Token_Int_Mapping);
-            \draw [arrow] (Token_Int_Mapping) -| node[anchor=east] {Token $\rightarrow$ Int} (Document_Word_List1);
-            \draw [arrow] (Token_Int_Mapping) -| node[anchor=west] {Token $\rightarrow$ Int} (Document_Word_List2);
-            \draw [thick] (Document_Word_List1) |- (Inv2);
-            \draw [thick] (Document_Word_List2) |- (Inv2);
-            \draw [arrow] (Inv2) -- (Intersection);
-            \draw [arrow] (Intersection) -- node[anchor=west, text centered, text width=3.5cm] {Bereite Daten vor} (Document_Word_List_Ergebnis);
-            \draw [arrow] (Document_Word_List_Ergebnis) -- node[anchor=west, text centered, text width=3.5cm] {Exportiere Daten mittels cJSON} (Ausgabedatei);
-        \end{tikzpicture}
-    \subsection{...}
-    ...
+                % ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
 
-\section{Ergebnisse}
-    ...
-    \subsection{...}
-    ...
+                \draw [arrow] (Eingabedatei1) -- node[anchor=east] {Parse mittels cJSON} (Token_List_Container1);
+                \draw [arrow] (Eingabedatei2) -- node[anchor=west] {Parse mittels cJSON} (Token_List_Container2);
+                \draw [thick] (Token_List_Container1) |- (Inv1);
+                \draw [thick] (Token_List_Container2) |- (Inv1);
+                \draw [arrow] (Inv1) -- node[anchor=west, text centered, text width=3.5cm]{Entferne Duplikate} node[anchor=east, text centered, text width=3.5cm]{Gebe jedem Token eine eindeutige ID} (Token_Int_Mapping);
+                \draw [arrow] (Token_Int_Mapping) -| node[anchor=east] {Token $ \rightarrow $ Int} (Document_Word_List1);
+                \draw [arrow] (Token_Int_Mapping) -| node[anchor=west] {Token $ \rightarrow $ Int} (Document_Word_List2);
+                \draw [thick] (Document_Word_List1) |- (Inv2);
+                \draw [thick] (Document_Word_List2) |- (Inv2);
+                \draw [arrow] (Inv2) -- (Intersection);
+                \draw [arrow] (Intersection) -- node[anchor=west, text centered, text width=3.5cm] {Bereite Daten für Export vor} (Document_Word_List_Ergebnis);
+                \draw [arrow] (Document_Word_List_Ergebnis) -- node[anchor=east, text centered, text width=2.5cm] {Int $ \rightarrow $ Token} node[anchor=west, text centered, text width=3.5cm] {Exportiere Daten mittels cJSON} (Ausgabedatei);
+            \end{tikzpicture}
+            \caption{Aufbau des Auswertungsverfahrens}
+            \label{Proammverfahren}
+        \end{figure}
 
-\section{Ausblick}
-    ...
-    \subsection{...}
-    ...
+    \subsection{Token-Int Mapping}
+        Das Token-Int Mapping ist eine bijektive Abbildung zwischen den Tokens aus den Eingabedateien und ganzzahligen Werten. Technisch ist solch eine Abbildung nicht notwendig. Die Idee dahinter ist, dass Vergleiche von Zeichenketten vergleichsweise aufwendig sind. Wenn lediglich ein Wert verglichen werden muss, dann ist bei der vorgegeben Größe an Daten ein Geschwindigkeitsgewinn denkbar.
+
+    \subsection{Ergebnisdatei}
+        Nach Rücksprache mit \dataSource \space wurde sich entschieden, dass die Ergebnisdatei \dashAndSpace wie die Eingabedateien \dashAndSpace auch dem JSON-Dateiformat entsprechen wird. Hauptmotivation war dafür die einfache Auswertbarkeit des Formats.\footnote{Dies war auch der Grund warum die Quellinformationen als JSON-Datei angelegt wurden.}
+        Die Bibliothek \emph{cJSON} bietet auch Funktionen für den Export von Dateien im JSON-Format an, sodass keine weitere Bibliothek notwendig wurde.
+
+
+\section{Ergebnisse und Ausblick}
+    Im letzten Kapitel werden die aktuellen Zwischenergebnisse genannt sowie der weitere Projektablauf außerhalb vom Bioinformatikkurs.
+
+    \subsection{Ergebnisse}
+        Am Ende hat sich herausgestellt, dass die geplanten Auswertungen erfolgreich durchgeführt werden konnten. Zusätzlich haben sich bei der Umsetzung weitere Ideen ergeben, wie die Sortierung anhand der Relevanz noch verfeinert werden kann.
+
+    \subsection{Ausblick}
+        Mögliche Features können implementiert werden, um die Auswertung noch genauer zu machen:
+        \begin{itemize}
+            \item Zusätzlich zur Schnittmenge kann die Position der Tokens in den Quelldateien ermittelt. Je geringer der Abstand zwischen den Tokens ist, desto relevanter werden die Ergebnisse sein.
+            \item ...
+        \end{itemize}
+
 
 \end{document}
+%%%%% %%%%% %%%%% %%%%% %%%%% \end{document} %%%%% %%%%% %%%%% %%%%% %%%%%
