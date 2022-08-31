@@ -31,11 +31,11 @@
 \maketitle
 
 \begin{abstract}
-    Das Praktikums im Bereich der Bioinformatik bestand aus dem Auswerten von großen Datenmengen, die in Form von Textdateien vorlagen.\\
-    Während der Durchführung hat sich herausgestellt, dass die Möglichkeiten der Datenauswertung größer sind als ursprünglich geplant, sodass diese Ausarbeitung lediglich den aktuellen Stand beschreiben kann.\\
+    Das Praktikum im Bereich der Bioinformatik bestand aus dem Auswerten von großen Datenmengen, die in Form von Textdateien im JSON-Format vorlagen.\\
+    Während der Durchführung hat sich herausgestellt, dass die Möglichkeiten der Datenauswertung größer sind als ursprünglich geplant, sodass diese Ausarbeitung lediglich den aktuellen Stand widerspiegeln kann.\\
     Der Inhalt des Praktikums besaß seinen Fokus hauptsächlich auf die Methoden der Datenauswertung und weniger auf den biologischen Hintergrund der Daten.\\
 
-    Die Umsetzung erfolgte mittels der Programmiersprache \texttt{C} und die mathematischen Methoden basieren auf angepasste elementare Mengenoperationen. Das Ziel der Auswertung war das Ermitteln des Vorhandenseins von kleinen Wortmengen in den Zusammenfassungen von unterschiedlichsten Ausarbeitungen. Hiermit soll die Relevanz von Ausarbeitungen ermittelt werden.
+    Die Umsetzung erfolgte mittels der Programmiersprache \texttt{C}. Die mathematischen Methoden basieren auf angepassten elementaren Mengenoperationen. Das Ziel der Auswertung war das Ermitteln des Vorhandenseins von kleinen Wortmengen in den Zusammenfassungen von unterschiedlichsten Ausarbeitungen. Hiermit soll die Relevanz von Ausarbeitungen bei gegebenen Wortmengen ermittelt werden.
 \end{abstract}
 
 \section{Hintergrund}
@@ -115,26 +115,26 @@
         \end{figure}
 
     \subsection{Token-Int Mapping}
-        Das Token-Int Mapping ist eine bijektive Abbildung zwischen den Tokens aus den Eingabedateien und ganzzahligen Werten. Technisch ist solch eine Abbildung nicht notwendig. Die Idee dahinter ist, dass Vergleiche von Zeichenketten vergleichsweise aufwendig sind. Wenn lediglich ein Wert verglichen werden muss, dann ist bei der vorgegeben Größe an Daten ein Geschwindigkeitsgewinn denkbar.
+        Das Token-Int Mapping ist eine bijektive Abbildung zwischen den Tokens aus den Eingabedateien und ganzzahligen Werten. Technisch gesehen ist solch eine Abbildung nicht notwendig. Die Idee dahinter ist, dass Vergleiche von Zeichenketten relativ aufwendig sind, da jedes einzelne Zeichen miteinander verglichen werden muss. Wenn lediglich ein Wert verglichen werden muss, dann ist bei der vorgegeben Größe an Daten ein Geschwindigkeitsgewinn denkbar.\footnote{Eine Bestimmung des Geschwindigkeitsgewinns ist ohne weiteres nicht möglich, da nicht beide Verfahren implementiert wurden.}
 
     \subsection{Ergebnisdatei}
-        Nach Rücksprache mit \dataSource \space wurde sich entschieden, dass die Ergebnisdatei \dashAndSpace wie die Eingabedateien \dashAndSpace auch dem JSON-Dateiformat entsprechen wird. Hauptmotivation war dafür die einfache Auswertbarkeit des Formats.\footnote{Dies war auch der Grund warum die Quellinformationen als JSON-Datei angelegt wurden.}
+        Nach Rücksprache mit \dataSource \space wurde sich entschieden, dass die Ergebnisdatei \dashAndSpace wie die Eingabedateien \dashAndSpace auch dem JSON-Dateiformat entsprechen wird. Die Hauptmotivation dafür war die einfache Auswertbarkeit des Formats.\footnote{Dies war auch der Grund warum die Quellinformationen als JSON-Datei angelegt wurden.}
         Die Bibliothek \emph{cJSON} bietet auch Funktionen für den Export von Dateien im JSON-Format an, sodass keine weitere Bibliothek notwendig wurde.
 
 
 \section{Ergebnisse und Ausblick}
-    Im letzten Kapitel werden die aktuellen Zwischenergebnisse genannt sowie der weitere Projektablauf außerhalb vom Bioinformatikkurs.
+    Im letzten Kapitel werden die aktuellen Zwischenergebnisse genannt sowie der weitere Projektablauf außerhalb vom Bioinformatik Modul.
 
     \subsection{Ergebnisse}
         Am Ende hat sich herausgestellt, dass die geplanten Auswertungen erfolgreich durchgeführt werden konnten. Zusätzlich haben sich bei der Umsetzung weitere Ideen ergeben, wie die Sortierung anhand der Relevanz noch verfeinert werden kann.
 
     \subsection{Ausblick}
-        Mögliche Features können implementiert bzw. angepasst werden, um die Auswertung genauer zu machen und die Nutzerfreundlichkeit zu verbessern. Denn bisher lag der Fokus auf der Funktionalität und Korrektheit und nicht auf eine einfache Bedienbarkeit.
+        Folgende Features können implementiert bzw. angepasst werden, um die Auswertung genauer zu machen und die Nutzerfreundlichkeit zu verbessern. Denn bisher lag der Fokus auf der Funktionalität und Korrektheit und nicht auf eine einfache Bedienbarkeit.
         \begin{itemize}
-            \item Zusätzlich zur Schnittmenge kann die Position der Tokens in den Quelldateien ermittelt. Je geringer der Abstand zwischen den Tokens ist, desto wahrscheinlicher ist eine höhere Relevanz.
-            \item Obwohl die Laufzeit durch die großen Eingabedateien akzeptabel ist, besteht noch Potenzial für Verbesserungen.
+            \item Zusätzlich zur Schnittmenge kann die Position der Tokens in den Quelldateien ermittelt werden. Je geringer der Abstand zwischen den Tokens ist, desto wahrscheinlicher ist eine höhere Relevanz.
+            \item Obwohl die Laufzeit trotz der großen Eingabedateien akzeptabel ist, besteht noch Potenzial für Verbesserungen.
             \item Bisher existiert lediglich ein rudimentäres CLI-Interface. Durch eine Verbesserung des CLI-Interfaces oder gar durch die Verwendung einer GUI, kann die Nutzerfreundlichkeit deutlich gesteigert werden.
-            \item Das Programm erwartet aktuell das die Eingabedateien strikt dem erwarteten Format entsprechen. Bei falschen Datensätzen wird der Einfachheit halber die komplette Berechnung abgebrochen. Dieses Verhalten kann für die Zukunft angepasst werden, sodass das Programm flexibler auf fehlerhafte Datensätze reagiert. So können z.B. solche bei der Verarbeitung übersprungen werden.
+            \item Das Programm erwartet aktuell das die Eingabedateien strikt dem erwarteten Format entsprechen. Bei falschen Datensätzen wird der Einfachheit halber die komplette Berechnung abgebrochen. Dieses Verhalten kann für die Zukunft angepasst werden, sodass das Programm flexibler auf fehlerhafte Datensätze reagiert. So können z.B. fehlerhafte Datensätze bei der Verarbeitung übersprungen werden.
         \end{itemize}
 
 
