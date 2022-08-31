@@ -69,7 +69,7 @@
         Das einfachste Verfahren, um eine Menge an Informationen nach der Relevanz für bestimmte Eingaben zu sortieren, ist das Bilden der Schnittmenge von der Eingabe mit den zur Verfügung gestellten Informationen. Dabei wird sowohl die Eingabe als auch die bereitgestellten Informationen in Tokens zerlegt. Im vorliegenden Fall stellen die Wörter die Tokens dar.\\
         Der grundlegende Aufbau ist in der Grafik \ref{Proammverfahren} dargestellt.
 
-        \tikzstyle{in_out} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black]%, fill=red!30]
+        \tikzstyle{in_out} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, very thick]%, fill=red!30]
         \tikzstyle{rect} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black]
         \tikzstyle{process} = [rectangle, rounded corners, minimum width=0.75cm, minimum height=0.75cm,text centered, draw=black, fill=gray!12.5]
         \tikzstyle{intersection} = [rectangle, rounded corners, minimum width=4cm, minimum height=1cm, text centered, draw=black]
@@ -129,10 +129,12 @@
         Am Ende hat sich herausgestellt, dass die geplanten Auswertungen erfolgreich durchgeführt werden konnten. Zusätzlich haben sich bei der Umsetzung weitere Ideen ergeben, wie die Sortierung anhand der Relevanz noch verfeinert werden kann.
 
     \subsection{Ausblick}
-        Mögliche Features können implementiert werden, um die Auswertung noch genauer zu machen:
+        Mögliche Features können implementiert bzw. angepasst werden, um die Auswertung genauer zu machen und die Nutzerfreundlichkeit zu verbessern. Denn bisher lag der Fokus auf der Funktionalität und Korrektheit und nicht auf eine einfache Bedienbarkeit.
         \begin{itemize}
-            \item Zusätzlich zur Schnittmenge kann die Position der Tokens in den Quelldateien ermittelt. Je geringer der Abstand zwischen den Tokens ist, desto relevanter werden die Ergebnisse sein.
-            \item ...
+            \item Zusätzlich zur Schnittmenge kann die Position der Tokens in den Quelldateien ermittelt. Je geringer der Abstand zwischen den Tokens ist, desto wahrscheinlicher ist eine höhere Relevanz.
+            \item Obwohl die Laufzeit durch die großen Eingabedateien akzeptabel ist, besteht noch Potenzial für Verbesserungen.
+            \item Bisher existiert lediglich ein rudimentäres CLI-Interface. Durch eine Verbesserung des CLI-Interfaces oder gar durch die Verwendung einer GUI, kann die Nutzerfreundlichkeit deutlich gesteigert werden.
+            \item Das Programm erwartet aktuell das die Eingabedateien strikt dem erwarteten Format entsprechen. Bei falschen Datensätzen wird der Einfachheit halber die komplette Berechnung abgebrochen. Dieses Verhalten kann für die Zukunft angepasst werden, sodass das Programm flexibler auf fehlerhafte Datensätze reagiert. So können z.B. solche bei der Verarbeitung übersprungen werden.
         \end{itemize}
 
 
