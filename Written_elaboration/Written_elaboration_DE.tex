@@ -45,28 +45,30 @@
         Die Daten stammen von der Doktorandin \dataSource, die aktuell in der Schweiz unter Hilfenahme dieser Daten ihre Doktorarbeit verfasst. Bei den Daten handelt es sich um reale Daten, die aus dem Klinikbetrieb stammen.
 
     \subsection{Ziel der Auswertung}
-        Das Ziel ist die Sortierung bezüglich der Relevanz von Abschlussarbeiten mittels deren Zusammenfassungen bei gegebenen Wortgruppen. Diese Wortgruppen bestehen aus 1 bis etwa 10 Wörter, die entweder eine Thematik, Chemikalien oder Technologien beschreiben.\\
+        Das Ziel ist die Sortierung bezüglich der Relevanz von Abschlussarbeiten mittels deren Zusammenfassungen bei gegebenen Wortgruppen. Diese Wortgruppen bestehen i.d.R. aus einem bis 10 Wörter, die entweder eine Thematik, Chemikalien oder Technologien beschreiben.\\
         Durch diese Sortierung erhofft man sich einen schnellen Zugriff auf die möglichst am meisten relevanten Quellen. Da es sich bei den vorhandenen Wortgruppen um Mengen in der Größenordnung von vielen Hunderttausenden bis hin zu einigen Millionen handelt, ist eine Sortierung nur mit der Unterstützung von Computern möglich.
 
 
 \section{Umsetzung}
-    Das folgende Kapitel nennt die verwendeten Technologien und eine Erklärung warum genau diese verwendet wurden. Dazu kommt der konzeptionelle Aufbau des Auswertungsverfahrens und eine Erläuterung der Hintergedanken, die dabei gemacht wurden.
+    Das folgende Kapitel nennt die verwendeten Technologien und eine Erklärung warum genau diese verwendet wurden. Dazu kommt der konzeptionelle Aufbau des Auswertungsverfahrens in Form eines Diagramms und eine Erläuterung der Hintergedanken, die dabei gemacht wurden.
 
     \subsection{Verwendete Technologien}
         \begin{itemize}
             \item Programmiersprache: \texttt{C} (Standard: \texttt{C11})
             \item Compiler: GCC (Version: 11.2.0)
+            \item Betriebssystem: Linux Mint 21 Xfce-64 Bit
             \item Versionsverwaltungstool: git (Version: 2.34.1)
             \item IDE: Eclipse for \texttt{C}/\texttt{C++} (Version: 2022-06 (4.24.0))
-            \item Weiteres: u.a. make, Perf, Valgrind, cJSON
+            \item Weiteres: u.a. make, gitk, Perf, Valgrind, cJSON
         \end{itemize}
-        Die Wahl der Programmiersprache wurde insbesondere durch die Größen der Eingabedateien beeinflusst. So war bereits zum Projektbeginn bekannt, dass einige der zu verarbeitenden Dateien viele hundert Megabyte groß sind. Um solch eine große Menge an Daten möglichst effizient auswerten zu können, bietet sich eine hardwarenahe Programmiersprache wie \texttt{C} an. Die weiteren Technologien sind gängige Werkzeuge für Projekte, die mittels \texttt{C} oder \texttt{C++} entwickelt werden.
+        Die Wahl der Programmiersprache wurde insbesondere durch die Größen der Eingabedateien beeinflusst. So war bereits zu Projektbeginn bekannt, dass einige der zu verarbeitenden Dateien viele hundert Megabyte groß sein werden. Um solch eine große Menge an Daten möglichst effizient auswerten zu können, bietet sich eine hardwarenahe Programmiersprache wie \texttt{C} an. Die weiteren Technologien sind gängige Werkzeuge für Projekte, die mittels \texttt{C} oder \texttt{C++} entwickelt werden.
 
     \subsection{Portierbarkeit}
-        Während des gesamten Projektes wurde darauf geachtet, dass der Quellcode portierbar ist und ohne Änderungen auf andere Betriebssysteme und Prozessorarchitekturen übersetzt werden kann. Dies wurde nicht nur durch die Wahl der Programmiersprache erreicht, sondern auch durch die strikte Verwendung des \texttt{C11}-Standards sowie der Standardbibliothek. Betriebssystem-spezifische Codefragmente wurden mittels Präprozessoranweisungen zur Übersetzungszeit auswählbar gemacht.\footnote{Eine Übersetzung ist unter Linux Mint + 21 und unter Windows (8.1 + 10) getestet worden.}
+        Während des gesamten Projektes wurde darauf geachtet, dass der Quellcode portierbar ist und ohne Änderungen auf andere Betriebssysteme und Prozessorarchitekturen übersetzt werden kann. Dies wurde nicht nur durch die Wahl der Programmiersprache erreicht, sondern auch durch die strikte Verwendung des \texttt{C11}-Standards sowie der Standardbibliothek. Betriebssystem-spezifische Codefragmente wurden mittels Präprozessoranweisungen zur Übersetzungszeit auswählbar gemacht.\footnote{Eine Übersetzung ist unter Linux Mint + 21 und unter Windows (8.1 + 10) getestet worden.}\\
+        Die Portierbarkeit ist ein entschiedener Faktor, da die Zielgruppe nicht mit Linux sondern mit Windows und Mac-OS arbeitet.
 
     \subsection{Konzeptioneller Aufbau}
-        Das einfachste Verfahren, um eine Menge an Informationen nach der Relevanz für bestimmte Eingaben zu sortieren, ist das Bilden der Schnittmenge von der Eingabe mit den zur Verfügung gestellten Informationen. Dabei wird sowohl die Eingabe als auch die bereitgestellten Informationen in Tokens zerlegt. Im vorliegenden Fall stellen die Wörter die Tokens dar.\\
+        Das einfachste Verfahren, um eine Menge an Informationen nach der Relevanz für bestimmte Eingaben zu sortieren, ist das Bilden der Schnittmenge von der Eingabe mit den zur Verfügung gestellten Informationen. Dabei wird sowohl die Eingabe als auch die bereitgestellten Informationen in Tokens zerlegt. Im vorliegenden Fall stellen die Wörter in der Eingabe die Tokens dar.\\
         Der grundlegende Aufbau ist in der Grafik \ref{Proammverfahren} dargestellt.
 
         \tikzstyle{in_out} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, very thick]%, fill=red!30]
@@ -115,18 +117,18 @@
         \end{figure}
 
     \subsection{Token-Int Mapping}
-        Das Token-Int Mapping ist eine bijektive Abbildung zwischen den Tokens aus den Eingabedateien und ganzzahligen Werten. Technisch gesehen ist solch eine Abbildung nicht notwendig. Die Idee dahinter ist, dass Vergleiche von Zeichenketten relativ aufwendig sind, da jedes einzelne Zeichen miteinander verglichen werden muss. Wenn lediglich ein Wert verglichen werden muss, dann ist bei der vorgegeben Größe an Daten ein Geschwindigkeitsgewinn denkbar.\footnote{Eine Bestimmung des Geschwindigkeitsgewinns ist ohne weiteres nicht möglich, da nicht beide Verfahren implementiert wurden.}
+        Das Token-Int Mapping ist eine bijektive Abbildung zwischen den Tokens aus den Eingabedateien und ganzzahligen Werten. Technisch gesehen ist solch eine Abbildung nicht notwendig. Die Idee dahinter ist, dass Vergleiche von Zeichenketten relativ aufwendig sind, da jedes einzelne Zeichen miteinander verglichen werden muss. Wenn lediglich ein Wert verglichen werden muss, dann ist bei der vorgegeben Größe an Daten ein Geschwindigkeitsgewinn denkbar.\footnote{Eine Bestimmung des Geschwindigkeitsgewinns ist ohne weiteres nicht möglich, da nicht beide Verfahren (also mit und ohne eines Mappings) implementiert wurden.}
 
     \subsection{Ergebnisdatei}
-        Nach Rücksprache mit \dataSource \space wurde sich entschieden, dass die Ergebnisdatei \dashAndSpace wie die Eingabedateien \dashAndSpace auch dem JSON-Dateiformat entsprechen wird. Die Hauptmotivation dafür war die einfache Auswertbarkeit des Formats.\footnote{Dies war auch der Grund warum die Quellinformationen als JSON-Datei angelegt wurden.}
+        Nach Rücksprache mit \dataSource \space wurde entschieden, dass die Ergebnisdatei \dashAndSpace wie die Eingabedateien \dashAndSpace auch dem JSON-Dateiformat entsprechen wird. Die Hauptmotivation dafür war die einfache Auswertbarkeit des Formats.\footnote{Dies war auch der Grund warum die Quellinformationen als JSON-Datei angelegt wurden.}
         Die Bibliothek \emph{cJSON} bietet auch Funktionen für den Export von Dateien im JSON-Format an, sodass keine weitere Bibliothek notwendig wurde.
 
 
 \section{Ergebnisse und Ausblick}
-    Im letzten Kapitel werden die aktuellen Zwischenergebnisse genannt sowie der weitere Projektablauf außerhalb vom Bioinformatik Modul.
+    Im letzten Kapitel werden die aktuellen Zwischenergebnisse genannt sowie ein denkbarer Projektablauf außerhalb vom Bioinformatik Modul.
 
     \subsection{Ergebnisse}
-        Am Ende hat sich herausgestellt, dass die geplanten Auswertungen erfolgreich durchgeführt werden konnten. Zusätzlich haben sich bei der Umsetzung weitere Ideen ergeben, wie die Sortierung anhand der Relevanz noch verfeinert werden kann.
+        Am Ende hat sich herausgestellt, dass die geplanten Auswertungen erfolgreich durchgeführt werden konnten. Zusätzlich haben sich bei der Umsetzung weitere Ideen ergeben, wie die Sortierung anhand der Relevanz noch verfeinert werden könnte.
 
     \subsection{Ausblick}
         Folgende Features können implementiert bzw. angepasst werden, um die Auswertung genauer zu machen und die Nutzerfreundlichkeit zu verbessern. Denn bisher lag der Fokus auf der Funktionalität und Korrektheit und nicht auf eine einfache Bedienbarkeit.
@@ -134,9 +136,8 @@
             \item Zusätzlich zur Schnittmenge kann die Position der Tokens in den Quelldateien ermittelt werden. Je geringer der Abstand zwischen den Tokens ist, desto wahrscheinlicher ist eine höhere Relevanz.
             \item Obwohl die Laufzeit trotz der großen Eingabedateien akzeptabel ist, besteht noch Potenzial für Verbesserungen.
             \item Bisher existiert lediglich ein rudimentäres CLI-Interface. Durch eine Verbesserung des CLI-Interfaces oder gar durch die Verwendung einer GUI, kann die Nutzerfreundlichkeit deutlich gesteigert werden.
-            \item Das Programm erwartet aktuell das die Eingabedateien strikt dem erwarteten Format entsprechen. Bei falschen Datensätzen wird der Einfachheit halber die komplette Berechnung abgebrochen. Dieses Verhalten kann für die Zukunft angepasst werden, sodass das Programm flexibler auf fehlerhafte Datensätze reagiert. So können z.B. fehlerhafte Datensätze bei der Verarbeitung übersprungen werden.
+            \item Das Programm erwartet aktuell Eingabedateien, die strikt dem erwarteten Format entsprechen. Bei falschen Datensätzen wird der Einfachheit halber die komplette Berechnung abgebrochen. Dieses Verhalten kann für die Zukunft angepasst werden, sodass das Programm flexibler auf fehlerhafte Datensätze reagiert. So können z.B. fehlerhafte Datensätze bei der Verarbeitung übersprungen werden.
         \end{itemize}
-
 
 \end{document}
 %%%%% %%%%% %%%%% %%%%% %%%%% \end{document} %%%%% %%%%% %%%%% %%%%% %%%%%
