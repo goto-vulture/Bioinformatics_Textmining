@@ -245,6 +245,10 @@ extern size_t Process_Printer (const size_t print_step_size, const size_t counte
         )
 );
 
+extern void Print_Memory_Size_As_B_KB_MB (const size_t byte_size);
+
+extern void Print_Value_With_Decimal_Points (const long int value);
+
 
 
 #ifdef __cplusplus

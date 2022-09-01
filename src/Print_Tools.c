@@ -12,6 +12,7 @@
 #include <inttypes.h>
 #include "Error_Handling/Assert_Msg.h"
 #include "Misc.h"
+#include "int2str.h"
 
 
 
@@ -142,6 +143,48 @@ extern size_t Process_Printer (const size_t print_step_size, const size_t counte
     }
 
     return new_counter;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+extern void Print_Memory_Size_As_B_KB_MB (const size_t byte_size)
+{
+    ASSERT_MSG(byte_size != 0, "Byte size is 0 !")
+
+    printf ("%zu B (%.3f KB | %.3f MB)\n", byte_size, (double) byte_size / 1024.0,
+            (double) byte_size / 1024.0 / 1024.0);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+extern void Print_Value_With_Decimal_Points (const long int value)
+{
+    char value_to_str [30];
+    memset(value_to_str, '\0', sizeof(value));
+
+    const enum int2str_errno converting_result = int2str(value_to_str, COUNT_ARRAY_ELEMENTS(value_to_str) - 1, value);
+    ASSERT_FMSG(converting_result == INT2STR_SUCCESS, "Cannot convert %lu to str !", value);
+
+    const size_t value_to_str_lenght = strlen (value_to_str);
+    const size_t first_dot_pos = value_to_str_lenght % 3;
+
+    // Print the converted long int value
+    for (uint_fast8_t i = 0; i < value_to_str_lenght; ++ i)
+    {
+        printf("%c", value_to_str [i]);
+        if (i == first_dot_pos)
+        {
+            putchar('.');
+        }
+        else if (((i - first_dot_pos) % 3) == 0)
+        {
+            putchar('.');
+        }
+    }
+
+    return;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
