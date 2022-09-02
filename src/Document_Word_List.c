@@ -373,9 +373,9 @@ DocumentWordList_ShowAttributes
                 Count_Number_Of_Digits(object->max_array_length));
 
     puts("");
-    printf ("Full document word list container size: %zu B (%.3f KB | %.3f MB)\n", DocumentWordList_GetAllocatedMemSize(object),
-            (double) DocumentWordList_GetAllocatedMemSize(object) / 1024.0,
-            (double) DocumentWordList_GetAllocatedMemSize(object) / 1024.0 / 1024.0);
+    printf("Full document word list container size: ");
+    Print_Memory_Size_As_B_KB_MB(DocumentWordList_GetAllocatedMemSize(object));
+
     puts ("> Attributes <");
     printf ("Intersection data:     %s\n", (object->intersection_data /* == true */) ? "YES" : "NO");
     printf ("Number of arrays:      %*zu\n", formatter_int, object->number_of_arrays);
