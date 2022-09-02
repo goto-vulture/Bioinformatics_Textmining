@@ -431,7 +431,10 @@ Exec_Intersection
                     ++ tokens_wrote;
                 }
                 // Add data to the specific cJSON object
-                if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array))
+                // For the comparison it is important to use "src_tokens_array_wo_stop_words" instead of
+                // "src_tokens_array"; Because a full match means a equalness with the list, that contains NO stop
+                // words !
+                if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
                 {
                     cJSON_AddItemToObject(intersections_full_match, dataset_id_1, tokens_array);
                 }
