@@ -147,6 +147,14 @@ extern size_t Process_Printer (const size_t print_step_size, const size_t counte
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Print a memory size in Byte, KByte und MByte.
+ *
+ * Asserts:
+ *      byte_size != 0
+ *
+ * param[in] byte_size Value, that will be converted an printed
+ */
 extern void Print_Memory_Size_As_B_KB_MB (const size_t byte_size)
 {
     ASSERT_MSG(byte_size != 0, "Byte size is 0 !")
@@ -159,6 +167,12 @@ extern void Print_Memory_Size_As_B_KB_MB (const size_t byte_size)
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Print a given integer value with decimal dots. This is helpful to get a direct information in which "size
+ * class" the value is.
+ *
+ * @param[in] value Value, that will be printed with decimal dots
+ */
 extern void Print_Value_With_Decimal_Points (const long int value)
 {
     char value_to_str [30];
