@@ -162,26 +162,27 @@ extern void Print_Memory_Size_As_B_KB_MB (const size_t byte_size)
 extern void Print_Value_With_Decimal_Points (const long int value)
 {
     char value_to_str [30];
-    memset(value_to_str, '\0', sizeof(value));
+    memset(value_to_str, '\0', sizeof(value_to_str));
 
     const enum int2str_errno converting_result = int2str(value_to_str, COUNT_ARRAY_ELEMENTS(value_to_str) - 1, value);
     ASSERT_FMSG(converting_result == INT2STR_SUCCESS, "Cannot convert %lu to str !", value);
 
-    const size_t value_to_str_lenght = strlen (value_to_str);
-    const size_t first_dot_pos = value_to_str_lenght % 3;
+    const size_t value_to_str_length = strlen (value_to_str);
+    const size_t mod_3 = value_to_str_length % 3;
 
     // Print the converted long int value
-    for (uint_fast8_t i = 0; i < value_to_str_lenght; ++ i)
+    for (size_t i = 0; i < mod_3; ++ i)
     {
-        printf("%c", value_to_str [i]);
-        if (i == first_dot_pos)
+        printf ("%c", value_to_str [i]);
+    }
+    if (mod_3 != 0) { putchar ('.'); }
+    for (size_t i = mod_3; i < value_to_str_length; ++ i)
+    {
+        if (((i - mod_3) % 3) == 0 && i != mod_3)
         {
-            putchar('.');
+            putchar ('.');
         }
-        else if (((i - first_dot_pos) % 3) == 0)
-        {
-            putchar('.');
-        }
+        printf ("%c", value_to_str [i]);
     }
 
     return;
