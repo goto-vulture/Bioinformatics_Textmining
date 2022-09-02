@@ -730,9 +730,8 @@ TokenListContainer_ShowAttributes
     }
 
     puts("");
-    printf ("Full token list container size: %zu B (%.3f KB | %.3f MB)\n", TokenListContainer_GetAllocatedMemSize(container),
-            (double) TokenListContainer_GetAllocatedMemSize(container) / 1024.0,
-            (double) TokenListContainer_GetAllocatedMemSize(container) / 1024.0 / 1024.0);
+    printf ("Full token list container size: ");
+    Print_Memory_Size_As_B_KB_MB(TokenListContainer_GetAllocatedMemSize(container));
     printf ("Sum all tokens:                 %" PRIuFAST32 "\n", TokenListContainer_CountAllTokens(container));
     printf ("Number of token lists:          %" PRIuFAST32 "\n", container->next_free_element);
     // Actual every token list has the same max token length !

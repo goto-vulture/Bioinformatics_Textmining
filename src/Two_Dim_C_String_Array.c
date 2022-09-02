@@ -12,6 +12,7 @@
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Misc.h"
+#include "Print_Tools.h"
 
 
 
@@ -313,8 +314,8 @@ Show_Attributes_From_Two_Dim_C_String_Array
     }
 
     puts("");
-    printf ("Full two dim C string array size: %zu B (%.3f KB | %.3f MB)\n", full_object_size,
-            (double) full_object_size / 1024.0, (double) full_object_size / 1024.0 / 1024.0);
+    printf ("Full two dim C string array size: ");
+    Print_Memory_Size_As_B_KB_MB(full_object_size);
     printf ("Number of C strins:            %zu\n", object->number_of_c_str);
     printf ("Next free C string:            %zu\n", object->next_free_c_str);
     printf ("Longest allocated C string:    %zu\n", longest_allocated_c_str);

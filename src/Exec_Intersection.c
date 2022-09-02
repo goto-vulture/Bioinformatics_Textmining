@@ -438,8 +438,9 @@ abort_label:
     char* json_export_str = cJSON_Print(export_results); //< Create the JSON string for the export file
     const size_t result_str_length = strlen (json_export_str);
     fputs(json_export_str, result_file);
-    printf ("=> Result file size: %zu B (%.3f KB | %.3f MB)\n", result_str_length,
-            (double) result_str_length / 1024.0, (double) result_str_length / 1024.0 / 1024.0);
+
+    printf ("=> Result file size: ");
+    Print_Memory_Size_As_B_KB_MB(result_str_length);
     FCLOSE_AND_SET_TO_NULL(result_file);
 
     // NO FREE_AND_SET_TO_NULL, because this object was not created with MALLOC or CALLOC. The counter for the dynamic
