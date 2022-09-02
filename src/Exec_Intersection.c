@@ -56,6 +56,17 @@
 #error "The macro \"cJSON_NEW_STR_CHECK\" is already defined !"
 #endif /* cJSON_NEW_STR_CHECK */
 
+#ifndef cJSON_FREE_AND_SET_TO_NULL
+#define cJSON_FREE_AND_SET_TO_NULL(cJSON_object)                                                                                        \
+    if (cJSON_object != NULL)                                                                                           \
+    {                                                                                                                   \
+        cJSON_free(cJSON_object);                                                                                       \
+        cJSON_object = NULL;                                                                                            \
+    }
+#else
+#error "The macro \"cJSON_FREE_AND_SET_TO_NULL\" is already defined !"
+#endif /* cJSON_FREE_AND_SET_TO_NULL */
+
 /**
  * @brief Add general information to the export cJSON object.
  *
@@ -460,17 +471,20 @@ Exec_Intersection
         // the main object !
         else
         {
-            cJSON_free(intersections_partial_match);
-            intersections_partial_match = NULL;
-            cJSON_free(intersections_full_match);
-            intersections_full_match = NULL;
-            cJSON_free(outer_object);
-            outer_object = NULL;
+            cJSON_FREE_AND_SET_TO_NULL(intersections_partial_match);
+            cJSON_FREE_AND_SET_TO_NULL(intersections_full_match);
+            cJSON_FREE_AND_SET_TO_NULL(outer_object);
         }
     }
     // Label for a debugging end of the calculations
 abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
+
+    // If the calculation was stopped with abort_label, some dynamic objects are not deleted
+    // Therefore: an additional call
+    cJSON_FREE_AND_SET_TO_NULL(intersections_partial_match);
+    cJSON_FREE_AND_SET_TO_NULL(intersections_full_match);
+    cJSON_FREE_AND_SET_TO_NULL(outer_object);
 
     const float used_seconds = DETERMINE_USED_TIME(start, end);
     const float intersection_calls_div_abort = ((float) number_of_intersection_calls) * (GLOBAL_ABORT_PROCESS_PERCENT / 100.0f);
@@ -787,3 +801,7 @@ Exec_Intersection_Process_Print_Function
 #ifdef cJSON_NEW_STR_CHECK
 #undef cJSON_NEW_STR_CHECK
 #endif /* cJSON_NEW_STR_CHECK */
+
+#ifdef cJSON_FREE_AND_SET_TO_NULL
+#undef cJSON_FREE_AND_SET_TO_NULL
+#endif /* cJSON_FREE_AND_SET_TO_NULL */
