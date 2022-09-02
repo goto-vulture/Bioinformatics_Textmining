@@ -29,16 +29,22 @@ uint_fast64_t GLOBAL_free_calls     = 0;
 void Show_Dynamic_Memory_Status (void)
 {
     const uint_fast64_t missing_free_calls = (GLOBAL_malloc_calls + GLOBAL_calloc_calls) - GLOBAL_free_calls;
+    const char k []         = { 'K', '\0' };
+    const char null_str []  = { '\0' };
 
-    printf ("malloc () calls:       %10" PRIuFAST64 "\n"
-            "calloc () calls:       %10" PRIuFAST64 "\n"
-            "realloc () calls:      %10" PRIuFAST64 "\n"
-            "free () calls:         %10" PRIuFAST64 "\n"
+    printf ("malloc () calls:       %10" PRIuFAST64 " %s\n"
+            "calloc () calls:       %10" PRIuFAST64 " %s\n"
+            "realloc () calls:      %10" PRIuFAST64 " %s\n"
+            "free () calls:         %10" PRIuFAST64 " %s\n"
             "Missing free () calls: %10" PRIuFAST64 " %s\n",
-            GLOBAL_malloc_calls,
-            GLOBAL_calloc_calls,
-            GLOBAL_realloc_calls,
-            GLOBAL_free_calls,
+            (GLOBAL_malloc_calls > 1000) ? GLOBAL_malloc_calls / 1000 : GLOBAL_malloc_calls,
+            (GLOBAL_malloc_calls > 1000) ? k : null_str,
+            (GLOBAL_calloc_calls > 1000) ? GLOBAL_calloc_calls / 1000 : GLOBAL_calloc_calls,
+            (GLOBAL_calloc_calls > 1000) ? k : null_str,
+            (GLOBAL_realloc_calls > 1000) ? GLOBAL_realloc_calls / 1000 : GLOBAL_realloc_calls,
+            (GLOBAL_realloc_calls > 1000) ? k : null_str,
+            (GLOBAL_free_calls > 1000) ? GLOBAL_free_calls / 1000 :  GLOBAL_free_calls,
+            (GLOBAL_free_calls > 1000) ? k : null_str,
             missing_free_calls,
             (missing_free_calls == 0) ? ":D" : ":o");
 
