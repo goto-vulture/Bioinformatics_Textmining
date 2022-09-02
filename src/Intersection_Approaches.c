@@ -363,8 +363,9 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
                 // Was the current value already inserted in the intersection result ?
                 if (! *multiple_guard_data_1_d1 && ! *multiple_guard_data_2_d2)
                 {
-                    intersection_result->data [0][intersection_result->arrays_lengths [0]] = data_1 [d1];
-                    ++ intersection_result->arrays_lengths [0];
+                    Put_One_Value_To_Document_Word_List(intersection_result, data_1 [d1]);
+                    // intersection_result->data [0][intersection_result->arrays_lengths [0]] = data_1 [d1];
+                    //++ intersection_result->arrays_lengths [0];
                     *multiple_guard_data_1_d1 = true;
                     *multiple_guard_data_2_d2 = true;
                 }
