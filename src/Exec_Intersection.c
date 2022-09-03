@@ -506,6 +506,8 @@ abort_label:
     fflush (stdout);
 
     char* json_export_str = cJSON_Print(export_results); //< Create the JSON string for the export file
+    ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
+
     const size_t result_str_length = strlen (json_export_str);
     fputs(json_export_str, result_file);
     printf ("=> Result file size: %zu B (%.3f KB | %.3f MB)\n", result_str_length,
