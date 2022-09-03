@@ -308,6 +308,7 @@ Exec_Intersection
 
     clock_t start           = 0;
     clock_t end             = 0;
+    _Bool abort_label_used = false;
 
     // Determine the intersections
     CLOCK_WITH_RETURN_CHECK(start);
@@ -330,6 +331,7 @@ Exec_Intersection
             if (Determine_Percent(intersection_call_counter, number_of_intersection_calls) > abort_progress_percent)
             {
                 PRINTF_FFLUSH("\nCalculation stopped intended after %.4f %% !\n", abort_progress_percent);
+                abort_label_used = true;
                 goto abort_label;
             }
 
@@ -482,9 +484,12 @@ abort_label:
 
     // If the calculation was stopped with abort_label, some dynamic objects are not deleted
     // Therefore: an additional call
-    cJSON_FREE_AND_SET_TO_NULL(intersections_partial_match);
-    cJSON_FREE_AND_SET_TO_NULL(intersections_full_match);
-    cJSON_FREE_AND_SET_TO_NULL(outer_object);
+    if (abort_label_used)
+    {
+        cJSON_FREE_AND_SET_TO_NULL(intersections_partial_match);
+        cJSON_FREE_AND_SET_TO_NULL(intersections_full_match);
+        cJSON_FREE_AND_SET_TO_NULL(outer_object);
+    }
 
     const float used_seconds = DETERMINE_USED_TIME(start, end);
     const float intersection_calls_div_abort = ((float) number_of_intersection_calls) * (GLOBAL_ABORT_PROCESS_PERCENT / 100.0f);
