@@ -56,6 +56,17 @@
 #error "The macro \"cJSON_NEW_STR_CHECK\" is already defined !"
 #endif /* cJSON_NEW_STR_CHECK */
 
+#ifndef cJSON_FREE_AND_SET_TO_NULL
+#define cJSON_FREE_AND_SET_TO_NULL(cJSON_object)                                                                                        \
+    if (cJSON_object != NULL)                                                                                           \
+    {                                                                                                                   \
+        cJSON_free(cJSON_object);                                                                                       \
+        cJSON_object = NULL;                                                                                            \
+    }
+#else
+#error "The macro \"cJSON_FREE_AND_SET_TO_NULL\" is already defined !"
+#endif /* cJSON_FREE_AND_SET_TO_NULL */
+
 /**
  * @brief Add general information to the export cJSON object.
  *
@@ -264,17 +275,40 @@ Exec_Intersection
     memset(dataset_id_2, '\0', sizeof (dataset_id_2));
 
     // Objects for exporting the intersection results as JSON file
-    cJSON* token            = NULL;
-    cJSON* tokens_array     = NULL;
-    cJSON* intersections    = NULL;
-    cJSON* outer_object     = NULL;
+    cJSON* src_token                        = NULL; // Token from a source file
+    cJSON* src_token_no_stop_word           = NULL; // Token from a source file (no stop word)
+    cJSON* src_tokens_array                 = NULL; // Array of tokens, which are from a source file
+    cJSON* src_tokens_array_wo_stop_words   = NULL; // Array of tokens, which are from a source file (no stop words)
+    cJSON* token                            = NULL; // Token
+    cJSON* tokens_array                     = NULL; // Array of tokens
+    cJSON* intersections_partial_match      = NULL; // Intersections with a partial match (An intersection does not
+                                                    // contain a full source set)
+    cJSON* intersections_full_match         = NULL; // Intersections with a full match (An intersection contains a full
+                                                    // source set)
+    cJSON* outer_object                     = NULL; // Outer object, that contains the intersections and token arrays
 
     cJSON* export_results = cJSON_CreateObject();
     cJSON_NOT_NULL(export_results);
     Add_General_Information_To_Export_File(export_results);
 
+    // Pointer array to delete all of them safely
+    cJSON* cjson_ptr [] =
+    {
+            src_token, src_token_no_stop_word, src_tokens_array, src_tokens_array_wo_stop_words,
+            token, tokens_array, intersections_partial_match, intersections_full_match,
+            outer_object, export_results
+    };
+    // Pointer pointer to make it possible to set the original pointer to NULL
+    cJSON** cjson_ptr_ptr [] =
+    {
+            &src_token, &src_token_no_stop_word, &src_tokens_array, &src_tokens_array_wo_stop_words,
+            &token, &tokens_array, &intersections_partial_match, &intersections_full_match,
+            &outer_object, &export_results
+    };
+
     clock_t start           = 0;
     clock_t end             = 0;
+    _Bool abort_label_used = false;
 
     // Determine the intersections
     CLOCK_WITH_RETURN_CHECK(start);
@@ -284,7 +318,8 @@ Exec_Intersection
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
     {
-        cJSON_NEW_OBJ_CHECK(intersections);
+        cJSON_NEW_OBJ_CHECK(intersections_partial_match);
+        cJSON_NEW_OBJ_CHECK(intersections_full_match);
         cJSON_NEW_OBJ_CHECK(outer_object);
         _Bool data_found = false;
 
@@ -296,6 +331,7 @@ Exec_Intersection
             if (Determine_Percent(intersection_call_counter, number_of_intersection_calls) > abort_progress_percent)
             {
                 PRINTF_FFLUSH("\nCalculation stopped intended after %.4f %% !\n", abort_progress_percent);
+                abort_label_used = true;
                 goto abort_label;
             }
 
@@ -358,12 +394,14 @@ Exec_Intersection
             if (DocumentWordList_IsDataInObject(intersection_result) && tokens_left > 0)
             {
                 data_found = true;
+                // "selected_data_2_array" is the counter for the outer loop
+                // This test has the effect, that the tokens array only appear once for each outer element
                 if (selected_data_2_array != last_used_selected_data_2_array)
                 {
                     last_used_selected_data_2_array = selected_data_2_array;
-    
-                    cJSON_NEW_ARR_CHECK(tokens_array);
-                    cJSON_AddItemToObject(outer_object, "tokens", tokens_array);
+
+                    cJSON_NEW_ARR_CHECK(src_tokens_array);
+                    cJSON_NEW_ARR_CHECK(src_tokens_array_wo_stop_words);
 
                     for (size_t i = 0; i < source_int_values_2->arrays_lengths [selected_data_2_array]; ++ i)
                     {
@@ -371,10 +409,17 @@ Exec_Intersection
                         const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
                                 source_int_values_2->data [selected_data_2_array][i]);
 
-                        cJSON_NEW_STR_CHECK(token, int_to_token_mem);
-                        cJSON_NOT_NULL(token);
-                        cJSON_AddItemToArray(tokens_array, token);
+                        // Is the token a stop word ?
+                        if (! Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
+                        {
+                            cJSON_NEW_STR_CHECK(src_token_no_stop_word, int_to_token_mem);
+                            cJSON_AddItemToArray(src_tokens_array_wo_stop_words, src_token_no_stop_word);
+                        }
+                        cJSON_NEW_STR_CHECK(src_token, int_to_token_mem);
+                        cJSON_AddItemToArray(src_tokens_array, src_token);
                     }
+                    cJSON_AddItemToObject(outer_object, "tokens", src_tokens_array);
+                    cJSON_AddItemToObject(outer_object, "tokens w/o stop words", src_tokens_array_wo_stop_words);
                 }
 
                 cJSON_NEW_ARR_CHECK(tokens_array);
@@ -384,10 +429,6 @@ Exec_Intersection
                 size_t tokens_wrote = 0;
                 for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
                 {
-                    if (i == 0)
-                    {
-                        cJSON_AddItemToObject(intersections, dataset_id_1, tokens_array);
-                    }
                     if (intersection_result->data [0][i] == UINT_FAST32_MAX)
                     {
                         continue;
@@ -402,6 +443,18 @@ Exec_Intersection
                     ++ intersection_call_counter;
                     ++ tokens_wrote;
                 }
+                // Add data to the specific cJSON object
+                // For the comparison it is important to use "src_tokens_array_wo_stop_words" instead of
+                // "src_tokens_array"; Because a full match means a equalness with the list, that contains NO stop
+                // words !
+                if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
+                {
+                    cJSON_AddItemToObject(intersections_full_match, dataset_id_1, tokens_array);
+                }
+                else
+                {
+                    cJSON_AddItemToObject(intersections_partial_match, dataset_id_1, tokens_array);
+                }
             }
 
             DocumentWordList_DeleteObject(intersection_result);
@@ -411,7 +464,8 @@ Exec_Intersection
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
         {
-            cJSON_AddItemToObject(outer_object, "Intersections", intersections);
+            cJSON_AddItemToObject(outer_object, "Intersections (partial)", intersections_partial_match);
+            cJSON_AddItemToObject(outer_object, "Intersections (full)", intersections_full_match);
             cJSON_AddItemToObject(export_results, dataset_id_2, outer_object);
         }
         // Delete the new cJSON object from the current outer loop call to avoid memory leaks
@@ -419,23 +473,41 @@ Exec_Intersection
         // the main object !
         else
         {
-            cJSON_free(intersections);
-            intersections = NULL;
-            cJSON_free(outer_object);
-            outer_object = NULL;
+            cJSON_FREE_AND_SET_TO_NULL(intersections_partial_match);
+            cJSON_FREE_AND_SET_TO_NULL(intersections_full_match);
+            cJSON_FREE_AND_SET_TO_NULL(outer_object);
         }
     }
     // Label for a debugging end of the calculations
 abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
 
+    // If the calculation was stopped with abort_label, some dynamic objects are not deleted
+    // Therefore: an additional call
+    if (abort_label_used)
+    {
+        cJSON_FREE_AND_SET_TO_NULL(intersections_partial_match);
+        cJSON_FREE_AND_SET_TO_NULL(intersections_full_match);
+        cJSON_FREE_AND_SET_TO_NULL(outer_object);
+    }
+
     const float used_seconds = DETERMINE_USED_TIME(start, end);
     const float intersection_calls_div_abort = ((float) number_of_intersection_calls) * (GLOBAL_ABORT_PROCESS_PERCENT / 100.0f);
-    printf ("\n=> %3.3fs (~ %zu calc/s) for calculation of all intersections.\n",
-            Replace_NaN_And_Inf_With_Zero(used_seconds),
-            (size_t) Replace_NaN_And_Inf_With_Zero (intersection_calls_div_abort));
+    if (isnan(GLOBAL_ABORT_PROCESS_PERCENT))
+    {
+        printf ("\n=> %3.3fs for calculation of all intersections.\n",  Replace_NaN_And_Inf_With_Zero(used_seconds));
+    }
+    else
+    {
+        printf ("\n=> %3.3fs (~ %zu calc/s) for calculation of all intersections.\n",
+                Replace_NaN_And_Inf_With_Zero(used_seconds),
+                (size_t) Replace_NaN_And_Inf_With_Zero (intersection_calls_div_abort));
+    }
+    fflush (stdout);
 
     char* json_export_str = cJSON_Print(export_results); //< Create the JSON string for the export file
+    ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
+
     const size_t result_str_length = strlen (json_export_str);
     fputs(json_export_str, result_file);
 
@@ -447,11 +519,21 @@ abort_label:
     // memory calls would be manipulated with the macro usage
     free (json_export_str);
     json_export_str = NULL;
-    cJSON_Delete(export_results);
-    export_results = NULL;
 
-    if (intersections != NULL)  { cJSON_free(intersections); intersections = NULL;  }
-    if (outer_object != NULL)   { cJSON_free(outer_object); outer_object = NULL;    }
+    // Delete all cJSON objects, if this not already was done
+    for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(cjson_ptr); ++ i)
+    {
+        if (cjson_ptr [i] != NULL)
+        {
+            cJSON_Delete(cjson_ptr [i]);
+            cjson_ptr [i] = NULL;
+        }
+    }
+    for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(cjson_ptr_ptr); ++ i)
+    {
+        *(cjson_ptr_ptr [i]) = NULL;
+        cjson_ptr_ptr [i] = NULL;
+    }
 
     DocumentWordList_DeleteObject(source_int_values_1);
     source_int_values_1 = NULL;
@@ -510,6 +592,20 @@ Add_General_Information_To_Export_File
     // This way of checking the strftime call is described in the strftime documentation !
     ASSERT_MSG(!(ret == 0 && time_string [0] != '\0'), "Something went wrong in the strftime call.")
     time_string [ret] = '\0';
+
+    // Creation mode (Part match ? Full match ? Part and full match ?)
+    cJSON* creation_mode = cJSON_CreateObject();
+    cJSON_NOT_NULL(creation_mode);
+    cJSON* part_match = cJSON_CreateBool(true);
+    cJSON_NOT_NULL(part_match);
+    cJSON* full_match = cJSON_CreateBool(true);
+    cJSON_NOT_NULL(full_match);
+    cJSON* stop_word_list = cJSON_CreateBool(true);
+    cJSON_NOT_NULL(stop_word_list);
+    cJSON_AddItemToObject(creation_mode, "Part match", part_match);
+    cJSON_AddItemToObject(creation_mode, "Full match", full_match);
+    cJSON_AddItemToObject(creation_mode, "Stop word list used", stop_word_list);
+    cJSON_AddItemToObject(general_infos, "Creation mode", creation_mode);
 
     cJSON* creation_time    = cJSON_CreateString(time_string);
     cJSON_NOT_NULL(creation_time);
@@ -721,3 +817,7 @@ Exec_Intersection_Process_Print_Function
 #ifdef cJSON_NEW_STR_CHECK
 #undef cJSON_NEW_STR_CHECK
 #endif /* cJSON_NEW_STR_CHECK */
+
+#ifdef cJSON_FREE_AND_SET_TO_NULL
+#undef cJSON_FREE_AND_SET_TO_NULL
+#endif /* cJSON_FREE_AND_SET_TO_NULL */
