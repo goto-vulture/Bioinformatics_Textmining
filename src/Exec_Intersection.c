@@ -259,6 +259,8 @@ Exec_Intersection
     DocumentWordList_ShowAttributes(source_int_values_1);
     DocumentWordList_ShowAttributes(source_int_values_2);
     puts("");
+    TokenIntMapping_ShowMemoryUsage(token_int_mapping);
+    puts("");
 
 
 

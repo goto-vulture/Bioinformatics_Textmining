@@ -368,9 +368,9 @@ TokenIntMapping_ShowMemoryUsage
     Print_Memory_Size_As_B_KB_MB(allocated_memory);
     //printf ("Allocated Token_Int_Mapping size: %*zu B (%.3f KB | %.3f MB)\n", field_size, allocated_memory,
     //        (double) allocated_memory / 1024.0, (double) allocated_memory / 1024.0 / 1024.0);
-    printf ("\nUsed Token_Int_Mapping size:      ");
+    printf ("Used Token_Int_Mapping size:      ");
     Print_Memory_Size_As_B_KB_MB(used_memory);
-    printf (" (used: %.2f %%)\n", Determine_Percent(used_memory, allocated_memory));
+    //printf (" (used: %.2f %%)\n", Determine_Percent(used_memory, allocated_memory));
     //printf ("Used Token_Int_Mapping size:      %*zu B (%.3f KB | %.3f MB) (used: %.2f %%)\n", field_size, used_memory,
     //        (double) used_memory / 1024.0, (double) used_memory / 1024.0 / 1024.0,
     //        Determine_Percent(used_memory, allocated_memory));
