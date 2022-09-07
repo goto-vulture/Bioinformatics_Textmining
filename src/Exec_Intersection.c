@@ -357,6 +357,7 @@ Exec_Intersection
 
     uint_fast32_t last_used_selected_data_2_array = UINT_FAST32_MAX;
 
+    // ===== ===== ===== ===== ===== ===== ===== ===== BEGIN Outer loop ===== ===== ===== ===== ===== ===== ===== =====
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
     {
@@ -367,6 +368,7 @@ Exec_Intersection
         cJSON_NEW_OBJ_CHECK(outer_object);
         _Bool data_found = false;
 
+        // ===== ===== ===== ===== ===== BEGIN Inner loop ===== ===== ===== ===== =====
         for (uint_fast32_t selected_data_1_array = 0; selected_data_1_array < source_int_values_1->next_free_array;
                 ++ selected_data_1_array)
         {
@@ -504,7 +506,8 @@ Exec_Intersection
 
             DocumentWordList_DeleteObject(intersection_result);
             intersection_result = NULL;
-        } // Inner loop end
+        }
+        // ===== ===== ===== ===== ===== END Inner loop ===== ===== ===== ===== =====
 
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
@@ -535,6 +538,8 @@ Exec_Intersection
             cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
         }
     }
+    // ===== ===== ===== ===== ===== ===== ===== ===== END Outer loop ===== ===== ===== ===== ===== ===== ===== =====
+
     // Label for a debugging end of the calculations
 abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
