@@ -56,16 +56,30 @@
 #error "The macro \"cJSON_NEW_STR_CHECK\" is already defined !"
 #endif /* cJSON_NEW_STR_CHECK */
 
-#ifndef cJSON_FREE_AND_SET_TO_NULL
-#define cJSON_FREE_AND_SET_TO_NULL(cJSON_object)                                                                                        \
+#ifndef cJSON_FULL_FREE_AND_SET_TO_NULL
+#define cJSON_FULL_FREE_AND_SET_TO_NULL(cJSON_object)                                                                                        \
     if (cJSON_object != NULL)                                                                                           \
     {                                                                                                                   \
-        cJSON_free(cJSON_object);                                                                                       \
+        cJSON_Delete(cJSON_object);                                                                                       \
         cJSON_object = NULL;                                                                                            \
     }
 #else
-#error "The macro \"cJSON_FREE_AND_SET_TO_NULL\" is already defined !"
-#endif /* cJSON_FREE_AND_SET_TO_NULL */
+#error "The macro \"cJSON_FULL_FREE_AND_SET_TO_NULL\" is already defined !"
+#endif /* cJSON_FULL_FREE_AND_SET_TO_NULL */
+
+#ifndef CJSON_PRINT_BUFFER_SIZE
+#define CJSON_PRINT_BUFFER_SIZE 5000
+#else
+#error "The macro \"CJSON_PRINT_BUFFER_SIZE\" is already defined !"
+#endif /* CJSON_PRINT_BUFFER_SIZE */
+
+#ifndef RESULT_FILE_BUFFER_SIZE
+#define RESULT_FILE_BUFFER_SIZE 10000
+#else
+#error "The macro \"RESULT_FILE_BUFFER_SIZE\" is already defined !"
+#endif /* RESULT_FILE_BUFFER_SIZE */
+
+
 
 /**
  * @brief Add general information to the export cJSON object.
@@ -257,6 +271,10 @@ Exec_Intersection
     FILE* result_file = fopen(GLOBAL_CLI_OUTPUT_FILE, "w");
     ASSERT_FMSG(result_file != NULL, "Cannot open/create the result file: \"%s\" !", GLOBAL_CLI_OUTPUT_FILE);
 
+    // Create file buffer
+    char result_file_buffer [RESULT_FILE_BUFFER_SIZE];
+    setvbuf (result_file, result_file_buffer, _IOFBF, RESULT_FILE_BUFFER_SIZE);
+
     const uint_fast16_t count_steps                     = 10000;
     const uint_fast32_t number_of_intersection_calls    = source_int_values_2->next_free_array *
             source_int_values_1->next_free_array;
@@ -287,9 +305,20 @@ Exec_Intersection
                                                     // source set)
     cJSON* outer_object                     = NULL; // Outer object, that contains the intersections and token arrays
 
-    cJSON* export_results = cJSON_CreateObject();
-    cJSON_NOT_NULL(export_results);
-    Add_General_Information_To_Export_File(export_results);
+    cJSON* export_results = NULL;
+    cJSON* general_information = cJSON_CreateObject();
+    cJSON_NOT_NULL(general_information);
+
+    Add_General_Information_To_Export_File(general_information);
+
+    // Insert the general information to the result file
+    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, false);
+    ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
+    fputs("{\n", result_file);
+    fputs(general_information_as_str, result_file);
+    cJSON_FULL_FREE_AND_SET_TO_NULL(general_information);
+    free(general_information_as_str);
+    general_information_as_str = NULL;
 
     // Pointer array to delete all of them safely
     cJSON* cjson_ptr [] =
@@ -308,7 +337,6 @@ Exec_Intersection
 
     clock_t start           = 0;
     clock_t end             = 0;
-    _Bool abort_label_used = false;
 
     // Determine the intersections
     CLOCK_WITH_RETURN_CHECK(start);
@@ -318,6 +346,8 @@ Exec_Intersection
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
     {
+        cJSON_NEW_OBJ_CHECK(export_results);
+
         cJSON_NEW_OBJ_CHECK(intersections_partial_match);
         cJSON_NEW_OBJ_CHECK(intersections_full_match);
         cJSON_NEW_OBJ_CHECK(outer_object);
@@ -331,7 +361,6 @@ Exec_Intersection
             if (Determine_Percent(intersection_call_counter, number_of_intersection_calls) > abort_progress_percent)
             {
                 PRINTF_FFLUSH("\nCalculation stopped intended after %.4f %% !\n", abort_progress_percent);
-                abort_label_used = true;
                 goto abort_label;
             }
 
@@ -467,29 +496,36 @@ Exec_Intersection
             cJSON_AddItemToObject(outer_object, "Intersections (partial)", intersections_partial_match);
             cJSON_AddItemToObject(outer_object, "Intersections (full)", intersections_full_match);
             cJSON_AddItemToObject(export_results, dataset_id_2, outer_object);
+
+            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, false);
+            ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
+
+            fputs(json_export_str, result_file);
+            fflush(result_file);
+
+            free(json_export_str);
+            json_export_str = NULL;
+
+            // Delete the full object will all child-objects
+            // This is the reason why this call is enough to cleanup the full structure
+            cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
         }
-        // Delete the new cJSON object from the current outer loop call to avoid memory leaks
-        // cJSON_Delete (that will be used for freeing the resources) do this only for cJSOn objects, that are added to
-        // the main object !
         else
         {
-            cJSON_FREE_AND_SET_TO_NULL(intersections_partial_match);
-            cJSON_FREE_AND_SET_TO_NULL(intersections_full_match);
-            cJSON_FREE_AND_SET_TO_NULL(outer_object);
+            // When there are no new data, there is no connection between these four objects. So every object needs to
+            // be deleted manually
+            cJSON_FULL_FREE_AND_SET_TO_NULL(intersections_partial_match);
+            cJSON_FULL_FREE_AND_SET_TO_NULL(intersections_full_match);
+            cJSON_FULL_FREE_AND_SET_TO_NULL(outer_object);
+            cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
         }
     }
     // Label for a debugging end of the calculations
 abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
-
-    // If the calculation was stopped with abort_label, some dynamic objects are not deleted
-    // Therefore: an additional call
-    if (abort_label_used)
-    {
-        cJSON_FREE_AND_SET_TO_NULL(intersections_partial_match);
-        cJSON_FREE_AND_SET_TO_NULL(intersections_full_match);
-        cJSON_FREE_AND_SET_TO_NULL(outer_object);
-    }
+    //cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
+    fputs("\n}", result_file);
+    FCLOSE_AND_SET_TO_NULL(result_file);
 
     const float used_seconds = DETERMINE_USED_TIME(start, end);
     const float intersection_calls_div_abort = ((float) number_of_intersection_calls) * (GLOBAL_ABORT_PROCESS_PERCENT / 100.0f);
@@ -503,22 +539,8 @@ abort_label:
                 Replace_NaN_And_Inf_With_Zero(used_seconds),
                 (size_t) Replace_NaN_And_Inf_With_Zero (intersection_calls_div_abort));
     }
-    fflush (stdout);
 
-    char* json_export_str = cJSON_Print(export_results); //< Create the JSON string for the export file
-    ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
-
-    const size_t result_str_length = strlen (json_export_str);
-    fputs(json_export_str, result_file);
-
-    printf ("=> Result file size: ");
-    Print_Memory_Size_As_B_KB_MB(result_str_length);
-    FCLOSE_AND_SET_TO_NULL(result_file);
-
-    // NO FREE_AND_SET_TO_NULL, because this object was not created with MALLOC or CALLOC. The counter for the dynamic
-    // memory calls would be manipulated with the macro usage
-    free (json_export_str);
-    json_export_str = NULL;
+    PRINTF_FFLUSH ("=> Result file size: %" PRIuFAST64 " B\n", 0);
 
     // Delete all cJSON objects, if this not already was done
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(cjson_ptr); ++ i)
@@ -818,6 +840,14 @@ Exec_Intersection_Process_Print_Function
 #undef cJSON_NEW_STR_CHECK
 #endif /* cJSON_NEW_STR_CHECK */
 
-#ifdef cJSON_FREE_AND_SET_TO_NULL
-#undef cJSON_FREE_AND_SET_TO_NULL
-#endif /* cJSON_FREE_AND_SET_TO_NULL */
+#ifdef cJSON_FULL_FREE_AND_SET_TO_NULL
+#undef cJSON_FULL_FREE_AND_SET_TO_NULL
+#endif /* cJSON_FULL_FREE_AND_SET_TO_NULL */
+
+#ifdef CJSON_PRINT_BUFFER_SIZE
+#undef CJSON_PRINT_BUFFER_SIZE
+#endif /* CJSON_PRINT_BUFFER_SIZE */
+
+#ifdef RESULT_FILE_BUFFER_SIZE
+#undef RESULT_FILE_BUFFER_SIZE
+#endif /* RESULT_FILE_BUFFER_SIZE */
