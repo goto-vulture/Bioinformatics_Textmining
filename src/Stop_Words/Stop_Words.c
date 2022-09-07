@@ -22,6 +22,22 @@ const char* GLOBAL_eng_stop_words [] =
 size_t GLOBAL_eng_stop_words_length = 0;
 
 
+
+/**
+ * @brief Is the given C-String a Latin numeral?
+ *
+ * This information is useful, because in normal cases a Latin numeral is a stop word.
+ *
+ * @param[in] c_string          C-String, that will be checked
+ * @param[in] c_string_length   Length of the C-String
+ *
+ * @return true, if the C-String a Latin numeral, false otherwise
+ */
+static _Bool Is_String_A_Latin_Numeral
+(
+        const char* const c_string,
+        const size_t c_string_length
+);
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -91,6 +107,11 @@ extern _Bool Is_Word_In_Stop_Word_List
     {
         return true;
     }
+    // Is the number a Latin numeral ?
+    if (Is_String_A_Latin_Numeral(c_string, c_string_length))
+    {
+        return true;
+    }
 
     // Search the string in the stop word list
     for (size_t i = 0; i < GLOBAL_eng_stop_words_length; ++ i)
@@ -99,6 +120,47 @@ extern _Bool Is_Word_In_Stop_Word_List
                 selected_stop_word_list [i], strlen (selected_stop_word_list [i])) == 0)
         {
             return true;
+        }
+    }
+
+    return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Is the given C-String a Latin numeral?
+ *
+ * This information is useful, because in normal cases a Latin numeral is a stop word.
+ *
+ * @param[in] c_string          C-String, that will be checked
+ * @param[in] c_string_length   Length of the C-String
+ *
+ * @return true, if the C-String a Latin numeral, false otherwise
+ */
+static _Bool Is_String_A_Latin_Numeral
+(
+        const char* const c_string,
+        const size_t c_string_length
+)
+{
+    _Bool result = true;
+
+    for (size_t i = 0; i < c_string_length; ++ i)
+    {
+        switch(c_string [i])
+        {
+        case 'I':
+        case 'V':
+        case 'X':
+        case 'L':
+        case 'C':
+        case 'D':
+        case 'M':
+            continue;
+        default:
+            result = false;
+            break;
         }
     }
 

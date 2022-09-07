@@ -35,7 +35,8 @@
 #ifndef cJSON_NEW_OBJ_CHECK
 #define cJSON_NEW_OBJ_CHECK(cJSON_object)                                                                               \
     cJSON_object = cJSON_CreateObject();                                                                                \
-    cJSON_NOT_NULL(cJSON_object);
+    cJSON_NOT_NULL(cJSON_object);                                                                                       \
+    cJSON_mem_counter += cJSON_Determine_Full_Memory_Usage(cJSON_object);
 #else
 #error "The macro \"cJSON_NEW_OBJ_CHECK\" is already defined !"
 #endif /* cJSON_NEW_OBJ_CHECK */
@@ -43,7 +44,8 @@
 #ifndef cJSON_NEW_ARR_CHECK
 #define cJSON_NEW_ARR_CHECK(cJSON_object)                                                                               \
     cJSON_object = cJSON_CreateArray();                                                                                 \
-    cJSON_NOT_NULL(cJSON_object);
+    cJSON_NOT_NULL(cJSON_object);                                                                                       \
+    cJSON_mem_counter += cJSON_Determine_Full_Memory_Usage(cJSON_object);
 #else
 #error "The macro \"cJSON_NEW_ARR_CHECK\" is already defined !"
 #endif /* cJSON_NEW_ARR_CHECK */
@@ -51,7 +53,8 @@
 #ifndef cJSON_NEW_STR_CHECK
 #define cJSON_NEW_STR_CHECK(cJSON_object, str)                                                                          \
     cJSON_object = cJSON_CreateString(str);                                                                             \
-    cJSON_NOT_NULL(cJSON_object);
+    cJSON_NOT_NULL(cJSON_object);                                                                                       \
+    cJSON_mem_counter += cJSON_Determine_Full_Memory_Usage(cJSON_object);
 #else
 #error "The macro \"cJSON_NEW_STR_CHECK\" is already defined !"
 #endif /* cJSON_NEW_STR_CHECK */
@@ -162,6 +165,12 @@ Exec_Intersection_Process_Print_Function
         const clock_t interval_end
 );
 
+static size_t
+cJSON_Determine_Full_Memory_Usage
+(
+        const cJSON* const cJSON_str
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -264,6 +273,8 @@ Exec_Intersection
     DocumentWordList_ShowAttributes(source_int_values_1);
     DocumentWordList_ShowAttributes(source_int_values_2);
     puts("");
+    TokenIntMapping_ShowMemoryUsage(token_int_mapping);
+    puts("");
 
 
 
@@ -334,6 +345,9 @@ Exec_Intersection
             &token, &tokens_array, &intersections_partial_match, &intersections_full_match,
             &outer_object, &export_results
     };
+
+    size_t intersection_found_counter = 0;
+    size_t cJSON_mem_counter = 0;
 
     clock_t start           = 0;
     clock_t end             = 0;
@@ -423,6 +437,8 @@ Exec_Intersection
             if (DocumentWordList_IsDataInObject(intersection_result) && tokens_left > 0)
             {
                 data_found = true;
+                ++ intersection_found_counter;
+
                 // "selected_data_2_array" is the counter for the outer loop
                 // This test has the effect, that the tokens array only appear once for each outer element
                 if (selected_data_2_array != last_used_selected_data_2_array)
@@ -527,15 +543,20 @@ abort_label:
     fputs("\n}", result_file);
     FCLOSE_AND_SET_TO_NULL(result_file);
 
+    printf ("\nDone !");
+    printf ("\n\nIntersections found: %" PRIuFAST64 "\n", intersection_call_counter);
+    printf ("cJSON objects memory usage: ");
+    Print_Memory_Size_As_B_KB_MB(cJSON_mem_counter);
+
     const float used_seconds = DETERMINE_USED_TIME(start, end);
     const float intersection_calls_div_abort = ((float) number_of_intersection_calls) * (GLOBAL_ABORT_PROCESS_PERCENT / 100.0f);
     if (isnan(GLOBAL_ABORT_PROCESS_PERCENT))
     {
-        printf ("\n=> %3.3fs for calculation of all intersections.\n",  Replace_NaN_And_Inf_With_Zero(used_seconds));
+        printf ("\n=> %3.3fs for calculation of all intersections.\n\n",  Replace_NaN_And_Inf_With_Zero(used_seconds));
     }
     else
     {
-        printf ("\n=> %3.3fs (~ %zu calc/s) for calculation of all intersections.\n",
+        printf ("\n=> %3.3fs (~ %zu calc/s) for calculation of all intersections.\n\n",
                 Replace_NaN_And_Inf_With_Zero(used_seconds),
                 (size_t) Replace_NaN_And_Inf_With_Zero (intersection_calls_div_abort));
     }
@@ -818,6 +839,26 @@ Exec_Intersection_Process_Print_Function
             Replace_NaN_And_Inf_With_Zero(time_left));
 
     return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+static size_t
+cJSON_Determine_Full_Memory_Usage
+(
+        const cJSON* const cJSON_str
+)
+{
+    ASSERT_MSG(cJSON_str != NULL, "cJSON string object is NULL !");
+
+    size_t result = sizeof (cJSON);
+
+    if (cJSON_str->valuestring != NULL)
+    {result += strlen (cJSON_str->valuestring); }
+    if (cJSON_str->string != NULL)
+    { result += strlen (cJSON_str->string); }
+
+    return result;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
