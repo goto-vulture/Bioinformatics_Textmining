@@ -346,9 +346,6 @@ Exec_Intersection
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
     {
-        // If necessary, delete the full object will all child-objects
-        // This is the reason why this call is enough to cleanup the full structure
-        cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
         cJSON_NEW_OBJ_CHECK(export_results);
 
         cJSON_NEW_OBJ_CHECK(intersections_partial_match);
@@ -508,12 +505,25 @@ Exec_Intersection
 
             free(json_export_str);
             json_export_str = NULL;
+
+            // Delete the full object will all child-objects
+            // This is the reason why this call is enough to cleanup the full structure
+            cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
+        }
+        else
+        {
+            // When there are no new data, there is no connection between these four objects. So every object needs to
+            // be deleted manually
+            cJSON_FULL_FREE_AND_SET_TO_NULL(intersections_partial_match);
+            cJSON_FULL_FREE_AND_SET_TO_NULL(intersections_full_match);
+            cJSON_FULL_FREE_AND_SET_TO_NULL(outer_object);
+            cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
         }
     }
     // Label for a debugging end of the calculations
 abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
-    cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
+    //cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
     fputs("\n}", result_file);
     FCLOSE_AND_SET_TO_NULL(result_file);
 
