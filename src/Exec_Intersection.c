@@ -331,21 +331,6 @@ Exec_Intersection
     free(general_information_as_str);
     general_information_as_str = NULL;
 
-    // Pointer array to delete all of them safely
-    cJSON* cjson_ptr [] =
-    {
-            src_token, src_token_no_stop_word, src_tokens_array, src_tokens_array_wo_stop_words,
-            token, tokens_array, intersections_partial_match, intersections_full_match,
-            outer_object, export_results
-    };
-    // Pointer pointer to make it possible to set the original pointer to NULL
-    cJSON** cjson_ptr_ptr [] =
-    {
-            &src_token, &src_token_no_stop_word, &src_tokens_array, &src_tokens_array_wo_stop_words,
-            &token, &tokens_array, &intersections_partial_match, &intersections_full_match,
-            &outer_object, &export_results
-    };
-
     size_t intersection_found_counter = 0;
     size_t cJSON_mem_counter = 0;
 
@@ -566,21 +551,6 @@ abort_label:
     }
 
     PRINTF_FFLUSH ("=> Result file size: %" PRIuFAST64 " B\n", 0);
-
-    // Delete all cJSON objects, if this not already was done
-    for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(cjson_ptr); ++ i)
-    {
-        if (cjson_ptr [i] != NULL)
-        {
-            cJSON_Delete(cjson_ptr [i]);
-            cjson_ptr [i] = NULL;
-        }
-    }
-    for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(cjson_ptr_ptr); ++ i)
-    {
-        *(cjson_ptr_ptr [i]) = NULL;
-        cjson_ptr_ptr [i] = NULL;
-    }
 
     DocumentWordList_DeleteObject(source_int_values_1);
     source_int_values_1 = NULL;
