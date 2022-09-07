@@ -507,6 +507,7 @@ abort_label:
         cJSON_FREE_AND_SET_TO_NULL(outer_object);
     }
 
+    printf ("\nDone !");
     printf ("\n\nIntersections found: %" PRIuFAST64 "\n", intersection_call_counter);
     printf ("cJSON objects memory usage: ");
     Print_Memory_Size_As_B_KB_MB(cJSON_mem_counter);
@@ -515,21 +516,26 @@ abort_label:
     const float intersection_calls_div_abort = ((float) number_of_intersection_calls) * (GLOBAL_ABORT_PROCESS_PERCENT / 100.0f);
     if (isnan(GLOBAL_ABORT_PROCESS_PERCENT))
     {
-        printf ("\n=> %3.3fs for calculation of all intersections.\n",  Replace_NaN_And_Inf_With_Zero(used_seconds));
+        printf ("\n=> %3.3fs for calculation of all intersections.\n\n",  Replace_NaN_And_Inf_With_Zero(used_seconds));
     }
     else
     {
-        printf ("\n=> %3.3fs (~ %zu calc/s) for calculation of all intersections.\n",
+        printf ("\n=> %3.3fs (~ %zu calc/s) for calculation of all intersections.\n\n",
                 Replace_NaN_And_Inf_With_Zero(used_seconds),
                 (size_t) Replace_NaN_And_Inf_With_Zero (intersection_calls_div_abort));
     }
-    fflush (stdout);
 
+    PRINTF_NO_VA_ARGS_FFLUSH("Try to prepare the export results ... ");
     char* json_export_str = cJSON_Print(export_results); //< Create the JSON string for the export file
     ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
+    PRINTF_NO_VA_ARGS_FFLUSH("Done !\n");
 
+    PRINTF_NO_VA_ARGS_FFLUSH("Calculate result size ... ");
     const size_t result_str_length = strlen (json_export_str);
+    PRINTF_NO_VA_ARGS_FFLUSH("Done !\n");
+    PRINTF_FFLUSH("Try to export the prepared results in the export file (%s) ... ", GLOBAL_CLI_OUTPUT_FILE);
     fputs(json_export_str, result_file);
+    PRINTF_NO_VA_ARGS_FFLUSH("Done !\n\n");
 
     printf ("=> Result file size: ");
     Print_Memory_Size_As_B_KB_MB(result_str_length);
