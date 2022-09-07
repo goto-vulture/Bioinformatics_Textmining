@@ -73,6 +73,12 @@
 #error "The macro \"CJSON_PRINT_BUFFER_SIZE\" is already defined !"
 #endif /* CJSON_PRINT_BUFFER_SIZE */
 
+#ifndef RESULT_FILE_BUFFER_SIZE
+#define RESULT_FILE_BUFFER_SIZE 10000
+#else
+#error "The macro \"RESULT_FILE_BUFFER_SIZE\" is already defined !"
+#endif /* RESULT_FILE_BUFFER_SIZE */
+
 
 
 /**
@@ -264,6 +270,10 @@ Exec_Intersection
     // >>> Create the intersections and save the information in the output file <<<
     FILE* result_file = fopen(GLOBAL_CLI_OUTPUT_FILE, "w");
     ASSERT_FMSG(result_file != NULL, "Cannot open/create the result file: \"%s\" !", GLOBAL_CLI_OUTPUT_FILE);
+
+    // Create file buffer
+    char result_file_buffer [RESULT_FILE_BUFFER_SIZE];
+    setvbuf (result_file, result_file_buffer, _IOFBF, RESULT_FILE_BUFFER_SIZE);
 
     const uint_fast16_t count_steps                     = 10000;
     const uint_fast32_t number_of_intersection_calls    = source_int_values_2->next_free_array *
@@ -827,3 +837,7 @@ Exec_Intersection_Process_Print_Function
 #ifdef CJSON_PRINT_BUFFER_SIZE
 #undef CJSON_PRINT_BUFFER_SIZE
 #endif /* CJSON_PRINT_BUFFER_SIZE */
+
+#ifdef RESULT_FILE_BUFFER_SIZE
+#undef RESULT_FILE_BUFFER_SIZE
+#endif /* RESULT_FILE_BUFFER_SIZE */
