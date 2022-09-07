@@ -67,6 +67,14 @@
 #error "The macro \"cJSON_FULL_FREE_AND_SET_TO_NULL\" is already defined !"
 #endif /* cJSON_FULL_FREE_AND_SET_TO_NULL */
 
+#ifndef CJSON_PRINT_BUFFER_SIZE
+#define CJSON_PRINT_BUFFER_SIZE 5000
+#else
+#error "The macro \"CJSON_PRINT_BUFFER_SIZE\" is already defined !"
+#endif /* CJSON_PRINT_BUFFER_SIZE */
+
+
+
 /**
  * @brief Add general information to the export cJSON object.
  *
@@ -294,7 +302,7 @@ Exec_Intersection
     Add_General_Information_To_Export_File(general_information);
 
     // Insert the general information to the result file
-    char* general_information_as_str = cJSON_Print(general_information);
+    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, false);
     ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
     fputs("{\n", result_file);
     fputs(general_information_as_str, result_file);
@@ -482,7 +490,7 @@ Exec_Intersection
             cJSON_AddItemToObject(outer_object, "Intersections (full)", intersections_full_match);
             cJSON_AddItemToObject(export_results, dataset_id_2, outer_object);
 
-            char* json_export_str = cJSON_Print(export_results); //< Create the JSON string for the export file
+            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, false);
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
 
             fputs(json_export_str, result_file);
@@ -815,3 +823,7 @@ Exec_Intersection_Process_Print_Function
 #ifdef cJSON_FULL_FREE_AND_SET_TO_NULL
 #undef cJSON_FULL_FREE_AND_SET_TO_NULL
 #endif /* cJSON_FULL_FREE_AND_SET_TO_NULL */
+
+#ifdef CJSON_PRINT_BUFFER_SIZE
+#undef CJSON_PRINT_BUFFER_SIZE
+#endif /* CJSON_PRINT_BUFFER_SIZE */
