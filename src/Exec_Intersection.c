@@ -517,7 +517,6 @@ Exec_Intersection
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
 
             fputs(json_export_str, result_file);
-            fflush(result_file);
 
             free(json_export_str);
             json_export_str = NULL;
