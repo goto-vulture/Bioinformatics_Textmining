@@ -321,11 +321,15 @@ Exec_Intersection
 
     Add_General_Information_To_Export_File(general_information);
 
+    size_t result_file_size = 0;
+
     // Insert the general information to the result file
     char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, false);
     ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
     fputs("{\n", result_file);
+    result_file_size += strlen ("{\n");
     fputs(general_information_as_str, result_file);
+    result_file_size += strlen (general_information_as_str);
     cJSON_FULL_FREE_AND_SET_TO_NULL(general_information);
     free(general_information_as_str);
     general_information_as_str = NULL;
@@ -501,6 +505,7 @@ Exec_Intersection
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
 
             fputs(json_export_str, result_file);
+            result_file_size += strlen (json_export_str);
 
             free(json_export_str);
             json_export_str = NULL;
@@ -546,7 +551,8 @@ abort_label:
                 (size_t) Replace_NaN_And_Inf_With_Zero (intersection_calls_div_abort));
     }
 
-    PRINTF_FFLUSH ("=> Result file size: %" PRIuFAST64 " B\n", 0);
+    printf ("=> Result file size: ");
+    Print_Memory_Size_As_B_KB_MB(result_file_size);
 
     DocumentWordList_DeleteObject(source_int_values_1);
     source_int_values_1 = NULL;
