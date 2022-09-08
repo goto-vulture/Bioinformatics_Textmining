@@ -326,10 +326,10 @@ Exec_Intersection
     // Insert the general information to the result file
     char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, true);
     ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
-    fputs("{\n", result_file);
-    result_file_size += strlen ("{\n");
     fputs(general_information_as_str, result_file);
     result_file_size += strlen (general_information_as_str);
+    fputs(",\n", result_file);
+    result_file_size += strlen (",\n");
     cJSON_FULL_FREE_AND_SET_TO_NULL(general_information);
     free(general_information_as_str);
     general_information_as_str = NULL;
@@ -506,6 +506,8 @@ Exec_Intersection
 
             fputs(json_export_str, result_file);
             result_file_size += strlen (json_export_str);
+            fputc(',', result_file);
+            ++ result_file_size;
 
             free(json_export_str);
             json_export_str = NULL;
@@ -529,8 +531,10 @@ Exec_Intersection
     // Label for a debugging end of the calculations
 abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
-    //cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
-    fputs("\n}", result_file);
+    fseek (result_file, -1, SEEK_CUR); // Remove the last "," from the file
+    -- result_file_size;
+    fputc('\n', result_file);
+    ++ result_file_size;
     FCLOSE_AND_SET_TO_NULL(result_file);
 
     printf ("\nDone !");
