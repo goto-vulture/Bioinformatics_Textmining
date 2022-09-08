@@ -11,6 +11,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <math.h>
+#include <errno.h>
 #include "CLI_Parameter.h"
 #include "File_Reader.h"
 #include "Token_Int_Mapping.h"
@@ -322,14 +323,22 @@ Exec_Intersection
     Add_General_Information_To_Export_File(general_information);
 
     size_t result_file_size = 0;
+    int file_operation_ret_value = 0;
 
     // Insert the general information to the result file
     char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, true);
     ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
-    fputs(general_information_as_str, result_file);
+
+    file_operation_ret_value = fputs(general_information_as_str, result_file);
+    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+            strerror(errno));
     result_file_size += strlen (general_information_as_str);
-    fputs(",\n", result_file);
+
+    file_operation_ret_value = fputs(",\n", result_file);
+    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+            strerror(errno));
     result_file_size += strlen (",\n");
+
     cJSON_FULL_FREE_AND_SET_TO_NULL(general_information);
     free(general_information_as_str);
     general_information_as_str = NULL;
@@ -504,9 +513,14 @@ Exec_Intersection
             char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, true);
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
 
-            fputs(json_export_str, result_file);
+            file_operation_ret_value = fputs(json_export_str, result_file);
+            ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
+                    GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
             result_file_size += strlen (json_export_str);
-            fputc(',', result_file);
+
+            file_operation_ret_value = fputc(',', result_file);
+            ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
+                    GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
             ++ result_file_size;
 
             free(json_export_str);
@@ -531,9 +545,13 @@ Exec_Intersection
     // Label for a debugging end of the calculations
 abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
-    fseek (result_file, -1, SEEK_CUR); // Remove the last "," from the file
+    const int fseek_ret = fseek (result_file, -1, SEEK_CUR); // Remove the last "," from the file
+    ASSERT_FMSG(fseek_ret == 0, "Error in a fseek() call for the file \"%s\" occurred !", GLOBAL_CLI_OUTPUT_FILE);
     -- result_file_size;
-    fputc('\n', result_file);
+
+    file_operation_ret_value = fputc('\n', result_file);
+    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+            strerror(errno));
     ++ result_file_size;
     FCLOSE_AND_SET_TO_NULL(result_file);
 
