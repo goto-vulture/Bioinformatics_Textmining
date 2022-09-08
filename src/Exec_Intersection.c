@@ -324,7 +324,7 @@ Exec_Intersection
     size_t result_file_size = 0;
 
     // Insert the general information to the result file
-    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, false);
+    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, true);
     ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
     fputs("{\n", result_file);
     result_file_size += strlen ("{\n");
@@ -501,7 +501,7 @@ Exec_Intersection
             cJSON_AddItemToObject(outer_object, "Intersections (full)", intersections_full_match);
             cJSON_AddItemToObject(export_results, dataset_id_2, outer_object);
 
-            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, false);
+            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, true);
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
 
             fputs(json_export_str, result_file);
