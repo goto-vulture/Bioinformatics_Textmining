@@ -11,6 +11,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <math.h>
+#include <errno.h>
 #include "CLI_Parameter.h"
 #include "File_Reader.h"
 #include "Token_Int_Mapping.h"
@@ -315,48 +316,48 @@ Exec_Intersection
     cJSON* intersections_full_match         = NULL; // Intersections with a full match (An intersection contains a full
                                                     // source set)
     cJSON* outer_object                     = NULL; // Outer object, that contains the intersections and token arrays
-
-    cJSON* export_results = NULL;
-    cJSON* general_information = cJSON_CreateObject();
+    cJSON* export_results                   = NULL;
+    cJSON* general_information              = cJSON_CreateObject();
     cJSON_NOT_NULL(general_information);
 
     Add_General_Information_To_Export_File(general_information);
 
+    size_t result_file_size = 0;
+    int file_operation_ret_value = 0;
+
     // Insert the general information to the result file
-    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, false);
+    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, true);
     ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
-    fputs("{\n", result_file);
-    fputs(general_information_as_str, result_file);
+    const size_t general_information_as_str_len = strlen (general_information_as_str);
+    // Remove the last two char from the string representation ('\n' and '}')
+    general_information_as_str [general_information_as_str_len - 1] = '\0';
+    general_information_as_str [general_information_as_str_len - 2] = '\0';
+
+    file_operation_ret_value = fputs(general_information_as_str, result_file);
+    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+            strerror(errno));
+    result_file_size = result_file_size + (general_information_as_str_len - 2);
+
+    file_operation_ret_value = fputc(',', result_file);
+    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+            strerror(errno));
+    ++ result_file_size;
+
     cJSON_FULL_FREE_AND_SET_TO_NULL(general_information);
     free(general_information_as_str);
     general_information_as_str = NULL;
 
-    // Pointer array to delete all of them safely
-    cJSON* cjson_ptr [] =
-    {
-            src_token, src_token_no_stop_word, src_tokens_array, src_tokens_array_wo_stop_words,
-            token, tokens_array, intersections_partial_match, intersections_full_match,
-            outer_object, export_results
-    };
-    // Pointer pointer to make it possible to set the original pointer to NULL
-    cJSON** cjson_ptr_ptr [] =
-    {
-            &src_token, &src_token_no_stop_word, &src_tokens_array, &src_tokens_array_wo_stop_words,
-            &token, &tokens_array, &intersections_partial_match, &intersections_full_match,
-            &outer_object, &export_results
-    };
-
-    size_t intersection_found_counter = 0;
-    size_t cJSON_mem_counter = 0;
-
-    clock_t start           = 0;
-    clock_t end             = 0;
+    size_t intersection_found_counter   = 0;
+    size_t cJSON_mem_counter            = 0;
+    clock_t start                       = 0;
+    clock_t end                         = 0;
 
     // Determine the intersections
     CLOCK_WITH_RETURN_CHECK(start);
 
     uint_fast32_t last_used_selected_data_2_array = UINT_FAST32_MAX;
 
+    // ===== ===== ===== ===== ===== ===== ===== ===== BEGIN Outer loop ===== ===== ===== ===== ===== ===== ===== =====
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
     {
@@ -367,8 +368,9 @@ Exec_Intersection
         cJSON_NEW_OBJ_CHECK(outer_object);
         _Bool data_found = false;
 
+        // ===== ===== ===== ===== ===== BEGIN Inner loop ===== ===== ===== ===== =====
         for (uint_fast32_t selected_data_1_array = 0; selected_data_1_array < source_int_values_1->next_free_array;
-                ++ selected_data_1_array)
+                ++ selected_data_1_array, ++ intersection_call_counter, ++ intersection_calls_before_last_output)
         {
             // Program exit after a given progress
             // This is only for debugging purposes to avoid a complete program execution
@@ -395,8 +397,6 @@ Exec_Intersection
                             source_int_values_2->arrays_lengths [selected_data_2_array],
                             token_container_input_1->token_lists [selected_data_1_array].dataset_id,
                             token_container_input_2->token_lists [selected_data_2_array].dataset_id);
-            ++ intersection_call_counter;
-            ++ intersection_calls_before_last_output;
 
             // Copy the two dataset IDs and use them for the export JSON file
             // memset(dataset_id_1, '\0', sizeof (dataset_id_1));
@@ -504,7 +504,8 @@ Exec_Intersection
 
             DocumentWordList_DeleteObject(intersection_result);
             intersection_result = NULL;
-        } // Inner loop end
+        }
+        // ===== ===== ===== ===== ===== END Inner loop ===== ===== ===== ===== =====
 
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
@@ -513,13 +514,32 @@ Exec_Intersection
             cJSON_AddItemToObject(outer_object, "Intersections (full)", intersections_full_match);
             cJSON_AddItemToObject(export_results, dataset_id_2, outer_object);
 
-            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, false);
+            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, true);
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
+            const size_t json_export_str_len = strlen (json_export_str);
 
-            fputs(json_export_str, result_file);
-            fflush(result_file);
+            // Removing the trailing closing bracket and the newline
+            // And remove the first char (The opening bracket)
+            // These steps are necessary, because the string objects meant to be stand alone JSON objects
+            // But in our case we concatenate these JSON objects. So it is necessary to modify the objects for a valid
+            // JSON result file
+            char* orig_ptr = json_export_str;
+            json_export_str ++;
+            orig_ptr [json_export_str_len - 1] = '\0';
+            orig_ptr [json_export_str_len - 2] = '\0';
 
-            free(json_export_str);
+            file_operation_ret_value = fputs(json_export_str, result_file);
+            ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
+                    GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
+            result_file_size = result_file_size + (json_export_str_len - 3);
+
+            file_operation_ret_value = fputc(',', result_file);
+            ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
+                    GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
+            ++ result_file_size;
+
+            free(orig_ptr);
+            orig_ptr = NULL;
             json_export_str = NULL;
 
             // Delete the full object will all child-objects
@@ -536,11 +556,19 @@ Exec_Intersection
             cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
         }
     }
+    // ===== ===== ===== ===== ===== ===== ===== ===== END Outer loop ===== ===== ===== ===== ===== ===== ===== =====
+
     // Label for a debugging end of the calculations
 abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
-    //cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
-    fputs("\n}", result_file);
+    const int fseek_ret = fseek (result_file, -1, SEEK_CUR); // Remove the last "," from the file
+    ASSERT_FMSG(fseek_ret == 0, "Error in a fseek() call for the file \"%s\" occurred !", GLOBAL_CLI_OUTPUT_FILE);
+    -- result_file_size;
+
+    file_operation_ret_value = fputs("\n}", result_file);
+    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+            strerror(errno));
+    result_file_size += strlen ("\n}");
     FCLOSE_AND_SET_TO_NULL(result_file);
 
     printf ("\nDone !");
@@ -561,22 +589,8 @@ abort_label:
                 (size_t) Replace_NaN_And_Inf_With_Zero (intersection_calls_div_abort));
     }
 
-    PRINTF_FFLUSH ("=> Result file size: %" PRIuFAST64 " B\n", 0);
-
-    // Delete all cJSON objects, if this not already was done
-    for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(cjson_ptr); ++ i)
-    {
-        if (cjson_ptr [i] != NULL)
-        {
-            cJSON_Delete(cjson_ptr [i]);
-            cjson_ptr [i] = NULL;
-        }
-    }
-    for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(cjson_ptr_ptr); ++ i)
-    {
-        *(cjson_ptr_ptr [i]) = NULL;
-        cjson_ptr_ptr [i] = NULL;
-    }
+    printf ("=> Result file size: ");
+    Print_Memory_Size_As_B_KB_MB(result_file_size);
 
     DocumentWordList_DeleteObject(source_int_values_1);
     source_int_values_1 = NULL;
