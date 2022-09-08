@@ -355,7 +355,7 @@ Exec_Intersection
 
         // ===== ===== ===== ===== ===== BEGIN Inner loop ===== ===== ===== ===== =====
         for (uint_fast32_t selected_data_1_array = 0; selected_data_1_array < source_int_values_1->next_free_array;
-                ++ selected_data_1_array)
+                ++ selected_data_1_array, ++ intersection_call_counter, ++ intersection_calls_before_last_output)
         {
             // Program exit after a given progress
             // This is only for debugging purposes to avoid a complete program execution
@@ -382,8 +382,6 @@ Exec_Intersection
                             source_int_values_2->arrays_lengths [selected_data_2_array],
                             token_container_input_1->token_lists [selected_data_1_array].dataset_id,
                             token_container_input_2->token_lists [selected_data_2_array].dataset_id);
-            ++ intersection_call_counter;
-            ++ intersection_calls_before_last_output;
 
             // Copy the two dataset IDs and use them for the export JSON file
             // memset(dataset_id_1, '\0', sizeof (dataset_id_1));
