@@ -328,16 +328,20 @@ Exec_Intersection
     // Insert the general information to the result file
     char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, true);
     ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
+    const size_t general_information_as_str_len = strlen (general_information_as_str);
+    // Remove the last two char from the string representation ('\n' and '}')
+    general_information_as_str [general_information_as_str_len - 1] = '\0';
+    general_information_as_str [general_information_as_str_len - 2] = '\0';
 
     file_operation_ret_value = fputs(general_information_as_str, result_file);
     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
             strerror(errno));
-    result_file_size += strlen (general_information_as_str);
+    result_file_size = result_file_size + (general_information_as_str_len - 2);
 
-    file_operation_ret_value = fputs(",\n", result_file);
+    file_operation_ret_value = fputc(',', result_file);
     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
             strerror(errno));
-    result_file_size += strlen (",\n");
+    ++ result_file_size;
 
     cJSON_FULL_FREE_AND_SET_TO_NULL(general_information);
     free(general_information_as_str);
@@ -512,18 +516,30 @@ Exec_Intersection
 
             char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, true);
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
+            const size_t json_export_str_len = strlen (json_export_str);
+
+            // Removing the trailing closing bracket and the newline
+            // And remove the first char (The opening bracket)
+            // These steps are necessary, because the string objects meant to be stand alone JSON objects
+            // But in our case we concatenate these JSON objects. So it is necessary to modify the objects for a valid
+            // JSON result file
+            char* orig_ptr = json_export_str;
+            json_export_str ++;
+            orig_ptr [json_export_str_len - 1] = '\0';
+            orig_ptr [json_export_str_len - 2] = '\0';
 
             file_operation_ret_value = fputs(json_export_str, result_file);
             ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
                     GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
-            result_file_size += strlen (json_export_str);
+            result_file_size = result_file_size + (json_export_str_len - 3);
 
             file_operation_ret_value = fputc(',', result_file);
             ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
                     GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
             ++ result_file_size;
 
-            free(json_export_str);
+            free(orig_ptr);
+            orig_ptr = NULL;
             json_export_str = NULL;
 
             // Delete the full object will all child-objects
@@ -549,10 +565,10 @@ abort_label:
     ASSERT_FMSG(fseek_ret == 0, "Error in a fseek() call for the file \"%s\" occurred !", GLOBAL_CLI_OUTPUT_FILE);
     -- result_file_size;
 
-    file_operation_ret_value = fputc('\n', result_file);
+    file_operation_ret_value = fputs("\n}", result_file);
     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
             strerror(errno));
-    ++ result_file_size;
+    result_file_size += strlen ("\n}");
     FCLOSE_AND_SET_TO_NULL(result_file);
 
     printf ("\nDone !");
