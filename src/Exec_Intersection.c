@@ -315,9 +315,8 @@ Exec_Intersection
     cJSON* intersections_full_match         = NULL; // Intersections with a full match (An intersection contains a full
                                                     // source set)
     cJSON* outer_object                     = NULL; // Outer object, that contains the intersections and token arrays
-
-    cJSON* export_results = NULL;
-    cJSON* general_information = cJSON_CreateObject();
+    cJSON* export_results                   = NULL;
+    cJSON* general_information              = cJSON_CreateObject();
     cJSON_NOT_NULL(general_information);
 
     Add_General_Information_To_Export_File(general_information);
@@ -331,11 +330,10 @@ Exec_Intersection
     free(general_information_as_str);
     general_information_as_str = NULL;
 
-    size_t intersection_found_counter = 0;
-    size_t cJSON_mem_counter = 0;
-
-    clock_t start           = 0;
-    clock_t end             = 0;
+    size_t intersection_found_counter   = 0;
+    size_t cJSON_mem_counter            = 0;
+    clock_t start                       = 0;
+    clock_t end                         = 0;
 
     // Determine the intersections
     CLOCK_WITH_RETURN_CHECK(start);
