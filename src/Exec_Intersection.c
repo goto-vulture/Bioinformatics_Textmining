@@ -197,7 +197,7 @@ Exec_Intersection_Process_Print_Function
 );
 
 /**
- * @brief Determine the full size (including child objects) of a cJSON object.
+ * @brief Determine the full size (including str sizes) of a cJSON object.
  *
  * Asserts:
  *      cJSON_obj != NULL
@@ -928,7 +928,7 @@ Exec_Intersection_Process_Print_Function
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Determine the full size (including child objects) of a cJSON object.
+ * @brief Determine the full size (including str sizes) of a cJSON object.
  *
  * Asserts:
  *      cJSON_obj != NULL
@@ -943,7 +943,7 @@ cJSON_Determine_Full_Memory_Usage
         const cJSON* const cJSON_obj
 )
 {
-    ASSERT_MSG(cJSON_obj != NULL, "cJSON string object is NULL !");
+    ASSERT_MSG(cJSON_obj != NULL, "cJSON object is NULL !");
 
     size_t result = sizeof (cJSON);
 
