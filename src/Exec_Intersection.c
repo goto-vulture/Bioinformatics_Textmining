@@ -61,10 +61,10 @@
 #endif /* cJSON_NEW_STR_CHECK */
 
 #ifndef cJSON_FULL_FREE_AND_SET_TO_NULL
-#define cJSON_FULL_FREE_AND_SET_TO_NULL(cJSON_object)                                                                                        \
+#define cJSON_FULL_FREE_AND_SET_TO_NULL(cJSON_object)                                                                   \
     if (cJSON_object != NULL)                                                                                           \
     {                                                                                                                   \
-        cJSON_Delete(cJSON_object);                                                                                       \
+        cJSON_Delete(cJSON_object);                                                                                     \
         cJSON_object = NULL;                                                                                            \
     }
 #else
