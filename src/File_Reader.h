@@ -61,6 +61,13 @@ struct Token_List_Container
         char* data;
 
         /**
+         * @brief Char offsets of each token.
+         *
+         * UINT_FAST16_MAX is the placeholder value, because 0 is a valid offset !
+         */
+        uint_fast16_t* char_offsets;
+
+        /**
          * @brief Max. possible length for one token (inkl. terminator symbol)
          */
         size_t max_token_length;

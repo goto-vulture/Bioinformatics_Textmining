@@ -161,8 +161,15 @@ TokenListContainer_CreateObject
         new_container->token_lists [i].data = (char*) CALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE, sizeof (char));
         ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
                 MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-        // memset(new_container->tokens [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
         new_container->malloc_calloc_calls ++;
+
+        new_container->token_lists [i].char_offsets = (uint_fast16_t*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (uint_fast16_t));
+        ASSERT_ALLOC(new_container->token_lists [i].char_offsets, "Cannot create data for a Token object !",
+                TOKENS_ALLOCATION_STEP_SIZE * sizeof (uint_fast16_t));
+        new_container->malloc_calloc_calls ++;
+        // Init new values
+        for (size_t i2 = 0; i2 < TOKENS_ALLOCATION_STEP_SIZE; ++ i2)
+        { new_container->token_lists [i].char_offsets [i2] = UINT_FAST16_MAX; }
 
         new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
         new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
@@ -265,11 +272,18 @@ TokenListContainer_CreateObject
                     // Create memory for the new Token_List objects
                     for (size_t i = old_allocated_token_container; i < new_container->allocated_token_container; ++ i)
                     {
-                        new_container->token_lists [i].data = (char*) MALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+                        new_container->token_lists [i].data = (char*) CALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE, sizeof (char));
                         ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
-                                MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-                        memset(new_container->token_lists [i].data, '\0', MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
+                                MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE * sizeof (char));
                         new_container->malloc_calloc_calls ++;
+
+                        new_container->token_lists [i].char_offsets = (uint_fast16_t*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (uint_fast16_t));
+                        ASSERT_ALLOC(new_container->token_lists [i].char_offsets, "Cannot create data for a Token object !",
+                                TOKENS_ALLOCATION_STEP_SIZE * sizeof (uint_fast16_t));
+                        new_container->malloc_calloc_calls ++;
+                        // Init new values
+                        for (size_t i2 = 0; i2 < TOKENS_ALLOCATION_STEP_SIZE; ++ i2)
+                        { new_container->token_lists [i].char_offsets [i2] = UINT_FAST16_MAX; }
 
                         new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
                         new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
@@ -312,8 +326,19 @@ TokenListContainer_CreateObject
                                 (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
                         memset(tmp_ptr + (old_tokens_size * token_size), '\0',
                                 (TOKENS_ALLOCATION_STEP_SIZE) * token_size);
+                        new_container->realloc_calls ++;
+
+                        uint_fast16_t* tmp_ptr2 = (uint_fast16_t*) REALLOC (current_token_list_obj->char_offsets,
+                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (uint_fast16_t));
+                        ASSERT_ALLOC(tmp_ptr2, "Cannot create data for a Token object !",
+                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (uint_fast16_t));
+                        new_container->realloc_calls ++;
+                        // Init new values
+                        for (size_t i2 = old_tokens_size; i2 < (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE); ++ i2)
+                        { tmp_ptr2 [i2] = UINT_FAST16_MAX; }
 
                         current_token_list_obj->data = tmp_ptr;
+                        current_token_list_obj->char_offsets = tmp_ptr2;
                         current_token_list_obj->allocated_tokens += TOKENS_ALLOCATION_STEP_SIZE;
                     }
 
@@ -321,9 +346,22 @@ TokenListContainer_CreateObject
 
                     // Copy token to the current Token_List
                     strncpy(res_mem_for_curr_token, curr_token->valuestring, current_token_list_obj->max_token_length - 1);
+
+                    // Adjust the next offset value
+                    // Zero for the fist element
+                    if (current_token_list_obj->next_free_element == 0)
+                    {
+                        current_token_list_obj->char_offsets [0] = 0;
+                    }
+                    else
+                    {
+                        current_token_list_obj->char_offsets [current_token_list_obj->next_free_element] =
+                                current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
+                                strlen (curr_token->valuestring);
+                    }
+
                     current_token_list_obj->next_free_element ++;
                     tokens_found ++;
-
                     curr_token = curr_token->next;
                 }
                 // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
@@ -382,6 +420,7 @@ TokenListContainer_DeleteObject
         for (size_t i = 0; i < object->allocated_token_container; ++ i)
         {
             FREE_AND_SET_TO_NULL(object->token_lists [i].data);
+            FREE_AND_SET_TO_NULL(object->token_lists [i].char_offsets);
         }
     }
 
@@ -459,6 +498,7 @@ TokenListContainer_GetAllocatedMemSize
     for (size_t i = 0; i < container->allocated_token_container; ++ i)
     {
         result += (container->token_lists [i].allocated_tokens * max_token_size);
+        result += (container->token_lists [i].allocated_tokens * sizeof (int_fast16_t));
     }
 
     return result;
