@@ -93,6 +93,12 @@
  *      - Input file 2
  *      - Creation time (ctime format)
  *
+ * Creation modes:
+ *      - Partial match
+ *      - Full match
+ *      - Stop word list used
+ *      - Char offset
+ *
  * Asserts:
  *      export_results != NULL
  *
@@ -655,6 +661,12 @@ abort_label:
  *      - Input file 1
  *      - Input file 2
  *      - Creation time (ctime format)
+ *
+ * Creation modes:
+ *      - Partial match
+ *      - Full match
+ *      - Stop word list used
+ *      - Char offset
  *
  * Asserts:
  *      export_results != NULL
