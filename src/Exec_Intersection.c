@@ -512,10 +512,10 @@ Exec_Intersection
                         if (! Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
                         {
                             cJSON_NEW_STR_CHECK(src_token_no_stop_word, int_to_token_mem);
-                            cJSON_AddItemToArray(src_tokens_array_wo_stop_words, src_token_no_stop_word);
+                            cJSON_ADD_ITEM_TO_ARRAY_CHECK(src_tokens_array_wo_stop_words, src_token_no_stop_word);
                         }
                         cJSON_NEW_STR_CHECK(src_token, int_to_token_mem);
-                        cJSON_AddItemToArray(src_tokens_array, src_token);
+                        cJSON_ADD_ITEM_TO_ARRAY_CHECK(src_tokens_array, src_token);
                     }
                     cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "tokens", src_tokens_array);
                     cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "tokens w/o stop words", src_tokens_array_wo_stop_words);
@@ -537,7 +537,7 @@ Exec_Intersection
                     const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
                             intersection_result->data [0][i]);
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
-                    cJSON_AddItemToArray(tokens_array, token);
+                    cJSON_ADD_ITEM_TO_ARRAY_CHECK(tokens_array, token);
 
                     ++ intersection_call_counter;
                     ++ tokens_wrote;
