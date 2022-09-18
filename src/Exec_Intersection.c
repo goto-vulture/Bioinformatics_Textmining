@@ -356,6 +356,7 @@ Exec_Intersection
     cJSON* src_tokens_array                 = NULL; // Array of tokens, which are from a source file
     cJSON* src_tokens_array_wo_stop_words   = NULL; // Array of tokens, which are from a source file (no stop words)
     cJSON* token                            = NULL; // Token
+    cJSON* char_offset_array                = NULL; // Offset (number of char) of the intersection tokens
     cJSON* tokens_array                     = NULL; // Array of tokens
     cJSON* intersections_partial_match      = NULL; // Intersections with a partial match (An intersection does not
                                                     // contain a full source set)
@@ -513,6 +514,7 @@ Exec_Intersection
                     cJSON_AddItemToObject(outer_object, "tokens w/o stop words", src_tokens_array_wo_stop_words);
                 }
 
+                cJSON_NEW_ARR_CHECK(char_offset_array);
                 cJSON_NEW_ARR_CHECK(tokens_array);
 
                 //fputs("Found tokens_array in:\n", result_file);
@@ -528,23 +530,35 @@ Exec_Intersection
                     // Reverse the mapping to get the original token (int -> token)
                     const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
                             intersection_result->data [0][i]);
+
+                    // Placeholder value
+                    cJSON* char_offset = cJSON_CreateNumber(rand() % 100);
+                    ASSERT_MSG(char_offset != NULL, "char offset is NULL !");
+
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
+                    cJSON_AddItemToArray(char_offset_array, char_offset);
                     cJSON_AddItemToArray(tokens_array, token);
 
                     ++ intersection_call_counter;
                     ++ tokens_wrote;
                 }
+
+                // Create a object for the tow arrays (tokens / offset)
+                cJSON* two_array_container = NULL;
+                cJSON_NEW_OBJ_CHECK(two_array_container);
+                cJSON_AddItemToObject(two_array_container, "tokens", tokens_array);
+                cJSON_AddItemToObject(two_array_container, "char offsets", char_offset_array);
                 // Add data to the specific cJSON object
                 // For the comparison it is important to use "src_tokens_array_wo_stop_words" instead of
                 // "src_tokens_array"; Because a full match means a equalness with the list, that contains NO stop
                 // words !
                 if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
                 {
-                    cJSON_AddItemToObject(intersections_full_match, dataset_id_1, tokens_array);
+                    cJSON_AddItemToObject(intersections_full_match, dataset_id_1, two_array_container);
                 }
                 else
                 {
-                    cJSON_AddItemToObject(intersections_partial_match, dataset_id_1, tokens_array);
+                    cJSON_AddItemToObject(intersections_partial_match, dataset_id_1, two_array_container);
                 }
             }
 
