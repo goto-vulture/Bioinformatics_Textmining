@@ -554,6 +554,12 @@ Exec_Intersection
             cJSON_AddItemToObject(outer_object, "Intersections (full)", intersections_full_match);
             cJSON_AddItemToObject(export_results, dataset_id_2, outer_object);
 
+            // In theory it is possible to create the string of our cJSON structure at the end of all calculations
+            // But the problem is, that all temporary data nedds to be saved until the end of calculations. With bigger
+            // files more than 15 GB are possible !
+            // Second problem: The string, that will be created from cJSON_PrintBuffered, is in some cases too large for
+            // a single call at the end.
+            // So the only possibility: Intermediate calls
             char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, true);
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
             const size_t json_export_str_len = strlen (json_export_str);
