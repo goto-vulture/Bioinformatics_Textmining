@@ -510,8 +510,8 @@ Exec_Intersection
                         cJSON_NEW_STR_CHECK(src_token, int_to_token_mem);
                         cJSON_AddItemToArray(src_tokens_array, src_token);
                     }
-                    cJSON_AddItemToObject(outer_object, "tokens", src_tokens_array);
-                    cJSON_AddItemToObject(outer_object, "tokens w/o stop words", src_tokens_array_wo_stop_words);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "tokens", src_tokens_array);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "tokens w/o stop words", src_tokens_array_wo_stop_words);
                 }
 
                 cJSON_NEW_ARR_CHECK(tokens_array);
@@ -541,11 +541,11 @@ Exec_Intersection
                 // words !
                 if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
                 {
-                    cJSON_AddItemToObject(intersections_full_match, dataset_id_1, tokens_array);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match, dataset_id_1, tokens_array);
                 }
                 else
                 {
-                    cJSON_AddItemToObject(intersections_partial_match, dataset_id_1, tokens_array);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match, dataset_id_1, tokens_array);
                 }
             }
 
@@ -557,9 +557,9 @@ Exec_Intersection
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
         {
-            cJSON_AddItemToObject(outer_object, "Intersections (partial)", intersections_partial_match);
-            cJSON_AddItemToObject(outer_object, "Intersections (full)", intersections_full_match);
-            cJSON_AddItemToObject(export_results, dataset_id_2, outer_object);
+            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "Intersections (partial)", intersections_partial_match);
+            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "Intersections (full)", intersections_full_match);
+            cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, dataset_id_2, outer_object);
 
             // In theory it is possible to create the string of our cJSON structure at the end of all calculations
             // But the problem is, that all temporary data nedds to be saved until the end of calculations. With bigger
@@ -712,18 +712,18 @@ Add_General_Information_To_Export_File
     cJSON_NOT_NULL(full_match);
     cJSON* stop_word_list = cJSON_CreateBool(true);
     cJSON_NOT_NULL(stop_word_list);
-    cJSON_AddItemToObject(creation_mode, "Part match", part_match);
-    cJSON_AddItemToObject(creation_mode, "Full match", full_match);
-    cJSON_AddItemToObject(creation_mode, "Stop word list used", stop_word_list);
-    cJSON_AddItemToObject(general_infos, "Creation mode", creation_mode);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Full match", full_match);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Stop word list used", stop_word_list);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation mode", creation_mode);
 
     cJSON* creation_time    = cJSON_CreateString(time_string);
     cJSON_NOT_NULL(creation_time);
 
-    cJSON_AddItemToObject(general_infos, "First file", first_file);
-    cJSON_AddItemToObject(general_infos, "Second file", second_file);
-    cJSON_AddItemToObject(general_infos, "Creation time", creation_time);
-    cJSON_AddItemToObject(export_results, "General infos", general_infos);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "First file", first_file);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Second file", second_file);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation time", creation_time);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "General infos", general_infos);
 
     return;
 }
