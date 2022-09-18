@@ -60,6 +60,13 @@
 #error "The macro \"cJSON_NEW_STR_CHECK\" is already defined !"
 #endif /* cJSON_NEW_STR_CHECK */
 
+#ifndef cJSON_ADD_ITEM_TO_OBJECT_CHECK
+#define cJSON_ADD_ITEM_TO_OBJECT_CHECK(cJSON_object, str, cJSON_item)                                                   \
+    ASSERT_MSG (cJSON_AddItemToObject(cJSON_object,str, cJSON_item) != 0, "Error in the cJSON_AddItemToObject call !");
+#else
+#error "The macro \"cJSON_ADD_ITEM_TO_OBJECT_CHECK\" is already defined !"
+#endif /* cJSON_ADD_ITEM_TO_OBJECT_CHECK */
+
 #ifndef cJSON_FULL_FREE_AND_SET_TO_NULL
 #define cJSON_FULL_FREE_AND_SET_TO_NULL(cJSON_object)                                                                   \
     if (cJSON_object != NULL)                                                                                           \
@@ -980,6 +987,10 @@ cJSON_Determine_Full_Memory_Usage
 #ifdef cJSON_NEW_STR_CHECK
 #undef cJSON_NEW_STR_CHECK
 #endif /* cJSON_NEW_STR_CHECK */
+
+#ifdef cJSON_ADD_ITEM_TO_OBJECT_CHECK
+#undef cJSON_ADD_ITEM_TO_OBJECT_CHECK
+#endif /* cJSON_ADD_ITEM_TO_OBJECT_CHECK */
 
 #ifdef cJSON_FULL_FREE_AND_SET_TO_NULL
 #undef cJSON_FULL_FREE_AND_SET_TO_NULL
