@@ -61,10 +61,10 @@
 #endif /* cJSON_NEW_STR_CHECK */
 
 #ifndef cJSON_FULL_FREE_AND_SET_TO_NULL
-#define cJSON_FULL_FREE_AND_SET_TO_NULL(cJSON_object)                                                                                        \
+#define cJSON_FULL_FREE_AND_SET_TO_NULL(cJSON_object)                                                                   \
     if (cJSON_object != NULL)                                                                                           \
     {                                                                                                                   \
-        cJSON_Delete(cJSON_object);                                                                                       \
+        cJSON_Delete(cJSON_object);                                                                                     \
         cJSON_object = NULL;                                                                                            \
     }
 #else
@@ -146,6 +146,21 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
         struct Document_Word_List* const restrict document_word_list
 );
 
+/**
+ * @brief A function, that will be used to show the token int mapping process.
+ *
+ * The time calculation is a approximate time calculation with time interval information. If the calculation is not
+ * linear (this is the normal case), then the calculated time will be in- and decrease while doing the operations.
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param print_step_size Number of inner loop calls, that needs to be done, for a new process print
+ * @param actual Counter since last process print
+ * @param hundred_percent The number of all inner loop calls (see the intersection code)
+ * @param interval_begin clock_t value at the begin of the last process print
+ * @param interval_end clock_t value since the last process print
+ */
 static void
 Exec_Add_Token_To_Mapping_Process_Print_Function
 (
@@ -156,6 +171,21 @@ Exec_Add_Token_To_Mapping_Process_Print_Function
         const clock_t interval_end
 );
 
+/**
+ * @brief A function, that will be used to show the intersection calculation process.
+ *
+ * The time calculation is a approximate time calculation with time interval information. If the calculation is not
+ * linear (this is the normal case), then the calculated time will be in- and decrease while doing the intersections.
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param print_step_size Number of inner loop calls, that needs to be done, for a new process print
+ * @param actual Counter since last process print
+ * @param hundred_percent The number of all inner loop calls (see the intersection code)
+ * @param interval_begin clock_t value at the begin of the last process print
+ * @param interval_end clock_t value since the last process print
+ */
 static void
 Exec_Intersection_Process_Print_Function
 (
@@ -166,10 +196,20 @@ Exec_Intersection_Process_Print_Function
         const clock_t interval_end
 );
 
+/**
+ * @brief Determine the full size (including str sizes) of a cJSON object.
+ *
+ * Asserts:
+ *      cJSON_obj != NULL
+ *
+ * @param cJSON_obj The cJSON object
+ *
+ * @return The object size in bytes
+ */
 static size_t
 cJSON_Determine_Full_Memory_Usage
 (
-        const cJSON* const cJSON_str
+        const cJSON* const cJSON_obj
 );
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -803,6 +843,21 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief A function, that will be used to show the token int mapping process.
+ *
+ * The time calculation is a approximate time calculation with time interval information. If the calculation is not
+ * linear (this is the normal case), then the calculated time will be in- and decrease while doing the operations.
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param print_step_size Number of inner loop calls, that needs to be done, for a new process print
+ * @param actual Counter since last process print
+ * @param hundred_percent The number of all inner loop calls (see the intersection code)
+ * @param interval_begin clock_t value at the begin of the last process print
+ * @param interval_end clock_t value since the last process print
+ */
 static void
 Exec_Add_Token_To_Mapping_Process_Print_Function
 (
@@ -830,6 +885,21 @@ Exec_Add_Token_To_Mapping_Process_Print_Function
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief A function, that will be used to show the intersection calculation process.
+ *
+ * The time calculation is a approximate time calculation with time interval information. If the calculation is not
+ * linear (this is the normal case), then the calculated time will be in- and decrease while doing the intersections.
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param print_step_size Number of inner loop calls, that needs to be done, for a new process print
+ * @param actual Counter since last process print
+ * @param hundred_percent The number of all inner loop calls (see the intersection code)
+ * @param interval_begin clock_t value at the begin of the last process print
+ * @param interval_end clock_t value since the last process print
+ */
 static void
 Exec_Intersection_Process_Print_Function
 (
@@ -857,20 +927,30 @@ Exec_Intersection_Process_Print_Function
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Determine the full size (including str sizes) of a cJSON object.
+ *
+ * Asserts:
+ *      cJSON_obj != NULL
+ *
+ * @param cJSON_obj The cJSON object
+ *
+ * @return The object size in bytes
+ */
 static size_t
 cJSON_Determine_Full_Memory_Usage
 (
-        const cJSON* const cJSON_str
+        const cJSON* const cJSON_obj
 )
 {
-    ASSERT_MSG(cJSON_str != NULL, "cJSON string object is NULL !");
+    ASSERT_MSG(cJSON_obj != NULL, "cJSON object is NULL !");
 
     size_t result = sizeof (cJSON);
 
-    if (cJSON_str->valuestring != NULL)
-    {result += strlen (cJSON_str->valuestring); }
-    if (cJSON_str->string != NULL)
-    { result += strlen (cJSON_str->string); }
+    if (cJSON_obj->valuestring != NULL)
+    {result += strlen (cJSON_obj->valuestring); }
+    if (cJSON_obj->string != NULL)
+    { result += strlen (cJSON_obj->string); }
 
     return result;
 }
