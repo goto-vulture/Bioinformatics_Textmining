@@ -699,12 +699,16 @@ Add_General_Information_To_Export_File
     cJSON_NOT_NULL(full_match);
     cJSON* stop_word_list = cJSON_CreateBool(true);
     cJSON_NOT_NULL(stop_word_list);
+    // Up to now there will be no switch or similar structure to alter this export behavior
+    cJSON* char_offset = cJSON_CreateBool(true);
+    cJSON_NOT_NULL(char_offset);
     cJSON_AddItemToObject(creation_mode, "Part match", part_match);
     cJSON_AddItemToObject(creation_mode, "Full match", full_match);
     cJSON_AddItemToObject(creation_mode, "Stop word list used", stop_word_list);
+    cJSON_AddItemToObject(creation_mode, "Char offset", char_offset);
     cJSON_AddItemToObject(general_infos, "Creation mode", creation_mode);
 
-    cJSON* creation_time    = cJSON_CreateString(time_string);
+    cJSON* creation_time = cJSON_CreateString(time_string);
     cJSON_NOT_NULL(creation_time);
 
     cJSON_AddItemToObject(general_infos, "First file", first_file);
