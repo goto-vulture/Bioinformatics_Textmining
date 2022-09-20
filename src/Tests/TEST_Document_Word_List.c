@@ -129,7 +129,7 @@ extern _Bool TEST_Intersection (void)
         // Determine intersections
         // T 1,1 are the data, which will be used for the calculation
         intersection_objects [i] = DocumentWordList_IntersectWithData(test_data [i + 1],
-                test_data [0]->data [0], 4, INTERSECTION_MODE_2_NESTED_LOOPS);
+                test_data [0]->data_struct.data [0], 4, INTERSECTION_MODE_2_NESTED_LOOPS);
         ASSERT_ALLOC(intersection_objects [i], "Cannot create an intersection object ! Given object size could be wrong !",
                 sizeof (struct Document_Word_List));
     }
@@ -251,7 +251,7 @@ static void Use_All_Intersection_Modes
         clock_t begin = (clock_t) -1;
         CLOCK_WITH_RETURN_CHECK(begin);
         struct Document_Word_List* intersection_data =
-                DocumentWordList_IntersectWithData(data_2, data_1->data [0], data_1->arrays_lengths[0],
+                DocumentWordList_IntersectWithData(data_2, data_1->data_struct.data [0], data_1->arrays_lengths[0],
                         used_modes [i]);
         clock_t end = (clock_t) -1;
         CLOCK_WITH_RETURN_CHECK(end);

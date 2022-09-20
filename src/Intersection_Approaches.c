@@ -185,7 +185,7 @@ IntersectionApproach_TwoNestedLoops
             // Compare everyone with everyone
             for (size_t i3 = 0; i3 < data_length; ++ i3)
             {
-                if (object->data [i][i2] == data [i3])
+                if (object->data_struct.data [i][i2] == data [i3])
                 {
                     // Has the array, which display, if a value is already in the intersection, enough memory ?
                     if (data [i3] >= size_multiple_guard)
@@ -201,7 +201,7 @@ IntersectionApproach_TwoNestedLoops
 
                     //if (multiple_guard [data [i3]] == false)
                     {
-                        intersection_result->data [i][intersection_result->arrays_lengths [i]] = data [i3];
+                        intersection_result->data_struct.data [i][intersection_result->arrays_lengths [i]] = data [i3];
                         intersection_result->arrays_lengths [i] ++;
                         multiple_guard [data [i3]] = true;
                     }
@@ -252,7 +252,7 @@ IntersectionApproach_QSortAndBinarySearch
     // Sort all data ascending with the QSort algorithm
     for (size_t i = 0; i < object->number_of_arrays; ++ i)
     {
-        qsort (object->data [i], object->arrays_lengths [i], sizeof (uint_fast32_t), Compare_Function);
+        qsort (object->data_struct.data [i], object->arrays_lengths [i], sizeof (uint_fast32_t), Compare_Function);
     }
 
     Find_Intersection_Data (intersection_result, object, data, data_length);
@@ -296,7 +296,7 @@ IntersectionApproach_HeapSortAndBinarySearch
     // Sort all data ascending with the Heapsort algorithm
     for (size_t i = 0; i < object->number_of_arrays; ++ i)
     {
-        Heapsort(object->data [i], object->arrays_lengths [i]);
+        Heapsort(object->data_struct.data [i], object->arrays_lengths [i]);
     }
 
     Find_Intersection_Data (intersection_result, object, data, data_length);
@@ -343,7 +343,8 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     ASSERT_MSG(data_2_length > 0, "Length of the data 2 is 0 !");
 
     // This result contains only one array, because two raw data arrays will be used for the intersection
-    struct Document_Word_List* intersection_result = DocumentWordList_CreateObject(1, MAX(data_1_length, data_2_length));
+    struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult
+            (1, MAX(data_1_length, data_2_length));
 
     // Arrays, which display, if a value is already in the intersection
     _Bool* multiple_guard_data_1 = (_Bool*) CALLOC(data_1_length, sizeof (_Bool));
@@ -467,7 +468,7 @@ Find_Intersection_Data
         // Execute the binary search
         for (size_t i2 = 0; i2 < data_length; ++ i2)
         {
-            if (Binary_Search(object->data[i], object->arrays_lengths [i], data [i2]) == true)
+            if (Binary_Search(object->data_struct.data[i], object->arrays_lengths [i], data [i2]) == true)
             {
                 // Has the array, which display, if a value is already in the intersection, enough memory ?
                 if (data [i2] >= size_multiple_guard)
@@ -483,7 +484,7 @@ Find_Intersection_Data
 
                 if (multiple_guard [data [i2]] == false)
                 {
-                    intersection_result->data [i][intersection_result->arrays_lengths [i]] = data [i2];
+                    intersection_result->data_struct.data [i][intersection_result->arrays_lengths [i]] = data [i2];
                     intersection_result->arrays_lengths [i] ++;
                     multiple_guard [data [i2]] = true;
                 }

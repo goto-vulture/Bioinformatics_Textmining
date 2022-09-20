@@ -54,7 +54,26 @@ enum Intersection_Mode
 
 struct Document_Word_List
 {
-    uint_fast32_t** data;           ///< 2 dimensional Array with the data
+    struct Data_And_Offsets
+    {
+        uint_fast32_t** data;       ///< 2 dimensional Array with the data
+
+        /**
+         * @brief Char offsets of the first data set (only valid data, when the object is intersection data).
+         *
+         * In normal cases only one of the char offsets is relevant as result. But in the calculation it is not possible to
+         * determine, whether the first or the second offsets are relevant. So the solution: calculate and save both.
+         */
+        unsigned short** char_offsets_1;
+        /**
+         * @brief Char offsets of the second data set (only valid data, when the object is intersection data).
+         *
+         * In normal cases only one of the char offsets is relevant as result. But in the calculation it is not possible to
+         * determine, whether the first or the second offsets are relevant. So the solution: calculate and save both.
+         */
+        unsigned short** char_offsets_2;
+    } data_struct;
+
     size_t* arrays_lengths;         ///< 1 dimensional Array with the data length information
 
     uint_fast32_t next_free_array;  ///< Next free array in data
@@ -98,6 +117,25 @@ struct Document_Word_List
  */
 extern struct Document_Word_List*
 DocumentWordList_CreateObject
+(
+        const size_t number_of_arrays,
+        const size_t max_array_length
+);
+
+/**
+ * @brief Create new document word list as result for an intersection process.
+ *
+ * Asserts:
+ *      number_of_arrays > 0
+ *      max_array_length > 0
+ *
+ * @param[in] number_of_arrays Number of arrays (Subsets)
+ * @param[in] max_array_length Maximum length of the subsets
+ *
+ * @return Pointer to the new dynamic allocated Document_Word_List
+ */
+extern struct Document_Word_List*
+DocumentWordList_CreateObjectAsIntersectionResult
 (
         const size_t number_of_arrays,
         const size_t max_array_length

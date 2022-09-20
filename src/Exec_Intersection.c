@@ -433,14 +433,14 @@ Exec_Intersection
                     Exec_Intersection_Process_Print_Function);
 
             // Determine the current intersection
-            // The second array (source_int_values_2->data [selected_data_array]) will be used for every data array in
+            // The second array (source_int_values_2->data_struct.data [selected_data_array]) will be used for every data array in
             // source_int_values_1 !
             //struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops (source_int_values_1,
-            //        source_int_values_2->data [selected_data_2_array], source_int_values_2->arrays_lengths [selected_data_2_array]);
+            //        source_int_values_2->data_struct.data [selected_data_2_array], source_int_values_2->arrays_lengths [selected_data_2_array]);
             struct Document_Word_List* intersection_result = IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
-                    (source_int_values_1->data [selected_data_1_array],
+                    (source_int_values_1->data_struct.data [selected_data_1_array],
                             source_int_values_1->arrays_lengths [selected_data_1_array],
-                            source_int_values_2->data [selected_data_2_array],
+                            source_int_values_2->data_struct.data [selected_data_2_array],
                             source_int_values_2->arrays_lengths [selected_data_2_array],
                             token_container_input_1->token_lists [selected_data_1_array].dataset_id,
                             token_container_input_2->token_lists [selected_data_2_array].dataset_id);
@@ -460,13 +460,13 @@ Exec_Intersection
             {
                 // Reverse the mapping to get the original token (int -> token)
                 const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
-                        intersection_result->data [0][i]);
+                        intersection_result->data_struct.data [0][i]);
 
                 // Is the token in the list with the stop words ?
                 if (Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
                 {
                     // Override the mapped int value
-                    intersection_result->data [0][i] = UINT_FAST32_MAX;
+                    intersection_result->data_struct.data [0][i] = UINT_FAST32_MAX;
                 }
             }
 
@@ -474,7 +474,7 @@ Exec_Intersection
             size_t tokens_left = 0;
             for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
             {
-                if (intersection_result->data [0][i] != UINT_FAST32_MAX)
+                if (intersection_result->data_struct.data [0][i] != UINT_FAST32_MAX)
                 {
                     ++ tokens_left;
                 }
@@ -499,7 +499,7 @@ Exec_Intersection
                     {
                         // Reverse the mapping to get the original token (int -> token)
                         const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
-                                source_int_values_2->data [selected_data_2_array][i]);
+                                source_int_values_2->data_struct.data [selected_data_2_array][i]);
 
                         // Is the token a stop word ?
                         if (! Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
@@ -522,14 +522,14 @@ Exec_Intersection
                 size_t tokens_wrote = 0;
                 for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
                 {
-                    if (intersection_result->data [0][i] == UINT_FAST32_MAX)
+                    if (intersection_result->data_struct.data [0][i] == UINT_FAST32_MAX)
                     {
                         continue;
                     }
 
                     // Reverse the mapping to get the original token (int -> token)
                     const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
-                            intersection_result->data [0][i]);
+                            intersection_result->data_struct.data [0][i]);
 
                     // Placeholder value
                     cJSON* char_offset = cJSON_CreateNumber(rand() % 100);

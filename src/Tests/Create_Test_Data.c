@@ -155,7 +155,7 @@ Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
                 if (new_position == true) { break; }
             }
 
-            result_object->data [i][used_positions [i2]] = specified_data [i2];
+            result_object->data_struct.data [i][used_positions [i2]] = specified_data [i2];
         }
 
         FREE_AND_SET_TO_NULL(used_positions);

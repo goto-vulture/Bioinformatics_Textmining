@@ -38,6 +38,13 @@
 _Static_assert(INT_ALLOCATION_STEP_SIZE > 0, "The marco \"INT_ALLOCATION_STEP_SIZE\" is zero !");
 #endif /* __STDC_VERSION__ */
 
+static struct Document_Word_List*
+Create_Main_Object_Structure
+(
+        const size_t number_of_arrays,
+        const size_t max_array_length
+);
+
 /**
  * @brief Increase the size of a data array.
  *
@@ -102,37 +109,63 @@ DocumentWordList_CreateObject
     ASSERT_MSG(number_of_arrays != 0, "Number of arrays is 0 !");
     ASSERT_MSG(max_array_length != 0, "Max array length is 0 !");
 
-    struct Document_Word_List* new_object = (struct Document_Word_List*) CALLOC(1, sizeof (struct Document_Word_List));
-    ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List));
+    struct Document_Word_List* new_object = Create_Main_Object_Structure (number_of_arrays, max_array_length);
+
+    return new_object;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Create new document word list as result for an intersection process.
+ *
+ * Asserts:
+ *      number_of_arrays > 0
+ *      max_array_length > 0
+ *
+ * @param[in] number_of_arrays Number of arrays (Subsets)
+ * @param[in] max_array_length Maximum length of the subsets
+ *
+ * @return Pointer to the new dynamic allocated Document_Word_List
+ */
+extern struct Document_Word_List*
+DocumentWordList_CreateObjectAsIntersectionResult
+(
+        const size_t number_of_arrays,
+        const size_t max_array_length
+)
+{
+    // Avoid a unused warning
+    (void) Increase_Data_Array_Size_Allocation_Step_Size;
+    ASSERT_MSG(number_of_arrays != 0, "Number of arrays is 0 !");
+    ASSERT_MSG(max_array_length != 0, "Max array length is 0 !");
+
+    struct Document_Word_List* new_object = Create_Main_Object_Structure (number_of_arrays, max_array_length);
+
+    // Outer dimension for data and char_offsets (1 and 2)
+    new_object->data_struct.char_offsets_1 = (unsigned short**) CALLOC(number_of_arrays, sizeof (unsigned short*));
+    ASSERT_ALLOC(new_object->data_struct.char_offsets_1, "Cannot create new Document_Word_List !",
+            sizeof (unsigned short*) * number_of_arrays);
+    new_object->malloc_calloc_calls ++;
+    new_object->data_struct.char_offsets_2 = (unsigned short**) CALLOC(number_of_arrays, sizeof (unsigned short*));
+    ASSERT_ALLOC(new_object->data_struct.char_offsets_2, "Cannot create new Document_Word_List !",
+            sizeof (unsigned short*) * number_of_arrays);
     new_object->malloc_calloc_calls ++;
 
-    // Outer dimension
-    new_object->data = (uint_fast32_t**) CALLOC(number_of_arrays, sizeof (uint_fast32_t*));
-    ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (uint_fast32_t*) * number_of_arrays);
-    new_object->malloc_calloc_calls ++;
-
-    new_object->allocated_array_size = (size_t*) CALLOC(number_of_arrays, sizeof (size_t));
-    ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (size_t) * number_of_arrays);
-    new_object->malloc_calloc_calls ++;
-
-    // Inner dimension
+    // Inner dimension for data and char_offsets (1 and 2)
     for (uint_fast32_t i = 0; i < number_of_arrays; ++ i)
     {
-        new_object->data [i] = (uint_fast32_t*) CALLOC(INT_ALLOCATION_STEP_SIZE, sizeof (uint_fast32_t));
-        ASSERT_ALLOC(new_object->data [i], "Cannot create new Document_Word_List !",
-                sizeof (uint_fast32_t) * INT_ALLOCATION_STEP_SIZE);
+        new_object->data_struct.char_offsets_1 [i] = (unsigned short*) CALLOC(INT_ALLOCATION_STEP_SIZE,
+                sizeof (unsigned short));
+        ASSERT_ALLOC(new_object->data_struct.char_offsets_1 [i], "Cannot create new Document_Word_List !",
+                sizeof (unsigned short) * INT_ALLOCATION_STEP_SIZE);
         new_object->malloc_calloc_calls ++;
-        new_object->allocated_array_size [i] = INT_ALLOCATION_STEP_SIZE;
+        new_object->data_struct.char_offsets_2 [i] = (unsigned short*) CALLOC(INT_ALLOCATION_STEP_SIZE,
+                sizeof (unsigned short));
+        ASSERT_ALLOC(new_object->data_struct.char_offsets_2 [i], "Cannot create new Document_Word_List !",
+                sizeof (unsigned short) * INT_ALLOCATION_STEP_SIZE);
+        new_object->malloc_calloc_calls ++;
     }
-
-    // Length list
-    new_object->arrays_lengths = (size_t*) CALLOC(number_of_arrays, sizeof (size_t));
-    ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (size_t) * number_of_arrays);
-    new_object->malloc_calloc_calls ++;
-
-    new_object->max_array_length = INT_ALLOCATION_STEP_SIZE;
-    new_object->number_of_arrays = number_of_arrays;
-    new_object->next_free_array = 0;
 
     return new_object;
 }
@@ -156,10 +189,26 @@ DocumentWordList_DeleteObject
     ASSERT_MSG(object != NULL, "Object is NULL !");
 
     // Inner dimension
-    for (uint_fast32_t i = 0; i < object->number_of_arrays; ++ i) { FREE_AND_SET_TO_NULL(object->data [i]); }
+    for (uint_fast32_t i = 0; i < object->number_of_arrays; ++ i)
+    {
+        FREE_AND_SET_TO_NULL(object->data_struct.data [i]);
+    }
+    if (object->intersection_data)
+    {
+        for (uint_fast32_t i = 0; i < object->number_of_arrays; ++ i)
+        {
+            FREE_AND_SET_TO_NULL(object->data_struct.char_offsets_1 [i]);
+            FREE_AND_SET_TO_NULL(object->data_struct.char_offsets_2 [i]);
+        }
+    }
 
     // Outer dimension
-    FREE_AND_SET_TO_NULL(object->data);
+    FREE_AND_SET_TO_NULL(object->data_struct.data);
+    if (object->intersection_data)
+    {
+        FREE_AND_SET_TO_NULL(object->data_struct.char_offsets_1);
+        FREE_AND_SET_TO_NULL(object->data_struct.char_offsets_2);
+    }
 
     FREE_AND_SET_TO_NULL(object->allocated_array_size)
     FREE_AND_SET_TO_NULL(object->arrays_lengths);
@@ -207,7 +256,7 @@ DocumentWordList_AppendData
     }
 
     // Copy the new data
-    memcpy (object->data [object->next_free_array], new_data, sizeof (uint_fast32_t) * data_length);
+    memcpy (object->data_struct.data [object->next_free_array], new_data, sizeof (uint_fast32_t) * data_length);
     object->arrays_lengths [object->next_free_array] = data_length;
     object->next_free_array ++;
 
@@ -273,7 +322,7 @@ Put_One_Value_To_Document_Word_List
     {
         Increase_Data_Array_Size_Allocation_Step_Size(object, next_free_array);
     }
-    object->data [next_free_array][object->arrays_lengths [next_free_array]] = new_value;
+    object->data_struct.data [next_free_array][object->arrays_lengths [next_free_array]] = new_value;
     object->arrays_lengths [next_free_array] ++;
 
     return;
@@ -305,7 +354,7 @@ DocumentWordList_ShowData
         printf ("%2zu: { ", (i + 1));
         for (size_t i2 = 0; i2 < object->arrays_lengths [i]; ++ i2)
         {
-            printf ("%2" PRIuFAST32, object->data [i][i2]);
+            printf ("%2" PRIuFAST32, object->data_struct.data [i][i2]);
 
             if ((i2 + 1) < object->arrays_lengths [i])
             {
@@ -420,7 +469,7 @@ DocumentWordList_ShowDataAndAttributes
  * You can change the intersection mode with the enum parameter Intersection_Mode. Actual following modes are
  * available
  * - 2 nested loops
- * - QSort with binary search
+ * - QSort with binary search(data and char_offsets (1 and 2))
  * - Heapsort with binary search
  *
  * Asserts:
@@ -528,6 +577,61 @@ DocumentWordList_IsDataInObject
 
 //=====================================================================================================================
 
+static struct Document_Word_List*
+Create_Main_Object_Structure
+(
+        const size_t number_of_arrays,
+        const size_t max_array_length
+)
+{
+    ASSERT_MSG(number_of_arrays != 0, "Number of arrays is 0 !");
+    ASSERT_MSG(max_array_length != 0, "Max array length is 0 !");
+
+    struct Document_Word_List* new_object = (struct Document_Word_List*) CALLOC(1, sizeof (struct Document_Word_List));
+    ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List));
+    new_object->malloc_calloc_calls ++;
+
+    // Outer dimension
+    new_object->data_struct.data = (uint_fast32_t**) CALLOC(number_of_arrays, sizeof (uint_fast32_t*));
+    ASSERT_ALLOC(new_object->data_struct.data, "Cannot create new Document_Word_List !",
+            sizeof (uint_fast32_t*) * number_of_arrays);
+    new_object->malloc_calloc_calls ++;
+
+    // New management data
+    new_object->allocated_array_size = (size_t*) CALLOC(number_of_arrays, sizeof (size_t));
+    ASSERT_ALLOC(new_object->data_struct.data, "Cannot create new Document_Word_List !",
+                sizeof (size_t) * number_of_arrays);
+    new_object->malloc_calloc_calls ++;
+
+    // Inner dimension
+    for (uint_fast32_t i = 0; i < number_of_arrays; ++ i)
+    {
+        new_object->data_struct.data [i] = (uint_fast32_t*) CALLOC(INT_ALLOCATION_STEP_SIZE, sizeof (uint_fast32_t));
+        ASSERT_ALLOC(new_object->data_struct.data [i], "Cannot create new Document_Word_List !",
+                sizeof (uint_fast32_t) * INT_ALLOCATION_STEP_SIZE);
+        new_object->malloc_calloc_calls ++;
+
+        new_object->allocated_array_size [i] = INT_ALLOCATION_STEP_SIZE;
+    }
+
+    // Length list
+    new_object->arrays_lengths = (size_t*) CALLOC(number_of_arrays, sizeof (size_t));
+    ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (size_t) * number_of_arrays);
+    new_object->malloc_calloc_calls ++;
+
+    new_object->max_array_length = INT_ALLOCATION_STEP_SIZE;
+    new_object->number_of_arrays = number_of_arrays;
+    new_object->next_free_array = 0;
+
+    // Set pointer for a intersection result type to NULL
+    new_object->data_struct.char_offsets_1 = NULL;
+    new_object->data_struct.char_offsets_2 = NULL;
+
+    return new_object;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 /**
  * @brief Increase the size of a data array.
  *
@@ -557,12 +661,12 @@ static void Increase_Data_Array_Size
 
     ++ object->realloc_calls;
 
-    size_t* tmp_ptr = (size_t*) REALLOC(object->data [data_array_index],
+    size_t* tmp_ptr = (size_t*) REALLOC(object->data_struct.data [data_array_index],
             (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (uint_fast32_t));
     ASSERT_ALLOC(tmp_ptr, "Cannot increase the data array size !",
             (object->allocated_array_size + increase_number_of_objects) * sizeof (uint_fast32_t))
-    object->data [data_array_index] = tmp_ptr;
-    memset (&(object->data [data_array_index][object->allocated_array_size [data_array_index]]), '\0',
+    object->data_struct.data [data_array_index] = tmp_ptr;
+    memset (&(object->data_struct.data [data_array_index][object->allocated_array_size [data_array_index]]), '\0',
             increase_number_of_objects * sizeof (uint_fast32_t));
     object->allocated_array_size [data_array_index] += increase_number_of_objects;
 
