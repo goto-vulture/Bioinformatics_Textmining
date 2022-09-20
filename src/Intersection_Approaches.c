@@ -330,8 +330,10 @@ extern struct Document_Word_List*
 IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 (
     const uint_fast32_t* const restrict data_1,
+    const unsigned short* const restrict char_offsets_1,
     const size_t data_1_length,
     const uint_fast32_t* const restrict data_2,
+    const unsigned short* const restrict char_offsets_2,
     const size_t data_2_length,
     const char* const restrict id_1,
     const char* const restrict id_2
@@ -364,7 +366,9 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
                 // Was the current value already inserted in the intersection result ?
                 if (! *multiple_guard_data_1_d1 && ! *multiple_guard_data_2_d2)
                 {
-                    Put_One_Value_To_Document_Word_List(intersection_result, data_1 [d1]);
+                    //Put_One_Value_To_Document_Word_List(intersection_result, data_1 [d1]);
+                    Put_One_Value_And_Offets_To_Document_Word_List(intersection_result, data_1 [d1],
+                            char_offsets_1 [d1], char_offsets_2 [d2]);
                     // intersection_result->data [0][intersection_result->arrays_lengths [0]] = data_1 [d1];
                     //++ intersection_result->arrays_lengths [0];
                     *multiple_guard_data_1_d1 = true;

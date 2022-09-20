@@ -308,9 +308,9 @@ Exec_Intersection
     // is okay.
     // => ! It will be changed for real use cases ! <=
     struct Document_Word_List* source_int_values_1 =
-            DocumentWordList_CreateObject(token_container_input_1->next_free_element, length_of_longest_token_container);
+            DocumentWordList_CreateObjectAsIntersectionResult(token_container_input_1->next_free_element, length_of_longest_token_container);
     struct Document_Word_List* source_int_values_2 =
-            DocumentWordList_CreateObject(token_container_input_2->next_free_element, length_of_longest_token_container);
+            DocumentWordList_CreateObjectAsIntersectionResult(token_container_input_2->next_free_element, length_of_longest_token_container);
 
     Append_Token_Int_Mapping_Data_To_Document_Word_List(token_int_mapping, token_container_input_1,
             source_int_values_1);
@@ -438,12 +438,18 @@ Exec_Intersection
             //struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops (source_int_values_1,
             //        source_int_values_2->data_struct.data [selected_data_2_array], source_int_values_2->arrays_lengths [selected_data_2_array]);
             struct Document_Word_List* intersection_result = IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
-                    (source_int_values_1->data_struct.data [selected_data_1_array],
-                            source_int_values_1->arrays_lengths [selected_data_1_array],
-                            source_int_values_2->data_struct.data [selected_data_2_array],
-                            source_int_values_2->arrays_lengths [selected_data_2_array],
-                            token_container_input_1->token_lists [selected_data_1_array].dataset_id,
-                            token_container_input_2->token_lists [selected_data_2_array].dataset_id);
+            (
+                    source_int_values_1->data_struct.data [selected_data_1_array],
+                    source_int_values_1->data_struct.char_offsets_1 [selected_data_1_array],
+                    source_int_values_1->arrays_lengths [selected_data_1_array],
+
+                    source_int_values_2->data_struct.data [selected_data_2_array],
+                    source_int_values_2->data_struct.char_offsets_1 [selected_data_2_array],
+                    source_int_values_2->arrays_lengths [selected_data_2_array],
+
+                    token_container_input_1->token_lists [selected_data_1_array].dataset_id,
+                    token_container_input_2->token_lists [selected_data_2_array].dataset_id
+            );
 
             // Copy the two dataset IDs and use them for the export JSON file
             // memset(dataset_id_1, '\0', sizeof (dataset_id_1));
@@ -863,7 +869,8 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
         // Append data
         if (next_free_value > 0)
         {
-            DocumentWordList_AppendData(document_word_list, token_int_values, next_free_value);
+            DocumentWordList_AppendDataWithOffsets(document_word_list, token_int_values,
+                    token_list_container->token_lists [i].char_offsets, NULL, next_free_value);
         }
     }
     FREE_AND_SET_TO_NULL(token_int_values);
