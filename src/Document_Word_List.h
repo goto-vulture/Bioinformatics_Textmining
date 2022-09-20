@@ -175,6 +175,20 @@ DocumentWordList_AppendData
         const size_t data_length
 );
 
+/**
+ * @brief Add data with up to two offset arrays to a Document_Word_List.
+ *
+ * Asserts:
+ *      object != NULL
+ *      new_data != NULL
+ *      data_length > 0
+ *
+ * @param[in] object Document_Word_List
+ * @param[in] new_data New data
+ * @param[in] new_offsets_1 First offset array
+ * @param[in] new_offsets_2 Second offset array
+ * @param[in] data_length Length of the new data
+ */
 extern void
 DocumentWordList_AppendDataWithOffsets
 (
@@ -207,8 +221,9 @@ DocumentWordList_AppendOneValueAsNewDataSet
 /**
  * @brief Put one value to a Document_Word_List.
  *
- * The new value will be appended to the next free data array. Instead of Append_One_Value_To_Document_Word_List, the
- * new value will NOT be interpreted as new data set !
+ * The new value will be appended to the next free data array. Instead of DocumentWordList_AppendOneValueAsNewDataSet,
+ * the new value will NOT be interpreted as new data set !
+ * @see DocumentWordList_AppendOneValueAsNewDataSet
  *
  * Asserts:
  *      object != NULL
@@ -223,6 +238,21 @@ Put_One_Value_To_Document_Word_List
         const uint_fast32_t new_value
 );
 
+/**
+ * @brief Put one value with offsets to a Document_Word_List.
+ *
+ * The new value and the given offsets will be appended to the next free data array. Instead of
+ * DocumentWordList_AppendOneValueAsNewDataSet, the new value will NOT be interpreted as new data set !
+ * @see DocumentWordList_AppendOneValueAsNewDataSet
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
+ * @param[in] new_value New value
+ * @param[in] new_offset_1 First new offset value
+ * @param[in] new_offset_2 Second new offset value
+ */
 extern void
 Put_One_Value_And_Offets_To_Document_Word_List
 (

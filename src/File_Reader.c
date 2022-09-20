@@ -111,6 +111,18 @@ Read_Next_Line
         const long int input_file_data_length
 );
 
+/**
+ * @brief The process print function for the file processing operation.
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param print_step_size Number of inner loop calls, that needs to be done, for a new process print
+ * @param actual Counter since last process print
+ * @param hundred_percent The number of all inner loop calls (see the intersection code)
+ * @param interval_begin clock_t value at the begin of the last process print
+ * @param interval_end clock_t value since the last process print
+ */
 static void
 Read_File_Process_Print_Function
 (
@@ -894,6 +906,18 @@ Read_Next_Line
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief The process print function for the file processing operation.
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param print_step_size Number of inner loop calls, that needs to be done, for a new process print
+ * @param actual Counter since last process print
+ * @param hundred_percent The number of all inner loop calls (see the intersection code)
+ * @param interval_begin clock_t value at the begin of the last process print
+ * @param interval_end clock_t value since the last process print
+ */
 static void
 Read_File_Process_Print_Function
 (

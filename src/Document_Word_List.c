@@ -39,6 +39,20 @@
 _Static_assert(INT_ALLOCATION_STEP_SIZE > 0, "The marco \"INT_ALLOCATION_STEP_SIZE\" is zero !");
 #endif /* __STDC_VERSION__ */
 
+/**
+ * @brief Create a new Document_Word_List and initialize the main structure.
+ *
+ * Additional operations (e.g. data for a intersection result) will be done in the specific creation function.
+ *
+ * Asserts:
+ *      number_of_arrays > 0
+ *      max_array_length > 0
+ *
+ * @param[in] number_of_arrays Number of arrays (Subsets)
+ * @param[in] max_array_length Maximum length of the subsets
+ *
+ * @return Pointer to the new dynamic allocated Document_Word_List
+ */
 static struct Document_Word_List*
 Create_Main_Object_Structure
 (
@@ -269,6 +283,20 @@ DocumentWordList_AppendData
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Add data with up to two offset arrays to a Document_Word_List.
+ *
+ * Asserts:
+ *      object != NULL
+ *      new_data != NULL
+ *      data_length > 0
+ *
+ * @param[in] object Document_Word_List
+ * @param[in] new_data New data
+ * @param[in] new_offsets_1 First offset array
+ * @param[in] new_offsets_2 Second offset array
+ * @param[in] data_length Length of the new data
+ */
 extern void
 DocumentWordList_AppendDataWithOffsets
 (
@@ -362,6 +390,21 @@ Put_One_Value_To_Document_Word_List
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Put one value with offsets to a Document_Word_List.
+ *
+ * The new value and the given offsets will be appended to the next free data array. Instead of
+ * DocumentWordList_AppendOneValueAsNewDataSet, the new value will NOT be interpreted as new data set !
+ * @see DocumentWordList_AppendOneValueAsNewDataSet
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
+ * @param[in] new_value New value
+ * @param[in] new_offset_1 First new offset value
+ * @param[in] new_offset_2 Second new offset value
+ */
 extern void
 Put_One_Value_And_Offets_To_Document_Word_List
 (
@@ -634,6 +677,20 @@ DocumentWordList_IsDataInObject
 
 //=====================================================================================================================
 
+/**
+ * @brief Create a new Document_Word_List and initialize the main structure.
+ *
+ * Additional operations (e.g. data for a intersection result) will be done in the specific creation function.
+ *
+ * Asserts:
+ *      number_of_arrays > 0
+ *      max_array_length > 0
+ *
+ * @param[in] number_of_arrays Number of arrays (Subsets)
+ * @param[in] max_array_length Maximum length of the subsets
+ *
+ * @return Pointer to the new dynamic allocated Document_Word_List
+ */
 static struct Document_Word_List*
 Create_Main_Object_Structure
 (

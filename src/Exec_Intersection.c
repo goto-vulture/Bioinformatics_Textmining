@@ -444,6 +444,7 @@ Exec_Intersection
                     source_int_values_1->arrays_lengths [selected_data_1_array],
 
                     source_int_values_2->data_struct.data [selected_data_2_array],
+                    // Yes "char_offsets_1" instead of "char_offsets_2" is correct !
                     source_int_values_2->data_struct.char_offsets_1 [selected_data_2_array],
                     source_int_values_2->arrays_lengths [selected_data_2_array],
 
