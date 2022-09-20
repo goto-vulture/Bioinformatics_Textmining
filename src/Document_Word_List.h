@@ -175,6 +175,16 @@ DocumentWordList_AppendData
         const size_t data_length
 );
 
+extern void
+DocumentWordList_AppendDataWithOffsets
+(
+        struct Document_Word_List* const object,
+        const uint_fast32_t* const new_data,
+        const unsigned short* const new_offsets_1,
+        const unsigned short* const new_offsets_2,
+        const size_t data_length
+);
+
 /**
  * @brief Add one value to a Document_Word_List.
  *

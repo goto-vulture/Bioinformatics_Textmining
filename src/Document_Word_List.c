@@ -266,6 +266,34 @@ DocumentWordList_AppendData
 
 //---------------------------------------------------------------------------------------------------------------------
 
+extern void
+DocumentWordList_AppendDataWithOffsets
+(
+        struct Document_Word_List* const object,
+        const uint_fast32_t* const new_data,
+        const unsigned short* const new_offsets_1,
+        const unsigned short* const new_offsets_2,
+        const size_t data_length
+)
+{
+    DocumentWordList_AppendData(object, new_data, data_length);
+
+    // Because the last function alters the array length value, it is necessary to undo this
+    const uint_fast32_t next_free_array = object->next_free_array - 1;
+    if (new_offsets_1 != NULL)
+    {
+        memcpy (object->data_struct.char_offsets_1 [next_free_array], new_offsets_1, sizeof (unsigned short) * data_length);
+    }
+    if (new_offsets_2 != NULL)
+    {
+        memcpy (object->data_struct.char_offsets_2 [next_free_array], new_offsets_2, sizeof (unsigned short) * data_length);
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 /**
  * @brief Add one value to a Document_Word_List.
  *
