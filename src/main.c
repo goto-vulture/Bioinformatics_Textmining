@@ -165,6 +165,11 @@ At_Exit_Function
  */
 int main (const int argc, const char* argv [])
 {
+    // Init pseudo random number generator
+    const time_t curr_time = time (NULL);
+    ASSERT_MSG(curr_time != (time_t) (-1), "time () return value is (time_t) (-1) !");
+    srand ((unsigned int) time (NULL));
+
     // Runtime check of the system
     // This check is necessary, because a _Static_assert test is only available in C11
 #if __STDC_VERSION__ < 201112L
