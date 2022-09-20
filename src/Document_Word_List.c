@@ -14,6 +14,7 @@
 #include "Document_Word_List.h"
 
 #include <string.h>
+#include <limits.h>
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Misc.h"
@@ -323,6 +324,31 @@ Put_One_Value_To_Document_Word_List
         Increase_Data_Array_Size_Allocation_Step_Size(object, next_free_array);
     }
     object->data_struct.data [next_free_array][object->arrays_lengths [next_free_array]] = new_value;
+    object->arrays_lengths [next_free_array] ++;
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+extern void
+Put_One_Value_And_Offets_To_Document_Word_List
+(
+        struct Document_Word_List* const object,
+        const uint_fast32_t new_value,
+        const unsigned short new_offset_1,
+        const unsigned short new_offset_2
+)
+{
+    ASSERT_MSG(object != NULL, "Object is NULL !");
+
+    Put_One_Value_To_Document_Word_List(object, new_value);
+    const uint_fast32_t next_free_array = object->next_free_array;
+
+    // Because the last function alters the array length value, it is necessary to undo this
+    object->arrays_lengths [next_free_array] --;
+    object->data_struct.char_offsets_1 [next_free_array][object->arrays_lengths [next_free_array]] = new_offset_1;
+    object->data_struct.char_offsets_2 [next_free_array][object->arrays_lengths [next_free_array]] = new_offset_2;
     object->arrays_lengths [next_free_array] ++;
 
     return;
@@ -664,10 +690,36 @@ static void Increase_Data_Array_Size
     size_t* tmp_ptr = (size_t*) REALLOC(object->data_struct.data [data_array_index],
             (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (uint_fast32_t));
     ASSERT_ALLOC(tmp_ptr, "Cannot increase the data array size !",
-            (object->allocated_array_size + increase_number_of_objects) * sizeof (uint_fast32_t))
+            (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (uint_fast32_t))
     object->data_struct.data [data_array_index] = tmp_ptr;
     memset (&(object->data_struct.data [data_array_index][object->allocated_array_size [data_array_index]]), '\0',
             increase_number_of_objects * sizeof (uint_fast32_t));
+
+    // If the object is a intersection data, then the offset arrays also need a resize operation
+    if (object->intersection_data)
+    {
+        unsigned short* tmp_ptr_offset_1 = (unsigned short*) REALLOC(object->data_struct.char_offsets_1 [data_array_index],
+                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (unsigned short));
+        ASSERT_ALLOC(tmp_ptr_offset_1, "Cannot increase the data array size !",
+                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (unsigned short))
+        unsigned short* tmp_ptr_offset_2 = (unsigned short*) REALLOC(object->data_struct.char_offsets_2 [data_array_index],
+                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (unsigned short));
+        ASSERT_ALLOC(tmp_ptr_offset_2, "Cannot increase the data array size !",
+                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (unsigned short))
+        object->data_struct.char_offsets_1 [data_array_index] = tmp_ptr_offset_1;
+        object->data_struct.char_offsets_2 [data_array_index] = tmp_ptr_offset_2;
+
+        // Init the new memory (No zero, because a zero is a valid offset !)
+        for (size_t i = object->allocated_array_size [data_array_index];
+                i < (object->allocated_array_size [data_array_index] + increase_number_of_objects); ++ i)
+        {
+            object->data_struct.char_offsets_1 [data_array_index][i] = USHRT_MAX;
+            object->data_struct.char_offsets_2 [data_array_index][i] = USHRT_MAX;
+        }
+
+        object->realloc_calls += 2;
+    }
+
     object->allocated_array_size [data_array_index] += increase_number_of_objects;
 
     // If the new allocated array size bigger than the saved max allocated size

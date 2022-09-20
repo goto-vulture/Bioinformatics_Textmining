@@ -213,6 +213,15 @@ Put_One_Value_To_Document_Word_List
         const uint_fast32_t new_value
 );
 
+extern void
+Put_One_Value_And_Offets_To_Document_Word_List
+(
+        struct Document_Word_List* const object,
+        const uint_fast32_t new_value,
+        const unsigned short new_offset_1,
+        const unsigned short new_offset_2
+);
+
 /**
  * @brief Printh data of a Document_Word_List to stdout.
  *
