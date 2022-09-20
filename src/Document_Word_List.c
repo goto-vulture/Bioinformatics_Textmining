@@ -168,6 +168,9 @@ DocumentWordList_CreateObjectAsIntersectionResult
         new_object->malloc_calloc_calls ++;
     }
 
+    // Show, that this object was created for intersection results
+    new_object->intersection_data = true;
+
     return new_object;
 }
 
