@@ -537,8 +537,7 @@ Exec_Intersection
                     const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
                             intersection_result->data_struct.data [0][i]);
 
-                    // Placeholder value
-                    cJSON* char_offset = cJSON_CreateNumber(rand() % 100);
+                    cJSON* char_offset = cJSON_CreateNumber(intersection_result->data_struct.char_offsets_1 [0][i]);
                     ASSERT_MSG(char_offset != NULL, "char offset is NULL !");
 
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
