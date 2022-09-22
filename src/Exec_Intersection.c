@@ -60,6 +60,20 @@
 #error "The macro \"cJSON_NEW_STR_CHECK\" is already defined !"
 #endif /* cJSON_NEW_STR_CHECK */
 
+#ifndef cJSON_ADD_ITEM_TO_OBJECT_CHECK
+#define cJSON_ADD_ITEM_TO_OBJECT_CHECK(cJSON_object, str, cJSON_item)                                                   \
+    ASSERT_MSG (cJSON_AddItemToObject(cJSON_object,str, cJSON_item) != 0, "Error in the cJSON_AddItemToObject call !");
+#else
+#error "The macro \"cJSON_ADD_ITEM_TO_OBJECT_CHECK\" is already defined !"
+#endif /* cJSON_ADD_ITEM_TO_OBJECT_CHECK */
+
+#ifndef cJSON_ADD_ITEM_TO_ARRAY_CHECK
+#define cJSON_ADD_ITEM_TO_ARRAY_CHECK(cJSON_object, cJSON_item)                                                         \
+    ASSERT_MSG (cJSON_AddItemToArray(cJSON_object, cJSON_item) != 0, "Error in the cJSON_AddItemToArray call !");
+#else
+#error "The macro \"cJSON_ADD_ITEM_TO_ARRAY_CHECK\" is already defined !"
+#endif /* cJSON_ADD_ITEM_TO_ARRAY_CHECK */
+
 #ifndef cJSON_FULL_FREE_AND_SET_TO_NULL
 #define cJSON_FULL_FREE_AND_SET_TO_NULL(cJSON_object)                                                                   \
     if (cJSON_object != NULL)                                                                                           \
@@ -512,13 +526,13 @@ Exec_Intersection
                         if (! Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
                         {
                             cJSON_NEW_STR_CHECK(src_token_no_stop_word, int_to_token_mem);
-                            cJSON_AddItemToArray(src_tokens_array_wo_stop_words, src_token_no_stop_word);
+                            cJSON_ADD_ITEM_TO_ARRAY_CHECK(src_tokens_array_wo_stop_words, src_token_no_stop_word);
                         }
                         cJSON_NEW_STR_CHECK(src_token, int_to_token_mem);
-                        cJSON_AddItemToArray(src_tokens_array, src_token);
+                        cJSON_ADD_ITEM_TO_ARRAY_CHECK(src_tokens_array, src_token);
                     }
-                    cJSON_AddItemToObject(outer_object, "tokens", src_tokens_array);
-                    cJSON_AddItemToObject(outer_object, "tokens w/o stop words", src_tokens_array_wo_stop_words);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "tokens", src_tokens_array);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "tokens w/o stop words", src_tokens_array_wo_stop_words);
                 }
 
                 cJSON_NEW_ARR_CHECK(char_offset_array);
@@ -542,8 +556,8 @@ Exec_Intersection
                     ASSERT_MSG(char_offset != NULL, "char offset is NULL !");
 
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
-                    cJSON_AddItemToArray(char_offset_array, char_offset);
-                    cJSON_AddItemToArray(tokens_array, token);
+                    cJSON_ADD_ITEM_TO_ARRAY_CHECK(char_offset_array, char_offset);
+                    cJSON_ADD_ITEM_TO_ARRAY_CHECK(tokens_array, token);
 
                     ++ intersection_call_counter;
                     ++ tokens_wrote;
@@ -560,11 +574,11 @@ Exec_Intersection
                 // words !
                 if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
                 {
-                    cJSON_AddItemToObject(intersections_full_match, dataset_id_1, two_array_container);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match, dataset_id_1, tokens_array);
                 }
                 else
                 {
-                    cJSON_AddItemToObject(intersections_partial_match, dataset_id_1, two_array_container);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match, dataset_id_1, tokens_array);
                 }
             }
 
@@ -576,10 +590,16 @@ Exec_Intersection
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
         {
-            cJSON_AddItemToObject(outer_object, "Intersections (partial)", intersections_partial_match);
-            cJSON_AddItemToObject(outer_object, "Intersections (full)", intersections_full_match);
-            cJSON_AddItemToObject(export_results, dataset_id_2, outer_object);
+            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "Intersections (partial)", intersections_partial_match);
+            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "Intersections (full)", intersections_full_match);
+            cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, dataset_id_2, outer_object);
 
+            // In theory it is possible to create the string of our cJSON structure at the end of all calculations
+            // But the problem is, that all temporary data nedds to be saved until the end of calculations. With bigger
+            // files more than 15 GB are possible !
+            // Second problem: The string, that will be created from cJSON_PrintBuffered, is in some cases too large for
+            // a single call at the end.
+            // So the only possibility: Intermediate calls
             char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, true);
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
             const size_t json_export_str_len = strlen (json_export_str);
@@ -731,6 +751,7 @@ Add_General_Information_To_Export_File
     cJSON_NOT_NULL(full_match);
     cJSON* stop_word_list = cJSON_CreateBool(true);
     cJSON_NOT_NULL(stop_word_list);
+
     // Up to now there will be no switch or similar structure to alter this export behavior
     cJSON* char_offset = cJSON_CreateBool(true);
     cJSON_NOT_NULL(char_offset);
@@ -739,14 +760,19 @@ Add_General_Information_To_Export_File
     cJSON_AddItemToObject(creation_mode, "Stop word list used", stop_word_list);
     cJSON_AddItemToObject(creation_mode, "Char offset", char_offset);
     cJSON_AddItemToObject(general_infos, "Creation mode", creation_mode);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Full match", full_match);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Stop word list used", stop_word_list);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Char offset", char_offset);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation mode", creation_mode);
 
     cJSON* creation_time = cJSON_CreateString(time_string);
     cJSON_NOT_NULL(creation_time);
 
-    cJSON_AddItemToObject(general_infos, "First file", first_file);
-    cJSON_AddItemToObject(general_infos, "Second file", second_file);
-    cJSON_AddItemToObject(general_infos, "Creation time", creation_time);
-    cJSON_AddItemToObject(export_results, "General infos", general_infos);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "First file", first_file);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Second file", second_file);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation time", creation_time);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "General infos", general_infos);
 
     return;
 }
@@ -1011,6 +1037,14 @@ cJSON_Determine_Full_Memory_Usage
 #ifdef cJSON_NEW_STR_CHECK
 #undef cJSON_NEW_STR_CHECK
 #endif /* cJSON_NEW_STR_CHECK */
+
+#ifdef cJSON_ADD_ITEM_TO_OBJECT_CHECK
+#undef cJSON_ADD_ITEM_TO_OBJECT_CHECK
+#endif /* cJSON_ADD_ITEM_TO_OBJECT_CHECK */
+
+#ifdef cJSON_ADD_ITEM_TO_ARRAY_CHECK
+#undef cJSON_ADD_ITEM_TO_ARRAY_CHECK
+#endif /* cJSON_ADD_ITEM_TO_ARRAY_CHECK */
 
 #ifdef cJSON_FULL_FREE_AND_SET_TO_NULL
 #undef cJSON_FULL_FREE_AND_SET_TO_NULL
