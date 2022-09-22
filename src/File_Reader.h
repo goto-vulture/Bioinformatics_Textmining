@@ -79,6 +79,8 @@ struct Token_List_Container
         char dataset_id [DATASET_ID_LENGTH];    ///< ID of the dataset
     }* token_lists;
 
+    size_t longest_token_length;            ///< Length of the longest token in the whole container
+
     uint_fast32_t next_free_element;        ///< Next free element in the Token_List array
     size_t allocated_token_container;       ///< Allocated number of Token_List objects
 

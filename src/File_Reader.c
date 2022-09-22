@@ -324,6 +324,10 @@ TokenListContainer_CreateObject
                     current_token_list_obj->next_free_element ++;
                     tokens_found ++;
 
+                    // Is the current token longer than the previous tokens ?
+                    new_container->longest_token_length = MAX(new_container->longest_token_length,
+                            strlen (curr_token->valuestring));
+
                     curr_token = curr_token->next;
                 }
                 // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
@@ -738,7 +742,8 @@ TokenListContainer_ShowAttributes
     printf ("Max. possible token length:     %zu\n", container->token_lists [0].max_token_length);
     printf ("Average token length:           %zu\n", Get_Average_Token_Length(container));
     printf ("Longest token list:             %zu\n", TokenListContainer_GetLenghOfLongestTokenList(container));
-    printf ("Longest token:                  %zu\n", TokenListContainer_GetLenghOfLongestToken(container));
+    printf ("Longest saved token:            %zu\n", TokenListContainer_GetLenghOfLongestToken(container));
+    printf ("Longest token in the container: %zu\n", container->longest_token_length);
     printf ("Longest dataset id:             %zu\n", longest_dataset_id);
     printf ("Malloc / calloc calls:          %zu\n", container->malloc_calloc_calls);
     printf ("Realloc calls:                  %zu\n", container->realloc_calls);
