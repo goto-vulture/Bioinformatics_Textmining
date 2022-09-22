@@ -574,11 +574,11 @@ Exec_Intersection
                 // words !
                 if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
                 {
-                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match, dataset_id_1, tokens_array);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match, dataset_id_1, two_array_container);
                 }
                 else
                 {
-                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match, dataset_id_1, tokens_array);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match, dataset_id_1, two_array_container);
                 }
             }
 
