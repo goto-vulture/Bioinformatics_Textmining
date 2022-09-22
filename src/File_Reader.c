@@ -72,6 +72,25 @@ Get_Address_Of_Next_Free_Token
 );
 
 /**
+ * @brief Calculate the begin of the token specified with an index in a Token_List.
+ *
+ * Asserts:
+ *      token_list != NULL
+ *      token_index < allocated_tokens
+ *
+ * @param[in] token_list Token_List object
+ * @param[in] token_index Index of the token
+ *
+ * @return Pointer to the begin of the token with the given index
+ */
+static char*
+Get_Address_Of_Token
+(
+        const struct Token_List* const token_list,
+        const uint_fast32_t token_index
+);
+
+/**
  * @brief Calculate the the average of all tokens in the object.
  *
  * This information is for debugging and statistical purposes helpful.
@@ -370,7 +389,8 @@ TokenListContainer_CreateObject
                     {
                         const size_t tmp_result =
                                 current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
-                                strlen (curr_token->valuestring);
+                                strlen(Get_Address_Of_Token (current_token_list_obj, current_token_list_obj->next_free_element - 1));
+                                //strlen (current_token_list_obj->data + (current_token_list_obj->max_token_length * (current_token_list_obj->next_free_element - 1)));
                         ASSERT_FMSG(tmp_result < USHRT_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
                                 tmp_result, USHRT_MAX - 1);
                         current_token_list_obj->char_offsets [current_token_list_obj->next_free_element] =
@@ -826,6 +846,35 @@ Get_Address_Of_Next_Free_Token
     ASSERT_MSG(token_list != NULL, "Token_List is NULL !");
 
     return token_list->data + (token_list->max_token_length * token_list->next_free_element);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Calculate the begin of the token specified with an index in a Token_List.
+ *
+ * Asserts:
+ *      token_list != NULL
+ *      token_index < allocated_tokens
+ *
+ * @param[in] token_list Token_List object
+ * @param[in] token_index Index of the token
+ *
+ * @return Pointer to the begin of the token with the given index
+ */
+static char*
+Get_Address_Of_Token
+(
+        const struct Token_List* const token_list,
+        const uint_fast32_t token_index
+)
+{
+    ASSERT_MSG(token_list != NULL, "Token_List is NULL !");
+    ASSERT_FMSG(token_index < token_list->allocated_tokens,
+            "Specified token index is too large ! Given: %" PRIuFAST32 "; Max. valid: %" PRIuFAST32 " !",
+            token_index, token_list->allocated_tokens - 1);
+
+    return token_list->data + (token_list->max_token_length * token_index);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
