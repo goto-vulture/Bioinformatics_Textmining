@@ -50,6 +50,8 @@ DEBUG_FLAGS = -O0 -g3 -D_FORTIFY_SOURCE=2
 # Eine Praeprozessorkonstante setzen, wenn im Debug-Modus das Programm uebersetzt wird
 DEBUG_FLAGS += -DDEBUG_BUILD
 
+##### Siehe: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html #####
+##### Uebersicht ueber die OPtimierungsmoeglichkeiten von GCC #####
 # Release Build: Hoechste Optimierung und keine Debug Informationen
 RELEASE_FLAGS = -O3
 # Optimierungen fuer den Linker (Ich wusste vorher gar nicht, dass es so ein Flag auch fuer den Linker gibt ... :o)
@@ -58,8 +60,14 @@ RELEASE_FLAGS += -Wl,-O1
 RELEASE_FLAGS += -fPIE
 # Eine Praeprozessorkonstante setzen, wenn im Release-Modus das Programm uebersetzt wird
 RELEASE_FLAGS += -DRELEASE_BUILD
-
-
+# IEEE Standard nicht mehr strikt verfolgen und Gleitkommaoperations u.a. durch fehlende NaN und +/-Inf Checks beschleunigen
+RELEASE_FLAGS += -ffast-math
+# Prolog von Vararg Funktionen optimieren
+RELEASE_FLAGS += -fstdarg-opt
+# Pointer Anlaysen durchfuehren, die bei groesseren Uebersetzungseinheiten viele Ressourcen in Anspruch nehmen koennen
+RELEASE_FLAGS += -fipa-pta
+# Weitere Optimierungen durch den Linker durchfuehren => Funktioniert nicht wie gewollt ... :(
+#RELEASE_FLAGS += -flto
 
 DEBUG = 0
 RELEASE = 0
