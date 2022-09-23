@@ -22,6 +22,7 @@
 #include "JSON_Parser/cJSON.h"
 #include "str2int.h"
 #include "Token_Int_Mapping.h"
+#include "String_Tools.h"
 
 
 
@@ -259,7 +260,8 @@ TokenListContainer_CreateObject
             if (! json)
             {
                 // Sometimes the json pointer is NULL. But an error only occurs, when an error message is available
-                if (strlen (cJSON_GetErrorPtr()) > 0)
+                //if (strlen (cJSON_GetErrorPtr()) > 0)
+                if (! IS_STRING_LENGTH_ZERO(cJSON_GetErrorPtr()))
                 {
                     printf("Error before: [%s] %" PRIuFAST32 ": %ld\n", cJSON_GetErrorPtr(), line_counter,
                             (long int) (current_parsing_position - input_file_data));
