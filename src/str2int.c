@@ -181,7 +181,7 @@ extern enum str2double_errno str2double
  * @brief Convert a C-String to a integer with a width of at least 32 bits.
  *
  * The result will be given with the return values. Errors will be indicated with LONG_MIN. So you shoudn't use an
- * input C-String, that represents LONG_MIN. In this case it is not possible to determine whether an error occured or
+ * input C-String, that represents LONG_MIN. In this case it is not possible to determine whether an error occurred or
  * not.
  *
  * @param[in] input_string Input C-String

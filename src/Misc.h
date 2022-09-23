@@ -30,7 +30,7 @@ extern "C"
  * @brief This macro determines the number of elements in an array.
  *
  * ! Attention !
- * This only works, if the number ob objects in the array is already known during the compiling process ! In other cases
+ * This only works, if the number are objects in the array is already known during the compiling process ! In other cases
  * (e.g.: memory allocated with malloc()) wrong result will be determined !
  */
 #ifndef COUNT_ARRAY_ELEMENTS
@@ -60,7 +60,6 @@ extern "C"
 
 /**
  * @brief This macro helps to create a C-String representation of a object (struct). Here with a format string.
- * Diesmal mit einem Formatstring.
  */
 #ifndef TO_STRING_HELPER_VA_ARGS
 #define TO_STRING_HELPER_VA_ARGS(format_string, ...)                                                                    \

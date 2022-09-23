@@ -431,7 +431,7 @@ Put_One_Value_And_Offets_To_Document_Word_List
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Printh data of a Document_Word_List to stdout.
+ * @brief Print data of a Document_Word_List to stdout.
  *
  * This function is for debugging purposes.
  *
@@ -538,7 +538,7 @@ DocumentWordList_ShowAttributes
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Printh data and the attribute information of a Document_Word_List to stdout.
+ * @brief Print data and the attribute information of a Document_Word_List to stdout.
  *
  * This function is for debugging purposes.
  *

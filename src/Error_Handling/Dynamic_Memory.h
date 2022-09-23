@@ -2,7 +2,7 @@
  * @file Dynamic_Memory.h
  *
  * @brief Here the number of dynamic memory operations will be counted with global variables. (Yes I know: They are evil
- * bytes. It is necessary to be careful; they can bite ! But up to now I had a accaptable relationship with them :3)
+ * bytes. It is necessary to be careful; they can bite ! But up to now I had a acceptable relationship with them :3)
  *
  * The goal is to determine whether memory leaks are possible. If this is the case there will be more allocation calls
  * than free calls.
@@ -90,7 +90,6 @@ extern void Show_Dynamic_Memory_Status (void);
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Das uebergebene Objekt wird geloescht und auf nullptr gesetzt
  * @brief Delete the object, increase the free counter and set the pointer to NULL.
  *
  * A nullptr check before the free call is NOT necessary. In case of nullptr the free function do nothing !

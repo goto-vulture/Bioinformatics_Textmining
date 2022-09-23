@@ -22,12 +22,12 @@ extern "C"
 
 
 /**
- * @brief Fehlercodes, die Fehlerzustaende bei der Verwendung von int2str(), anzeigen.
+ * @brief Error codes for the function int2str().
  */
 enum int2str_errno
 {
-    INT2STR_SUCCESS = 0,    ///< Konvertierung war erfolgreich
-    INT2STR_INCONVERTIBLE   ///< Zahl ist nicht konvertierbar
+    INT2STR_SUCCESS = 0,    ///< Converting successful war
+    INT2STR_INCONVERTIBLE   ///< Number is not convertible
 };
 
 

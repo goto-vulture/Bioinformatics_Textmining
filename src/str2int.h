@@ -23,9 +23,9 @@ extern "C"
 enum str2int_errno
 {
     STR2INT_SUCCESS = 0,    ///< Conversion was successful
-    STR2INT_OVERFLOW,       ///< Overflow occured
-    STR2INT_UNDERFLOW,      ///< Underflow occured
-    STR2INT_INCONVERTIBLE   ///< C-String is not convertable
+    STR2INT_OVERFLOW,       ///< Overflow occurred
+    STR2INT_UNDERFLOW,      ///< Underflow occurred
+    STR2INT_INCONVERTIBLE   ///< C-String is not convertible
 };
 
 /**
@@ -36,9 +36,9 @@ enum str2int_errno
 enum str2uint_errno
 {
     STR2UINT_SUCCESS = 0,   ///< Conversion was successful
-    STR2UINT_OVERFLOW,      ///< Overflow occured
-    STR2UINT_UNDERFLOW,     ///< Underflow occured
-    STR2UINT_INCONVERTIBLE  ///< C-String is not convertable
+    STR2UINT_OVERFLOW,      ///< Overflow occurred
+    STR2UINT_UNDERFLOW,     ///< Underflow occurred
+    STR2UINT_INCONVERTIBLE  ///< C-String is not convertible
 };
 
 /**
@@ -47,7 +47,7 @@ enum str2uint_errno
 enum str2double_errno
 {
     STR2DOUBLE_SUCCESS = 0,     ///< Conversion was successful
-    STR2DOUBLE_INCONVERTIBLE    ///< C-String is not convertable
+    STR2DOUBLE_INCONVERTIBLE    ///< C-String is not convertible
 };
 
 
@@ -75,7 +75,7 @@ extern enum str2double_errno str2double (double* out, const char* input_string);
  * @brief Convert a C-String to a integer with a width of at least 32 bits.
  *
  * The result will be given with the return values. Errors will be indicated with LONG_MIN. So you shoudn't use an
- * input C-String, that represents LONG_MIN. In this case it is not possible to determine whether an error occured or
+ * input C-String, that represents LONG_MIN. In this case it is not possible to determine whether an error occurred or
  * not.
  *
  * @param[in] input_string Input C-String

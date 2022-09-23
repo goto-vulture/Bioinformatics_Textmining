@@ -7,10 +7,10 @@
  * 2. Data sorting (with QSort from the C lib) and a binary search
  * 3. Data sorting (with heap sort) and a binary search
  *
- * Plots with runtime comparisions are in the "Plots" folder.
+ * Plots with runtime comparisons are in the "Plots" folder.
  *
  * Summary of the tests: In normal cases (with datasets of a few hundred integers) the simplest way is faster, because
- * the sorting of the data needs most of the time. Only with a larger amout of data the approaches with a data sorting
+ * the sorting of the data needs most of the time. Only with a larger amount of data the approaches with a data sorting
  * are faster.
  *
  * @date 23.05.2022
@@ -115,7 +115,6 @@ Binary_Search
 
 /**
  * @brief Implementation of the sorting algorithm "HeapSort".
- * @brief Implementierung des Sortierungsalgorithmus "HeapSort".
  *
  * This implementation was derived from the example implementation on Wikipedia.
  * https://de.wikipedia.org/wiki/Heapsort#Implementierung
@@ -219,7 +218,7 @@ IntersectionApproach_TwoNestedLoops
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Determine intersections with a previous ascending sort of the elements ih the Document_Word_List. Afterwards
+ * @brief Determine intersections with a previous ascending sort of the elements in the Document_Word_List. Afterwards
  * for the search process the binary search will be used.
  *
  * Algorithm for the sorting: QSort (https://en.wikipedia.org/wiki/Qsort)
@@ -263,7 +262,7 @@ IntersectionApproach_QSortAndBinarySearch
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Determine intersections with a previous ascending sort of the elements ih the Document_Word_List. Afterwards
+ * @brief Determine intersections with a previous ascending sort of the elements in the Document_Word_List. Afterwards
  * for the search process the binary search will be used.
  *
  * Algorithm for the sorting: Heapsort (https://en.wikipedia.org/wiki/Heapsort)
@@ -536,7 +535,7 @@ Compare_Function
  * Asserts:
  *      data != NULL
  *
- * @param[in] data Dta in which is searched
+ * @param[in] data Data in which is searched
  * @param[in] data_size Size of the data
  * @param[in] search_value Value to be searched
  *
@@ -583,7 +582,6 @@ Binary_Search
 
 /**
  * @brief Implementation of the sorting algorithm "HeapSort".
- * @brief Implementierung des Sortierungsalgorithmus "HeapSort".
  *
  * This implementation was derived from the example implementation on Wikipedia.
  * https://de.wikipedia.org/wiki/Heapsort#Implementierung

@@ -52,8 +52,8 @@ String_To_Lower
 /**
  * @brief Compare two C-Strings case insensitive.
  *
- * There might be a functiom "strncasecmp()" on your system with the same functionality. But this is an GNU extention
- * and no potable C code.
+ * There might be a function "strncasecmp()" on your system with the same functionality. But this is an GNU extension
+ * and no portable C code.
  *
  * @param[in] string_1 First C-String
  * @param[in] string_1_length Length of the first C-String
@@ -134,7 +134,7 @@ Contain_String_Only_Null_Symbols
  * 		destination != NULL
  * 		destination_size > 1
  * 		count > 0
- * 		Jeder weitere C-String != NULL
+ * 		Every additional C-String != NULL
  *
  * @param[in] destination Destination C-String
  * @param[in] destination_size Length of the destination C-String

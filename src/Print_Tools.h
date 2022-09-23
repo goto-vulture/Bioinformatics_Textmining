@@ -111,7 +111,7 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Same as the macro "PRINTF_FFLUSH". But here with a automatíc newline at the end.
+ * @brief Same as the macro "PRINTF_FFLUSH". But here with a automatic newline at the end.
  */
 #ifndef PUTS_FFLUSH
     #define PUTS_FFLUSH(string)                                                                                         \
@@ -190,7 +190,7 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Print a 2D-String array to stdout. *
+ * @brief Print a 2D-String array to stdout.
  *
  * This is helpful for debugging of text-based drawings.
  *
@@ -200,8 +200,8 @@ extern "C"
  *      dim_2 > 0
  *
  * @param[in] drawing 2D-String array
- * @param[in] dim_1 Groesse der First array dimension (Number of C-Strings)
- * @param[in] dim_2 Groesse der Second array dimension (Max numer of char per C-String)
+ * @param[in] dim_1 Size of the first array dimension (Number of C-Strings)
+ * @param[in] dim_2 Size of the second array dimension (Max number of char per C-String)
  */
 extern void Print_2D_String_Array (const char* const restrict drawing [], const size_t dim_1, const size_t dim_2);
 
@@ -246,7 +246,7 @@ extern size_t Process_Printer (const size_t print_step_size, const size_t counte
 );
 
 /**
- * @brief Print a memory size in Byte, KByte und MByte.
+ * @brief Print a memory size in Byte, KByte and MByte.
  *
  * Asserts:
  *      byte_size != 0

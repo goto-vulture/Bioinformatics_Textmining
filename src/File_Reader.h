@@ -1,7 +1,7 @@
 /**
  * @file File_Reader.h
  *
- * @brief In this translation unit the Token_List_Container object is defined. This is the main object for storeing a
+ * @brief In this translation unit the Token_List_Container object is defined. This is the main object for storing a
  * input dataset.
  *
  * It holds the original tokens from the dataset and make them usable for the mapping process. (See: "Token_Int_Mapping")
@@ -127,7 +127,7 @@ TokenListContainer_DeleteObject
  * @param[in] index_token_list Index of the Token_List object
  * @param[in] index_token_in_token_list Index of the token in the Token_List object
  *
- * @return Poiner at the begin of the token. (token is terminated with a null byte !)
+ * @return Pointer at the begin of the token. (token is terminated with a null byte !)
  */
 extern char*
 TokenListContainer_GetToken

@@ -39,7 +39,7 @@ extern "C"
 /**
  * @brief A assert with a user-defined error message in the form of format string.
  *
- * In an error case the error message will be shown before the assert will be executed becase the standard assert
+ * In an error case the error message will be shown before the assert will be executed because the standard assert
  * function only accepts C-String without format parameter.
  */
 #ifndef ASSERT_FMSG
@@ -60,7 +60,7 @@ extern "C"
 /**
  * @brief This assert is for error cases after an dynamic allocation operation.
  *
- * In an error case the number of bytes, that tried to allocte, will be printed. This additional information is not
+ * In an error case the number of bytes, that tried to allocate, will be printed. This additional information is not
  * necessary. But it can help to find bugs. E.g.: Maybe there is an bug in the memory size calculation.
  */
 #ifndef ASSERT_ALLOC

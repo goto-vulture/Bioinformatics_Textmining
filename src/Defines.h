@@ -4,7 +4,7 @@
  * @brief Here are the defines, that cannot be assigned to a specific translation unit or if there must be global
  * visible.
  *
- * @date22.09.2022
+ * @date 22.09.2022
  * @author: am1
  */
 

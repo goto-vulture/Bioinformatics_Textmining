@@ -595,7 +595,7 @@ Exec_Intersection
             cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, dataset_id_2, outer_object);
 
             // In theory it is possible to create the string of our cJSON structure at the end of all calculations
-            // But the problem is, that all temporary data nedds to be saved until the end of calculations. With bigger
+            // But the problem is, that all temporary data needs to be saved until the end of calculations. With bigger
             // files more than 15 GB are possible !
             // Second problem: The string, that will be created from cJSON_PrintBuffered, is in some cases too large for
             // a single call at the end.
@@ -721,7 +721,7 @@ Add_General_Information_To_Export_File
 {
     ASSERT_MSG(export_results != NULL, "Main cJSON result pointer is NULL !");
 
-    // Insert some general infos to the export file
+    // Insert some general info to the export file
     cJSON* general_infos    = cJSON_CreateObject();
     cJSON_NOT_NULL(general_infos);
     cJSON* first_file       = cJSON_CreateString(GLOBAL_CLI_INPUT_FILE);

@@ -20,12 +20,12 @@
  * Check the used C version, to replace keywords in the language if necessary. (E.g.: The C version is an older version
  * and contains some keywords which were included in newer releases of the language.
  *
- * The possiblility is high, that another components in the code exists, which are not compatible with older versions (I
+ * The possibility is high, that another components in the code exists, which are not compatible with older versions (I
  * used only the C11 standard while the development)
  * At least the conflict with the keywords can be solved with the following preprocessor statements.
  *
  * The macro __STDC_VERSION__ is for C90 not defined
- * ->   Replace the keywords inline and restrict with empty marcos to make a translation with the C90 standard possible.
+ * ->   Replace the keywords inline and restrict with empty macros to make a translation with the C90 standard possible.
  */
 #ifndef __STDC_VERSION__
     /**
@@ -159,7 +159,7 @@ At_Exit_Function
  * @brief main function of the program.
  * *
  * @param[in] argc argc parameter
- * @param[in] argv Number of argc paramer
+ * @param[in] argv Number of argc parameter
  *
  * @return 0, if the program execution was successful; Else != 0
  */
