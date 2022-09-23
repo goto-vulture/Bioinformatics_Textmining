@@ -23,6 +23,7 @@ extern "C"
 
 #include <inttypes.h>   // uint_fast32_t
 #include <stddef.h>     // size_t
+#include "Defines.h"    // CHAR_OFFSET_TYPE
 
 
 
@@ -64,14 +65,14 @@ struct Document_Word_List
          * In normal cases only one of the char offsets is relevant as result. But in the calculation it is not possible to
          * determine, whether the first or the second offsets are relevant. So the solution: calculate and save both.
          */
-        unsigned short** char_offsets_1;
+        CHAR_OFFSET_TYPE** char_offsets_1;
         /**
          * @brief Char offsets of the second data set (only valid data, when the object is intersection data).
          *
          * In normal cases only one of the char offsets is relevant as result. But in the calculation it is not possible to
          * determine, whether the first or the second offsets are relevant. So the solution: calculate and save both.
          */
-        unsigned short** char_offsets_2;
+        CHAR_OFFSET_TYPE** char_offsets_2;
     } data_struct;
 
     size_t* arrays_lengths;         ///< 1 dimensional Array with the data length information
@@ -194,8 +195,8 @@ DocumentWordList_AppendDataWithOffsets
 (
         struct Document_Word_List* const object,
         const uint_fast32_t* const new_data,
-        const unsigned short* const new_offsets_1,
-        const unsigned short* const new_offsets_2,
+        const CHAR_OFFSET_TYPE* const new_offsets_1,
+        const CHAR_OFFSET_TYPE* const new_offsets_2,
         const size_t data_length
 );
 
@@ -258,8 +259,8 @@ Put_One_Value_And_Offets_To_Document_Word_List
 (
         struct Document_Word_List* const object,
         const uint_fast32_t new_value,
-        const unsigned short new_offset_1,
-        const unsigned short new_offset_2
+        const CHAR_OFFSET_TYPE new_offset_1,
+        const CHAR_OFFSET_TYPE new_offset_2
 );
 
 /**

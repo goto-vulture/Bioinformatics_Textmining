@@ -158,27 +158,27 @@ DocumentWordList_CreateObjectAsIntersectionResult
     struct Document_Word_List* new_object = Create_Main_Object_Structure (number_of_arrays, max_array_length);
 
     // Outer dimension for data and char_offsets (1 and 2)
-    new_object->data_struct.char_offsets_1 = (unsigned short**) CALLOC(number_of_arrays, sizeof (unsigned short*));
+    new_object->data_struct.char_offsets_1 = (CHAR_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (CHAR_OFFSET_TYPE*));
     ASSERT_ALLOC(new_object->data_struct.char_offsets_1, "Cannot create new Document_Word_List !",
-            sizeof (unsigned short*) * number_of_arrays);
+            sizeof (CHAR_OFFSET_TYPE*) * number_of_arrays);
     new_object->malloc_calloc_calls ++;
-    new_object->data_struct.char_offsets_2 = (unsigned short**) CALLOC(number_of_arrays, sizeof (unsigned short*));
+    new_object->data_struct.char_offsets_2 = (CHAR_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (CHAR_OFFSET_TYPE*));
     ASSERT_ALLOC(new_object->data_struct.char_offsets_2, "Cannot create new Document_Word_List !",
-            sizeof (unsigned short*) * number_of_arrays);
+            sizeof (CHAR_OFFSET_TYPE*) * number_of_arrays);
     new_object->malloc_calloc_calls ++;
 
     // Inner dimension for data and char_offsets (1 and 2)
     for (uint_fast32_t i = 0; i < number_of_arrays; ++ i)
     {
-        new_object->data_struct.char_offsets_1 [i] = (unsigned short*) CALLOC(INT_ALLOCATION_STEP_SIZE,
-                sizeof (unsigned short));
+        new_object->data_struct.char_offsets_1 [i] = (CHAR_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
+                sizeof (CHAR_OFFSET_TYPE));
         ASSERT_ALLOC(new_object->data_struct.char_offsets_1 [i], "Cannot create new Document_Word_List !",
-                sizeof (unsigned short) * INT_ALLOCATION_STEP_SIZE);
+                sizeof (CHAR_OFFSET_TYPE) * INT_ALLOCATION_STEP_SIZE);
         new_object->malloc_calloc_calls ++;
-        new_object->data_struct.char_offsets_2 [i] = (unsigned short*) CALLOC(INT_ALLOCATION_STEP_SIZE,
-                sizeof (unsigned short));
+        new_object->data_struct.char_offsets_2 [i] = (CHAR_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
+                sizeof (CHAR_OFFSET_TYPE));
         ASSERT_ALLOC(new_object->data_struct.char_offsets_2 [i], "Cannot create new Document_Word_List !",
-                sizeof (unsigned short) * INT_ALLOCATION_STEP_SIZE);
+                sizeof (CHAR_OFFSET_TYPE) * INT_ALLOCATION_STEP_SIZE);
         new_object->malloc_calloc_calls ++;
     }
 
@@ -302,8 +302,8 @@ DocumentWordList_AppendDataWithOffsets
 (
         struct Document_Word_List* const object,
         const uint_fast32_t* const new_data,
-        const unsigned short* const new_offsets_1,
-        const unsigned short* const new_offsets_2,
+        const CHAR_OFFSET_TYPE* const new_offsets_1,
+        const CHAR_OFFSET_TYPE* const new_offsets_2,
         const size_t data_length
 )
 {
@@ -313,11 +313,11 @@ DocumentWordList_AppendDataWithOffsets
     const uint_fast32_t next_free_array = object->next_free_array - 1;
     if (new_offsets_1 != NULL)
     {
-        memcpy (object->data_struct.char_offsets_1 [next_free_array], new_offsets_1, sizeof (unsigned short) * data_length);
+        memcpy (object->data_struct.char_offsets_1 [next_free_array], new_offsets_1, sizeof (CHAR_OFFSET_TYPE) * data_length);
     }
     if (new_offsets_2 != NULL)
     {
-        memcpy (object->data_struct.char_offsets_2 [next_free_array], new_offsets_2, sizeof (unsigned short) * data_length);
+        memcpy (object->data_struct.char_offsets_2 [next_free_array], new_offsets_2, sizeof (CHAR_OFFSET_TYPE) * data_length);
     }
 
     return;
@@ -410,8 +410,8 @@ Put_One_Value_And_Offets_To_Document_Word_List
 (
         struct Document_Word_List* const object,
         const uint_fast32_t new_value,
-        const unsigned short new_offset_1,
-        const unsigned short new_offset_2
+        const CHAR_OFFSET_TYPE new_offset_1,
+        const CHAR_OFFSET_TYPE new_offset_2
 )
 {
     ASSERT_MSG(object != NULL, "Object is NULL !");
@@ -786,14 +786,14 @@ static void Increase_Data_Array_Size
     // If the object is a intersection data, then the offset arrays also need a resize operation
     if (object->intersection_data)
     {
-        unsigned short* tmp_ptr_offset_1 = (unsigned short*) REALLOC(object->data_struct.char_offsets_1 [data_array_index],
-                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (unsigned short));
+        CHAR_OFFSET_TYPE* tmp_ptr_offset_1 = (CHAR_OFFSET_TYPE*) REALLOC(object->data_struct.char_offsets_1 [data_array_index],
+                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (CHAR_OFFSET_TYPE));
         ASSERT_ALLOC(tmp_ptr_offset_1, "Cannot increase the data array size !",
-                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (unsigned short))
-        unsigned short* tmp_ptr_offset_2 = (unsigned short*) REALLOC(object->data_struct.char_offsets_2 [data_array_index],
-                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (unsigned short));
+                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (CHAR_OFFSET_TYPE))
+        CHAR_OFFSET_TYPE* tmp_ptr_offset_2 = (CHAR_OFFSET_TYPE*) REALLOC(object->data_struct.char_offsets_2 [data_array_index],
+                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (CHAR_OFFSET_TYPE));
         ASSERT_ALLOC(tmp_ptr_offset_2, "Cannot increase the data array size !",
-                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (unsigned short))
+                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (CHAR_OFFSET_TYPE))
         object->data_struct.char_offsets_1 [data_array_index] = tmp_ptr_offset_1;
         object->data_struct.char_offsets_2 [data_array_index] = tmp_ptr_offset_2;
 

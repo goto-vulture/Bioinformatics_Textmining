@@ -22,6 +22,7 @@ extern "C"
 
 #include <inttypes.h>   // uint_fast32_t
 #include <stddef.h>     // size_t
+#include "Defines.h"    // CHAR_OFFSET_TYPE
 
 
 
@@ -65,7 +66,7 @@ struct Token_List_Container
          *
          * USHRT_MAX is the placeholder value, because 0 is a valid offset !
          */
-        unsigned short* char_offsets;
+        CHAR_OFFSET_TYPE* char_offsets;
 
         /**
          * @brief Max. possible length for one token (inkl. terminator symbol)

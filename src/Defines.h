@@ -42,11 +42,11 @@ extern "C"
 #error "The macro \"INT_MAPPING_TYPE_FSTR_SPECIFIER\" is already defined !"
 #endif /* INT_MAPPING_TYPE_FSTR_SPECIFIER */
 
-#ifndef DATASET_ID_LENGTH
-#define DATASET_ID_LENGTH 16                    ///< Length of a data set ID.
-#else
-#error "The macro \"DATASET_ID_LENGTH\" is already defined !"
-#endif /* DATASET_ID_LENGTH */
+//#ifndef DATASET_ID_LENGTH
+//#define DATASET_ID_LENGTH 16                    ///< Length of a data set ID.
+//#else
+//#error "The macro \"DATASET_ID_LENGTH\" is already defined !"
+//#endif /* DATASET_ID_LENGTH */
 
 
 

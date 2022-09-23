@@ -195,9 +195,9 @@ TokenListContainer_CreateObject
                 MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
         new_container->malloc_calloc_calls ++;
 
-        new_container->token_lists [i].char_offsets = (unsigned short*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (unsigned short));
+        new_container->token_lists [i].char_offsets = (CHAR_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (CHAR_OFFSET_TYPE));
         ASSERT_ALLOC(new_container->token_lists [i].char_offsets, "Cannot create data for a Token object !",
-                TOKENS_ALLOCATION_STEP_SIZE * sizeof (unsigned short));
+                TOKENS_ALLOCATION_STEP_SIZE * sizeof (CHAR_OFFSET_TYPE));
         new_container->malloc_calloc_calls ++;
         // Init new values
         for (size_t i2 = 0; i2 < TOKENS_ALLOCATION_STEP_SIZE; ++ i2)
@@ -309,9 +309,9 @@ TokenListContainer_CreateObject
                                 MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE * sizeof (char));
                         new_container->malloc_calloc_calls ++;
 
-                        new_container->token_lists [i].char_offsets = (unsigned short*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (unsigned short));
+                        new_container->token_lists [i].char_offsets = (CHAR_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (CHAR_OFFSET_TYPE));
                         ASSERT_ALLOC(new_container->token_lists [i].char_offsets, "Cannot create data for a Token object !",
-                                TOKENS_ALLOCATION_STEP_SIZE * sizeof (unsigned short));
+                                TOKENS_ALLOCATION_STEP_SIZE * sizeof (CHAR_OFFSET_TYPE));
                         new_container->malloc_calloc_calls ++;
                         // Init new values
                         for (size_t i2 = 0; i2 < TOKENS_ALLOCATION_STEP_SIZE; ++ i2)
@@ -360,10 +360,10 @@ TokenListContainer_CreateObject
                                 (TOKENS_ALLOCATION_STEP_SIZE) * token_size);
                         new_container->realloc_calls ++;
 
-                        unsigned short* tmp_ptr2 = (unsigned short*) REALLOC (current_token_list_obj->char_offsets,
-                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (unsigned short));
+                        CHAR_OFFSET_TYPE* tmp_ptr2 = (CHAR_OFFSET_TYPE*) REALLOC (current_token_list_obj->char_offsets,
+                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (CHAR_OFFSET_TYPE));
                         ASSERT_ALLOC(tmp_ptr2, "Cannot create data for a Token object !",
-                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (unsigned short));
+                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (CHAR_OFFSET_TYPE));
                         new_container->realloc_calls ++;
                         // Init new values
                         for (size_t i2 = old_tokens_size; i2 < (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE); ++ i2)
@@ -394,7 +394,7 @@ TokenListContainer_CreateObject
                         ASSERT_FMSG(tmp_result < USHRT_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
                                 tmp_result, USHRT_MAX - 1);
                         current_token_list_obj->char_offsets [current_token_list_obj->next_free_element] =
-                                (unsigned short) tmp_result;
+                                (CHAR_OFFSET_TYPE) tmp_result;
                     }
 
                     current_token_list_obj->next_free_element ++;
@@ -540,7 +540,7 @@ TokenListContainer_GetAllocatedMemSize
     for (size_t i = 0; i < container->allocated_token_container; ++ i)
     {
         result += (container->token_lists [i].allocated_tokens * max_token_size);
-        result += (container->token_lists [i].allocated_tokens * sizeof (unsigned short));
+        result += (container->token_lists [i].allocated_tokens * sizeof (CHAR_OFFSET_TYPE));
     }
 
     return result;
