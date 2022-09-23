@@ -61,18 +61,22 @@ Um eine möglichst effiziente Durchsuchung der Daten vornehmen zu können, werde
 
 Nach der Codierung wird mittels einiger elementarer Mengenoperationen (vornehmlich durch die Bildung der Schnittmenge) die Wortmengen gebildet, die in allen Datensätzen auftauchen.
 
+#### Verwendete Bibliotheken
+
+- *argparse*: Einfacher CLI Parser. Verfügbar auf [GitHub](https://github.com/cofyc/argparse).
+- *cJSON*: Wunderschöner und effizienter JSON Parser. Ebenfalls verfügbar auf [GitHub](https://github.com/DaveGamble/cJSON).
+- *TinyTest*: Minimalistische Testsuite. Hier verfügbar: [GitHub](https://github.com/joewalnes/tinytest).
+
 ---
 
 ### Technische Details
 
-Um die Implementierung auf das wesentliche zu fokussieren, werden die Ein- und Ausgabemöglichkeiten des Programms einfach ausfallen. So werden die Dateien mittels CLI-Parameter eingelesen; und die Ergebnisse werden in Form einer CSV-Datei dargestellt.
-
-Eine nutzerfreundlichere Bedienungsmöglichkeit ist mit Sicherheit möglich. Dies hat in diesem Projekt aber keine hohe Priorität.
+Um die Implementierung auf das wesentliche zu fokussieren, werden die Ein- und Ausgabemöglichkeiten des Programms einfach ausfallen. So werden die Dateien mittels CLI-Parameter eingelesen; und die Ergebnisse werden in Form einer JSON-Datei dargestellt.
 
 ---
 
-### Weitere Infos
+### Weitere Funktionen
 
-Weitere Infos folgen ...
+- Ein benutzerfreundlichere Bedienung; möglicherweise über eine GUI. Die Priorität ist allerdings gering, da diese auf der Funktionalität liegt.
 
 ---
