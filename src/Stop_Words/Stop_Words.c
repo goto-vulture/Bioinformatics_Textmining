@@ -113,8 +113,11 @@ extern _Bool Is_Word_In_Stop_Word_List
         return true;
     }
 
+    // With this construction you have the guarantee, that this value will be at least on the current stack frame.
+    // Maybe also in a register ...
+    register const size_t eng_stop_words_length = GLOBAL_eng_stop_words_length;
     // Search the string in the stop word list
-    for (size_t i = 0; i < GLOBAL_eng_stop_words_length; ++ i)
+    for (register size_t i = 0; i < eng_stop_words_length; ++ i)
     {
         if (Compare_Strings_Case_Insensitive(c_string, c_string_length,
                 selected_stop_word_list [i], strlen (selected_stop_word_list [i])) == 0)
