@@ -42,11 +42,21 @@ extern "C"
 #error "The macro \"INT_MAPPING_TYPE_FSTR_SPECIFIER\" is already defined !"
 #endif /* INT_MAPPING_TYPE_FSTR_SPECIFIER */
 
-//#ifndef DATASET_ID_LENGTH
-//#define DATASET_ID_LENGTH 16                    ///< Length of a data set ID.
-//#else
-//#error "The macro \"DATASET_ID_LENGTH\" is already defined !"
-//#endif /* DATASET_ID_LENGTH */
+#ifndef DATASET_ID_LENGTH
+#define DATASET_ID_LENGTH 16                    ///< Length of a data set ID.
+#else
+#error "The macro \"DATASET_ID_LENGTH\" is already defined !"
+#endif /* DATASET_ID_LENGTH */
+
+
+
+/**
+ * @brief Check, whether the macro values are valid.
+ */
+#if __STDC_VERSION__ >= 201112L
+_Static_assert(DATASET_ID_LENGTH > 1, "The marco \"DATASET_ID_LENGTH\" needs to be at lest 2 (one char for the ID and "
+        "one for the end symbol ('\0') !");
+#endif /* __STDC_VERSION__ */
 
 
 

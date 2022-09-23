@@ -26,23 +26,6 @@ extern "C"
 
 
 
-/**
- * @brief Length of a data set ID.
- */
-#ifndef DATASET_ID_LENGTH
-#define DATASET_ID_LENGTH 16
-#else
-#error "The macro \"DATASET_ID_LENGTH\" is already defined !"
-#endif /* DATASET_ID_LENGTH */
-
-/**
- * @brief Check, whether the macro values are valid.
- */
-#if __STDC_VERSION__ >= 201112L
-_Static_assert(DATASET_ID_LENGTH > 1, "The marco \"DATASET_ID_LENGTH\" needs to be at lest 2 (one char for the ID and "
-        "one for the end symbol ('\0') !");
-#endif /* __STDC_VERSION__ */
-
 //=====================================================================================================================
 
 struct Token_List_Container
@@ -308,10 +291,6 @@ TokenListContainer_ShowAttributes
 );
 
 
-
-#ifdef DATASET_ID_LENGTH
-#undef DATASET_ID_LENGTH
-#endif /* DATASET_ID_LENGTH */
 
 #ifdef __cplusplus
 }
