@@ -24,15 +24,19 @@ With the help of some elementary set operations (the main important one: interse
 
 ### Technical information
 
-To make the implementation simple, the in and output will be created in a simple way. The name of the input files will be passed trough CLI parameter and the results will be represented as CSV file.
+To make the implementation simple, the in and output will be created in a simple way. The name of the input files will be passed trough CLI parameter and the results will be represented as JSON file.
 
-A more user-friendly interface is possible. But the priority in this project is low.
+#### Used libraries
+
+- *argparse*: Simple and powerful CLI parser. Here available on [GitHub](https://github.com/cofyc/argparse).
+- *cJSON*: Lightweight (and beautiful) JSON parser. Also available on [GitHub](https://github.com/DaveGamble/cJSON).
+- *TinyTest*: Simple and tiny test suite. You can find it here on [GitHub](https://github.com/joewalnes/tinytest).
 
 ---
 
-### More information
+### Future features
 
-More information will follow ...
+- A more user-friendly interface. Maybe with a GUI. But the priority in this project is low.
 
 ---
 <br>
