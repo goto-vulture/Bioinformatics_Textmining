@@ -11,6 +11,7 @@
 #include "../Error_Handling/Assert_Msg.h"
 #include "../String_Tools.h"
 #include "../str2int.h"
+#include "../Error_Handling/Dynamic_Memory.h"
 
 
 
@@ -20,6 +21,7 @@ const char* GLOBAL_eng_stop_words [] =
         , NULL // The NULL pointer marks the end of the C-String array
 };
 size_t GLOBAL_eng_stop_words_length = 0;
+size_t* stop_word_lengths = NULL;
 
 
 
@@ -56,12 +58,22 @@ extern _Bool Is_Word_In_Stop_Word_List
         const enum Stop_Word_Language language
 )
 {
+    const size_t stop_word_lengths_length = 1000;
+    size_t current_stop_word_length = 0;
+
     ASSERT_MSG(c_string != NULL, "C string is NULL !");
     ASSERT_MSG(c_string_length > 0, "C string length is 0 !");
     ASSERT_MSG(language != NO_LANGUAGE, "No language selected !");
 
     _Bool result = false;
     const char** selected_stop_word_list = NULL;
+    if (stop_word_lengths == NULL)
+    {
+        stop_word_lengths = (size_t*) CALLOC (stop_word_lengths_length, sizeof (size_t));
+        ASSERT_ALLOC(stop_word_lengths, "Cannot allocate memory for the strlen() result buffer !",
+                stop_word_lengths_length * sizeof (size_t));
+        memset(stop_word_lengths, '\0', stop_word_lengths_length * sizeof (size_t));
+    }
 
     switch(language)
     {
@@ -71,6 +83,13 @@ extern _Bool Is_Word_In_Stop_Word_List
         {
             while (*selected_stop_word_list != NULL)
             {
+                // Save the lengths of the stop words to avoid massive strlen calls
+                if (current_stop_word_length < stop_word_lengths_length)
+                {
+                    stop_word_lengths [current_stop_word_length] = strlen (*selected_stop_word_list);
+                    ++ current_stop_word_length;
+                }
+
                 ++ selected_stop_word_list;
                 ++ GLOBAL_eng_stop_words_length;
             }
@@ -120,7 +139,9 @@ extern _Bool Is_Word_In_Stop_Word_List
     for (register size_t i = 0; i < eng_stop_words_length; ++ i)
     {
         if (Compare_Strings_Case_Insensitive(c_string, c_string_length,
-                selected_stop_word_list [i], strlen (selected_stop_word_list [i])) == 0)
+                selected_stop_word_list [i],
+                (i < stop_word_lengths_length) ? stop_word_lengths [i] : strlen (selected_stop_word_list [i]))
+                == 0)
         {
             return true;
         }

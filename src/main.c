@@ -132,6 +132,8 @@
 #include "Tests/tinytest.h"
 #include "Tests/TEST_cJSON_Parser.h"
 
+#include "Stop_Words/Stop_Words.h"
+
 
 
 /**
@@ -300,6 +302,8 @@ At_Exit_Function
         void
 )
 {
+    FREE_AND_SET_TO_NULL(stop_word_lengths);
+
     puts ("\n");
     Show_Dynamic_Memory_Status();
     return;

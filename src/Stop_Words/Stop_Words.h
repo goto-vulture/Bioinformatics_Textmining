@@ -23,6 +23,7 @@ extern "C"
 
 extern const char* GLOBAL_eng_stop_words [];    ///< Array with common English stop words
 extern size_t GLOBAL_eng_stop_words_length;     ///< Number of strings in the English stop word list
+extern size_t* stop_word_lengths;               ///< Address of the strlen result buffer (for the stop word lengths)
 
 
 
