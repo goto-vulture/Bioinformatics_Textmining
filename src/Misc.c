@@ -116,7 +116,7 @@ extern float Determine_Time_Left (const size_t first_value, const size_t second_
             end_value);
 
     const size_t values_left = end_value - second_value;
-    const size_t diff_values = second_value - first_value;
+    const size_t diff_values = ((second_value - first_value) > 0) ? (second_value - first_value) : 1;
     const float time_between_values_sec = (float) time_between_values / (float) CLOCKS_PER_SEC;
 
     return ((float) values_left / (float) diff_values) * time_between_values_sec;
