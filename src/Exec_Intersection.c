@@ -477,6 +477,7 @@ Exec_Intersection
             dataset_id_2 [COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1] = '\0';
 
             // Remove stop words from the result
+            size_t tokens_left = intersection_result->arrays_lengths [0];
             for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
             {
                 // Reverse the mapping to get the original token (int -> token)
@@ -488,16 +489,7 @@ Exec_Intersection
                 {
                     // Override the mapped int value
                     intersection_result->data_struct.data [0][i] = UINT_FAST32_MAX;
-                }
-            }
-
-            // How many objects left after removing stop words
-            size_t tokens_left = 0;
-            for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
-            {
-                if (intersection_result->data_struct.data [0][i] != UINT_FAST32_MAX)
-                {
-                    ++ tokens_left;
+                    -- tokens_left;
                 }
             }
 
