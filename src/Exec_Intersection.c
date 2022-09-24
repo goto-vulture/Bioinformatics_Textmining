@@ -654,19 +654,6 @@ abort_label:
     printf ("cJSON objects memory usage: ");
     Print_Memory_Size_As_B_KB_MB(cJSON_mem_counter);
 
-    const float used_seconds = DETERMINE_USED_TIME(start, end);
-    const float intersection_calls_div_abort = ((float) number_of_intersection_calls) * (GLOBAL_ABORT_PROCESS_PERCENT / 100.0f);
-    if (isnan(GLOBAL_ABORT_PROCESS_PERCENT))
-    {
-        printf ("\n=> %3.3fs for calculation of all intersections.\n\n",  Replace_NaN_And_Inf_With_Zero(used_seconds));
-    }
-    else
-    {
-        printf ("\n=> %3.3fs (~ %zu calc/s) for calculation of all intersections.\n\n",
-                Replace_NaN_And_Inf_With_Zero(used_seconds),
-                (size_t) Replace_NaN_And_Inf_With_Zero (intersection_calls_div_abort));
-    }
-
     printf ("=> Result file size: ");
     Print_Memory_Size_As_B_KB_MB(result_file_size);
 
