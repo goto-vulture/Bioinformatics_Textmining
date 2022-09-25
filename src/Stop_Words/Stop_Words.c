@@ -16,6 +16,38 @@
 
 
 
+/**
+ * @brief How many arrays contains the hash table, that reduces the string comparison calls ?
+ */
+#ifndef HASH_TABLE_NUMBER_OF_ARRAYS
+#define HASH_TABLE_NUMBER_OF_ARRAYS 50
+#else
+#error "The macro \"HASH_TABLE_NUMBER_OF_ARRAYS\" is already defined !"
+#endif /* HASH_TABLE_NUMBER_OF_ARRAYS */
+
+#ifndef HASH_TABLE_ARRAY_LENGTH
+#define HASH_TABLE_ARRAY_LENGTH 1000    ///< How long are the arrays in the hash table ?
+#else
+#error "The macro \"HASH_TABLE_ARRAY_LENGTH\" is already defined !"
+#endif /* HASH_TABLE_ARRAY_LENGTH */
+
+#ifndef STOP_WORD_LIST_LENGTH
+#define STOP_WORD_LIST_LENGTH 1000      ///< Length of the stop word list buffer
+#else
+#error "The macro \"STOP_WORD_LIST_LENGTH\" is already defined !"
+#endif /* STOP_WORD_LIST_LENGTH */
+
+/**
+ * @brief Check, whether the macro values are valid.
+ */
+#if __STDC_VERSION__ >= 201112L
+_Static_assert(HASH_TABLE_NUMBER_OF_ARRAYS > 1, "The marco \"HASH_TABLE_NUMBER_OF_ARRAYS\" needs to be larger than 1 !");
+_Static_assert(HASH_TABLE_ARRAY_LENGTH > 1, "The marco \"HASH_TABLE_ARRAY_LENGTH\" needs to be larger than 1 !");
+_Static_assert(STOP_WORD_LIST_LENGTH > 1, "The marco \"STOP_WORD_LIST_LENGTH\" needs to be larger than 1 !");
+#endif /* __STDC_VERSION__ */
+
+
+
 const char* GLOBAL_eng_stop_words [] =
 {
 #include "Stop_Words_English.txt"
@@ -39,6 +71,25 @@ static _Bool Is_String_A_Latin_Numeral
         const char* const c_string,
         const size_t c_string_length
 );
+
+/**
+ * @brief A very very simple hash function.
+ *
+ * It is not fair to call this mechanism "Hash", because it is too simple. But for this cases it is enough. It will be
+ * used for the hash table. This table reduces the number of Compare_Strings_Case_Insensitive() calls, that determine
+ * whether the string is a stop word or not.
+ *
+ * @param[in] c_string          C-String, that will be hashed
+ * @param[in] c_string_length   Length of the C-String
+ *
+ * @return The hash value
+ */
+static inline size_t Pseudo_Hash_Function
+(
+        const char* const c_string,
+        const size_t c_string_length
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -57,7 +108,9 @@ extern _Bool Is_Word_In_Stop_Word_List
         const enum Stop_Word_Language language
 )
 {
-    static size_t eng_stop_word_lengths [1000];
+    static size_t eng_stop_word_lengths [STOP_WORD_LIST_LENGTH];
+    static size_t hash_table_stop_words [HASH_TABLE_NUMBER_OF_ARRAYS][HASH_TABLE_ARRAY_LENGTH];
+    static size_t hash_table_next_free_element [HASH_TABLE_NUMBER_OF_ARRAYS];
     static size_t count_eng_stop_words = 0;
 
     ASSERT_MSG(c_string != NULL, "C string is NULL !");
@@ -65,6 +118,7 @@ extern _Bool Is_Word_In_Stop_Word_List
     ASSERT_MSG(language != NO_LANGUAGE, "No language selected !");
 
     _Bool result = false;
+    size_t pseudo_hash = 0;
 
     // Only used for the fist run to initialize the data
     const char** selected_stop_word_list = NULL;
@@ -77,13 +131,28 @@ extern _Bool Is_Word_In_Stop_Word_List
         if (count_eng_stop_words == 0)
         {
             memset (eng_stop_word_lengths, '\0', sizeof (eng_stop_word_lengths));
+            for (size_t i = 0; i < HASH_TABLE_NUMBER_OF_ARRAYS; ++ i)
+            {
+                memset (hash_table_stop_words [i], '\0', sizeof (hash_table_stop_words [i]));
+            }
+            memset (hash_table_next_free_element, '\0', sizeof (hash_table_next_free_element));
 
             while (*selected_stop_word_list != NULL)
             {
                 // Save the lengths of the stop words to avoid massive strlen calls
-                if (current_stop_word_index < COUNT_ARRAY_ELEMENTS(eng_stop_word_lengths))
+                if (current_stop_word_index < STOP_WORD_LIST_LENGTH)
                 {
                     eng_stop_word_lengths [current_stop_word_index] = strlen (*selected_stop_word_list);
+
+                    pseudo_hash = Pseudo_Hash_Function(*selected_stop_word_list, eng_stop_word_lengths [current_stop_word_index]);
+
+                    // Fill the hash table
+                    if (hash_table_next_free_element [pseudo_hash] < HASH_TABLE_ARRAY_LENGTH)
+                    {
+                        hash_table_stop_words [pseudo_hash][hash_table_next_free_element [pseudo_hash]] = current_stop_word_index;
+                        hash_table_next_free_element [pseudo_hash] ++;
+                    }
+
                     ++ current_stop_word_index;
                 }
 
@@ -132,22 +201,53 @@ extern _Bool Is_Word_In_Stop_Word_List
     // With this construction you have the guarantee, that this value will be at least on the current stack frame.
     // Maybe also in a register ...
     register const size_t eng_stop_words_length = count_eng_stop_words;
-    // Search the string in the stop word list
-    for (register size_t i = 0; i < eng_stop_words_length; ++ i)
+
+    if (eng_stop_words_length > HASH_TABLE_ARRAY_LENGTH)
     {
-        if (Compare_Strings_Case_Insensitive(c_string, c_string_length,
-                selected_stop_word_list [i],
-                (i < COUNT_ARRAY_ELEMENTS(eng_stop_word_lengths)) ? eng_stop_word_lengths [i] : strlen (selected_stop_word_list [i]))
-                == 0)
+        // Search the string in the stop word list
+        for (register size_t i = 0; i < eng_stop_words_length; ++ i)
         {
-            return true;
+            const int strings_case_insensitive_equal = Compare_Strings_Case_Insensitive
+            (
+                    c_string,
+                    c_string_length,
+                    selected_stop_word_list [i],
+                    (i < STOP_WORD_LIST_LENGTH) ? eng_stop_word_lengths [i] : strlen (selected_stop_word_list [i])
+            );
+
+            if (strings_case_insensitive_equal == 0)
+            {
+                return true;
+            }
+        }
+    }
+    else
+    {
+        pseudo_hash = Pseudo_Hash_Function(c_string, c_string_length);
+
+        for (register size_t i = 0; i < hash_table_next_free_element [pseudo_hash]; ++ i)
+        {
+            const size_t to_be_used_index = hash_table_stop_words [pseudo_hash][i];
+            const int strings_case_insensitive_equal = Compare_Strings_Case_Insensitive
+            (
+                    c_string,
+                    c_string_length,
+                    selected_stop_word_list [to_be_used_index],
+                    (to_be_used_index < STOP_WORD_LIST_LENGTH) ?
+                            eng_stop_word_lengths [to_be_used_index] : strlen (selected_stop_word_list [to_be_used_index])
+            );
+
+            if (strings_case_insensitive_equal == 0)
+            {
+                return true;
+            }
         }
     }
 
     return result;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
+//=====================================================================================================================
 
 /**
  * @brief Is the given C-String a Latin numeral?
@@ -189,3 +289,45 @@ static _Bool Is_String_A_Latin_Numeral
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief A very very simple hash function.
+ *
+ * It is not fair to call this mechanism "Hash", because it is too simple. But for this cases it is enough. It will be
+ * used for the hash table. This table reduces the number of Compare_Strings_Case_Insensitive() calls, that determine
+ * whether the string is a stop word or not.
+ *
+ * @param[in] c_string          C-String, that will be hashed
+ * @param[in] c_string_length   Length of the C-String
+ *
+ * @return The hash value
+ */
+static inline size_t Pseudo_Hash_Function
+(
+        const char* const c_string,
+        const size_t c_string_length
+)
+{
+    size_t result = 0;
+
+    for (size_t i = 0; i < c_string_length; ++ i)
+    {
+        result += (size_t) tolower (c_string [i]);
+    }
+
+    return result % HASH_TABLE_NUMBER_OF_ARRAYS;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+#ifdef HASH_TABLE_NUMBER_OF_ARRAYS
+#undef HASH_TABLE_NUMBER_OF_ARRAYS
+#endif /* HASH_TABLE_NUMBER_OF_ARRAYS */
+
+#ifdef HASH_TABLE_ARRAY_LENGTH
+#undef HASH_TABLE_ARRAY_LENGTH
+#endif /* HASH_TABLE_ARRAY_LENGTH */
+
+#ifdef STOP_WORD_LIST_LENGTH
+#undef STOP_WORD_LIST_LENGTH
+#endif /* STOP_WORD_LIST_LENGTH */
