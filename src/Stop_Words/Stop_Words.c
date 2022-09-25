@@ -12,6 +12,7 @@
 #include "../String_Tools.h"
 #include "../str2int.h"
 #include "../Error_Handling/Dynamic_Memory.h"
+#include "../Misc.h"
 
 
 
@@ -20,8 +21,6 @@ const char* GLOBAL_eng_stop_words [] =
 #include "Stop_Words_English.txt"
         , NULL // The NULL pointer marks the end of the C-String array
 };
-size_t GLOBAL_eng_stop_words_length = 0;
-size_t* stop_word_lengths = NULL;
 
 
 
@@ -58,40 +57,38 @@ extern _Bool Is_Word_In_Stop_Word_List
         const enum Stop_Word_Language language
 )
 {
-    const size_t stop_word_lengths_length = 1000;
-    size_t current_stop_word_length = 0;
+    static size_t eng_stop_word_lengths [1000];
+    static size_t count_eng_stop_words = 0;
 
     ASSERT_MSG(c_string != NULL, "C string is NULL !");
     ASSERT_MSG(c_string_length > 0, "C string length is 0 !");
     ASSERT_MSG(language != NO_LANGUAGE, "No language selected !");
 
     _Bool result = false;
+
+    // Only used for the fist run to initialize the data
     const char** selected_stop_word_list = NULL;
-    if (stop_word_lengths == NULL)
-    {
-        stop_word_lengths = (size_t*) CALLOC (stop_word_lengths_length, sizeof (size_t));
-        ASSERT_ALLOC(stop_word_lengths, "Cannot allocate memory for the strlen() result buffer !",
-                stop_word_lengths_length * sizeof (size_t));
-        memset(stop_word_lengths, '\0', stop_word_lengths_length * sizeof (size_t));
-    }
+    size_t current_stop_word_index = 0;
 
     switch(language)
     {
     case ENG:
         selected_stop_word_list = GLOBAL_eng_stop_words;
-        if (GLOBAL_eng_stop_words_length == 0)
+        if (count_eng_stop_words == 0)
         {
+            memset (eng_stop_word_lengths, '\0', sizeof (eng_stop_word_lengths));
+
             while (*selected_stop_word_list != NULL)
             {
                 // Save the lengths of the stop words to avoid massive strlen calls
-                if (current_stop_word_length < stop_word_lengths_length)
+                if (current_stop_word_index < COUNT_ARRAY_ELEMENTS(eng_stop_word_lengths))
                 {
-                    stop_word_lengths [current_stop_word_length] = strlen (*selected_stop_word_list);
-                    ++ current_stop_word_length;
+                    eng_stop_word_lengths [current_stop_word_index] = strlen (*selected_stop_word_list);
+                    ++ current_stop_word_index;
                 }
 
                 ++ selected_stop_word_list;
-                ++ GLOBAL_eng_stop_words_length;
+                ++ count_eng_stop_words;
             }
             selected_stop_word_list = GLOBAL_eng_stop_words;
         }
@@ -134,13 +131,13 @@ extern _Bool Is_Word_In_Stop_Word_List
 
     // With this construction you have the guarantee, that this value will be at least on the current stack frame.
     // Maybe also in a register ...
-    register const size_t eng_stop_words_length = GLOBAL_eng_stop_words_length;
+    register const size_t eng_stop_words_length = count_eng_stop_words;
     // Search the string in the stop word list
     for (register size_t i = 0; i < eng_stop_words_length; ++ i)
     {
         if (Compare_Strings_Case_Insensitive(c_string, c_string_length,
                 selected_stop_word_list [i],
-                (i < stop_word_lengths_length) ? stop_word_lengths [i] : strlen (selected_stop_word_list [i]))
+                (i < COUNT_ARRAY_ELEMENTS(eng_stop_word_lengths)) ? eng_stop_word_lengths [i] : strlen (selected_stop_word_list [i]))
                 == 0)
         {
             return true;
