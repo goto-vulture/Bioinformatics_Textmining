@@ -27,8 +27,13 @@ elif [[ "$#" == 2 ]];
 then
     INPUT_FILE_1=${1}
     INPUT_FILE_2=${2}
+elif [[ "$#" == 3 ]];
+then
+    INPUT_FILE_1=${1}
+    INPUT_FILE_2=${2}
+    TOTAL_RUNS=${3}
 else
-    printf "Too much CLI parameter ! Exact 2 parameter (for both input files) are expected ! Got %d !\n" "$#"
+    printf "Too much CLI parameter ! 2 - 3 parameter (both input files and an optional number of program runs) are expected ! Got %d !\n" "$#"
     exit 1
 fi
 
@@ -52,6 +57,7 @@ fi
 
 echo "Using \"${INPUT_FILE_1}\" as first input file"
 echo "Using \"${INPUT_FILE_2}\" as second input file"
+echo "Using ${TOTAL_RUNS} program runs"
 echo ""
 
 if [[ ! -f ${MAKEFILE} ]]; then
