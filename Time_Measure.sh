@@ -14,6 +14,9 @@ SEC_TOTAL_ADDED=0
 AVERAGE_SEC=0
 TOTAL_RUNS=2
 
+MAX_RUNTIME=0
+MIN_RUNTIME=999999 # To make sure, that min runtime is not zero because of an initialization with zero
+
 # Test the CLI parameter
 if [[ "$#" == 0 ]];
 then
@@ -134,9 +137,19 @@ do
     SEC_TOTAL=$(awk "BEGIN {print ${SEC} + 60 * ${MIN}}")
     SEC_TOTAL_ADDED=$(awk "BEGIN {print ${SEC_TOTAL} + ${SEC_TOTAL_ADDED}}")
 
+    # Refresh min and max values
+    if (( $(echo "${SEC_TOTAL} < ${MIN_RUNTIME}" | bc -l) )); then
+        MIN_RUNTIME=${SEC_TOTAL}
+    fi
+    if (( $(echo "${SEC_TOTAL} > ${MAX_RUNTIME}" | bc -l) )); then
+        MAX_RUNTIME=${SEC_TOTAL}
+    fi
+
     printf "Runtime: %8.3f s\n\n" $(echo ${SEC_TOTAL} | tr . ,)
 done
 
 AVERAGE_SEC=$(awk "BEGIN {print ${SEC_TOTAL_ADDED} / ${TOTAL_RUNS}}")
 
-printf "=> Average runtime: %8.3f s\n" $(echo ${AVERAGE_SEC} | tr . ,)
+printf "=> Average runtime: %8.3f sek.\n" $(echo ${AVERAGE_SEC} | tr . ,)
+printf "   Min. runtime:    %8.3f sek.\n" $(echo ${MIN_RUNTIME} | tr . ,)
+printf "   Max. runtime:    %8.3f sek.\n" $(echo ${MAX_RUNTIME} | tr . ,)
