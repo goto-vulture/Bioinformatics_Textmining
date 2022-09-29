@@ -353,11 +353,6 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     _Bool* multiple_guard_data_2 = (_Bool*) CALLOC(data_2_length, sizeof (_Bool));
     ASSERT_ALLOC(multiple_guard_data_2, "Cannot create the multiple guard for data 2 !", data_2_length * sizeof (_Bool));
 
-    // When the number of elements, that were found, is equal with the lower length, then is no additional intersection
-    // result possible. The multiple guards forbid this !
-    register const size_t lower_data_length = MIN (data_1_length, data_2_length);
-    register size_t intersection_values_found = 0;
-
     // Calculate intersection
     for (register size_t d1 = 0; d1 < data_1_length; ++ d1)
     {
@@ -377,17 +372,10 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
                     //++ intersection_result->arrays_lengths [0];
                     *multiple_guard_data_1_d1 = true;
                     *multiple_guard_data_2_d2 = true;
-
-                    ++ intersection_values_found;
-                    if (intersection_values_found >= lower_data_length) // Max possible number of result elements found ?
-                    {
-                        goto nested_loop_end;
-                    }
                 }
             }
         }
     }
-    nested_loop_end:
 
     intersection_result->intersection_data = true;
     if (id_1 != NULL)
