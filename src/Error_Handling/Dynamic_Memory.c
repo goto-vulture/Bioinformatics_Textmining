@@ -36,7 +36,7 @@ void Show_Dynamic_Memory_Status (void)
             "calloc () calls:       %10" PRIuFAST64 " %s\n"
             "realloc () calls:      %10" PRIuFAST64 " %s\n"
             "free () calls:         %10" PRIuFAST64 " %s\n"
-            "Missing free () calls: %10" PRIuFAST64 " %s\n",
+            "Missing free () calls: %10" PRIuFAST64 " %s%s%s\n",
             (GLOBAL_malloc_calls > 1000) ? GLOBAL_malloc_calls / 1000 : GLOBAL_malloc_calls,
             (GLOBAL_malloc_calls > 1000) ? k : null_str,
             (GLOBAL_calloc_calls > 1000) ? GLOBAL_calloc_calls / 1000 : GLOBAL_calloc_calls,
@@ -45,7 +45,9 @@ void Show_Dynamic_Memory_Status (void)
             (GLOBAL_realloc_calls > 1000) ? k : null_str,
             (GLOBAL_free_calls > 1000) ? GLOBAL_free_calls / 1000 :  GLOBAL_free_calls,
             (GLOBAL_free_calls > 1000) ? k : null_str,
-            missing_free_calls,
+            (missing_free_calls > 1000) ? missing_free_calls / 1000 : missing_free_calls,
+            (missing_free_calls > 1000) ? k : null_str,
+            (missing_free_calls == 0) ? null_str : (missing_free_calls > 1000) ? " " : null_str,
             (missing_free_calls == 0) ? ":D" : ":o");
 
     return;
