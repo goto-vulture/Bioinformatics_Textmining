@@ -48,6 +48,14 @@ extern "C"
 #error "The macro \"DATASET_ID_LENGTH\" is already defined !"
 #endif /* DATASET_ID_LENGTH */
 
+#ifndef __STDC_NO_VLA__
+    #ifndef MAX_VLA_LENGTH
+    #define MAX_VLA_LENGTH (size_t) (4096)      ///< Max length of a VLA (variable length array)
+    #else
+    #error "The macro \"MAX_VLA_LENGTH\" is already defined !"
+    #endif /* MAX_VLA_LENGTH */
+#endif /* __STDC_NO_VLA__ */
+
 
 
 /**
@@ -56,6 +64,7 @@ extern "C"
 #if __STDC_VERSION__ >= 201112L
 _Static_assert(DATASET_ID_LENGTH > 1, "The marco \"DATASET_ID_LENGTH\" needs to be at lest 2 (one char for the ID and "
         "one for the end symbol ('\0') !");
+_Static_assert(MAX_VLA_LENGTH >= 100, "The macro \"MAX_VLA_LENGTH\" needs to be at least 100 !");
 #endif /* __STDC_VERSION__ */
 
 
