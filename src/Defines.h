@@ -56,6 +56,18 @@ extern "C"
     #endif /* MAX_VLA_LENGTH */
 #endif /* __STDC_NO_VLA__ */
 
+/**
+ * @brief VLA arrays will be created (in normal cases) on the stack. This memory is limited, therefore the macro
+ * MAX_VLA_LENGTH exists. But switching between VLAs and malloc/calloc memory is inefficient, so with this macro it is
+ * possible to disable size checks for the VLA usage.
+ * @see MAX_VLA_LENGTH
+ */
+#ifndef UNSAFE_VLA_USAGE
+#define UNSAFE_VLA_USAGE
+#else
+#error "The macro \"UNSAFE_VLA_USAGE\" is already defined !"
+#endif /* UNSAFE_VLA_USAGE */
+
 
 
 /**
