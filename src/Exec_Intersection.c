@@ -359,9 +359,9 @@ Exec_Intersection
     // Counter of all calls were done since the execution was started
     size_t intersection_call_counter                    = 0;
 
-    char dataset_id_1 [16];
-    memset(dataset_id_1, '\0', sizeof (dataset_id_1));
-    char dataset_id_2 [16];
+//    char dataset_id_1 [DATASET_ID_LENGTH];
+//    memset(dataset_id_1, '\0', sizeof (dataset_id_1));
+    char dataset_id_2 [DATASET_ID_LENGTH];
     memset(dataset_id_2, '\0', sizeof (dataset_id_2));
 
     // Objects for exporting the intersection results as JSON file
@@ -469,12 +469,12 @@ Exec_Intersection
             // Copy the two dataset IDs and use them for the export JSON file
             // memset(dataset_id_1, '\0', sizeof (dataset_id_1));
             // strncpy do the memset for the c string
-            strncpy (dataset_id_1, intersection_result->dataset_id_1, COUNT_ARRAY_ELEMENTS(dataset_id_1) - 1);
-            dataset_id_1 [COUNT_ARRAY_ELEMENTS(dataset_id_1) - 1] = '\0';
+//            strncpy (dataset_id_1, intersection_result->dataset_id_1, COUNT_ARRAY_ELEMENTS(dataset_id_1) - 1);
+//            dataset_id_1 [COUNT_ARRAY_ELEMENTS(dataset_id_1) - 1] = '\0';
             // memset(dataset_id_2, '\0', sizeof (dataset_id_2));
             // strncpy do the memset for the c string
-            strncpy (dataset_id_2, intersection_result->dataset_id_2, COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1);
-            dataset_id_2 [COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1] = '\0';
+//            strncpy (dataset_id_2, intersection_result->dataset_id_2, COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1);
+//            dataset_id_2 [COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1] = '\0';
 
             // Remove stop words from the result
             size_t tokens_left = intersection_result->arrays_lengths [0];
@@ -566,12 +566,18 @@ Exec_Intersection
                 // words !
                 if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
                 {
-                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match, dataset_id_1, two_array_container);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match, intersection_result->dataset_id_1, two_array_container);
                 }
                 else
                 {
-                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match, dataset_id_1, two_array_container);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match, intersection_result->dataset_id_1, two_array_container);
                 }
+            }
+
+            if ((selected_data_1_array + 1) >= source_int_values_1->next_free_array)
+            {
+                strncpy (dataset_id_2, intersection_result->dataset_id_2, COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1);
+                dataset_id_2 [COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1] = '\0';
             }
 
             DocumentWordList_DeleteObject(intersection_result);
