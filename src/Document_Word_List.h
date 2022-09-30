@@ -12,7 +12,7 @@
  */
 
 #ifndef DOCUMENT_WORD_LIST_H
-#define DOCUMENT_WORD_LIST_H
+#define DOCUMENT_WORD_LIST_H ///< Include-Guard
 
 #ifdef __cplusplus
 extern "C"

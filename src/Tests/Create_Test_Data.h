@@ -13,7 +13,7 @@
  */
 
 #ifndef CREATE_TEST_DATA_H
-#define CREATE_TEST_DATA_H
+#define CREATE_TEST_DATA_H ///< Include-Guard
 
 #ifdef __cplusplus
 extern "C"
