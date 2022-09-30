@@ -6,7 +6,7 @@
  * in the LICENSE file.
  */
 #ifndef ARGPARSE_H
-#define ARGPARSE_H
+#define ARGPARSE_H ///< Include-Guard
 
 /* For c++ compatibility */
 #ifdef __cplusplus
