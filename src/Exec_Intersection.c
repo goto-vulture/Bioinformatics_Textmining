@@ -86,13 +86,13 @@
 #endif /* cJSON_FULL_FREE_AND_SET_TO_NULL */
 
 #ifndef CJSON_PRINT_BUFFER_SIZE
-#define CJSON_PRINT_BUFFER_SIZE 5000
+#define CJSON_PRINT_BUFFER_SIZE 10000
 #else
 #error "The macro \"CJSON_PRINT_BUFFER_SIZE\" is already defined !"
 #endif /* CJSON_PRINT_BUFFER_SIZE */
 
 #ifndef RESULT_FILE_BUFFER_SIZE
-#define RESULT_FILE_BUFFER_SIZE 10000
+#define RESULT_FILE_BUFFER_SIZE 35000
 #else
 #error "The macro \"RESULT_FILE_BUFFER_SIZE\" is already defined !"
 #endif /* RESULT_FILE_BUFFER_SIZE */
