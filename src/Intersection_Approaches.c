@@ -342,16 +342,59 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     ASSERT_MSG(data_1_length > 0, "Length of the data 1 is 0 !");
     ASSERT_MSG(data_2 != NULL, "Data 2 is NULL !");
     ASSERT_MSG(data_2_length > 0, "Length of the data 2 is 0 !");
+#ifndef __STDC_NO_VLA__
+    #ifndef UNSAFE_VLA_USAGE
+        ASSERT_FMSG(data_1_length <= MAX_VLA_LENGTH, "Length of the data 1 is too large for VLA ! Max. valid: %zu; Got %zu !",
+                MAX_VLA_LENGTH, data_1_length);
+        ASSERT_FMSG(data_2_length <= MAX_VLA_LENGTH, "Length of the data 2 is too large for VLA ! Max. valid: %zu; Got %zu !",
+                MAX_VLA_LENGTH, data_2_length);
+    #endif /* UNSAFE_VLA_USAGE */
+#else
+    // Nothing to do
+#endif /* #ifndef __STDC_NO_VLA__ */
 
     // This result contains only one array, because two raw data arrays will be used for the intersection
     struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult
             (1, MAX(data_1_length, data_2_length));
 
     // Arrays, which display, if a value is already in the intersection
-    _Bool* multiple_guard_data_1 = (_Bool*) CALLOC(data_1_length, sizeof (_Bool));
+    _Bool* multiple_guard_data_1 = NULL;
+    _Bool* multiple_guard_data_2 = NULL;
+#ifndef __STDC_NO_VLA__
+    #ifndef UNSAFE_VLA_USAGE
+        if (data_1_length > MAX_VLA_LENGTH)
+        {
+            multiple_guard_data_1 = (_Bool*) CALLOC(data_1_length, sizeof (_Bool));
+            ASSERT_ALLOC(multiple_guard_data_1, "Cannot create the multiple guard for data 1 !", data_1_length * sizeof (_Bool));
+        }
+        else
+        {
+    #endif /* UNSAFE_VLA_USAGE */
+        _Bool tmp_multiple_guard_data_1 [data_1_length];
+        multiple_guard_data_1 = tmp_multiple_guard_data_1;
+        memset(multiple_guard_data_1, '\0', data_1_length);
+    #ifndef UNSAFE_VLA_USAGE
+        }
+        if (data_2_length > MAX_VLA_LENGTH)
+        {
+            multiple_guard_data_2 = (_Bool*) CALLOC(data_2_length, sizeof (_Bool));
+            ASSERT_ALLOC(multiple_guard_data_2, "Cannot create the multiple guard for data 2 !", data_2_length * sizeof (_Bool));
+        }
+        else
+        {
+    #endif /* UNSAFE_VLA_USAGE */
+        _Bool tmp_multiple_guard_data_2 [data_2_length];
+        multiple_guard_data_2 = tmp_multiple_guard_data_2;
+        memset(multiple_guard_data_2, '\0', data_2_length);
+    #ifndef UNSAFE_VLA_USAGE
+        }
+    #endif /* UNSAFE_VLA_USAGE */
+#else
+    multiple_guard_data_1 = (_Bool*) CALLOC(data_1_length, sizeof (_Bool));
     ASSERT_ALLOC(multiple_guard_data_1, "Cannot create the multiple guard for data 1 !", data_1_length * sizeof (_Bool));
-    _Bool* multiple_guard_data_2 = (_Bool*) CALLOC(data_2_length, sizeof (_Bool));
+    multiple_guard_data_2 = (_Bool*) CALLOC(data_2_length, sizeof (_Bool));
     ASSERT_ALLOC(multiple_guard_data_2, "Cannot create the multiple guard for data 2 !", data_2_length * sizeof (_Bool));
+#endif /* __STDC_NO_VLA__ */
 
     // Calculate intersection
     for (register size_t d1 = 0; d1 < data_1_length; ++ d1)
@@ -387,8 +430,21 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
         intersection_result->dataset_id_2 [COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_2) - 1] = '\0';
     }
 
+#ifndef __STDC_NO_VLA__
+    #ifndef UNSAFE_VLA_USAGE
+        if (data_1_length > MAX_VLA_LENGTH)
+        {
+            FREE_AND_SET_TO_NULL(multiple_guard_data_1);
+        }
+        if (data_2_length > MAX_VLA_LENGTH)
+        {
+            FREE_AND_SET_TO_NULL(multiple_guard_data_2);
+        }
+    #endif /* UNSAFE_VLA_USAGE */
+#else
     FREE_AND_SET_TO_NULL(multiple_guard_data_1);
     FREE_AND_SET_TO_NULL(multiple_guard_data_2);
+#endif /* __STDC_NO_VLA__ */
 
     return intersection_result;
 }
