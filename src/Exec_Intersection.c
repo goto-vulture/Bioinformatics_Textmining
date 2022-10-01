@@ -462,8 +462,9 @@ Exec_Intersection
                     source_int_values_2->data_struct.char_offsets_1 [selected_data_2_array],
                     source_int_values_2->arrays_lengths [selected_data_2_array],
 
-                    token_container_input_1->token_lists [selected_data_1_array].dataset_id,
-                    token_container_input_2->token_lists [selected_data_2_array].dataset_id
+                    NULL, NULL
+//                    token_container_input_1->token_lists [selected_data_1_array].dataset_id,
+//                    token_container_input_2->token_lists [selected_data_2_array].dataset_id
             );
 
             // Copy the two dataset IDs and use them for the export JSON file
@@ -566,17 +567,20 @@ Exec_Intersection
                 // words !
                 if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
                 {
-                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match, intersection_result->dataset_id_1, two_array_container);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match,
+                            token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
                 }
                 else
                 {
-                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match, intersection_result->dataset_id_1, two_array_container);
+                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match,
+                            token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
                 }
             }
 
             if ((selected_data_1_array + 1) >= source_int_values_1->next_free_array)
             {
-                strncpy (dataset_id_2, intersection_result->dataset_id_2, COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1);
+                strncpy (dataset_id_2, token_container_input_2->token_lists [selected_data_2_array].dataset_id,
+                        COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1);
                 dataset_id_2 [COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1] = '\0';
             }
 
