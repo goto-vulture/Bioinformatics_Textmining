@@ -20,6 +20,8 @@ For a efficient search process, all words will be encoded in integers. With this
 
 With the help of some elementary set operations (the main important one: intersection), the set of words will be created, that appear in every source set.
 
+---
+
 ### Structure of the evaluation
 <img src="https://github.com/goto-vulture/Bioinformatics_Textmining/blob/Misc/Written_elaboration/Structure_of_the_evaluation_process_EN.png" width="50%" height="50%">
 
@@ -72,6 +74,8 @@ Nach der Codierung wird mittels einiger elementarer Mengenoperationen (vornehmli
 ### Technische Details
 
 Um die Implementierung auf das wesentliche zu fokussieren, werden die Ein- und Ausgabemöglichkeiten des Programms einfach ausfallen. So werden die Dateien mittels CLI-Parameter eingelesen; und die Ergebnisse werden in Form einer JSON-Datei dargestellt.
+
+---
 
 #### Verwendete Bibliotheken
 
