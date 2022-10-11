@@ -20,6 +20,9 @@ For a efficient search process, all words will be encoded in integers. With this
 
 With the help of some elementary set operations (the main important one: intersection), the set of words will be created, that appear in every source set.
 
+### Structure of the evaluation
+![Picture of the evaluation](https://github.com/goto-vulture/Bioinformatics_Textmining/blob/Misc/Written_elaboration/Structure_of_the_evaluation_process_EN.png)
+
 ---
 
 ### Technical information
@@ -61,17 +64,20 @@ Um eine möglichst effiziente Durchsuchung der Daten vornehmen zu können, werde
 
 Nach der Codierung wird mittels einiger elementarer Mengenoperationen (vornehmlich durch die Bildung der Schnittmenge) die Wortmengen gebildet, die in allen Datensätzen auftauchen.
 
-#### Verwendete Bibliotheken
-
-- *argparse*: Einfacher CLI Parser. Verfügbar auf [GitHub](https://github.com/cofyc/argparse).
-- *cJSON*: Wunderschöner und effizienter JSON Parser. Ebenfalls verfügbar auf [GitHub](https://github.com/DaveGamble/cJSON).
-- *TinyTest*: Minimalistische Testsuite. Hier verfügbar: [GitHub](https://github.com/joewalnes/tinytest).
+### Struktur des Auswertungsprozesses
+![Bild des Auswertungsprozesses](https://github.com/goto-vulture/Bioinformatics_Textmining/blob/Misc/Written_elaboration/Structure_of_the_evaluation_process_DE.png)
 
 ---
 
 ### Technische Details
 
 Um die Implementierung auf das wesentliche zu fokussieren, werden die Ein- und Ausgabemöglichkeiten des Programms einfach ausfallen. So werden die Dateien mittels CLI-Parameter eingelesen; und die Ergebnisse werden in Form einer JSON-Datei dargestellt.
+
+#### Verwendete Bibliotheken
+
+- *argparse*: Einfacher CLI Parser. Verfügbar auf [GitHub](https://github.com/cofyc/argparse).
+- *cJSON*: Wunderschöner und effizienter JSON Parser. Ebenfalls verfügbar auf [GitHub](https://github.com/DaveGamble/cJSON).
+- *TinyTest*: Minimalistische Testsuite. Hier verfügbar: [GitHub](https://github.com/joewalnes/tinytest).
 
 ---
 
