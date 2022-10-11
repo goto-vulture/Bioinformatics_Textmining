@@ -19,13 +19,15 @@
 \newcommand{\de}[1]{\ifde#1\fi}
 
 % English:
-%\entrue
+\entrue
 % German:
-\detrue
+%\detrue
 
 \begin{tikzpicture}[node distance=2cm]
     % Centering the picutre (This value maybe need to be adjusted, when the picutre was changed)
-    \hspace*{0.425cm}
+    % Because the centering is a manual process, the hspace value depends on the language
+    \de{\hspace*{0.425cm}}
+    \en{\hspace*{0.775cm}}
 
     \tikzstyle{in_out} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, very thick]%, fill=red!30]
     \tikzstyle{rect} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black]
