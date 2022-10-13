@@ -408,7 +408,8 @@ Exec_Intersection
     free(general_information_as_str);
     general_information_as_str = NULL;
 
-    size_t intersection_found_counter   = 0;
+    uint_fast64_t intersection_tokens_found_counter    = 0;
+    uint_fast64_t intersection_sets_found_counter      = 0;
     size_t cJSON_mem_counter            = 0;
     clock_t start                       = 0;
     clock_t end                         = 0;
@@ -498,7 +499,6 @@ Exec_Intersection
             if (DocumentWordList_IsDataInObject(intersection_result) && tokens_left > 0)
             {
                 data_found = true;
-                ++ intersection_found_counter;
 
                 // "selected_data_2_array" is the counter for the outer loop
                 // This test has the effect, that the tokens array only appear once for each outer element
@@ -552,9 +552,11 @@ Exec_Intersection
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(char_offset_array, char_offset);
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(tokens_array, token);
 
+                    ++ intersection_tokens_found_counter;
                     ++ intersection_call_counter;
                     ++ tokens_wrote;
                 }
+                ++ intersection_sets_found_counter;
 
                 // Create a object for the tow arrays (tokens / offset)
                 cJSON* two_array_container = NULL;
@@ -630,7 +632,7 @@ Exec_Intersection
             orig_ptr = NULL;
             json_export_str = NULL;
 
-            // Delete the full object will all child-objects
+            // Delete the full object will all child-objectsintersection_sets_found_counter
             // This is the reason why this call is enough to cleanup the full structure
             cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
         }
@@ -659,8 +661,11 @@ abort_label:
     result_file_size += strlen ("\n}");
     FCLOSE_AND_SET_TO_NULL(result_file);
 
+    const int int_formatter = (int) MAX (Count_Number_Of_Digits(intersection_tokens_found_counter),
+            Count_Number_Of_Digits(intersection_sets_found_counter));
     printf ("\nDone !");
-    printf ("\n\nIntersections found: %" PRIuFAST64 "\n", intersection_call_counter);
+    printf ("\n\nIntersection tokens found: %*" PRIuFAST64 "\n", int_formatter, intersection_tokens_found_counter);
+    printf ("Intersection sets found:   %*" PRIuFAST64 "\n", int_formatter, intersection_sets_found_counter);
     printf ("cJSON objects memory usage: ");
     Print_Memory_Size_As_B_KB_MB(cJSON_mem_counter);
 
