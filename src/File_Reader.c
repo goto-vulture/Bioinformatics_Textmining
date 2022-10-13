@@ -420,7 +420,7 @@ TokenListContainer_CreateObject
                                 current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
                                 strlen(last_token);
                         const size_t new_sentence_offset =
-                                current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
+                                current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element - 1] +
                                 (last_token [0] == '.') ? 1 : 0;
                                 //strlen (current_token_list_obj->data + (current_token_list_obj->max_token_length * (current_token_list_obj->next_free_element - 1)));
                         ASSERT_FMSG(tmp_result < USHRT_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
