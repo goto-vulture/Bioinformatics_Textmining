@@ -881,8 +881,21 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
         // Append data
         if (next_free_value > 0)
         {
-            DocumentWordList_AppendDataWithOffsets(document_word_list, token_int_values,
-                    token_list_container->token_lists [i].char_offsets, NULL, next_free_value);
+            // Without sentence offsets
+//            DocumentWordList_AppendDataWithOffsets(document_word_list, token_int_values,
+//                    token_list_container->token_lists [i].char_offsets, NULL, next_free_value);
+
+            // With sentence offsets
+            DocumentWordList_AppendDataWithTwoTypeOffsets
+            (
+                    document_word_list,
+                    token_int_values,
+                    token_list_container->token_lists [i].char_offsets,
+                    NULL,
+                    token_list_container->token_lists [i].sentence_offsets,
+                    NULL,
+                    next_free_value
+            );
         }
     }
     FREE_AND_SET_TO_NULL(token_int_values);
