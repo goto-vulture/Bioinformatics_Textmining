@@ -157,7 +157,7 @@ DocumentWordList_CreateObjectAsIntersectionResult
 
     struct Document_Word_List* new_object = Create_Main_Object_Structure (number_of_arrays, max_array_length);
 
-    // Outer dimension for data and char_offsets (1 and 2)
+    // Outer dimension for both char_offsets
     new_object->data_struct.char_offsets_1 = (CHAR_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (CHAR_OFFSET_TYPE*));
     ASSERT_ALLOC(new_object->data_struct.char_offsets_1, "Cannot create new Document_Word_List !",
             sizeof (CHAR_OFFSET_TYPE*) * number_of_arrays);
@@ -167,7 +167,7 @@ DocumentWordList_CreateObjectAsIntersectionResult
             sizeof (CHAR_OFFSET_TYPE*) * number_of_arrays);
     new_object->malloc_calloc_calls ++;
 
-    // Outer dimension for the sentence offsets (1 and 2)
+    // Outer dimension for both sentence offsets
     new_object->data_struct.sentence_offsets_1 =
             (SENTENCE_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (SENTENCE_OFFSET_TYPE*));
     ASSERT_ALLOC(new_object->data_struct.sentence_offsets_1, "Cannot create new Document_Word_List !",
@@ -179,7 +179,7 @@ DocumentWordList_CreateObjectAsIntersectionResult
             sizeof (SENTENCE_OFFSET_TYPE*) * number_of_arrays);
     new_object->malloc_calloc_calls ++;
 
-    // Inner dimension for data and char_offsets and sentence offsets (1 and 2)
+    // Inner dimension for char_offsets and sentence offsets (1 and 2)
     for (uint_fast32_t i = 0; i < number_of_arrays; ++ i)
     {
         new_object->data_struct.char_offsets_1 [i] = (CHAR_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
@@ -764,7 +764,6 @@ Create_Main_Object_Structure
     new_object->number_of_arrays = number_of_arrays;
     new_object->next_free_array = 0;
 
-    // Set pointer for a intersection result type to NULL
     new_object->data_struct.char_offsets_1 = NULL;
     new_object->data_struct.char_offsets_2 = NULL;
     new_object->data_struct.sentence_offsets_1 = NULL;

@@ -46,8 +46,6 @@ struct Token_List_Container
 
         /**
          * @brief Char offsets of each token.
-         *
-         * USHRT_MAX is the placeholder value, because 0 is a valid offset !
          */
         CHAR_OFFSET_TYPE* char_offsets;
 
