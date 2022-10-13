@@ -290,6 +290,34 @@ Put_One_Value_And_Offets_To_Document_Word_List
 );
 
 /**
+ * @brief Put one value with offsets of both types to a Document_Word_List.
+ *
+ * The new value and the given offsets will be appended to the next free data array. Instead of
+ * DocumentWordList_AppendOneValueAsNewDataSet, the new value will NOT be interpreted as new data set !
+ * @see DocumentWordList_AppendOneValueAsNewDataSet
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object Document_Word_List
+ * @param[in] new_value New value
+ * @param[in] new_char_offset_1 First new char offset value
+ * @param[in] new_char_offset_2 Second new char offset value
+ * @param[in] new_sentence_offset_1 First new sentence offset value
+ * @param[in] new_sentence_offset_2 Second new sentence offset value
+ */
+extern void
+Put_One_Value_And_Two_Offset_Types_To_Document_Word_List
+(
+        struct Document_Word_List* const object,
+        const uint_fast32_t new_value,
+        const CHAR_OFFSET_TYPE new_char_offset_1,
+        const CHAR_OFFSET_TYPE new_char_offset_2,
+        const SENTENCE_OFFSET_TYPE new_sentence_offset_1,
+        const SENTENCE_OFFSET_TYPE new_sentence_offset_2
+);
+
+/**
  * @brief Print data of a Document_Word_List to stdout.
  *
  * This function is for debugging purposes.
