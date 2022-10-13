@@ -199,6 +199,34 @@ DocumentWordList_AppendDataWithOffsets
 );
 
 /**
+ * @brief Add data with up to two char and sentence offset arrays to a Document_Word_List.
+ *
+ * Asserts:
+ *      object != NULL
+ *      new_data != NULL
+ *      data_length > 0
+ *
+ * @param[in] object Document_Word_List
+ * @param[in] new_data New data
+ * @param[in] new_char_offsets_1 First char offset array
+ * @param[in] new_char_offsets_2 Second char offset array
+ * @param[in] new_sentence_offsets_1 First sentence offset array
+ * @param[in] new_sentence_offsets_2 Second sentence offset array
+ * @param[in] data_length Length of the new data
+ */
+extern void
+DocumentWordList_AppendDataWithTwoTypeOffsets
+(
+        struct Document_Word_List* const object,
+        const uint_fast32_t* const new_data,
+        const CHAR_OFFSET_TYPE* const new_char_offsets_1,
+        const CHAR_OFFSET_TYPE* const new_char_offsets_2,
+        const SENTENCE_OFFSET_TYPE* const new_sentence_offsets_1,
+        const SENTENCE_OFFSET_TYPE* const new_sentence_offsets_2,
+        const size_t data_length
+);
+
+/**
  * @brief Add one value to a Document_Word_List.
  *
  * ! Caution: If you use this function the container manages this single value as an data set with the length of one.

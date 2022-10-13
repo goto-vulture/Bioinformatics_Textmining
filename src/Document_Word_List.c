@@ -353,6 +353,52 @@ DocumentWordList_AppendDataWithOffsets
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Add data with up to two char and sentence offset arrays to a Document_Word_List.
+ *
+ * Asserts:
+ *      object != NULL
+ *      new_data != NULL
+ *      data_length > 0
+ *
+ * @param[in] object Document_Word_List
+ * @param[in] new_data New data
+ * @param[in] new_char_offsets_1 First char offset array
+ * @param[in] new_char_offsets_2 Second char offset array
+ * @param[in] new_sentence_offsets_1 First sentence offset array
+ * @param[in] new_sentence_offsets_2 Second sentence offset array
+ * @param[in] data_length Length of the new data
+ */
+extern void
+DocumentWordList_AppendDataWithTwoTypeOffsets
+(
+        struct Document_Word_List* const object,
+        const uint_fast32_t* const new_data,
+        const CHAR_OFFSET_TYPE* const new_char_offsets_1,
+        const CHAR_OFFSET_TYPE* const new_char_offsets_2,
+        const SENTENCE_OFFSET_TYPE* const new_sentence_offsets_1,
+        const SENTENCE_OFFSET_TYPE* const new_sentence_offsets_2,
+        const size_t data_length
+)
+{
+    DocumentWordList_AppendDataWithOffsets(object, new_data, new_char_offsets_1, new_char_offsets_2, data_length);
+
+    if (new_sentence_offsets_1 != NULL)
+    {
+        memcpy (object->data_struct.sentence_offsets_1 [object->next_free_array - 1], new_sentence_offsets_1,
+                sizeof (SENTENCE_OFFSET_TYPE) * data_length);
+    }
+    if (new_sentence_offsets_2 != NULL)
+    {
+        memcpy (object->data_struct.sentence_offsets_2 [object->next_free_array - 1], new_sentence_offsets_2,
+                sizeof (SENTENCE_OFFSET_TYPE) * data_length);
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Add one value to a Document_Word_List.
  *
  * ! Caution: If you use this function the container manages this single value as an data set with the length of one.
@@ -825,15 +871,28 @@ static void Increase_Data_Array_Size
         object->data_struct.char_offsets_1 [data_array_index] = tmp_ptr_offset_1;
         object->data_struct.char_offsets_2 [data_array_index] = tmp_ptr_offset_2;
 
+        SENTENCE_OFFSET_TYPE* tmp_ptr_sentence_offset_1 = (SENTENCE_OFFSET_TYPE*) REALLOC(object->data_struct.sentence_offsets_1 [data_array_index],
+                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (SENTENCE_OFFSET_TYPE));
+        ASSERT_ALLOC(tmp_ptr_sentence_offset_1, "Cannot increase the data array size !",
+                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (SENTENCE_OFFSET_TYPE))
+        SENTENCE_OFFSET_TYPE* tmp_ptr_sentence_offset_2 = (SENTENCE_OFFSET_TYPE*) REALLOC(object->data_struct.sentence_offsets_2 [data_array_index],
+                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (SENTENCE_OFFSET_TYPE));
+        ASSERT_ALLOC(tmp_ptr_sentence_offset_2, "Cannot increase the data array size !",
+                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (SENTENCE_OFFSET_TYPE))
+        object->data_struct.sentence_offsets_1 [data_array_index] = tmp_ptr_sentence_offset_1;
+        object->data_struct.sentence_offsets_2 [data_array_index] = tmp_ptr_sentence_offset_2;
+
         // Init the new memory (No zero, because a zero is a valid offset !)
         for (size_t i = object->allocated_array_size [data_array_index];
                 i < (object->allocated_array_size [data_array_index] + increase_number_of_objects); ++ i)
         {
             object->data_struct.char_offsets_1 [data_array_index][i] = USHRT_MAX;
             object->data_struct.char_offsets_2 [data_array_index][i] = USHRT_MAX;
+            object->data_struct.sentence_offsets_1 [data_array_index][i] = UCHAR_MAX;
+            object->data_struct.sentence_offsets_2 [data_array_index][i] = UCHAR_MAX;
         }
 
-        object->realloc_calls += 2;
+        object->realloc_calls += 4;
     }
 
     object->allocated_array_size [data_array_index] += increase_number_of_objects;
