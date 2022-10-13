@@ -410,6 +410,7 @@ TokenListContainer_CreateObject
                     if (current_token_list_obj->next_free_element == 0)
                     {
                         current_token_list_obj->char_offsets [0] = 0;
+                        current_token_list_obj->sentence_offsets [0] = 0;
                     }
                     else
                     {
