@@ -754,10 +754,13 @@ Add_General_Information_To_Export_File
     // Up to now there will be no switch or similar structure to alter this export behavior
     cJSON* char_offset = cJSON_CreateBool(true);
     cJSON_NOT_NULL(char_offset);
+    cJSON* sentence_offset = cJSON_CreateBool(true);
+    cJSON_NOT_NULL(sentence_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Full match", full_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Stop word list used", stop_word_list);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Char offset", char_offset);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Sentence offset", sentence_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation mode", creation_mode);
 
     cJSON* creation_time = cJSON_CreateString(time_string);
