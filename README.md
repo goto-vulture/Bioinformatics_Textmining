@@ -41,6 +41,11 @@ To make the implementation simple, the in and output will be created in a simple
 
 ### Future features
 
+- Sentence offsets (The current implementation allows only a char offset)
+- Smaller result file with following ideas:
+    - Remove tabs
+    - Use abbreviations for array names in the JSON file (e.g.: "Intersections" -> "Inters.")
+    - Case insensitive comparison of the tokens
 - A more user-friendly interface. Maybe with a GUI. But the priority in this project is low.
 
 ---
@@ -87,6 +92,11 @@ Um die Implementierung auf das wesentliche zu fokussieren, werden die Ein- und A
 
 ### Weitere Funktionen
 
+- Satz Offsets (Die aktuelle Implementierung unterstuetzt nur zeichen-basierte Offsets)
+- Kleinere Ergebnisdatei durch folgende Ansaetze:
+    - Tabs entfernen
+    - Abkuerzungen der Array Namen in der JSON Datei verwenden (e.g.: "Intersections" -> "Inters.")
+    - Gross- und Kleinschreibung beim Vergleich der Tokens ignorieren
 - Ein benutzerfreundlichere Bedienung; möglicherweise über eine GUI. Die Priorität ist allerdings gering, da diese auf der Funktionalität liegt.
 
 ---
