@@ -382,11 +382,20 @@ TokenListContainer_CreateObject
                         ASSERT_ALLOC(tmp_ptr2, "Cannot create data for a Token object !",
                                 (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (CHAR_OFFSET_TYPE));
                         new_container->realloc_calls ++;
+                        SENTENCE_OFFSET_TYPE* tmp_ptr3 = (SENTENCE_OFFSET_TYPE*) REALLOC (current_token_list_obj->sentence_offsets,
+                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (SENTENCE_OFFSET_TYPE));
+                        ASSERT_ALLOC(tmp_ptr2, "Cannot create data for a Token object !",
+                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (SENTENCE_OFFSET_TYPE));
+                        new_container->realloc_calls ++;
                         // Init new values
                         for (size_t i2 = old_tokens_size; i2 < (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE); ++ i2)
-                        { tmp_ptr2 [i2] = USHRT_MAX; }
+                        {
+                            tmp_ptr2 [i2] = USHRT_MAX;
+                            tmp_ptr3 [i2] = UCHAR_MAX;
+                        }
                         current_token_list_obj->data = tmp_ptr;
                         current_token_list_obj->char_offsets = tmp_ptr2;
+                        current_token_list_obj->sentence_offsets = tmp_ptr3;
                         current_token_list_obj->allocated_tokens += TOKENS_ALLOCATION_STEP_SIZE;
                     }
 
@@ -403,14 +412,22 @@ TokenListContainer_CreateObject
                     }
                     else
                     {
+                        const char* last_token =
+                                Get_Address_Of_Token (current_token_list_obj, current_token_list_obj->next_free_element - 1);
+
                         const size_t tmp_result =
                                 current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
-                                strlen(Get_Address_Of_Token (current_token_list_obj, current_token_list_obj->next_free_element - 1));
+                                strlen(last_token);
+                        const size_t new_sentence_offset =
+                                current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
+                                (last_token [0] == '.') ? 1 : 0;
                                 //strlen (current_token_list_obj->data + (current_token_list_obj->max_token_length * (current_token_list_obj->next_free_element - 1)));
                         ASSERT_FMSG(tmp_result < USHRT_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
                                 tmp_result, USHRT_MAX - 1);
                         current_token_list_obj->char_offsets [current_token_list_obj->next_free_element] =
                                 (CHAR_OFFSET_TYPE) tmp_result;
+                        current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element] =
+                                (SENTENCE_OFFSET_TYPE) new_sentence_offset;
                     }
 
                     current_token_list_obj->next_free_element ++;
