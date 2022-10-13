@@ -330,9 +330,11 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 (
     const uint_fast32_t* const restrict data_1,
     const CHAR_OFFSET_TYPE* const restrict char_offsets_1,
+    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets_1,
     const size_t data_1_length,
     const uint_fast32_t* const restrict data_2,
     const CHAR_OFFSET_TYPE* const restrict char_offsets_2,
+    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets_2,
     const size_t data_2_length,
     const char* const restrict id_1,
     const char* const restrict id_2
@@ -407,8 +409,8 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
                 if (! multiple_guard_data_1 [d1] && ! multiple_guard_data_2 [d2])
                 {
                     //Put_One_Value_To_Document_Word_List(intersection_result, data_1 [d1]);
-                    Put_One_Value_And_Offets_To_Document_Word_List(intersection_result, data_1 [d1],
-                            char_offsets_1 [d1], char_offsets_2 [d2]);
+                    Put_One_Value_And_Two_Offset_Types_To_Document_Word_List(intersection_result, data_1 [d1],
+                            char_offsets_1 [d1], char_offsets_2 [d2], sentence_offsets_1 [d1], sentence_offsets_2 [d2]);
                     // intersection_result->data [0][intersection_result->arrays_lengths [0]] = data_1 [d1];
                     //++ intersection_result->arrays_lengths [0];
                     multiple_guard_data_1 [d1] = true;
