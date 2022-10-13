@@ -167,7 +167,19 @@ DocumentWordList_CreateObjectAsIntersectionResult
             sizeof (CHAR_OFFSET_TYPE*) * number_of_arrays);
     new_object->malloc_calloc_calls ++;
 
-    // Inner dimension for data and char_offsets (1 and 2)
+    // Outer dimension for the sentence offsets (1 and 2)
+    new_object->data_struct.sentence_offsets_1 =
+            (SENTENCE_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (SENTENCE_OFFSET_TYPE*));
+    ASSERT_ALLOC(new_object->data_struct.sentence_offsets_1, "Cannot create new Document_Word_List !",
+            sizeof (SENTENCE_OFFSET_TYPE*) * number_of_arrays);
+    new_object->malloc_calloc_calls ++;
+    new_object->data_struct.sentence_offsets_2 =
+            (SENTENCE_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (SENTENCE_OFFSET_TYPE*));
+    ASSERT_ALLOC(new_object->data_struct.sentence_offsets_2, "Cannot create new Document_Word_List !",
+            sizeof (SENTENCE_OFFSET_TYPE*) * number_of_arrays);
+    new_object->malloc_calloc_calls ++;
+
+    // Inner dimension for data and char_offsets and sentence offsets (1 and 2)
     for (uint_fast32_t i = 0; i < number_of_arrays; ++ i)
     {
         new_object->data_struct.char_offsets_1 [i] = (CHAR_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
@@ -179,6 +191,17 @@ DocumentWordList_CreateObjectAsIntersectionResult
                 sizeof (CHAR_OFFSET_TYPE));
         ASSERT_ALLOC(new_object->data_struct.char_offsets_2 [i], "Cannot create new Document_Word_List !",
                 sizeof (CHAR_OFFSET_TYPE) * INT_ALLOCATION_STEP_SIZE);
+        new_object->malloc_calloc_calls ++;
+
+        new_object->data_struct.sentence_offsets_1 [i] = (SENTENCE_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
+                sizeof (SENTENCE_OFFSET_TYPE));
+        ASSERT_ALLOC(new_object->data_struct.sentence_offsets_1 [i], "Cannot create new Document_Word_List !",
+                sizeof (SENTENCE_OFFSET_TYPE) * INT_ALLOCATION_STEP_SIZE);
+        new_object->malloc_calloc_calls ++;
+        new_object->data_struct.sentence_offsets_2 [i] = (SENTENCE_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
+                sizeof (SENTENCE_OFFSET_TYPE));
+        ASSERT_ALLOC(new_object->data_struct.sentence_offsets_2 [i], "Cannot create new Document_Word_List !",
+                sizeof (SENTENCE_OFFSET_TYPE) * INT_ALLOCATION_STEP_SIZE);
         new_object->malloc_calloc_calls ++;
     }
 
@@ -217,6 +240,8 @@ DocumentWordList_DeleteObject
         {
             FREE_AND_SET_TO_NULL(object->data_struct.char_offsets_1 [i]);
             FREE_AND_SET_TO_NULL(object->data_struct.char_offsets_2 [i]);
+            FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets_1 [i]);
+            FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets_2 [i]);
         }
     }
 
@@ -226,6 +251,8 @@ DocumentWordList_DeleteObject
     {
         FREE_AND_SET_TO_NULL(object->data_struct.char_offsets_1);
         FREE_AND_SET_TO_NULL(object->data_struct.char_offsets_2);
+        FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets_1);
+        FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets_2);
     }
 
     FREE_AND_SET_TO_NULL(object->allocated_array_size)
@@ -740,6 +767,8 @@ Create_Main_Object_Structure
     // Set pointer for a intersection result type to NULL
     new_object->data_struct.char_offsets_1 = NULL;
     new_object->data_struct.char_offsets_2 = NULL;
+    new_object->data_struct.sentence_offsets_1 = NULL;
+    new_object->data_struct.sentence_offsets_2 = NULL;
 
     return new_object;
 }

@@ -56,6 +56,21 @@ struct Document_Word_List
          * determine, whether the first or the second offsets are relevant. So the solution: calculate and save both.
          */
         CHAR_OFFSET_TYPE** char_offsets_2;
+
+        /**
+         * @brief Here we have a similar situation compared with the char offsets.
+         *
+         * And we have here also similar problems: in the calculation it is not possible to determine, whether the first
+         * or the second offsets are relevant. So the solution: calculate and save both.
+         */
+        SENTENCE_OFFSET_TYPE** sentence_offsets_1;
+        /**
+         * @brief Here we have a similar situation compared with the char offsets.
+         *
+         * And we have here also similar problems: in the calculation it is not possible to determine, whether the first
+         * or the second offsets are relevant. So the solution: calculate and save both.
+         */
+        SENTENCE_OFFSET_TYPE** sentence_offsets_2;
     } data_struct;
 
     size_t* arrays_lengths;         ///< 1 dimensional Array with the data length information
