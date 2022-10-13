@@ -533,7 +533,6 @@ Exec_Intersection
 
                 //fputs("Found tokens_array in:\n", result_file);
                 // In the intersection result is always only one array ! Therefore a second loop is not necessary
-                size_t tokens_wrote = 0;
                 for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
                 {
                     if (intersection_result->data_struct.data [0][i] == UINT_FAST32_MAX)
@@ -553,8 +552,6 @@ Exec_Intersection
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(tokens_array, token);
 
                     ++ intersection_tokens_found_counter;
-                    ++ intersection_call_counter;
-                    ++ tokens_wrote;
                 }
                 ++ intersection_sets_found_counter;
 
