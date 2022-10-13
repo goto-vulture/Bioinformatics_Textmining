@@ -294,6 +294,7 @@ TokenListContainer_CreateObject
 
                 // ===== ===== ===== BEGIN Realloc necessary ? ===== ===== =====
                 // Is it necessary to realloc/increase the number of Token_Container ?
+                // ToDo: Move the realloc code in a own - at least static - function
                 if (new_container->next_free_element >= new_container->allocated_token_container)
                 {
                     static size_t token_container_realloc_counter = 0;
