@@ -17,6 +17,7 @@ TOTAL_RUNS=2
 MAX_RUNTIME=0
 MIN_RUNTIME=999999 # To make sure, that min runtime is not zero because of an initialization with zero
 
+##### ##### ##### ##### ##### BEGIN Check CLI input ##### ##### ##### ##### #####
 # Test the CLI parameter
 if [[ "$#" == 0 ]];
 then
@@ -69,6 +70,7 @@ if [[ "$#" == 3 ]]; then
         exit 1
     fi
 fi
+##### ##### ##### ##### ##### END Check CLI input ##### ##### ##### ##### #####
 
 echo "Using \"${INPUT_FILE_1}\" as first input file"
 echo "Using \"${INPUT_FILE_2}\" as second input file"
@@ -105,7 +107,7 @@ if [[ ! -e ${PROG_NAME} ]]; then
 fi
 echo ""
 
-# Start the program calls
+##### ##### ##### ##### ##### BEGIN Program calls ##### ##### ##### ##### #####
 for (( i=0; i<${TOTAL_RUNS}; i++ ))
 do
     printf "===== Program run %3d / %3d =====\n" $(( ${i} + 1 )) ${TOTAL_RUNS}
@@ -159,6 +161,7 @@ do
 
     printf "Runtime: %8.3f s\n\n" $(echo ${SEC_TOTAL} | tr . ,)
 done
+##### ##### ##### ##### ##### END Program calls ##### ##### ##### ##### #####
 
 AVERAGE_SEC=$(awk "BEGIN {print ${SEC_TOTAL_ADDED} / ${TOTAL_RUNS}}")
 
