@@ -240,8 +240,8 @@ TokenListContainer_CreateObject
         // Init new values
         for (size_t i2 = 0; i2 < TOKENS_ALLOCATION_STEP_SIZE; ++ i2)
         {
-            new_container->token_lists [i].char_offsets [i2] = USHRT_MAX;
-            new_container->token_lists [i].sentence_offsets [i2] = UCHAR_MAX;
+            new_container->token_lists [i].char_offsets [i2] = CHAR_OFFSET_TYPE_MAX;
+            new_container->token_lists [i].sentence_offsets [i2] = SENTENCE_OFFSET_TYPE_MAX;
         }
 
         new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
@@ -386,8 +386,8 @@ TokenListContainer_CreateObject
                                 current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element - 1] +
                                 (last_token [0] == '.') ? 1 : 0;
                                 //strlen (current_token_list_obj->data + (current_token_list_obj->max_token_length * (current_token_list_obj->next_free_element - 1)));
-                        ASSERT_FMSG(tmp_result < USHRT_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
-                                tmp_result, USHRT_MAX - 1);
+                        ASSERT_FMSG(tmp_result < CHAR_OFFSET_TYPE_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
+                                tmp_result, CHAR_OFFSET_TYPE_MAX - 1);
                         current_token_list_obj->char_offsets [current_token_list_obj->next_free_element] =
                                 (CHAR_OFFSET_TYPE) tmp_result;
                         current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element] =
@@ -974,8 +974,8 @@ Increase_Number_Of_Token_Lists
         // Init new values
         for (size_t i2 = 0; i2 < TOKENS_ALLOCATION_STEP_SIZE; ++ i2)
         {
-            token_list_container->token_lists [i].char_offsets [i2] = USHRT_MAX;
-            token_list_container->token_lists [i].sentence_offsets [i2] = UCHAR_MAX;
+            token_list_container->token_lists [i].char_offsets [i2] = CHAR_OFFSET_TYPE_MAX;
+            token_list_container->token_lists [i].sentence_offsets [i2] = SENTENCE_OFFSET_TYPE_MAX;
         }
 
         token_list_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
@@ -1029,8 +1029,8 @@ Increase_Number_Of_Tokens
     // Init new values
     for (size_t i2 = old_tokens_size; i2 < (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE); ++ i2)
     {
-        tmp_ptr2 [i2] = USHRT_MAX;
-        tmp_ptr3 [i2] = UCHAR_MAX;
+        tmp_ptr2 [i2] = CHAR_OFFSET_TYPE_MAX;
+        tmp_ptr3 [i2] = SENTENCE_OFFSET_TYPE_MAX;
     }
     token_list->data = tmp_ptr;
     token_list->char_offsets = tmp_ptr2;

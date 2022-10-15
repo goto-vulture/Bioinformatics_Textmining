@@ -930,10 +930,10 @@ static void Increase_Data_Array_Size
         for (size_t i = object->allocated_array_size [data_array_index];
                 i < (object->allocated_array_size [data_array_index] + increase_number_of_objects); ++ i)
         {
-            object->data_struct.char_offsets_1 [data_array_index][i] = USHRT_MAX;
-            object->data_struct.char_offsets_2 [data_array_index][i] = USHRT_MAX;
-            object->data_struct.sentence_offsets_1 [data_array_index][i] = UCHAR_MAX;
-            object->data_struct.sentence_offsets_2 [data_array_index][i] = UCHAR_MAX;
+            object->data_struct.char_offsets_1 [data_array_index][i] = CHAR_OFFSET_TYPE_MAX;
+            object->data_struct.char_offsets_2 [data_array_index][i] = CHAR_OFFSET_TYPE_MAX;
+            object->data_struct.sentence_offsets_1 [data_array_index][i] = SENTENCE_OFFSET_TYPE_MAX;
+            object->data_struct.sentence_offsets_2 [data_array_index][i] = SENTENCE_OFFSET_TYPE_MAX;
         }
 
         object->realloc_calls += 4;
