@@ -58,6 +58,18 @@ if [[ ! -r ${INPUT_FILE_2} ]]; then
     exit 1
 fi
 
+# Check total runs, if it was given
+if [[ "$#" == 3 ]]; then
+    if [[ ! ${3} =~ ^-?[0-9]+$ ]]; then
+        echo "\"${3}\" is not an integer !"
+        exit 1
+    fi
+    if [[ ${3} -lt 1 ]]; then
+        echo "${3} is less than 1 !"
+        exit 1
+    fi
+fi
+
 echo "Using \"${INPUT_FILE_1}\" as first input file"
 echo "Using \"${INPUT_FILE_2}\" as second input file"
 echo "Using ${TOTAL_RUNS} program runs"
