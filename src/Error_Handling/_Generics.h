@@ -1,4 +1,4 @@
-/*
+/**
  * @file _Generics.h
  *
  * @brief Here are macros, that uses the C11 _Generic keyword.
