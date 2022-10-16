@@ -185,7 +185,7 @@ extern "C"
  */
 #ifndef IS_NO_PTR
 #define IS_NO_PTR(value)                                                                                                \
-    _Static_assert(PTR_CHECK(value, TYPE_INVALID, true), #value " is a pointer ! Pointer are not allowed !")
+    _Static_assert(PTR_CHECK(value, TYPE_INVALID, true), #value " is a pointer ! Pointer are not allowed !");
 #else
 #error "The macro \"IS_NO_PTR\" is already defined !"
 #endif /* IS_NO_PTR */
@@ -195,7 +195,7 @@ extern "C"
  */
 #ifndef IS_INT
 #define IS_INT(value)                                                                                                   \
-    _Static_assert(PTR_CHECK(value, TYPE_INVALID, true), #value " is a pointer ! Pointer are not allowed !")
+    _Static_assert(PTR_CHECK(value, TYPE_INVALID, true), #value " is a pointer ! Pointer are not allowed !");
 #else
 #error "The macro \"IS_INT\" is already defined !"
 #endif /* IS_INT */
@@ -205,7 +205,7 @@ extern "C"
  */
 #ifndef IS_NO_INT
 #define IS_NO_INT(value)                                                                                                \
-    _Static_assert(PTR_CHECK(value, TYPE_VALID, false), #value " needs to be a pointer !")
+    _Static_assert(PTR_CHECK(value, TYPE_VALID, false), #value " needs to be a pointer !");
 #else
 #error "The macro \"IS_NO_INT\" is already defined !"
 #endif /* IS_NO_INT */
