@@ -21,6 +21,7 @@ extern "C"
 
 
 #include <time.h>   // time_t
+#include "Error_Handling/_Generics.h"   // For type checking macros
 
 
 
@@ -117,7 +118,8 @@ extern "C"
     for (size_t array_index = 0; array_index < (number_of_elements); array_index ++)                                    \
     {                                                                                                                   \
         (array) [array_index] = NULL;                                                                                   \
-    }
+    }                                                                                                                   \
+    IS_PTR(array)
 #else
 #error "The macro \"SET_POINTER_ARRAY_TO_NULL\" is already defined !"
 #endif /* SET_POINTER_ARRAY_TO_NULL */
@@ -129,7 +131,9 @@ extern "C"
  */
 #ifndef DETERMINE_USED_TIME
 #define DETERMINE_USED_TIME(start_time, end_time)                                                                       \
-    (float)(end_time - start_time) / CLOCKS_PER_SEC;
+    (float)(end_time - start_time) / CLOCKS_PER_SEC;                                                                    \
+    IS_TYPE(start_time, clock_t)                                                                                        \
+    IS_TYPE(end_time, clock_t)
 #else
 #error "The macro \"DETERMINE_USED_TIME\" is already defined !"
 #endif /* DETERMINE_USED_TIME */
@@ -146,7 +150,8 @@ extern "C"
     {                                                                                                                   \
         ASSERT_MSG(time_value != (clock_t)(-1),                                                                         \
                 "Time values are not available on this system ! Return value: (clock_t)(-1) !");                        \
-    }
+    }                                                                                                                   \
+	IS_TYPE(time_value, clock_t)
 #else
 #error "The macro \"CLOCK_WITH_RETURN_CHECK\" is already defined !"
 #endif /* CLOCK_WITH_RETURN_CHECK */
