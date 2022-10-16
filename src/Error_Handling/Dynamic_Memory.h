@@ -82,8 +82,8 @@ extern void Show_Dynamic_Memory_Status (void);
  * => So the malloc, realloc and free counter needs to be increased.
  */
 #ifndef REALLOC
-    #define REALLOC(number_of_elements, element_size)                                                                 \
-        realloc (number_of_elements, element_size);                                                                   \
+    #define REALLOC(pointer, element_size)                                                                            \
+        realloc (pointer, element_size);                                                                              \
         ++ GLOBAL_malloc_calls;                                                                                       \
         ++ GLOBAL_realloc_calls;                                                                                      \
         ++ GLOBAL_free_calls;                                                                                         \
