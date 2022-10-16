@@ -24,91 +24,105 @@ extern "C"
 // Is it a C11 compiler ? Because _Generic and _Static_assert are keywords that were introduced in the C11 standard.
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 
-#ifndef TYPE
-#define TYPE(type) type: #type
+#ifndef TYPE_TYPE
+#define TYPE_TYPE(type) type: #type
 #else
-#error "The macro \"TYPE\" is already defined !"
-#endif /* TYPE */
+#error "The macro \"TYPE_TYPE\" is already defined !"
+#endif /* TYPE_TYPE */
+
+#ifndef TYPE_VALID
+#define TYPE_VALID(type) type: true
+#else
+#error "The macro \"TYPE_VALID\" is already defined !"
+#endif /* TYPE_VALID */
+
+#ifndef TYPE_INVALID
+#define TYPE_INVALID(type) type: false
+#else
+#error "The macro \"TYPE_INVALID\" is already defined !"
+#endif /* TYPE_INVALID */
+
+
 
 #ifndef ALL_POSSIBLE_TYPES
-#define ALL_POSSIBLE_TYPES(type)                                                                                        \
-    TYPE(type),                                                                                                         \
-	ALL_PTR(type)
+#define ALL_POSSIBLE_TYPES(type, type_def)                                                                              \
+    type_def(type),                                                                                                     \
+	ALL_PTR(type, TYPE_DEF)
 #else
 #error "The macro \"ALL_POSSIBLE_TYPES\" is already defined !"
 #endif /* ALL_POSSIBLE_TYPES */
 
 #ifndef ALL_POSSIBLE_TYPES_WITH_UNSIGNED
-#define ALL_POSSIBLE_TYPES_WITH_UNSIGNED(type)                                                                          \
-    ALL_POSSIBLE_TYPES(type),                                                                                           \
-    ALL_POSSIBLE_TYPES(unsigned type)
+#define ALL_POSSIBLE_TYPES_WITH_UNSIGNED(type, type_def)                                                                \
+    ALL_POSSIBLE_TYPES(type, type_def),                                                                                 \
+    ALL_POSSIBLE_TYPES(unsigned type, type_def)
 #else
 #error "The macro \"ALL_POSSIBLE_TYPES_WITH_UNSIGNED\" is already defined !"
 #endif /* ALL_POSSIBLE_TYPES_WITH_UNSIGNED */
 
 #ifndef ALL_PTR
-#define ALL_PTR(type)                                                                                                   \
-    TYPE_PTR(type),                                                                                                     \
-    TYPE_PTR_PTR(type),                                                                                                 \
-    TYPE_PTR_PTR_PTR(type),                                                                                             \
-    TYPE_PTR_PTR_PTR_PTR(type),                                                                                         \
-	TYPE_PTR_PTR_PTR_PTR_PTR(type)
+#define ALL_PTR(type, type_def)                                                                                         \
+    TYPE_PTR(type, type_def),                                                                                           \
+    TYPE_PTR_PTR(type, type_def),                                                                                       \
+    TYPE_PTR_PTR_PTR(type, type_def),                                                                                   \
+    TYPE_PTR_PTR_PTR_PTR(type, type_def),                                                                               \
+	TYPE_PTR_PTR_PTR_PTR_PTR(type, type_def)
 #else
 #error "The macro \"ALL_PTR\" is already defined !"
 #endif /* ALL_PTR */
 
 #ifndef TYPE_PTR
-#define TYPE_PTR(type) TYPE(type*)
+#define TYPE_PTR(type, type_def) type_def(type*)
 #else
 #error "The macro \"TYPE_PTR\" is already defined !"
 #endif /* TYPE_PTR */
 
 #ifndef TYPE_PTR_PTR
-#define TYPE_PTR_PTR(type) TYPE(type**)
+#define TYPE_PTR_PTR(type, type_def) type_def(type**)
 #else
 #error "The macro \"TYPE_PTR_PTR\" is already defined !"
 #endif /* TYPE_PTR_PTR */
 
 #ifndef TYPE_PTR_PTR_PTR
-#define TYPE_PTR_PTR_PTR(type) TYPE(type***)
+#define TYPE_PTR_PTR_PTR(type, type_def) type_def(type***)
 #else
 #error "The macro \"TYPE_PTR_PTR_PTR\" is already defined !"
 #endif /* TYPE_PTR_PTR_PTR */
 
 #ifndef TYPE_PTR_PTR_PTR_PTR
-#define TYPE_PTR_PTR_PTR_PTR(type) TYPE(type****)
+#define TYPE_PTR_PTR_PTR_PTR(type, type_def) type_def(type****)
 #else
 #error "The macro \"TYPE_PTR_PTR_PTR_PTR\" is already defined !"
 #endif /* TYPE_PTR_PTR_PTR_PTR */
 
 #ifndef TYPE_PTR_PTR_PTR_PTR_PTR
-#define TYPE_PTR_PTR_PTR_PTR_PTR(type) TYPE(type*****)
+#define TYPE_PTR_PTR_PTR_PTR_PTR(type, type_def) type_def(type*****)
 #else
 #error "The macro \"TYPE_PTR_PTR_PTR_PTR_PTR\" is already defined !"
 #endif /* TYPE_PTR_PTR_PTR_PTR_PTR */
 
 #ifndef INT_TYPES
 #define INT_TYPES                                                                                                       \
-    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(char),                                                                             \
-    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(short int),                                                                        \
-    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(int),                                                                              \
-    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(long int),                                                                         \
-    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(long long int)
+    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(char, TYPE_TYPE),                                                                  \
+    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(short int, TYPE_TYPE),                                                             \
+    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(int, TYPE_TYPE),                                                                   \
+    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(long int, TYPE_TYPE),                                                              \
+    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(long long int, TYPE_TYPE)
 #else
 #error "The macro \"INT_TYPES\" is already defined !"
 #endif /* INT_TYPES */
 
 #ifndef FLOAT_TYPES
 #define FLOAT_TYPES                                                                                                     \
-    ALL_POSSIBLE_TYPES(float),                                                                                          \
-    ALL_POSSIBLE_TYPES(double),                                                                                         \
-    ALL_POSSIBLE_TYPES(long double)
+    ALL_POSSIBLE_TYPES(float, TYPE_TYPE),                                                                               \
+    ALL_POSSIBLE_TYPES(double, TYPE_TYPE),                                                                              \
+    ALL_POSSIBLE_TYPES(long double, TYPE_TYPE)
 #else
 #error "The macro \"FLOAT_TYPES\" is already defined !"
 #endif /* FLOAT_TYPES */
 
 #ifndef VOID_TYPES
-#define VOID_TYPES ALL_PTR(void)
+#define VOID_TYPES ALL_PTR(void, TYPE_TYPE)
 #else
 #error "The macro \"VOID_TYPES\" is already defined !"
 #endif /* VOID_TYPES */
@@ -128,6 +142,73 @@ extern "C"
 #else
 #error "The macro \"TYPE_NAME\" is already defined !"
 #endif /* TYPE_NAME */
+
+
+
+/**
+ * @brief Check whether x is a pointer. "type_def" defines, if a pointer should be valid or invalid.
+ */
+#ifndef PTR_CHECK
+#define PTR_CHECK(x, type_def, default_result)                                                                          \
+    _Generic((x),                                                                                                       \
+    ALL_PTR(char, type_def),                                                                                            \
+	ALL_PTR(unsigned char, type_def),                                                                                   \
+	ALL_PTR(short int, type_def),                                                                                       \
+	ALL_PTR(unsigned short int, type_def),                                                                              \
+	ALL_PTR(int, type_def),                                                                                             \
+	ALL_PTR(unsigned  int, type_def),                                                                                   \
+	ALL_PTR(long int, type_def),                                                                                        \
+	ALL_PTR(unsigned long int, type_def),                                                                               \
+	ALL_PTR(long long int, type_def),                                                                                   \
+	ALL_PTR(unsigned long long int, type_def),                                                                          \
+	ALL_PTR(float, type_def),                                                                                           \
+	ALL_PTR(double, type_def),                                                                                          \
+	ALL_PTR(long double, type_def),                                                                                     \
+	ALL_PTR(void, type_def),                                                                                            \
+    default: default_result)
+#else
+#error "The macro \"PTR_CHECK\" is already defined !"
+#endif /* PTR_CHECK */
+
+/**
+ * @brief Is the given value a pointer ?
+ */
+#ifndef IS_PTR
+#define IS_PTR(value)                                                                                                   \
+    _Static_assert(PTR_CHECK(value, TYPE_VALID, false), #value " needs to be a pointer !")
+#else
+#error "The macro \"IS_PTR\" is already defined !"
+#endif /* IS_PTR */
+
+/**
+ * @brief Is the given value not a pointer ?
+ */
+#ifndef IS_NO_PTR
+#define IS_NO_PTR(value)                                                                                                \
+    _Static_assert(PTR_CHECK(value, TYPE_INVALID, true), #value " is a pointer ! Pointer are not allowed !")
+#else
+#error "The macro \"IS_NO_PTR\" is already defined !"
+#endif /* IS_NO_PTR */
+
+/**
+ * @brief Is the given value a integer value ?
+ */
+#ifndef IS_INT
+#define IS_INT(value)                                                                                                   \
+    _Static_assert(PTR_CHECK(value, TYPE_INVALID, true), #value " is a pointer ! Pointer are not allowed !")
+#else
+#error "The macro \"IS_INT\" is already defined !"
+#endif /* IS_INT */
+
+/**
+ * @brief Is the given value not a integer value ?
+ */
+#ifndef IS_NO_INT
+#define IS_NO_INT(value)                                                                                                \
+    _Static_assert(PTR_CHECK(value, TYPE_VALID, false), #value " needs to be a pointer !")
+#else
+#error "The macro \"IS_NO_INT\" is already defined !"
+#endif /* IS_NO_INT */
 
 
 
@@ -243,11 +324,23 @@ extern "C"
 /*
  * Create empty macros to make the code compatible, when the compiler does not supports C11.
  */
-#ifndef TYPE
-#define TYPE(type)
+#ifndef TYPE_TYPE
+#define TYPE_TYPE(type)
 #else
-#error "The macro \"TYPE\" is already defined !"
-#endif /* TYPE */
+#error "The macro \"TYPE_TYPE\" is already defined !"
+#endif /* TYPE_TYPE */
+
+#ifndef TYPE_VALID
+#define TYPE_VALID(type)
+#else
+#error "The macro \"TYPE_VALID\" is already defined !"
+#endif /* TYPE_VALID */
+
+#ifndef TYPE_INVALID
+#define TYPE_INVALID(type)
+#else
+#error "The macro \"TYPE_INVALID\" is already defined !"
+#endif /* TYPE_INVALID */
 
 #ifndef ALL_POSSIBLE_TYPES
 #define ALL_POSSIBLE_TYPES(type)
@@ -320,6 +413,36 @@ extern "C"
 #else
 #error "The macro \"TYPE_NAME\" is already defined !"
 #endif /* TYPE_NAME */
+
+#ifndef PTR_CHECK
+#define PTR_CHECK
+#else
+#error "The macro \"PTR_CHECK\" is already defined !"
+#endif /* PTR_CHECK */
+
+#ifndef IS_PTR
+#define IS_PTR
+#else
+#error "The macro \"IS_PTR\" is already defined !"
+#endif /* IS_PTR */
+
+#ifndef IS_NO_PTR
+#define IS_NO_PTR
+#else
+#error "The macro \"IS_NO_PTR\" is already defined !"
+#endif /* IS_NO_PTR */
+
+#ifndef IS_INT
+#define IS_INT
+#else
+#error "The macro \"IS_INT\" is already defined !"
+#endif /* IS_INT */
+
+#ifndef IS_NO_INT
+#define IS_NO_INT
+#else
+#error "The macro \"IS_NO_INT\" is already defined !"
+#endif /* IS_NO_INT */
 
 #ifndef IS_TYPE
 #define IS_TYPE(value, exp_type)
