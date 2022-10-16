@@ -20,6 +20,7 @@ extern "C"
 #include <assert.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "_Generics.h"
 
 
 
@@ -29,7 +30,8 @@ extern "C"
  * @brief A assert with a user-defined error message.
  */
 #ifndef ASSERT_MSG
-    #define ASSERT_MSG(expr, message) assert (((void) (message), expr));
+    #define ASSERT_MSG(expr, message) assert (((void) (message), expr));                                                \
+		IS_IN_TYPE_LIST_4(message, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"ASSERT_MSG\" is already defined !"
 #endif /* ASSERT_MSG */
@@ -50,7 +52,8 @@ extern "C"
         fputc ('\n', stderr);                                           \
         fflush (stderr);                                                \
         ASSERT_MSG(false, "See error message above !")                  \
-    }
+    }                                                                   \
+	IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"ASSERT_FMSG\" is already defined !"
 #endif /* ASSERT_FMSG */
@@ -70,7 +73,9 @@ extern "C"
         fprintf (stderr, "Try to allocate %zu bytes !\n", (size_t) memory_size);    \
         fflush (stderr);                                                            \
         ASSERT_MSG(false, message)                                                  \
-    }
+    }                                                                               \
+	IS_IN_TYPE_LIST_4(message, char*, const char*, char* const, const char* const)  \
+	IS_INT(memory_size)
 #else
     #error "The macro \"ASSERT_ALLOC\" is already defined !"
 #endif /* ASSERT_ALLOC */

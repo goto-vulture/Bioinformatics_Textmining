@@ -25,6 +25,7 @@ extern "C"
 
 #include <inttypes.h>   // uint_fast64_t
 #include <stdlib.h>     // malloc, calloc
+#include "_Generics.h"
 
 
 // Global variables to count the malloc (), calloc (), realloc () and free () calls
@@ -51,7 +52,8 @@ extern void Show_Dynamic_Memory_Status (void);
 #ifndef MALLOC
     #define MALLOC(memory_size)                                                                                       \
         malloc (memory_size);                                                                                         \
-        ++ GLOBAL_malloc_calls;
+        ++ GLOBAL_malloc_calls;                                                                                       \
+        IS_INT(memory_size)
 #else
     #error "The macro \"MALLOC\" is already defined !"
 #endif /* MALLOC */
@@ -64,7 +66,9 @@ extern void Show_Dynamic_Memory_Status (void);
 #ifndef CALLOC
     #define CALLOC(number_of_elements, element_size)                                                                  \
         calloc (number_of_elements, element_size);                                                                    \
-        ++ GLOBAL_calloc_calls;
+        ++ GLOBAL_calloc_calls;                                                                                       \
+        IS_INT(number_of_elements)                                                                                    \
+		IS_INT(element_size)
 #else
     #error "The macro \"CALLOC\" is already defined !"
 #endif /* CALLOC */
@@ -82,7 +86,8 @@ extern void Show_Dynamic_Memory_Status (void);
         realloc (number_of_elements, element_size);                                                                   \
         ++ GLOBAL_malloc_calls;                                                                                       \
         ++ GLOBAL_realloc_calls;                                                                                      \
-        ++ GLOBAL_free_calls;
+        ++ GLOBAL_free_calls;                                                                                         \
+        IS_INT(element_size)
 #else
     #error "The macro \"REALLOC\" is already defined !"
 #endif /* REALLOC */
@@ -116,7 +121,8 @@ extern void Show_Dynamic_Memory_Status (void);
 #ifndef FCLOSE_AND_SET_TO_NULL
     #define FCLOSE_AND_SET_TO_NULL(pointer)                                                                           \
         fclose (pointer);                                                                                             \
-        pointer = NULL;
+        pointer = NULL;                                                                                               \
+        IS_TYPE(pointer, FILE*)
 #else
     #error "The macro \"FCLOSE_AND_SET_TO_NULL\" is already defined !"
 #endif /* FCLOSE_AND_SET_TO_NULL */

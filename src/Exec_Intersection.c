@@ -28,7 +28,8 @@
 
 #ifndef cJSON_NOT_NULL
 #define cJSON_NOT_NULL(cJSON_object)                                                                                    \
-    ASSERT_MSG(cJSON_object != NULL, "Creation of a cJSON object for exporting data as JSON file failed !");
+    ASSERT_MSG(cJSON_object != NULL, "Creation of a cJSON object for exporting data as JSON file failed !");            \
+    IS_TYPE(cJSON_object, cJSON*)
 #else
 #error "The macro \"cJSON_NOT_NULL\" is already defined !"
 #endif /* cJSON_NOT_NULL */
@@ -37,7 +38,8 @@
 #define cJSON_NEW_OBJ_CHECK(cJSON_object)                                                                               \
     cJSON_object = cJSON_CreateObject();                                                                                \
     cJSON_NOT_NULL(cJSON_object);                                                                                       \
-    cJSON_mem_counter += cJSON_Determine_Full_Memory_Usage(cJSON_object);
+    cJSON_mem_counter += cJSON_Determine_Full_Memory_Usage(cJSON_object);                                               \
+    IS_TYPE(cJSON_object, cJSON*)
 #else
 #error "The macro \"cJSON_NEW_OBJ_CHECK\" is already defined !"
 #endif /* cJSON_NEW_OBJ_CHECK */
@@ -46,7 +48,8 @@
 #define cJSON_NEW_ARR_CHECK(cJSON_object)                                                                               \
     cJSON_object = cJSON_CreateArray();                                                                                 \
     cJSON_NOT_NULL(cJSON_object);                                                                                       \
-    cJSON_mem_counter += cJSON_Determine_Full_Memory_Usage(cJSON_object);
+    cJSON_mem_counter += cJSON_Determine_Full_Memory_Usage(cJSON_object);                                               \
+    IS_TYPE(cJSON_object, cJSON*)
 #else
 #error "The macro \"cJSON_NEW_ARR_CHECK\" is already defined !"
 #endif /* cJSON_NEW_ARR_CHECK */
@@ -55,21 +58,28 @@
 #define cJSON_NEW_STR_CHECK(cJSON_object, str)                                                                          \
     cJSON_object = cJSON_CreateString(str);                                                                             \
     cJSON_NOT_NULL(cJSON_object);                                                                                       \
-    cJSON_mem_counter += cJSON_Determine_Full_Memory_Usage(cJSON_object);
+    cJSON_mem_counter += cJSON_Determine_Full_Memory_Usage(cJSON_object);                                               \
+    IS_TYPE(cJSON_object, cJSON*)                                                                                       \
+    IS_IN_TYPE_LIST_4(str, char*, const char*, char* const, const char* const)
 #else
 #error "The macro \"cJSON_NEW_STR_CHECK\" is already defined !"
 #endif /* cJSON_NEW_STR_CHECK */
 
 #ifndef cJSON_ADD_ITEM_TO_OBJECT_CHECK
 #define cJSON_ADD_ITEM_TO_OBJECT_CHECK(cJSON_object, str, cJSON_item)                                                   \
-    ASSERT_MSG (cJSON_AddItemToObject(cJSON_object,str, cJSON_item) != 0, "Error in the cJSON_AddItemToObject call !");
+    ASSERT_MSG (cJSON_AddItemToObject(cJSON_object,str, cJSON_item) != 0, "Error in the cJSON_AddItemToObject call !"); \
+    IS_TYPE(cJSON_object, cJSON*)                                                                                       \
+    IS_IN_TYPE_LIST_4(str, char*, const char*, char* const, const char* const)                                          \
+    IS_TYPE(cJSON_item, cJSON*)
 #else
 #error "The macro \"cJSON_ADD_ITEM_TO_OBJECT_CHECK\" is already defined !"
 #endif /* cJSON_ADD_ITEM_TO_OBJECT_CHECK */
 
 #ifndef cJSON_ADD_ITEM_TO_ARRAY_CHECK
 #define cJSON_ADD_ITEM_TO_ARRAY_CHECK(cJSON_object, cJSON_item)                                                         \
-    ASSERT_MSG (cJSON_AddItemToArray(cJSON_object, cJSON_item) != 0, "Error in the cJSON_AddItemToArray call !");
+    ASSERT_MSG (cJSON_AddItemToArray(cJSON_object, cJSON_item) != 0, "Error in the cJSON_AddItemToArray call !");       \
+    IS_TYPE(cJSON_object, cJSON*)                                                                                       \
+    IS_TYPE(cJSON_item, cJSON*)
 #else
 #error "The macro \"cJSON_ADD_ITEM_TO_ARRAY_CHECK\" is already defined !"
 #endif /* cJSON_ADD_ITEM_TO_ARRAY_CHECK */
@@ -80,7 +90,8 @@
     {                                                                                                                   \
         cJSON_Delete(cJSON_object);                                                                                     \
         cJSON_object = NULL;                                                                                            \
-    }
+    }                                                                                                                   \
+    IS_TYPE(cJSON_object, cJSON*)
 #else
 #error "The macro \"cJSON_FULL_FREE_AND_SET_TO_NULL\" is already defined !"
 #endif /* cJSON_FULL_FREE_AND_SET_TO_NULL */

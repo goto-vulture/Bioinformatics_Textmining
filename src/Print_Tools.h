@@ -20,6 +20,7 @@ extern "C"
 #include <stdio.h>      // printf
 #include <inttypes.h>   // uint_fast32_t
 #include <time.h>       // clock_t
+#include "Error_Handling/_Generics.h"
 
 
 
@@ -32,7 +33,8 @@ extern "C"
  */
 #ifndef PRINTF_FFLUSH
     #define PRINTF_FFLUSH(format_string, ...)                                                                           \
-    printf (format_string, __VA_ARGS__); fflush (stdout);
+    printf (format_string, __VA_ARGS__); fflush (stdout);                                                               \
+    IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"PRINTF_FFLUSH\" is already defined !"
 #endif /* PRINTF_FFLUSH */
@@ -60,7 +62,9 @@ extern "C"
     else                                                                                                                \
     {                                                                                                                   \
         PRINTF_FFLUSH (format_string, __VA_ARGS__);                                                                     \
-    }
+    }                                                                                                                   \
+    IS_INT(file)                                                                                                        \
+	IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"FPRINTF_FFLUSH\" is already defined !"
 #endif /* FPRINTF_FFLUSH */
@@ -75,7 +79,8 @@ extern "C"
  */
 #ifndef PRINTF_NO_VA_ARGS_FFLUSH
     #define PRINTF_NO_VA_ARGS_FFLUSH(format_string)                                                                     \
-    printf (format_string); fflush (stdout);
+    printf (format_string); fflush (stdout);                                                                            \
+    IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"PRINTF_NO_VA_ARGS_FFLUSH\" is already defined !"
 #endif /* PRINTF_NO_VA_ARGS_FFLUSH */
@@ -103,7 +108,9 @@ extern "C"
     else                                                                                                                \
     {                                                                                                                   \
         PRINTF_NO_VA_ARGS_FFLUSH (format_string);                                                                       \
-    }
+    }                                                                                                                   \
+    IS_INT(file)                                                                                                        \
+	IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"FPRINTF_NO_VA_ARGS_FFLUSH\" is already defined !"
 #endif /* FPRINTF_NO_VA_ARGS_FFLUSH */
@@ -115,7 +122,8 @@ extern "C"
  */
 #ifndef PUTS_FFLUSH
     #define PUTS_FFLUSH(string)                                                                                         \
-    puts (string); fflush (stdout);
+    puts (string); fflush (stdout);                                                                                     \
+    IS_IN_TYPE_LIST_4(string, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"PUTS_FFLUSH\" is already defined !"
 #endif /* PUTS_FFLUSH */
@@ -145,7 +153,9 @@ extern "C"
     else                                                                                                                \
     {                                                                                                                   \
         PRINTF_NO_VA_ARGS_FFLUSH (format_string);                                                                       \
-    }
+    }                                                                                                                   \
+    IS_INT(file)                                                                                                        \
+	IS_IN_TYPE_LIST_4(string, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"FPUTS_FFLUSH\" is already defined !"
 #endif /* FPUTS_FFLUSH */
@@ -182,7 +192,9 @@ extern "C"
  */
 #ifndef PRINT_X_TIMES_SAME_CHAR
 #define PRINT_X_TIMES_SAME_CHAR(character, times)                                                                       \
-    for (size_t i = 0; i < (times); ++ i) { printf ("%c", (character)); } fflush (stdout);
+    for (size_t i = 0; i < (times); ++ i) { printf ("%c", (character)); } fflush (stdout);                              \
+    IS_INT(times)                                                                                                       \
+    IS_TYPE(character, int)
 #else
     #error "The macro \"PRINT_X_TIMES_SAME_CHAR\" is already defined !"
 #endif /* PRINT_X_TIMES_SAME_CHAR */
