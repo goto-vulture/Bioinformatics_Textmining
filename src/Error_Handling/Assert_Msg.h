@@ -45,14 +45,14 @@ extern "C"
  * function only accepts C-String without format parameter.
  */
 #ifndef ASSERT_FMSG
-    #define ASSERT_FMSG(expr, format_string, ...)                       \
-    if (! (expr))                                                       \
-    {                                                                   \
-        fprintf (stderr, format_string, __VA_ARGS__);                   \
-        fputc ('\n', stderr);                                           \
-        fflush (stderr);                                                \
-        ASSERT_MSG(false, "See error message above !")                  \
-    }                                                                   \
+    #define ASSERT_FMSG(expr, format_string, ...)                                                                       \
+    if (! (expr))                                                                                                       \
+    {                                                                                                                   \
+        fprintf (stderr, format_string, __VA_ARGS__);                                                                   \
+        fputc ('\n', stderr);                                                                                           \
+        fflush (stderr);                                                                                                \
+        ASSERT_MSG(false, "See error message above !")                                                                  \
+    }                                                                                                                   \
 	IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"ASSERT_FMSG\" is already defined !"
@@ -67,14 +67,14 @@ extern "C"
  * necessary. But it can help to find bugs. E.g.: Maybe there is an bug in the memory size calculation.
  */
 #ifndef ASSERT_ALLOC
-    #define ASSERT_ALLOC(ptr, message, memory_size)                                 \
-    if (ptr == NULL)                                                                \
-    {                                                                               \
-        fprintf (stderr, "Try to allocate %zu bytes !\n", (size_t) memory_size);    \
-        fflush (stderr);                                                            \
-        ASSERT_MSG(false, message)                                                  \
-    }                                                                               \
-	IS_IN_TYPE_LIST_4(message, char*, const char*, char* const, const char* const)  \
+    #define ASSERT_ALLOC(ptr, message, memory_size)                                                                     \
+    if (ptr == NULL)                                                                                                    \
+    {                                                                                                                   \
+        fprintf (stderr, "Try to allocate %zu bytes !\n", (size_t) memory_size);                                        \
+        fflush (stderr);                                                                                                \
+        ASSERT_MSG(false, message)                                                                                      \
+    }                                                                                                                   \
+	IS_IN_TYPE_LIST_4(message, char*, const char*, char* const, const char* const)                                      \
 	IS_INT(memory_size)
 #else
     #error "The macro \"ASSERT_ALLOC\" is already defined !"

@@ -50,9 +50,9 @@ extern void Show_Dynamic_Memory_Status (void);
  * @brief Execute and count malloc calls.
  */
 #ifndef MALLOC
-    #define MALLOC(memory_size)                                                                                       \
-        malloc (memory_size);                                                                                         \
-        ++ GLOBAL_malloc_calls;                                                                                       \
+    #define MALLOC(memory_size)                                                                                         \
+        malloc (memory_size);                                                                                           \
+        ++ GLOBAL_malloc_calls;                                                                                         \
         IS_INT(memory_size)
 #else
     #error "The macro \"MALLOC\" is already defined !"
@@ -64,10 +64,10 @@ extern void Show_Dynamic_Memory_Status (void);
  * @brief Execute and count calloc calls.
  */
 #ifndef CALLOC
-    #define CALLOC(number_of_elements, element_size)                                                                  \
-        calloc (number_of_elements, element_size);                                                                    \
-        ++ GLOBAL_calloc_calls;                                                                                       \
-        IS_INT(number_of_elements)                                                                                    \
+    #define CALLOC(number_of_elements, element_size)                                                                    \
+        calloc (number_of_elements, element_size);                                                                      \
+        ++ GLOBAL_calloc_calls;                                                                                         \
+        IS_INT(number_of_elements)                                                                                      \
 		IS_INT(element_size)
 #else
     #error "The macro \"CALLOC\" is already defined !"
@@ -82,11 +82,11 @@ extern void Show_Dynamic_Memory_Status (void);
  * => So the malloc, realloc and free counter needs to be increased.
  */
 #ifndef REALLOC
-    #define REALLOC(pointer, element_size)                                                                            \
-        realloc (pointer, element_size);                                                                              \
-        ++ GLOBAL_malloc_calls;                                                                                       \
-        ++ GLOBAL_realloc_calls;                                                                                      \
-        ++ GLOBAL_free_calls;                                                                                         \
+    #define REALLOC(pointer, element_size)                                                                              \
+        realloc (pointer, element_size);                                                                                \
+        ++ GLOBAL_malloc_calls;                                                                                         \
+        ++ GLOBAL_realloc_calls;                                                                                        \
+        ++ GLOBAL_free_calls;                                                                                           \
         IS_INT(element_size)
 #else
     #error "The macro \"REALLOC\" is already defined !"
@@ -102,12 +102,12 @@ extern void Show_Dynamic_Memory_Status (void);
  * See: https://stackoverflow.com/questions/4190703/is-it-safe-to-delete-a-null-pointer
  */
 #ifndef FREE_AND_SET_TO_NULL
-    #define FREE_AND_SET_TO_NULL(pointer)                                                                             \
-        /* if (pointer != NULL) */                                                                                    \
-        {                                                                                                             \
-            free (pointer);                                                                                           \
-            pointer = NULL;                                                                                           \
-            ++ GLOBAL_free_calls;                                                                                     \
+    #define FREE_AND_SET_TO_NULL(pointer)                                                                               \
+        /* if (pointer != NULL) */                                                                                      \
+        {                                                                                                               \
+            free (pointer);                                                                                             \
+            pointer = NULL;                                                                                             \
+            ++ GLOBAL_free_calls;                                                                                       \
         }
 #else
     #error "The macro \"FREE_AND_SET_TO_NULL\" is already defined !"
@@ -119,9 +119,9 @@ extern void Show_Dynamic_Memory_Status (void);
  * @brief Close an file and set the FILE pointer to NULL.
  */
 #ifndef FCLOSE_AND_SET_TO_NULL
-    #define FCLOSE_AND_SET_TO_NULL(pointer)                                                                           \
-        fclose (pointer);                                                                                             \
-        pointer = NULL;                                                                                               \
+    #define FCLOSE_AND_SET_TO_NULL(pointer)                                                                             \
+        fclose (pointer);                                                                                               \
+        pointer = NULL;                                                                                                 \
         IS_TYPE(pointer, FILE*)
 #else
     #error "The macro \"FCLOSE_AND_SET_TO_NULL\" is already defined !"
@@ -133,8 +133,8 @@ extern void Show_Dynamic_Memory_Status (void);
  * @brief Delete an object with a user-defined delete function.
  */
 #ifndef FREE_WITH_FUNCTION_AND_SET_TO_NULL
-    #define FREE_WITH_FUNCTION_AND_SET_TO_NULL(free_function, pointer)                                                \
-        free_function (pointer);                                                                                      \
+    #define FREE_WITH_FUNCTION_AND_SET_TO_NULL(free_function, pointer)                                                  \
+        free_function (pointer);                                                                                        \
         pointer = NULL;
 #else
     #error "The macro \"FREE_WITH_FUNCTION_AND_SET_TO_NULL\" is already defined !"
