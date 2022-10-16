@@ -78,7 +78,7 @@
 /*
  * Is C11 available: Use _Statc_asserts to check the system before compiling the program.
  */
-#elif __STDC_VERSION__ == 201112L
+#elif __STDC_VERSION__ >= 201112L
     #include <limits.h>
     #include <stddef.h>
     #include <time.h>
