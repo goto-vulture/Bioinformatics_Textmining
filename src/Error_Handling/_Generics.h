@@ -415,31 +415,31 @@ extern "C"
 #endif /* TYPE_NAME */
 
 #ifndef PTR_CHECK
-#define PTR_CHECK
+#define PTR_CHECK(x, type_def, default_result)
 #else
 #error "The macro \"PTR_CHECK\" is already defined !"
 #endif /* PTR_CHECK */
 
 #ifndef IS_PTR
-#define IS_PTR
+#define IS_PTR(value)
 #else
 #error "The macro \"IS_PTR\" is already defined !"
 #endif /* IS_PTR */
 
 #ifndef IS_NO_PTR
-#define IS_NO_PTR
+#define IS_NO_PTR(value)
 #else
 #error "The macro \"IS_NO_PTR\" is already defined !"
 #endif /* IS_NO_PTR */
 
 #ifndef IS_INT
-#define IS_INT
+#define IS_INT(value)
 #else
 #error "The macro \"IS_INT\" is already defined !"
 #endif /* IS_INT */
 
 #ifndef IS_NO_INT
-#define IS_NO_INT
+#define IS_NO_INT(value)
 #else
 #error "The macro \"IS_NO_INT\" is already defined !"
 #endif /* IS_NO_INT */
