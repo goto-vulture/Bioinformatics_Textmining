@@ -238,6 +238,149 @@ extern "C"
 #error "The macro \"IS_NOT_TYPE_LIST_5\" is already defined !"
 #endif /* IS_NOT_TYPE_LIST_5 */
 
+#else //================================================================================================================
+
+/*
+ * Create empty macros to make the code compatible, when the compiler does not supports C11.
+ */
+#ifndef TYPE
+#define TYPE(type)
+#else
+#error "The macro \"TYPE\" is already defined !"
+#endif /* TYPE */
+
+#ifndef ALL_POSSIBLE_TYPES
+#define ALL_POSSIBLE_TYPES(type)
+#else
+#error "The macro \"ALL_POSSIBLE_TYPES\" is already defined !"
+#endif /* ALL_POSSIBLE_TYPES */
+
+#ifndef ALL_POSSIBLE_TYPES_WITH_UNSIGNED
+#define ALL_POSSIBLE_TYPES_WITH_UNSIGNED(type)
+#else
+#error "The macro \"ALL_POSSIBLE_TYPES_WITH_UNSIGNED\" is already defined !"
+#endif /* ALL_POSSIBLE_TYPES_WITH_UNSIGNED */
+
+#ifndef ALL_PTR
+#define ALL_PTR(type)
+#else
+#error "The macro \"ALL_PTR\" is already defined !"
+#endif /* ALL_PTR */
+
+#ifndef TYPE_PTR
+#define TYPE_PTR(type)
+#else
+#error "The macro \"TYPE_PTR\" is already defined !"
+#endif /* TYPE_PTR */
+
+#ifndef TYPE_PTR_PTR
+#define TYPE_PTR_PTR(type)
+#else
+#error "The macro \"TYPE_PTR_PTR\" is already defined !"
+#endif /* TYPE_PTR_PTR */
+
+#ifndef TYPE_PTR_PTR_PTR
+#define TYPE_PTR_PTR_PTR(type)
+#else
+#error "The macro \"TYPE_PTR_PTR_PTR\" is already defined !"
+#endif /* TYPE_PTR_PTR_PTR */
+
+#ifndef TYPE_PTR_PTR_PTR_PTR
+#define TYPE_PTR_PTR_PTR_PTR(type)
+#else
+#error "The macro \"TYPE_PTR_PTR_PTR_PTR\" is already defined !"
+#endif /* TYPE_PTR_PTR_PTR_PTR */
+
+#ifndef TYPE_PTR_PTR_PTR_PTR_PTR
+#define TYPE_PTR_PTR_PTR_PTR_PTR(type)
+#else
+#error "The macro \"TYPE_PTR_PTR_PTR_PTR_PTR\" is already defined !"
+#endif /* TYPE_PTR_PTR_PTR_PTR_PTR */
+
+#ifndef INT_TYPES
+#define INT_TYPES
+#else
+#error "The macro \"INT_TYPES\" is already defined !"
+#endif /* INT_TYPES */
+
+#ifndef FLOAT_TYPES
+#define FLOAT_TYPES
+#else
+#error "The macro \"FLOAT_TYPES\" is already defined !"
+#endif /* FLOAT_TYPES */
+
+#ifndef VOID_TYPES
+#define VOID_TYPES
+#else
+#error "The macro \"VOID_TYPES\" is already defined !"
+#endif /* VOID_TYPES */
+
+#ifndef TYPE_NAME
+#define TYPE_NAME(x)
+#else
+#error "The macro \"TYPE_NAME\" is already defined !"
+#endif /* TYPE_NAME */
+
+#ifndef IS_TYPE
+#define IS_TYPE(value, exp_type)
+#else
+#error "The macro \"IS_TYPE\" is already defined !"
+#endif /* IS_TYPE */
+
+#ifndef IS_IN_TYPE_LIST_2
+#define IS_IN_TYPE_LIST_2(value, exp_type_1, exp_type_2)
+#else
+#error "The macro \"IS_IN_TYPE_LIST_2\" is already defined !"
+#endif /* IS_IN_TYPE_LIST_2 */
+
+#ifndef IS_IN_TYPE_LIST_3
+#define IS_IN_TYPE_LIST_3(value, exp_type_1, exp_type_2, exp_type_3)
+#else
+#error "The macro \"IS_IN_TYPE_LIST_3\" is already defined !"
+#endif /* IS_IN_TYPE_LIST_3 */
+
+#ifndef IS_IN_TYPE_LIST_4
+#define IS_IN_TYPE_LIST_4(value, exp_type_1, exp_type_2, exp_type_3, exp_type_4)
+#else
+#error "The macro \"IS_IN_TYPE_LIST_4\" is already defined !"
+#endif /* IS_IN_TYPE_LIST_4 */
+
+#ifndef IS_IN_TYPE_LIST_5
+#define IS_IN_TYPE_LIST_5(value, exp_type_1, exp_type_2, exp_type_3, exp_type_4, exp_type_5)
+#else
+#error "The macro \"IS_IN_TYPE_LIST_5\" is already defined !"
+#endif /* IS_IN_TYPE_LIST_5 */
+
+#ifndef IS_NOT_TYPE
+#define IS_NOT_TYPE(value, not_allowed_type)
+#else
+#error "The macro \"IS_NOT_TYPE\" is already defined !"
+#endif /* IS_NOT_TYPE */
+
+#ifndef IS_NOT_TYPE_LIST_2
+#define IS_NOT_TYPE_LIST_2(value, not_allowed_type_1, not_allowed_type_2)
+#else
+#error "The macro \"IS_NOT_TYPE_LIST_2\" is already defined !"
+#endif /* IS_NOT_TYPE_LIST_2 */
+
+#ifndef IS_NOT_TYPE_LIST_3
+#define IS_NOT_TYPE_LIST_3(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3)
+#else
+#error "The macro \"IS_NOT_TYPE_LIST_3\" is already defined !"
+#endif /* IS_NOT_TYPE_LIST_3 */
+
+#ifndef IS_NOT_TYPE_LIST_4
+#define IS_NOT_TYPE_LIST_4(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3, not_allowed_type_4)
+#else
+#error "The macro \"IS_NOT_TYPE_LIST_4\" is already defined !"
+#endif /* IS_NOT_TYPE_LIST_4 */
+
+#ifndef IS_NOT_TYPE_LIST_5
+#define IS_NOT_TYPE_LIST_5(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3, not_allowed_type_4, not_allowed_type_5)
+#else
+#error "The macro \"IS_NOT_TYPE_LIST_5\" is already defined !"
+#endif /* IS_NOT_TYPE_LIST_5 */
+
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 
