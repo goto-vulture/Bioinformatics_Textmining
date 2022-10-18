@@ -788,6 +788,41 @@ TokenListContainer_GetLenghOfLongestTokenList
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Determine the array index of the longest Token_List object and return the value.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ *
+ * @return Array index of the longest Token_List object
+ */
+extern size_t
+TokenListContainer_GetArrayIndexOfLongestTokenList
+(
+        const struct Token_List_Container* const container
+)
+{
+    ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
+
+    size_t max_length = 0;
+    size_t result = 0;
+
+    for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
+    {
+        if (container->token_lists [i].next_free_element > max_length)
+        {
+            max_length = container->token_lists [i].next_free_element;
+            result = (size_t) i;
+        }
+    }
+
+    return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Print several container information.
  *
  * Asserts:
@@ -822,6 +857,7 @@ TokenListContainer_ShowAttributes
     printf ("Max. possible token length:     %zu\n", container->token_lists [0].max_token_length);
     printf ("Average token length:           %zu\n", Get_Average_Token_Length(container));
     printf ("Longest token list:             %zu\n", TokenListContainer_GetLenghOfLongestTokenList(container));
+    printf ("Array index longest token list: %zu\n", TokenListContainer_GetArrayIndexOfLongestTokenList(container));
     printf ("Longest saved token:            %zu\n", TokenListContainer_GetLenghOfLongestToken(container));
     printf ("Longest token in the container: %zu\n", container->longest_token_length);
     printf ("Longest dataset id:             %zu\n", longest_dataset_id);

@@ -277,6 +277,22 @@ TokenListContainer_GetLenghOfLongestTokenList
 );
 
 /**
+ * @brief Determine the array index of the longest Token_List object and return the value.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ *
+ * @return Array index of the longest Token_List object
+ */
+extern size_t
+TokenListContainer_GetArrayIndexOfLongestTokenList
+(
+        const struct Token_List_Container* const container
+);
+
+/**
  * @brief Print several container information.
  *
  * Asserts:
