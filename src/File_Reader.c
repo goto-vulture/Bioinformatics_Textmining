@@ -823,6 +823,40 @@ TokenListContainer_GetArrayIndexOfLongestTokenList
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Determine the length of the longest data set ID.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ *
+ * @return Length of the longest data set ID
+ */
+extern size_t
+TokenListContainer_GetLengthOfLongestDatasetID
+(
+        const struct Token_List_Container* const container
+)
+{
+    ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
+
+    size_t longest_dataset_id = 0;
+
+    for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
+    {
+        const size_t cur_id_length = strlen (container->token_lists [i].dataset_id);
+        if (cur_id_length > longest_dataset_id)
+        {
+            longest_dataset_id = cur_id_length;
+        }
+    }
+
+    return longest_dataset_id;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Print several container information.
  *
  * Asserts:
@@ -838,16 +872,6 @@ TokenListContainer_ShowAttributes
 {
     ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
 
-    size_t longest_dataset_id = 0;
-    for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
-    {
-        const size_t cur_id_length = strlen (container->token_lists [i].dataset_id);
-        if (cur_id_length > longest_dataset_id)
-        {
-            longest_dataset_id = cur_id_length;
-        }
-    }
-
     puts("");
     printf ("Full token list container size: ");
     Print_Memory_Size_As_B_KB_MB(TokenListContainer_GetAllocatedMemSize(container));
@@ -860,7 +884,7 @@ TokenListContainer_ShowAttributes
     printf ("Array index longest token list: %zu\n", TokenListContainer_GetArrayIndexOfLongestTokenList(container));
     printf ("Longest saved token:            %zu\n", TokenListContainer_GetLenghOfLongestToken(container));
     printf ("Longest token in the container: %zu\n", container->longest_token_length);
-    printf ("Longest dataset id:             %zu\n", longest_dataset_id);
+    printf ("Longest dataset id:             %zu\n", TokenListContainer_GetLengthOfLongestDatasetID(container));
     printf ("Malloc / calloc calls:          %zu\n", container->malloc_calloc_calls);
     printf ("Realloc calls:                  %zu\n", container->realloc_calls);
     puts("");

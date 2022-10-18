@@ -293,6 +293,22 @@ TokenListContainer_GetArrayIndexOfLongestTokenList
 );
 
 /**
+ * @brief Determine the length of the longest data set ID.
+ *
+ * Asserts:
+ *      container != NULL
+ *
+ * @param[in] container Token_List_Container object
+ *
+ * @return Length of the longest data set ID
+ */
+extern size_t
+TokenListContainer_GetLengthOfLongestDatasetID
+(
+        const struct Token_List_Container* const container
+);
+
+/**
  * @brief Print several container information.
  *
  * Asserts:
