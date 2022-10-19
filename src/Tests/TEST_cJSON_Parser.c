@@ -43,6 +43,7 @@ extern void TEST_cJSON_Parse_JSON_Fragment (void)
     const long unsigned int parsing_result_length = (long unsigned int) (expected_results_file_length * 2);
     long unsigned int parsing_result_mem_left = parsing_result_length - 1;
     char* parsing_result = (char*) MALLOC (parsing_result_length * sizeof (char));
+    memset (parsing_result, '\0', parsing_result_length);
     ASSERT_ALLOC(parsing_result, "Cannot allocate memory for the parsing result !",
             (expected_results_file_length * 2) * sizeof (char));
     parsing_result [expected_results_file_length * 2 - 1] = '\0'; // Gurantee a temination
@@ -84,9 +85,8 @@ extern void TEST_cJSON_Parse_JSON_Fragment (void)
     const int cmp_result =
             strncmp (expected_results_file_content, parsing_result, strlen (expected_results_file_content));
 
-    ASSERT_EQUALS(0, cmp_result);
-
     FREE_AND_SET_TO_NULL(parsing_result);
+    ASSERT_EQUALS(0, cmp_result);
 
     return;
 }
