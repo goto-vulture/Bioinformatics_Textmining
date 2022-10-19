@@ -43,6 +43,14 @@
 #error "The macro \"NUMBER_OF_RUNS\" is already defined !"
 #endif /* NUMBER_OF_RUNS */
 
+// #define checks only works with C11 and higher
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+_Static_assert(NUMBER_OF_ARRAYS > 0, "The macro \"NUMBER_OF_ARRAYS\" needs to be at least one !");
+_Static_assert(MAX_ARRAY_LENGTH > 0, "The macro \"MAX_ARRAY_LENGTH\" needs to be at least one !");
+_Static_assert(RAND_UPPER_BOUND > 0, "The macro \"RAND_UPPER_BOUND\" needs to be at least one !");
+_Static_assert(NUMBER_OF_RUNS > 0, "The macro \"NUMBER_OF_RUNS needs\" to be at least one !");
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
 /**
  * @brief Execute all intersection approaches and measure the used time. (Print the used time to stdout)
  *

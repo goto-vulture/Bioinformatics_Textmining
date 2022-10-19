@@ -73,11 +73,15 @@ extern "C"
 /**
  * @brief Check, whether the macro values are valid.
  */
-#if __STDC_VERSION__ >= 201112L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(DATASET_ID_LENGTH > 1, "The marco \"DATASET_ID_LENGTH\" needs to be at lest 2 (one char for the ID and "
         "one for the end symbol ('\0') !");
 _Static_assert(MAX_VLA_LENGTH >= 100, "The macro \"MAX_VLA_LENGTH\" needs to be at least 100 !");
-#endif /* __STDC_VERSION__ */
+_Static_assert(sizeof(CHAR_OFFSET_TYPE_FSTR_SPECIFIER) > 0 + 1, "The macro \"CHAR_OFFSET_TYPE_FSTR_SPECIFIER\" needs "
+        "at least one char (plus '\0') !");
+_Static_assert(sizeof(INT_MAPPING_TYPE_FSTR_SPECIFIER) > 0 + 1, "The macro \"INT_MAPPING_TYPE_FSTR_SPECIFIER\" needs "
+        "at least one char (plus '\0') !");
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 
 

@@ -59,6 +59,17 @@
 #error "The macro \"MAX_TOKENARRAY_LENGTH\" is already defined !"
 #endif /* MAX_TOKENARRAY_LENGTH */
 
+// #define checks only works with C11 and higher
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+_Static_assert(MD5_SUM_LENGTH == 16, "The macro \"MD5_SUM_LENGTH\" needs to be exact 16 !");
+_Static_assert(NUMBER_OF_TOKENARRAYS > 0, "The macro \"NUMBER_OF_TOKENARRAYS\" needs to be at least one !");
+_Static_assert(MAX_DATASET_ID_LENGTH > 0, "The macro \"MAX_DATASET_ID_LENGTH\" needs to be at least one !");
+_Static_assert(MAX_TOKENARRAY_LENGTH > 0, "The macro \"MAX_TOKENARRAY_LENGTH\" need to be at least one !");
+_Static_assert(sizeof(TEST_FILE_READER_TEST_FILE) > 0 + 1, "The macro \"TEST_FILE_READER_TEST_FILE\" is empty !");
+_Static_assert(sizeof(TEST_FILE_READER_TEST_FILE_MD5) == 32 + 1,
+        "The macro \"TEST_FILE_READER_TEST_FILE_MD5\" needs to be exact 32 char (+ '\0') !");
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
 /**
  * @brief Compare the MD5 sum of the file with the expected one.
  *
