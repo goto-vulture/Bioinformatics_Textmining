@@ -131,6 +131,7 @@
 
 #include "Tests/tinytest.h"
 #include "Tests/TEST_cJSON_Parser.h"
+#include "Tests/TEST_File_Reader.h"
 
 
 
@@ -284,6 +285,11 @@ Run_All_Test_Functions
     RUN(TEST_cJSON_Parse_JSON_Fragment);
     RUN(TEST_cJSON_Get_Token_Array_From_JSON_Fragment);
     RUN(TEST_cJSON_Parse_Full_JSON_File);
+
+    RUN(TEST_Number_Of_Tokenarrays);
+    RUN(TEST_Max_Dataset_ID_Length);
+    RUN(TEST_Max_Tokenarray_Length);
+    RUN(TEST_Length_Of_The_First_25_Tokenarrays);
 
     return;
 }
