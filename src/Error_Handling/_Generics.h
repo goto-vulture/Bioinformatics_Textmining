@@ -66,7 +66,7 @@ extern "C"
     TYPE_PTR_PTR(type, type_def),                                                                                       \
     TYPE_PTR_PTR_PTR(type, type_def),                                                                                   \
     TYPE_PTR_PTR_PTR_PTR(type, type_def),                                                                               \
-	TYPE_PTR_PTR_PTR_PTR_PTR(type, type_def)
+    TYPE_PTR_PTR_PTR_PTR_PTR(type, type_def)
 #else
 #error "The macro \"ALL_PTR\" is already defined !"
 #endif /* ALL_PTR */
@@ -152,19 +152,19 @@ extern "C"
 #define PTR_CHECK(x, type_def, default_result)                                                                          \
     _Generic((x),                                                                                                       \
     ALL_PTR(char, type_def),                                                                                            \
-	ALL_PTR(unsigned char, type_def),                                                                                   \
-	ALL_PTR(short int, type_def),                                                                                       \
-	ALL_PTR(unsigned short int, type_def),                                                                              \
-	ALL_PTR(int, type_def),                                                                                             \
-	ALL_PTR(unsigned  int, type_def),                                                                                   \
-	ALL_PTR(long int, type_def),                                                                                        \
-	ALL_PTR(unsigned long int, type_def),                                                                               \
-	ALL_PTR(long long int, type_def),                                                                                   \
-	ALL_PTR(unsigned long long int, type_def),                                                                          \
-	ALL_PTR(float, type_def),                                                                                           \
-	ALL_PTR(double, type_def),                                                                                          \
-	ALL_PTR(long double, type_def),                                                                                     \
-	ALL_PTR(void, type_def),                                                                                            \
+    ALL_PTR(unsigned char, type_def),                                                                                   \
+    ALL_PTR(short int, type_def),                                                                                       \
+    ALL_PTR(unsigned short int, type_def),                                                                              \
+    ALL_PTR(int, type_def),                                                                                             \
+    ALL_PTR(unsigned  int, type_def),                                                                                   \
+    ALL_PTR(long int, type_def),                                                                                        \
+    ALL_PTR(unsigned long int, type_def),                                                                               \
+    ALL_PTR(long long int, type_def),                                                                                   \
+    ALL_PTR(unsigned long long int, type_def),                                                                          \
+    ALL_PTR(float, type_def),                                                                                           \
+    ALL_PTR(double, type_def),                                                                                          \
+    ALL_PTR(long double, type_def),                                                                                     \
+    ALL_PTR(void, type_def),                                                                                            \
     default: default_result)
 #else
 #error "The macro \"PTR_CHECK\" is already defined !"
