@@ -8,6 +8,7 @@
 #include "TEST_File_Reader.h"
 
 #include <stdbool.h>
+#include <ctype.h>
 #include "../Misc.h"
 #include "../File_Reader.h"
 #include "md5.h"
@@ -33,7 +34,7 @@
 #endif /* TEST_FILE_READER_TEST_FILE_MD5 */
 
 #ifndef LENGTH_MD5_SUM
-#define MD5_SUM_LENGTH (unsigned char) 16 ///< Length (number of bytes) of a MD5 sum
+#define MD5_SUM_LENGTH 16 ///< Length (number of bytes) of a MD5 sum
 #else
 #error "The macro \"LENGTH_MD5_SUM\" is already defined !"
 #endif /* LENGTH_MD5_SUM */
@@ -195,7 +196,7 @@ static _Bool Check_Test_File_MD5_Sum
     memset (expected_md5_sum_hex, '\0', sizeof(expected_md5_sum_hex));
     uint8_t current_byte = 0;
 
-    for (unsigned char i = 0; i < MD5_SUM_LENGTH * 2; i += 2) // MD5_SUM_LENGTH * 2, because every byte are encoded with 2 char
+    for (int i = 0; i < MD5_SUM_LENGTH * 2; i += 2) // MD5_SUM_LENGTH * 2, because every byte are encoded with 2 char
     {
         expected_md5_sum_hex [current_byte] = Hex_Char_To_Byte (expected_md5_sum [i], expected_md5_sum [i + 1]);
         ++ current_byte;
@@ -203,7 +204,7 @@ static _Bool Check_Test_File_MD5_Sum
 
     // Compare MD5 sums
     _Bool result = true;
-    for (unsigned char i = 0; i < MD5_SUM_LENGTH; ++ i)
+    for (int i = 0; i < MD5_SUM_LENGTH; ++ i)
     {
         if (expected_md5_sum_hex [i] != created_md5 [i])
         {
@@ -277,13 +278,18 @@ static uint8_t Hex_Char_To_Byte
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(input_char); i ++)
     {
         // get current character then increment
-        uint8_t byte = (uint8_t) input_char [i];
+        uint8_t byte = (uint8_t) tolower(input_char [i]);
         // transform hex character to the 4bit equivalent number, using the ascii table indexes
-        if (byte >= '0' && byte <= '9') byte = byte - '0';
-        else if (byte >= 'a' && byte <='f') byte = byte - 'a' + 10;
-        else if (byte >= 'A' && byte <='F') byte = byte - 'A' + 10;
+        if (byte >= '0' && byte <= '9')
+        {
+            byte = (uint8_t) (byte - '0');
+        }
+        else if (byte >= 'a' && byte <='f')
+        {
+            byte = (uint8_t) (byte - 'a' + 10);
+        }
         // shift 4 to make space for new digit, and add the 4 bits of the new digit
-        result = (result << 4) | (byte & 0xF);
+        result = (uint8_t) ((result << 4) | (byte & 0xF));
     }
 
     return result;
