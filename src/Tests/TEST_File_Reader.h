@@ -1,5 +1,7 @@
 /**
- * @file TEST_File_Reader.h
+ * @file TEST_File_Reader.c
+ *
+ * @brief Here are tests for the File_Reader translation unit.
  *
  * @date 18.10.2022
  * @author: am4
