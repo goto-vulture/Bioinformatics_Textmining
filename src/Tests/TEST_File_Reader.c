@@ -222,7 +222,7 @@ static _Bool Check_Test_File_MD5_Sum
     }
     else
     {
-        printf("Checked MD5 sum: ");
+        printf("Checked MD5 sum of the file \"%s\": ", TEST_FILE_READER_TEST_FILE);
         Print_Hash(expected_md5_sum_hex);
         puts("");
     }
