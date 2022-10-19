@@ -223,6 +223,12 @@ STOP_WORDS_C = ./src/Stop_Words/Stop_Words.c
 
 TWO_DIM_C_STRING_ARRAY_H = ./src/Two_Dim_C_String_Array.h
 TWO_DIM_C_STRING_ARRAY_C = ./src/Two_Dim_C_String_Array.c
+
+MD5_SUM_H = ./src/Tests/md5.h
+MD5_SUM_C = ./src/Tests/md5.c
+
+TEST_FILE_READER_H = ./src/Tests/TEST_File_Reader.h
+TEST_FILE_READER_C = ./src/Tests/TEST_File_Reader.c
 ##### ##### ##### ENDE Uebersetzungseinheiten ##### ##### #####
 
 
@@ -245,11 +251,11 @@ endif
 	@echo
 	@echo Bioinformatics_Textmining build completed !
 
-$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o  Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o
+$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o  Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o
 	@echo
 	@echo Linking object files ...
 	@echo
-	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o $(LIBS)
+	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o $(LIBS)
 
 ##### BEGINN Die einzelnen Uebersetzungseinheiten #####
 main.o: $(MAIN_C)
@@ -337,6 +343,12 @@ Stop_Words.o: $(STOP_WORDS_C)
 
 Two_Dim_C_String_Array.o: $(TWO_DIM_C_STRING_ARRAY_C)
 	$(CC) $(CCFLAGS) -c $(TWO_DIM_C_STRING_ARRAY_C)
+
+md5.o: $(MD5_SUM_C)
+	$(CC) $(CCFLAGS) -c $(MD5_SUM_C)
+
+TEST_File_Reader.o: $(TEST_FILE_READER_C)
+	$(CC) $(CCFLAGS) -c $(TEST_FILE_READER_C)
 ##### ENDE Die einzelnen Uebersetzungseinheiten #####
 
 # Alles wieder aufraeumen
