@@ -244,7 +244,7 @@ extern int_fast64_t Determine_FILE_Size (FILE* file)
     #error "The macro \"USE_FALLBACK\" is already defined !"
     #endif /* USE_FALLBACK */
 #else
-    #ifdef __unix__
+    #if defined(__unix__) && defined(_POSIX_C_SOURCE)
         // Unix system
         #include <sys/types.h>
 
@@ -260,12 +260,18 @@ extern int_fast64_t Determine_FILE_Size (FILE* file)
         result = (int_fast64_t) file_length;
     #else
         // Other system: Using the fallback
+    #ifdef __GNUC__
+    #warning "Old fseek()/ftell() mechanism used for determining the file size ! This could lead to a file size limit of 2 GB."
         result = (int_fast64_t) Determine_FILE_Size_Fallback(file);
+    #endif /* __GNUC__ */
     #endif /* __unix__ */
 #endif
 
 #ifdef USE_FALLBACK
+    #ifdef __GNUC__
+    #warning "Old fseek()/ftell() mechanism used for determining the file size ! This could lead to a file size limit of 2 GB."
         result = (int_fast64_t) Determine_FILE_Size_Fallback(file);
+    #endif /* __GNUC__ */
 #else
         // Pseudo using to avoid unused warnings
         (void) Determine_FILE_Size_Fallback;
