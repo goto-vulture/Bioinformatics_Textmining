@@ -51,10 +51,10 @@
 /**
  * @brief Check, whether the macro values are valid.
  */
-#if __STDC_VERSION__ >= 201112L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(TOKENS_ALLOCATION_STEP_SIZE > 0, "The marco \"TOKENS_ALLOCATION_STEP_SIZE\" is zero !");
 _Static_assert(TOKEN_CONTAINER_ALLOCATION_STEP_SIZE > 0, "The marco \"TOKEN_CONTAINER_ALLOCATION_STEP_SIZE\" is zero !");
-#endif /* __STDC_VERSION__ */
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ */
 
 /**
  * @brief Calculate the begin of the next free token in a Token_List.
