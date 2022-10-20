@@ -382,6 +382,7 @@ Exec_Intersection
     cJSON* src_tokens_array_wo_stop_words   = NULL; // Array of tokens, which are from a source file (no stop words)
     cJSON* token                            = NULL; // Token
     cJSON* char_offset_array                = NULL; // Offset (number of char) of the intersection tokens
+    cJSON* sentence_offset_array            = NULL; // Offset (number of sentences) of the intersection tokens
     cJSON* tokens_array                     = NULL; // Array of tokens
     cJSON* intersections_partial_match      = NULL; // Intersections with a partial match (An intersection does not
                                                     // contain a full source set)
@@ -467,11 +468,13 @@ Exec_Intersection
             (
                     source_int_values_1->data_struct.data [selected_data_1_array],
                     source_int_values_1->data_struct.char_offsets_1 [selected_data_1_array],
+                    source_int_values_1->data_struct.sentence_offsets_1 [selected_data_1_array],
                     source_int_values_1->arrays_lengths [selected_data_1_array],
 
                     source_int_values_2->data_struct.data [selected_data_2_array],
                     // Yes "char_offsets_1" instead of "char_offsets_2" is correct !
                     source_int_values_2->data_struct.char_offsets_1 [selected_data_2_array],
+                    source_int_values_2->data_struct.sentence_offsets_1 [selected_data_2_array],
                     source_int_values_2->arrays_lengths [selected_data_2_array],
 
                     NULL, NULL
@@ -540,6 +543,7 @@ Exec_Intersection
                 }
 
                 cJSON_NEW_ARR_CHECK(char_offset_array);
+                cJSON_NEW_ARR_CHECK(sentence_offset_array);
                 cJSON_NEW_ARR_CHECK(tokens_array);
 
                 //fputs("Found tokens_array in:\n", result_file);
@@ -557,9 +561,12 @@ Exec_Intersection
 
                     cJSON* char_offset = cJSON_CreateNumber(intersection_result->data_struct.char_offsets_1 [0][i]);
                     ASSERT_MSG(char_offset != NULL, "char offset is NULL !");
+                    cJSON* sentence_offset = cJSON_CreateNumber(intersection_result->data_struct.sentence_offsets_1 [0][i]);
+                    ASSERT_MSG(sentence_offset != NULL, "sentence offset is NULL !");
 
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(char_offset_array, char_offset);
+                    cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset);
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(tokens_array, token);
 
                     ++ intersection_tokens_found_counter;
@@ -571,6 +578,7 @@ Exec_Intersection
                 cJSON_NEW_OBJ_CHECK(two_array_container);
                 cJSON_AddItemToObject(two_array_container, "tokens", tokens_array);
                 cJSON_AddItemToObject(two_array_container, "char offsets", char_offset_array);
+                cJSON_AddItemToObject(two_array_container, "sentence offsets", sentence_offset_array);
                 // Add data to the specific cJSON object
                 // For the comparison it is important to use "src_tokens_array_wo_stop_words" instead of
                 // "src_tokens_array"; Because a full match means a equalness with the list, that contains NO stop
@@ -757,10 +765,13 @@ Add_General_Information_To_Export_File
     // Up to now there will be no switch or similar structure to alter this export behavior
     cJSON* char_offset = cJSON_CreateBool(true);
     cJSON_NOT_NULL(char_offset);
+    cJSON* sentence_offset = cJSON_CreateBool(true);
+    cJSON_NOT_NULL(sentence_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Full match", full_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Stop word list used", stop_word_list);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Char offset", char_offset);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Sentence offset", sentence_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation mode", creation_mode);
 
     cJSON* creation_time = cJSON_CreateString(time_string);
@@ -892,8 +903,21 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
         // Append data
         if (next_free_value > 0)
         {
-            DocumentWordList_AppendDataWithOffsets(document_word_list, token_int_values,
-                    token_list_container->token_lists [i].char_offsets, NULL, next_free_value);
+            // Without sentence offsets
+//            DocumentWordList_AppendDataWithOffsets(document_word_list, token_int_values,
+//                    token_list_container->token_lists [i].char_offsets, NULL, next_free_value);
+
+            // With sentence offsets
+            DocumentWordList_AppendDataWithTwoTypeOffsets
+            (
+                    document_word_list,
+                    token_int_values,
+                    token_list_container->token_lists [i].char_offsets,
+                    NULL,
+                    token_list_container->token_lists [i].sentence_offsets,
+                    NULL,
+                    next_free_value
+            );
         }
     }
     FREE_AND_SET_TO_NULL(token_int_values);

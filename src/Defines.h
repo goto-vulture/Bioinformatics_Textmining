@@ -30,6 +30,32 @@ extern "C"
 #error "The macro \"CHAR_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
 #endif /* CHAR_OFFSET_TYPE_FSTR_SPECIFIER */
 
+#ifndef CHAR_OFFSET_TYPE_MAX
+#define CHAR_OFFSET_TYPE_MAX USHRT_MAX          ///< Max value for the char offset type
+#else
+#error "The macro \"CHAR_OFFSET_TYPE_MAX\" is already defined !"
+#endif /* CHAR_OFFSET_TYPE_MAX */
+
+
+#ifndef SENTENCE_OFFSET_TYPE
+#define SENTENCE_OFFSET_TYPE unsigned char      ///< Type for the sentence offsets
+#else
+#error "The macro \"SENTENCE_OFFSET_TYPE\" is already defined !"
+#endif /* SENTENCE_OFFSET_TYPE */
+
+#ifndef SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER
+#define SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER "cu"///< Type for the sentence offsets
+#else
+#error "The macro \"SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
+#endif /* SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER */
+
+#ifndef SENTENCE_OFFSET_TYPE_MAX
+#define SENTENCE_OFFSET_TYPE_MAX UCHAR_MAX      ///< Max value for the sentence offset type
+#else
+#error "The macro \"SENTENCE_OFFSET_TYPE_MAX\" is already defined !"
+#endif /* SENTENCE_OFFSET_TYPE_MAX */
+
+
 #ifndef INT_MAPPING_TYPE
 #define INT_MAPPING_TYPE unsigned int           ///< Int mapping type
 #else

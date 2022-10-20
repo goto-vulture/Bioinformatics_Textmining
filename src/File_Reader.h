@@ -46,10 +46,15 @@ struct Token_List_Container
 
         /**
          * @brief Char offsets of each token.
-         *
-         * USHRT_MAX is the placeholder value, because 0 is a valid offset !
          */
         CHAR_OFFSET_TYPE* char_offsets;
+
+        /**
+         * @brief Sentence offsets of each token.
+         *
+         * In other words: in which sentence are the tokens, when all sentences will be labeled with ascending numbers
+         */
+        SENTENCE_OFFSET_TYPE* sentence_offsets;
 
         /**
          * @brief Max. possible length for one token (inkl. terminator symbol)
