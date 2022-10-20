@@ -388,6 +388,14 @@ extern "C"
 #error "The macro \"TYPE_INVALID\" is already defined !"
 #endif /* TYPE_INVALID */
 
+#ifndef TYPE_PTR_FMT_STR
+#define TYPE_PTR_FMT_STR(type)
+#else
+#error "The macro \"TYPE_PTR_FMT_STR\" is already defined !"
+#endif /* TYPE_PTR_FMT_STR */
+
+
+
 #ifndef ALL_POSSIBLE_TYPES
 #define ALL_POSSIBLE_TYPES(type)
 #else
@@ -466,6 +474,8 @@ extern "C"
 #error "The macro \"PTR_CHECK\" is already defined !"
 #endif /* PTR_CHECK */
 
+
+
 #ifndef IS_PTR
 #define IS_PTR(value)
 #else
@@ -489,6 +499,8 @@ extern "C"
 #else
 #error "The macro \"IS_NO_INT\" is already defined !"
 #endif /* IS_NO_INT */
+
+
 
 #ifndef IS_TYPE
 #define IS_TYPE(value, exp_type)
@@ -525,6 +537,14 @@ extern "C"
 #else
 #error "The macro \"IS_NOT_TYPE\" is already defined !"
 #endif /* IS_NOT_TYPE */
+
+#ifndef GET_FORMAT_STR
+#define GET_FORMAT_STR(value)
+#else
+#error "The macro \"GET_FORMAT_STR\" is already defined !"
+#endif /* GET_FORMAT_STR */
+
+
 
 #ifndef IS_NOT_TYPE_LIST_2
 #define IS_NOT_TYPE_LIST_2(value, not_allowed_type_1, not_allowed_type_2)
