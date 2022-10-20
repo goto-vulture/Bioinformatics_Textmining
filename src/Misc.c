@@ -15,6 +15,15 @@
 
 
 
+/**
+ * @brief Determine the file size of a FILE stream with the classic C way. (fseek() and ftell())
+ *
+ * @param[in] file The opened FILE stream
+ *
+ * @return The size of the stream in bytes
+ */
+static long int Determine_FILE_Size_Fallback (FILE* file);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 
@@ -227,6 +236,13 @@ extern int_fast64_t Determine_FILE_Size (FILE* file)
         // Windows 32 bit
         // TODO: Implement the Windows specific code
     #endif /* _WIN64 */
+
+    // By now there is no implementation for Windows -> Using the fallback
+    #ifndef USE_FALLBACK
+    #define USE_FALLBACK
+    #else
+    #error "The macro \"USE_FALLBACK\" is already defined !"
+    #endif /* USE_FALLBACK */
 #else
     #ifdef __unix__
         // Unix system
@@ -244,20 +260,41 @@ extern int_fast64_t Determine_FILE_Size (FILE* file)
         result = (int_fast64_t) file_length;
     #else
         // Other system: Using the fallback
-        int fseek_return = fseek (file, 0, SEEK_END);
-        ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
-
-        const long int file_length = ftell (file); // Possible limit to 2 GB !
-        ASSERT_MSG(file_length != -1, "ftell() returned -1 !");
-
-        fseek_return = fseek (file, 0, SEEK_SET);
-        ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
-
-        result = (int_fast64_t) file_length;
+        result = (int_fast64_t) Determine_FILE_Size_Fallback(file);
     #endif /* __unix__ */
 #endif
 
+#ifdef USE_FALLBACK
+        result = (int_fast64_t) Determine_FILE_Size_Fallback(file);
+#else
+        // Pseudo using to avoid unused warnings
+        (void) Determine_FILE_Size_Fallback;
+#endif /* USE_FALLBACK */
+
     return result;
+}
+
+//=====================================================================================================================
+
+/**
+ * @brief Determine the file size of a FILE stream with the classic C way. (fseek() and ftell())
+ *
+ * @param[in] file The opened FILE stream
+ *
+ * @return The size of the stream in bytes
+ */
+static long int Determine_FILE_Size_Fallback (FILE* file)
+{
+    int fseek_return = fseek (file, 0, SEEK_END);
+    ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
+
+    const long int file_length = ftell (file); // Possible limit to 2 GB !
+    ASSERT_MSG(file_length != -1, "ftell() returned -1 !");
+
+    fseek_return = fseek (file, 0, SEEK_SET);
+    ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
+
+    return file_length;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
