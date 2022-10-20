@@ -21,6 +21,8 @@ extern "C"
 
 
 #include <time.h>   // time_t
+#include <stdio.h>      // FILE*
+#include <inttypes.h>   // int_fast64_t
 #include "Error_Handling/_Generics.h"   // For type checking macros
 
 
@@ -245,6 +247,20 @@ extern float Determine_Time_Left_Average (const size_t first_value, const size_t
  * @return 0.0 if input is NaN or +/-Inf, otherwise the value itself
  */
 extern float Replace_NaN_And_Inf_With_Zero (const float input);
+
+/**
+ * @brief Determine the size of a FILE* object.
+ *
+ * In normal cases this is the file size.
+ *
+ * Asserts:
+ *      file != NULL
+ *
+ * @param[in] file FILE pointer to an opened file stream.
+ *
+ * @return The file size in bytes or -1, if an error occurs.
+ */
+extern int_fast64_t Determine_FILE_Size (FILE* file);
 
 
 

@@ -10,6 +10,7 @@
 #include "Misc.h"
 #include <inttypes.h>
 #include <math.h>
+#include <stdio.h>
 #include "Error_Handling/Assert_Msg.h"
 
 
@@ -181,6 +182,80 @@ extern inline float Replace_NaN_And_Inf_With_Zero (const float input)
     float result = input;
 
     if (isnan(input) || isinf(input) != 0) { result = 0.0; }
+
+    return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Determine the size of a FILE* object. In normal cases this is the file size.
+ *
+ * The problem is the magical 2 GB bound. The standard way with fseek() und ftell() can only guarantee a handling with
+ * files up to 2GB size. For larger files there is no portable way to bypass this limitations. On 64 bit systems the
+ * type "long int" (this is the return type of ftell()) is 8 byte long. So the problem not occurs in this situations,
+ * but you cannot guarantee this. Especially on 32 bit systems.
+ *
+ * This problem has a own Wikipedia entry:
+ * EN: https://en.wikipedia.org/wiki/Large_file_support
+ * DE: https://de.wikipedia.org/wiki/Large_File_Support
+ *
+ * So the workaround:
+ * Use the preprocessor to encapsulate system specific code. The portable way with the C standard lib will be the
+ * fallback (with its limitations).
+ *
+ * Asserts:
+ *      file != NULL
+ *
+ * @param[in] file FILE pointer to an opened file stream.
+ *
+ * @return The file size in bytes or -1, if an error occurs.
+ */
+extern int_fast64_t Determine_FILE_Size (FILE* file)
+{
+    ASSERT_MSG(file != NULL, "The FILE pointer is NULL !");
+
+    int_fast64_t result = 0;
+
+    // OS check
+    // A good list for system specific #defines: https://iq.opengenus.org/detect-operating-system-in-c/
+#ifdef _WIN32
+    #ifdef _WIN64
+        // Windows 64 bit
+        // TODO: Implement the Windows specific code
+    #else
+        // Windows 32 bit
+        // TODO: Implement the Windows specific code
+    #endif /* _WIN64 */
+#else
+    #ifdef __unix__
+        // Unix system
+        #include <sys/types.h>
+
+        int fseek_return = fseeko (file, 0, SEEK_END);
+        ASSERT_MSG(fseek_return == 0, "fseeko() returned a nonzero value !");
+
+        const off_t file_length = ftello(file);
+        ASSERT_MSG(file_length != -1, "ftello() returned -1 !");
+
+        fseek_return = fseeko (file, 0, SEEK_SET);
+        ASSERT_MSG(fseek_return == 0, "fseeko() returned a nonzero value !");
+
+        result = (int_fast64_t) file_length;
+    #else
+        // Other system: Using the fallback
+        int fseek_return = fseek (file, 0, SEEK_END);
+        ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
+
+        const long int file_length = ftell (file); // Possible limit to 2 GB !
+        ASSERT_MSG(file_length != -1, "ftell() returned -1 !");
+
+        fseek_return = fseek (file, 0, SEEK_SET);
+        ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
+
+        result = (int_fast64_t) file_length;
+    #endif /* __unix__ */
+#endif
 
     return result;
 }
