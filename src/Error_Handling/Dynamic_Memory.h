@@ -26,6 +26,7 @@ extern "C"
 #include <inttypes.h>   // uint_fast64_t
 #include <stdlib.h>     // malloc, calloc
 #include "_Generics.h"
+#include "Assert_Msg.h"
 
 
 // Global variables to count the malloc (), calloc (), realloc () and free () calls
@@ -80,13 +81,18 @@ extern void Show_Dynamic_Memory_Status (void);
  *
  * realloc do a malloc and a free call in the background.
  * => So the malloc, realloc and free counter needs to be increased.
+ *
+ * If the pointer is NULL, then realloc() behaves like malloc()
  */
 #ifndef REALLOC
     #define REALLOC(pointer, element_size)                                                                              \
         realloc (pointer, element_size);                                                                                \
         ++ GLOBAL_malloc_calls;                                                                                         \
-        ++ GLOBAL_realloc_calls;                                                                                        \
-        ++ GLOBAL_free_calls;                                                                                           \
+        if (pointer != NULL)                                                                                            \
+        {                                                                                                               \
+            ++ GLOBAL_realloc_calls;                                                                                    \
+            ++ GLOBAL_free_calls;                                                                                       \
+        }                                                                                                               \
         IS_INT(element_size)
 #else
     #error "The macro \"REALLOC\" is already defined !"
