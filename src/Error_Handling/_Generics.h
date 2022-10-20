@@ -42,6 +42,12 @@ extern "C"
 #error "The macro \"TYPE_INVALID\" is already defined !"
 #endif /* TYPE_INVALID */
 
+#ifndef TYPE_PTR_FMT_STR
+#define TYPE_PTR_FMT_STR(type) type: "%p"
+#else
+#error "The macro \"TYPE_PTR_FMT_STR\" is already defined !"
+#endif /* TYPE_PTR_FMT_STR */
+
 
 
 #ifndef ALL_POSSIBLE_TYPES
@@ -224,6 +230,46 @@ extern "C"
 #else
 #error "The macro \"IS_TYPE\" is already defined !"
 #endif /* IS_TYPE */
+
+
+
+/**
+ * @brief This macro returns the format string specifier of the given variable, if possible.
+ */
+#ifndef GET_FORMAT_STR
+#define GET_FORMAT_STR(value)                                                                                           \
+    _Generic((value),                                                                                                   \
+    char: "%c",                                                                                                         \
+    unsigned char: "%hhu",                                                                                              \
+    short int: "%hi",                                                                                                   \
+    unsigned short int: "%hu",                                                                                          \
+    int: "%d",                                                                                                          \
+    unsigned int: "%lu",                                                                                                \
+    long int: "%ld",                                                                                                    \
+    unsigned long int: "%lu",                                                                                           \
+    long long int: "%lld",                                                                                              \
+    unsigned long long int: "%llu",                                                                                     \
+    float: "%f",                                                                                                        \
+    double: "%f",                                                                                                       \
+    long double: "%Lf",                                                                                                 \
+    ALL_PTR(char, TYPE_PTR_FMT_STR),                                                                                    \
+    ALL_PTR(unsigned char, TYPE_PTR_FMT_STR),                                                                           \
+    ALL_PTR(short int, TYPE_PTR_FMT_STR),                                                                               \
+    ALL_PTR(unsigned short int, TYPE_PTR_FMT_STR),                                                                      \
+    ALL_PTR(int, TYPE_PTR_FMT_STR),                                                                                     \
+    ALL_PTR(unsigned int, TYPE_PTR_FMT_STR),                                                                            \
+    ALL_PTR(long int, TYPE_PTR_FMT_STR),                                                                                \
+    ALL_PTR(unsigned long int, TYPE_PTR_FMT_STR),                                                                       \
+    ALL_PTR(long long int, TYPE_PTR_FMT_STR),                                                                           \
+    ALL_PTR(unsigned long long int, TYPE_PTR_FMT_STR),                                                                  \
+    ALL_PTR(float, TYPE_PTR_FMT_STR),                                                                                   \
+    ALL_PTR(double, TYPE_PTR_FMT_STR),                                                                                  \
+    ALL_PTR(long double, TYPE_PTR_FMT_STR),                                                                             \
+    ALL_PTR(void, TYPE_PTR_FMT_STR),                                                                                    \
+    default: "N/A")
+#else
+#error "The macro \"GET_FORMAT_STR\" is already defined !"
+#endif /* GET_FORMAT_STR */
 
 
 
