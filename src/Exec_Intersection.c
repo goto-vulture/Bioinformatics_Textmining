@@ -110,6 +110,24 @@
 
 
 
+// Here are some #defines for abbreviations
+// If a abbreviation not wanted, simply alter the #define
+#ifndef OFFSET
+#define OFFSET "offs."
+//#define OFFSET "offset"
+#else
+#error "The macro \"OFFSET\" is already defined !"
+#endif /* OFFSET */
+
+#ifndef INTERSECTIONS
+#define INTERSECTIONS "Inters."
+//#define INTERSECTIONS "Intersections"
+#else
+#error "The macro \"INTERSECTIONS\" is already defined !"
+#endif /* INTERSECTIONS */
+
+
+
 /**
  * @brief Add general information to the export cJSON object.
  *
@@ -577,8 +595,8 @@ Exec_Intersection
                 cJSON* two_array_container = NULL;
                 cJSON_NEW_OBJ_CHECK(two_array_container);
                 cJSON_AddItemToObject(two_array_container, "tokens", tokens_array);
-                cJSON_AddItemToObject(two_array_container, "char offsets", char_offset_array);
-                cJSON_AddItemToObject(two_array_container, "sentence offsets", sentence_offset_array);
+                cJSON_AddItemToObject(two_array_container, "char " OFFSET, char_offset_array);
+                cJSON_AddItemToObject(two_array_container, "sentence " OFFSET, sentence_offset_array);
                 // Add data to the specific cJSON object
                 // For the comparison it is important to use "src_tokens_array_wo_stop_words" instead of
                 // "src_tokens_array"; Because a full match means a equalness with the list, that contains NO stop
@@ -610,8 +628,8 @@ Exec_Intersection
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
         {
-            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "Intersections (partial)", intersections_partial_match);
-            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "Intersections (full)", intersections_full_match);
+            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, INTERSECTIONS " (partial)", intersections_partial_match);
+            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, INTERSECTIONS " (full)", intersections_full_match);
             cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, dataset_id_2, outer_object);
 
             // In theory it is possible to create the string of our cJSON structure at the end of all calculations
@@ -767,6 +785,7 @@ Add_General_Information_To_Export_File
     cJSON_NOT_NULL(char_offset);
     cJSON* sentence_offset = cJSON_CreateBool(true);
     cJSON_NOT_NULL(sentence_offset);
+
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Full match", full_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Stop word list used", stop_word_list);
@@ -1078,3 +1097,11 @@ cJSON_Determine_Full_Memory_Usage
 #ifdef RESULT_FILE_BUFFER_SIZE
 #undef RESULT_FILE_BUFFER_SIZE
 #endif /* RESULT_FILE_BUFFER_SIZE */
+
+#ifdef OFFSET
+#undef OFFSET
+#endif /* OFFSET */
+
+#ifdef INTERSECTIONS
+#undef INTERSECTIONS
+#endif /* INTERSECTIONS */
