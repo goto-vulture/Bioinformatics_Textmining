@@ -200,6 +200,7 @@ uint8_t* md5String(char *input){
 
 uint8_t* md5File(FILE *file){
 	char *input_buffer = malloc(1024);
+	if (input_buffer == NULL) { return NULL; }
 	size_t input_size = 0;
 
 	MD5Context ctx;
