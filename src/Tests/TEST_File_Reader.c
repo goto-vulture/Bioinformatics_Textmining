@@ -241,7 +241,10 @@ static _Bool Check_Test_File_MD5_Sum
         puts("");
     }
 
-    FREE_AND_SET_TO_NULL(created_md5);
+    // ! NO "FREE_AND_SET_TO_NULL" because this memory block was created in the MD5 lib with a simple malloc() call !
+    free (created_md5);
+    created_md5 = NULL;
+    //FREE_AND_SET_TO_NULL(created_md5);
 
     return result;
 }
