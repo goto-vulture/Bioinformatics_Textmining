@@ -108,6 +108,10 @@
 #error "The macro \"RESULT_FILE_BUFFER_SIZE\" is already defined !"
 #endif /* RESULT_FILE_BUFFER_SIZE */
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+_Static_assert(CJSON_PRINT_BUFFER_SIZE > 0, "The macro \"CJSON_PRINT_BUFFER_SIZE\" needs to be at least 1 !");
+_Static_assert(RESULT_FILE_BUFFER_SIZE > 0, "The macro \"RESULT_FILE_BUFFER_SIZE\" needs to be at least 1 !");
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 
 /**

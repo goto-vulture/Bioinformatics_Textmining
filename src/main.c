@@ -16,6 +16,30 @@
  * For me, a vulture is more desirable than money.
  */
 
+/**
+ * @brief This is a #define for Linux systems. With this value the type "off_t" will get in every case the size of 64
+ * bit.
+ *
+ * In most cases "off_t" already has the size of 64 bit.
+ *
+ * The main page of fseeko() and ftello():
+       The fseeko() and ftello() functions are identical to fseek(3) and
+       ftell(3) (see fseek(3)), respectively, except that the offset
+       argument of fseeko() and the return value of ftello() is of type
+       off_t instead of long.
+
+       On some architectures, both off_t and long are 32-bit types, but
+       defining _FILE_OFFSET_BITS with the value 64 (before including
+       any header files) will turn off_t into a 64-bit type.
+ */
+#ifdef __unix__
+    #ifndef _FILE_OFFSET_BITS
+    #define _FILE_OFFSET_BITS 64
+    #else
+    #error "The macro \"_FILE_OFFSET_BITS\" is already defined and should be redefined with 64 !"
+    #endif /* _FILE_OFFSET_BITS */
+#endif /* __unix__ */
+
 /*
  * Check the used C version, to replace keywords in the language if necessary. (E.g.: The C version is an older version
  * and contains some keywords which were included in newer releases of the language.

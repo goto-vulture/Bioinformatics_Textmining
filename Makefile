@@ -84,7 +84,8 @@ TEMP_1 =
 TARGET =
 
 # Zusaetzliche Flags fuer Linux
-ADDITIONAL_LINUX_FLAGS = -fstack-protector -Wl,-z,relro -Wl,-z,now
+# -D_POSIX_C_SOURCE=200112L:  Dies macht POSIX Funktionen verfuegbar, die nicht zum reinen C-Standard gehoeren (verwendet fuer fseeko()/ftello())
+ADDITIONAL_LINUX_FLAGS = -fstack-protector -Wl,-z,relro -Wl,-z,now -D_POSIX_C_SOURCE=200112L
 
 # Zusaetzliche Flags fuer Windows
 # Unter Windows gibt es bei Format-Strings einige Probleme !
