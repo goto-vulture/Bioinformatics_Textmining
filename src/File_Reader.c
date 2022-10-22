@@ -110,6 +110,38 @@ Get_Average_Token_Length
 );
 
 /**
+ * @brief Increase the number of Token_List objects in a Token_List_Container.
+ *
+ * The default allocation step size (TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) will be used.
+ *
+ * Asserts:
+ *      token_list_container != NULL
+ *
+ * @param[in] token_list_container Token_List_Container object
+ */
+static void
+Increase_Number_Of_Token_Lists
+(
+        struct Token_List_Container* const token_list_container
+);
+
+/**
+ * @brief Increase the number of tokens in a Token_List object.
+ *
+ * The default allocation step size (TOKENS_ALLOCATION_STEP_SIZE) will be used.
+ *
+ * Asserts:
+ *      token_list != NULL
+ *
+ * @param[in] token_list Token_List object
+ */
+static void
+Increase_Number_Of_Tokens
+(
+        struct Token_List* const token_list
+);
+
+/**
  * @brief Read the next line from the file and return the number of char, that were read.
  *
  * Asserts:
@@ -200,9 +232,17 @@ TokenListContainer_CreateObject
         ASSERT_ALLOC(new_container->token_lists [i].char_offsets, "Cannot create data for a Token object !",
                 TOKENS_ALLOCATION_STEP_SIZE * sizeof (CHAR_OFFSET_TYPE));
         new_container->malloc_calloc_calls ++;
+
+        new_container->token_lists [i].sentence_offsets = (SENTENCE_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (SENTENCE_OFFSET_TYPE));
+        ASSERT_ALLOC(new_container->token_lists [i].sentence_offsets, "Cannot create data for a Token object !",
+                TOKENS_ALLOCATION_STEP_SIZE * sizeof (SENTENCE_OFFSET_TYPE));
+        new_container->malloc_calloc_calls ++;
         // Init new values
         for (size_t i2 = 0; i2 < TOKENS_ALLOCATION_STEP_SIZE; ++ i2)
-        { new_container->token_lists [i].char_offsets [i2] = USHRT_MAX; }
+        {
+            new_container->token_lists [i].char_offsets [i2] = CHAR_OFFSET_TYPE_MAX;
+            new_container->token_lists [i].sentence_offsets [i2] = SENTENCE_OFFSET_TYPE_MAX;
+        }
 
         new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
         new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
@@ -285,43 +325,10 @@ TokenListContainer_CreateObject
                 register cJSON* curr_token = tokens_array->child;
 
                 // ===== ===== ===== BEGIN Realloc necessary ? ===== ===== =====
-                // Is it necessary to realloc/increase the number of Token_Container ?
+                // Is it necessary to realloc/increase the number of Token_List objects in the container ?
                 if (new_container->next_free_element >= new_container->allocated_token_container)
                 {
-                    static size_t token_container_realloc_counter = 0;
-                    ++ token_container_realloc_counter;
-                    const size_t old_allocated_token_container = new_container->allocated_token_container;
-
-                    // Adjust the number of Token_List object
-                    struct Token_List* temp_ptr = (struct Token_List*) REALLOC(new_container->token_lists,
-                            (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
-                    ASSERT_ALLOC(temp_ptr, "Cannot reallocate memory for Token_Container objects !",
-                            (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
-                    memset(temp_ptr + old_allocated_token_container, '\0', sizeof (struct Token_List) * TOKEN_CONTAINER_ALLOCATION_STEP_SIZE);
-                    new_container->realloc_calls ++;
-
-                    new_container->token_lists = temp_ptr;
-                    new_container->allocated_token_container = old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
-
-                    // Create memory for the new Token_List objects
-                    for (size_t i = old_allocated_token_container; i < new_container->allocated_token_container; ++ i)
-                    {
-                        new_container->token_lists [i].data = (char*) CALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE, sizeof (char));
-                        ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
-                                MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE * sizeof (char));
-                        new_container->malloc_calloc_calls ++;
-
-                        new_container->token_lists [i].char_offsets = (CHAR_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (CHAR_OFFSET_TYPE));
-                        ASSERT_ALLOC(new_container->token_lists [i].char_offsets, "Cannot create data for a Token object !",
-                                TOKENS_ALLOCATION_STEP_SIZE * sizeof (CHAR_OFFSET_TYPE));
-                        new_container->malloc_calloc_calls ++;
-                        // Init new values
-                        for (size_t i2 = 0; i2 < TOKENS_ALLOCATION_STEP_SIZE; ++ i2)
-                        { new_container->token_lists [i].char_offsets [i2] = USHRT_MAX; }
-
-                        new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
-                        new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
-                    }
+                    Increase_Number_Of_Token_Lists (new_container);
                 }
 
                 /*if (strlen (name->string) >= COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].id))
@@ -349,31 +356,10 @@ TokenListContainer_CreateObject
                     // Is more memory for the new token in the Token_List necessary ?
                     if (current_token_list_obj->next_free_element >= current_token_list_obj->allocated_tokens)
                     {
-                        static size_t tokens_realloc_counter = 0;
-                        ++ tokens_realloc_counter;
-                        const size_t old_tokens_size = current_token_list_obj->allocated_tokens;
-                        const size_t token_size = current_token_list_obj->max_token_length;
+                        Increase_Number_Of_Tokens (current_token_list_obj);
 
-                        char* tmp_ptr = (char*) REALLOC(current_token_list_obj->data,
-                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
-                        ASSERT_ALLOC(tmp_ptr, "Cannot reallocate memory for Tokens data !",
-                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
-                        memset(tmp_ptr + (old_tokens_size * token_size), '\0',
-                                (TOKENS_ALLOCATION_STEP_SIZE) * token_size);
-                        new_container->realloc_calls ++;
-
-                        CHAR_OFFSET_TYPE* tmp_ptr2 = (CHAR_OFFSET_TYPE*) REALLOC (current_token_list_obj->char_offsets,
-                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (CHAR_OFFSET_TYPE));
-                        ASSERT_ALLOC(tmp_ptr2, "Cannot create data for a Token object !",
-                                (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (CHAR_OFFSET_TYPE));
-                        new_container->realloc_calls ++;
-                        // Init new values
-                        for (size_t i2 = old_tokens_size; i2 < (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE); ++ i2)
-                        { tmp_ptr2 [i2] = USHRT_MAX; }
-
-                        current_token_list_obj->data = tmp_ptr;
-                        current_token_list_obj->char_offsets = tmp_ptr2;
-                        current_token_list_obj->allocated_tokens += TOKENS_ALLOCATION_STEP_SIZE;
+                        // Adjust the number of reallocs in the upper container
+                        new_container->realloc_calls += 3;
                     }
 
                     char* res_mem_for_curr_token = Get_Address_Of_Next_Free_Token (current_token_list_obj);
@@ -386,17 +372,26 @@ TokenListContainer_CreateObject
                     if (current_token_list_obj->next_free_element == 0)
                     {
                         current_token_list_obj->char_offsets [0] = 0;
+                        current_token_list_obj->sentence_offsets [0] = 0;
                     }
                     else
                     {
+                        const char* last_token =
+                                Get_Address_Of_Token (current_token_list_obj, current_token_list_obj->next_free_element - 1);
+
                         const size_t tmp_result =
                                 current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
-                                strlen(Get_Address_Of_Token (current_token_list_obj, current_token_list_obj->next_free_element - 1));
+                                strlen(last_token);
+                        const size_t new_sentence_offset =
+                                current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element - 1] +
+                                (last_token [0] == '.') ? 1 : 0;
                                 //strlen (current_token_list_obj->data + (current_token_list_obj->max_token_length * (current_token_list_obj->next_free_element - 1)));
-                        ASSERT_FMSG(tmp_result < USHRT_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
-                                tmp_result, USHRT_MAX - 1);
+                        ASSERT_FMSG(tmp_result < CHAR_OFFSET_TYPE_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
+                                tmp_result, CHAR_OFFSET_TYPE_MAX - 1);
                         current_token_list_obj->char_offsets [current_token_list_obj->next_free_element] =
                                 (CHAR_OFFSET_TYPE) tmp_result;
+                        current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element] =
+                                (SENTENCE_OFFSET_TYPE) new_sentence_offset;
                     }
 
                     current_token_list_obj->next_free_element ++;
@@ -465,6 +460,7 @@ TokenListContainer_DeleteObject
         {
             FREE_AND_SET_TO_NULL(object->token_lists [i].data);
             FREE_AND_SET_TO_NULL(object->token_lists [i].char_offsets);
+            FREE_AND_SET_TO_NULL(object->token_lists [i].sentence_offsets);
         }
     }
 
@@ -979,6 +975,129 @@ Get_Average_Token_Length
 
     const float result = (float) sum_token_length / (float) TokenListContainer_CountAllTokens(token_list_container);
     return (size_t) ceil (result);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Increase the number of Token_List objects in a Token_List_Container.
+ *
+ * The default allocation step size (TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) will be used.
+ *
+ * Asserts:
+ *      token_list_container != NULL
+ *
+ * @param[in] token_list_container Token_List_Container object
+ */
+static void
+Increase_Number_Of_Token_Lists
+(
+        struct Token_List_Container* const token_list_container
+)
+{
+    ASSERT_MSG(token_list_container != NULL, "Token_List_Container is NULL !");
+
+    static size_t token_container_realloc_counter = 0;
+    ++ token_container_realloc_counter;
+    const size_t old_allocated_token_container = token_list_container->allocated_token_container;
+
+    // Adjust the number of Token_List object
+    struct Token_List* temp_ptr = (struct Token_List*) REALLOC(token_list_container->token_lists,
+            (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
+    ASSERT_ALLOC(temp_ptr, "Cannot reallocate memory for Token_Container objects !",
+            (old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE) * sizeof (struct Token_List));
+    memset(temp_ptr + old_allocated_token_container, '\0', sizeof (struct Token_List) * TOKEN_CONTAINER_ALLOCATION_STEP_SIZE);
+    token_list_container->realloc_calls ++;
+
+    token_list_container->token_lists = temp_ptr;
+    token_list_container->allocated_token_container = old_allocated_token_container + TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
+
+    // Create memory for the new Token_List objects
+    for (size_t i = old_allocated_token_container; i < token_list_container->allocated_token_container; ++ i)
+    {
+        token_list_container->token_lists [i].data = (char*) CALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE, sizeof (char));
+        ASSERT_ALLOC(token_list_container->token_lists [i].data, "Cannot create data for a Token object !",
+                MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE * sizeof (char));
+        token_list_container->malloc_calloc_calls ++;
+
+        token_list_container->token_lists [i].char_offsets =
+                (CHAR_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (CHAR_OFFSET_TYPE));
+        ASSERT_ALLOC(token_list_container->token_lists [i].char_offsets, "Cannot create data for a Token object !",
+                TOKENS_ALLOCATION_STEP_SIZE * sizeof (CHAR_OFFSET_TYPE));
+        token_list_container->malloc_calloc_calls ++;
+
+        token_list_container->token_lists [i].sentence_offsets =
+                (SENTENCE_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (SENTENCE_OFFSET_TYPE));
+        ASSERT_ALLOC(token_list_container->token_lists [i].sentence_offsets, "Cannot create data for a Token object !",
+                TOKENS_ALLOCATION_STEP_SIZE * sizeof (SENTENCE_OFFSET_TYPE));
+        token_list_container->malloc_calloc_calls ++;
+        // Init new values
+        for (size_t i2 = 0; i2 < TOKENS_ALLOCATION_STEP_SIZE; ++ i2)
+        {
+            token_list_container->token_lists [i].char_offsets [i2] = CHAR_OFFSET_TYPE_MAX;
+            token_list_container->token_lists [i].sentence_offsets [i2] = SENTENCE_OFFSET_TYPE_MAX;
+        }
+
+        token_list_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
+        token_list_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Increase the number of tokens in a Token_List object.
+ *
+ * The default allocation step size (TOKENS_ALLOCATION_STEP_SIZE) will be used.
+ *
+ * Asserts:
+ *      token_list != NULL
+ *
+ * @param[in] token_list Token_List object
+ */
+static void
+Increase_Number_Of_Tokens
+(
+        struct Token_List* const token_list
+)
+{
+    ASSERT_MSG(token_list != NULL, "Token_List is NULL !");
+
+    static size_t tokens_realloc_counter = 0;
+    ++ tokens_realloc_counter;
+    const size_t old_tokens_size = token_list->allocated_tokens;
+    const size_t token_size = token_list->max_token_length;
+
+    char* tmp_ptr = (char*) REALLOC(token_list->data,
+            (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
+    ASSERT_ALLOC(tmp_ptr, "Cannot reallocate memory for Tokens data !",
+            (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
+    memset(tmp_ptr + (old_tokens_size * token_size), '\0',
+            (TOKENS_ALLOCATION_STEP_SIZE) * token_size);
+
+    CHAR_OFFSET_TYPE* tmp_ptr2 = (CHAR_OFFSET_TYPE*) REALLOC (token_list->char_offsets,
+            (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (CHAR_OFFSET_TYPE));
+    ASSERT_ALLOC(tmp_ptr2, "Cannot create data for a Token object !",
+            (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (CHAR_OFFSET_TYPE));
+
+    SENTENCE_OFFSET_TYPE* tmp_ptr3 = (SENTENCE_OFFSET_TYPE*) REALLOC (token_list->sentence_offsets,
+            (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (SENTENCE_OFFSET_TYPE));
+    ASSERT_ALLOC(tmp_ptr2, "Cannot create data for a Token object !",
+            (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (SENTENCE_OFFSET_TYPE));
+    // Init new values
+    for (size_t i2 = old_tokens_size; i2 < (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE); ++ i2)
+    {
+        tmp_ptr2 [i2] = CHAR_OFFSET_TYPE_MAX;
+        tmp_ptr3 [i2] = SENTENCE_OFFSET_TYPE_MAX;
+    }
+    token_list->data = tmp_ptr;
+    token_list->char_offsets = tmp_ptr2;
+    token_list->sentence_offsets = tmp_ptr3;
+    token_list->allocated_tokens += TOKENS_ALLOCATION_STEP_SIZE;
+
+    return;
 }
 
 //---------------------------------------------------------------------------------------------------------------------

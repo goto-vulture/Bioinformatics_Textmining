@@ -128,9 +128,11 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 (
     const uint_fast32_t* const restrict data_1,
     const CHAR_OFFSET_TYPE* const restrict char_offsets_1,
+    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets_1,
     const size_t data_1_length,
     const uint_fast32_t* const restrict data_2,
     const CHAR_OFFSET_TYPE* const restrict char_offsets_2,
+    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets_2,
     const size_t data_2_length,
     const char* const restrict id_1,
     const char* const restrict id_2
