@@ -94,6 +94,18 @@ extern "C"
 #error "The macro \"UNSAFE_VLA_USAGE\" is already defined !"
 #endif /* UNSAFE_VLA_USAGE */
 
+#ifndef VERSION         ///< Current program version.
+#define VERSION 0.1
+#else
+#error "The macro \"VERSION\" is already defined !"
+#endif /* VERSION */
+
+#ifndef VERSION_STR     ///< Current program version as c string.
+#define VERSION_STR "0.1"
+#else
+#error "The macro \"VERSION_STR\" is already defined !"
+#endif /* VERSION_STR */
+
 
 
 /**
