@@ -28,3 +28,13 @@ extern unsigned int Exec_Config_All_Matches (void)
 {
     return PART_MATCH | FULL_MATCH;
 }
+
+/**
+ * @brief Create the config to suppress all additional info in the result file.
+ *
+ * @return The config for no additional infos.
+ */
+extern unsigned int Exec_Config_No_Additional_Infos (void)
+{
+    return NO_FILENAMES | NO_CREATION_TIME | NO_PROGRAM_VERSION;
+}
