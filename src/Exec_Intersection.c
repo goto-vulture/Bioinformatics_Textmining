@@ -18,6 +18,7 @@
 #include "Document_Word_List.h"
 #include "Intersection_Approaches.h"
 #include "Misc.h"
+#include "Defines.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Error_Handling/Assert_Msg.h"
 #include "Print_Tools.h"
@@ -742,6 +743,8 @@ Add_General_Information_To_Export_File
     cJSON_NOT_NULL(first_file);
     cJSON* second_file      = cJSON_CreateString(GLOBAL_CLI_INPUT_FILE2);
     cJSON_NOT_NULL(second_file);
+    cJSON* program_version  = cJSON_CreateString(VERSION_STR);
+    cJSON_NOT_NULL(program_version);
 
     // Creation time
     const time_t raw_time = time(NULL);
@@ -783,6 +786,7 @@ Add_General_Information_To_Export_File
 
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "First file", first_file);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Second file", second_file);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Program version", program_version);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation time", creation_time);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "General infos", general_infos);
 
