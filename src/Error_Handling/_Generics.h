@@ -21,6 +21,10 @@ extern "C"
 
 
 
+#include <stdbool.h>
+
+
+
 // Is it a C11 compiler ? Because _Generic and _Static_assert are keywords that were introduced in the C11 standard.
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 

@@ -18,6 +18,10 @@ extern "C"
 
 
 
+#include "Error_Handling/_Generics.h"
+
+
+
 #ifndef CHAR_OFFSET_TYPE
 #define CHAR_OFFSET_TYPE unsigned short int     ///< Char offset type
 #else
@@ -119,6 +123,10 @@ _Static_assert(sizeof(CHAR_OFFSET_TYPE_FSTR_SPECIFIER) > 0 + 1, "The macro \"CHA
         "at least one char (plus '\0') !");
 _Static_assert(sizeof(INT_MAPPING_TYPE_FSTR_SPECIFIER) > 0 + 1, "The macro \"INT_MAPPING_TYPE_FSTR_SPECIFIER\" needs "
         "at least one char (plus '\0') !");
+_Static_assert(sizeof(VERSION_STR) > 0 + 1, "The macro \"VERSION_STR\" needs at least one char (plus '\0') !");
+
+IS_CONST_STR(VERSION_STR)
+IS_TYPE(VERSION, double) // float is not the right type for the expected type !
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 
