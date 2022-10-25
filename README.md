@@ -27,6 +27,32 @@ With the help of some elementary set operations (the main important one: interse
 
 ---
 
+### Usage
+
+#### Building
+
+make is the provided tool to build the program. To build the program with the default settings a simple `make` call is enough.
+
+There are two switches for the building process:
+- `DEBUG`: Building the program with debug information in the binary file (default)
+- `RELEASE`: Building with compiler optimization.
+
+`make clean` removes all compilation files.
+
+#### Interface
+
+The CLI accepts the following main inputs, that are required:
+- `-i`, `--input=<str>`: First input file
+- `-j`, `--input2=<str>`: Second input file
+- `-o`, `--output=<str>`: Output file
+
+Optional arguments:
+- `-h`, `--help`: Show a help message and exit
+- `-A`, `--abort=<float>`: Abort the calculation after X percent
+- `-T`, `--run_all_test_functions`: Runing all test functions (Only useful for debugging)
+
+---
+
 ### Technical information
 
 To make the implementation simple, the in and output will be created in a simple way. The name of the input files will be passed trough CLI parameter and the results will be represented as JSON file.
