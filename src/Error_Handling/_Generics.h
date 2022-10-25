@@ -231,6 +231,17 @@ extern "C"
 #error "The macro \"IS_TYPE\" is already defined !"
 #endif /* IS_TYPE */
 
+/**
+ * @brief Is the given object a const char* ptr ?
+ *
+ * Useful to check, if a #define give a hard coded c string.
+ */
+#ifndef IS_CONST_STR
+#define IS_CONST_STR(value) IS_TYPE(value, const char*)
+#else
+#error "The macro \"IS_CONST_STR\" is already defined !"
+#endif /* IS_CONST_STR */
+
 
 
 /**
@@ -507,6 +518,14 @@ extern "C"
 #else
 #error "The macro \"IS_TYPE\" is already defined !"
 #endif /* IS_TYPE */
+
+#ifndef IS_CONST_STR
+#define IS_CONST_STR(value)
+#else
+#error "The macro \"IS_CONST_STR\" is already defined !"
+#endif /* IS_CONST_STR */
+
+
 
 #ifndef IS_IN_TYPE_LIST_2
 #define IS_IN_TYPE_LIST_2(value, exp_type_1, exp_type_2)
