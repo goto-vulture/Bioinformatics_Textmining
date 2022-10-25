@@ -65,9 +65,13 @@ To make the implementation simple, the in and output will be created in a simple
 
 ## Future features
 
-- Sentence offsets (The current implementation allows only a char offset)
-- Smaller result file with following ideas:
-    - Remove tabs
-    - Use abbreviations for array names in the JSON file (e.g.: "Intersections" -> "Inters.")
-    - Case insensitive comparison of the tokens
+- Determine the end of sentences (Using POS tags from the source files; list of common abbreviations; 3rd party sentence tokenizer)
+- Calculate the error rate of the sentence end determining
+- "Smart" Case insensitive comparison of the tokens:
+    - Abbreviations should be compared case-sensitive
+    - They need to be appear in their original representation in the result file
+    - In all other cases a case insensitive comparison
+- Word offsets (the current implementation provides char and sentence offsets)
+- Change focus of the offsets to the origial file (in the current implementation the offset is focused on preprocessed data (stop word removed etc.))
+    - "Where are the objects in the source data?"
 - A more user-friendly interface. Maybe with a GUI. But the priority in this project is low.
