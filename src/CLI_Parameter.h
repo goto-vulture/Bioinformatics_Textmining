@@ -39,6 +39,8 @@ extern _Bool GLOBAL_CLI_FORMAT_OUTPUT; ///< Format the output ?
 
 extern _Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS; ///< Run all test functions ?
 
+extern _Bool GLOBAL_CLI_SENTENCE_OFFSET; ///< Create sentence offsets in the calculation ?
+
 /**
  * @brief On which percent in the calculation should be aborted ? This is for development and debugging purposes useful
  * to limit the calculation process.

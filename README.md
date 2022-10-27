@@ -46,6 +46,7 @@ The CLI accepts the following main inputs, that are required:
 
 Optional arguments:
 - `-f`, `--format`: Format the output for better readability in a normal editor?
+- `-s`, `--sentence_offset`: Calculate sentence offsets ? (In normal cases this is not necessary)
 - `-h`, `--help`: Show a help message and exit
 - `-A`, `--abort=<float>`: Abort the calculation after X percent
 - `-T`, `--run_all_test_functions`: Runing all test functions (Only useful for debugging)

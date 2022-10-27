@@ -614,7 +614,7 @@ Exec_Intersection
                 }
 
                 cJSON_NEW_ARR_CHECK(char_offset_array);
-                cJSON_NEW_ARR_CHECK(sentence_offset_array);
+                if (GLOBAL_CLI_SENTENCE_OFFSET) { cJSON_NEW_ARR_CHECK(sentence_offset_array); }
                 cJSON_NEW_ARR_CHECK(tokens_array);
 
                 //fputs("Found tokens_array in:\n", result_file);
@@ -631,13 +631,17 @@ Exec_Intersection
                             intersection_result->data_struct.data [0][i]);
 
                     cJSON* char_offset = cJSON_CreateNumber(intersection_result->data_struct.char_offsets_1 [0][i]);
+                    cJSON* sentence_offset = NULL;
                     ASSERT_MSG(char_offset != NULL, "char offset is NULL !");
-                    cJSON* sentence_offset = cJSON_CreateNumber(intersection_result->data_struct.sentence_offsets_1 [0][i]);
-                    ASSERT_MSG(sentence_offset != NULL, "sentence offset is NULL !");
+                    if (GLOBAL_CLI_SENTENCE_OFFSET)
+                    {
+                        sentence_offset = cJSON_CreateNumber(intersection_result->data_struct.sentence_offsets_1 [0][i]);
+                        ASSERT_MSG(sentence_offset != NULL, "sentence offset is NULL !");
+                    }
 
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(char_offset_array, char_offset);
-                    cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset);
+                    if (GLOBAL_CLI_SENTENCE_OFFSET) { cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset); }
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(tokens_array, token);
 
                     ++ intersection_tokens_found_counter;
