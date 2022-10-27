@@ -158,49 +158,30 @@ DocumentWordList_CreateObjectAsIntersectionResult
     struct Document_Word_List* new_object = Create_Main_Object_Structure (number_of_arrays, max_array_length);
 
     // Outer dimension for both char_offsets
-    new_object->data_struct.char_offsets_1 = (CHAR_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (CHAR_OFFSET_TYPE*));
-    ASSERT_ALLOC(new_object->data_struct.char_offsets_1, "Cannot create new Document_Word_List !",
-            sizeof (CHAR_OFFSET_TYPE*) * number_of_arrays);
-    new_object->malloc_calloc_calls ++;
-    new_object->data_struct.char_offsets_2 = (CHAR_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (CHAR_OFFSET_TYPE*));
-    ASSERT_ALLOC(new_object->data_struct.char_offsets_2, "Cannot create new Document_Word_List !",
+    new_object->data_struct.char_offsets = (CHAR_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (CHAR_OFFSET_TYPE*));
+    ASSERT_ALLOC(new_object->data_struct.char_offsets, "Cannot create new Document_Word_List !",
             sizeof (CHAR_OFFSET_TYPE*) * number_of_arrays);
     new_object->malloc_calloc_calls ++;
 
     // Outer dimension for both sentence offsets
-    new_object->data_struct.sentence_offsets_1 =
+    new_object->data_struct.sentence_offsets =
             (SENTENCE_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (SENTENCE_OFFSET_TYPE*));
-    ASSERT_ALLOC(new_object->data_struct.sentence_offsets_1, "Cannot create new Document_Word_List !",
-            sizeof (SENTENCE_OFFSET_TYPE*) * number_of_arrays);
-    new_object->malloc_calloc_calls ++;
-    new_object->data_struct.sentence_offsets_2 =
-            (SENTENCE_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (SENTENCE_OFFSET_TYPE*));
-    ASSERT_ALLOC(new_object->data_struct.sentence_offsets_2, "Cannot create new Document_Word_List !",
+    ASSERT_ALLOC(new_object->data_struct.sentence_offsets, "Cannot create new Document_Word_List !",
             sizeof (SENTENCE_OFFSET_TYPE*) * number_of_arrays);
     new_object->malloc_calloc_calls ++;
 
     // Inner dimension for char_offsets and sentence offsets (1 and 2)
     for (uint_fast32_t i = 0; i < number_of_arrays; ++ i)
     {
-        new_object->data_struct.char_offsets_1 [i] = (CHAR_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
+        new_object->data_struct.char_offsets [i] = (CHAR_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
                 sizeof (CHAR_OFFSET_TYPE));
-        ASSERT_ALLOC(new_object->data_struct.char_offsets_1 [i], "Cannot create new Document_Word_List !",
-                sizeof (CHAR_OFFSET_TYPE) * INT_ALLOCATION_STEP_SIZE);
-        new_object->malloc_calloc_calls ++;
-        new_object->data_struct.char_offsets_2 [i] = (CHAR_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
-                sizeof (CHAR_OFFSET_TYPE));
-        ASSERT_ALLOC(new_object->data_struct.char_offsets_2 [i], "Cannot create new Document_Word_List !",
+        ASSERT_ALLOC(new_object->data_struct.char_offsets [i], "Cannot create new Document_Word_List !",
                 sizeof (CHAR_OFFSET_TYPE) * INT_ALLOCATION_STEP_SIZE);
         new_object->malloc_calloc_calls ++;
 
-        new_object->data_struct.sentence_offsets_1 [i] = (SENTENCE_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
+        new_object->data_struct.sentence_offsets [i] = (SENTENCE_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
                 sizeof (SENTENCE_OFFSET_TYPE));
-        ASSERT_ALLOC(new_object->data_struct.sentence_offsets_1 [i], "Cannot create new Document_Word_List !",
-                sizeof (SENTENCE_OFFSET_TYPE) * INT_ALLOCATION_STEP_SIZE);
-        new_object->malloc_calloc_calls ++;
-        new_object->data_struct.sentence_offsets_2 [i] = (SENTENCE_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
-                sizeof (SENTENCE_OFFSET_TYPE));
-        ASSERT_ALLOC(new_object->data_struct.sentence_offsets_2 [i], "Cannot create new Document_Word_List !",
+        ASSERT_ALLOC(new_object->data_struct.sentence_offsets [i], "Cannot create new Document_Word_List !",
                 sizeof (SENTENCE_OFFSET_TYPE) * INT_ALLOCATION_STEP_SIZE);
         new_object->malloc_calloc_calls ++;
     }
@@ -238,10 +219,8 @@ DocumentWordList_DeleteObject
     {
         for (uint_fast32_t i = 0; i < object->number_of_arrays; ++ i)
         {
-            FREE_AND_SET_TO_NULL(object->data_struct.char_offsets_1 [i]);
-            FREE_AND_SET_TO_NULL(object->data_struct.char_offsets_2 [i]);
-            FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets_1 [i]);
-            FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets_2 [i]);
+            FREE_AND_SET_TO_NULL(object->data_struct.char_offsets [i]);
+            FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets [i]);
         }
     }
 
@@ -249,10 +228,8 @@ DocumentWordList_DeleteObject
     FREE_AND_SET_TO_NULL(object->data_struct.data);
     if (object->intersection_data)
     {
-        FREE_AND_SET_TO_NULL(object->data_struct.char_offsets_1);
-        FREE_AND_SET_TO_NULL(object->data_struct.char_offsets_2);
-        FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets_1);
-        FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets_2);
+        FREE_AND_SET_TO_NULL(object->data_struct.char_offsets);
+        FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets);
     }
 
     FREE_AND_SET_TO_NULL(object->allocated_array_size)
@@ -320,8 +297,7 @@ DocumentWordList_AppendData
  *
  * @param[in] object Document_Word_List
  * @param[in] new_data New data
- * @param[in] new_offsets_1 First offset array
- * @param[in] new_offsets_2 Second offset array
+ * @param[in] new_offsets Offset array
  * @param[in] data_length Length of the new data
  */
 extern void
@@ -329,8 +305,7 @@ DocumentWordList_AppendDataWithOffsets
 (
         struct Document_Word_List* const object,
         const uint_fast32_t* const new_data,
-        const CHAR_OFFSET_TYPE* const new_offsets_1,
-        const CHAR_OFFSET_TYPE* const new_offsets_2,
+        const CHAR_OFFSET_TYPE* const new_offsets,
         const size_t data_length
 )
 {
@@ -338,13 +313,9 @@ DocumentWordList_AppendDataWithOffsets
 
     // Because the last function alters the array length value, it is necessary to undo this
     const uint_fast32_t next_free_array = object->next_free_array - 1;
-    if (new_offsets_1 != NULL)
+    if (new_offsets != NULL)
     {
-        memcpy (object->data_struct.char_offsets_1 [next_free_array], new_offsets_1, sizeof (CHAR_OFFSET_TYPE) * data_length);
-    }
-    if (new_offsets_2 != NULL)
-    {
-        memcpy (object->data_struct.char_offsets_2 [next_free_array], new_offsets_2, sizeof (CHAR_OFFSET_TYPE) * data_length);
+        memcpy (object->data_struct.char_offsets [next_free_array], new_offsets, sizeof (CHAR_OFFSET_TYPE) * data_length);
     }
 
     return;
@@ -362,10 +333,8 @@ DocumentWordList_AppendDataWithOffsets
  *
  * @param[in] object Document_Word_List
  * @param[in] new_data New data
- * @param[in] new_char_offsets_1 First char offset array
- * @param[in] new_char_offsets_2 Second char offset array
- * @param[in] new_sentence_offsets_1 First sentence offset array
- * @param[in] new_sentence_offsets_2 Second sentence offset array
+ * @param[in] new_char_offsets Char offset array
+ * @param[in] new_sentence_offsets Sentence offset array
  * @param[in] data_length Length of the new data
  */
 extern void
@@ -373,23 +342,16 @@ DocumentWordList_AppendDataWithTwoTypeOffsets
 (
         struct Document_Word_List* const object,
         const uint_fast32_t* const new_data,
-        const CHAR_OFFSET_TYPE* const new_char_offsets_1,
-        const CHAR_OFFSET_TYPE* const new_char_offsets_2,
-        const SENTENCE_OFFSET_TYPE* const new_sentence_offsets_1,
-        const SENTENCE_OFFSET_TYPE* const new_sentence_offsets_2,
+        const CHAR_OFFSET_TYPE* const new_char_offsets,
+        const SENTENCE_OFFSET_TYPE* const new_sentence_offsets,
         const size_t data_length
 )
 {
-    DocumentWordList_AppendDataWithOffsets(object, new_data, new_char_offsets_1, new_char_offsets_2, data_length);
+    DocumentWordList_AppendDataWithOffsets(object, new_data, new_char_offsets, data_length);
 
-    if (new_sentence_offsets_1 != NULL)
+    if (new_sentence_offsets != NULL)
     {
-        memcpy (object->data_struct.sentence_offsets_1 [object->next_free_array - 1], new_sentence_offsets_1,
-                sizeof (SENTENCE_OFFSET_TYPE) * data_length);
-    }
-    if (new_sentence_offsets_2 != NULL)
-    {
-        memcpy (object->data_struct.sentence_offsets_2 [object->next_free_array - 1], new_sentence_offsets_2,
+        memcpy (object->data_struct.sentence_offsets [object->next_free_array - 1], new_sentence_offsets,
                 sizeof (SENTENCE_OFFSET_TYPE) * data_length);
     }
 
@@ -475,16 +437,14 @@ Put_One_Value_To_Document_Word_List
  *
  * @param[in] object Document_Word_List
  * @param[in] new_value New value
- * @param[in] new_offset_1 First new offset value
- * @param[in] new_offset_2 Second new offset value
+ * @param[in] new_offset New offset value
  */
 extern void
 Put_One_Value_And_Offets_To_Document_Word_List
 (
         struct Document_Word_List* const object,
         const uint_fast32_t new_value,
-        const CHAR_OFFSET_TYPE new_offset_1,
-        const CHAR_OFFSET_TYPE new_offset_2
+        const CHAR_OFFSET_TYPE new_offset
 )
 {
     ASSERT_MSG(object != NULL, "Object is NULL !");
@@ -494,8 +454,7 @@ Put_One_Value_And_Offets_To_Document_Word_List
 
     // Because the last function alters the array length value, it is necessary to undo this
     object->arrays_lengths [next_free_array] --;
-    object->data_struct.char_offsets_1 [next_free_array][object->arrays_lengths [next_free_array]] = new_offset_1;
-    object->data_struct.char_offsets_2 [next_free_array][object->arrays_lengths [next_free_array]] = new_offset_2;
+    object->data_struct.char_offsets [next_free_array][object->arrays_lengths [next_free_array]] = new_offset;
     object->arrays_lengths [next_free_array] ++;
 
     return;
@@ -515,31 +474,26 @@ Put_One_Value_And_Offets_To_Document_Word_List
  *
  * @param[in] object Document_Word_List
  * @param[in] new_value New value
- * @param[in] new_char_offset_1 First new char offset value
- * @param[in] new_char_offset_2 Second new char offset value
- * @param[in] new_sentence_offset_1 First new sentence offset value
- * @param[in] new_sentence_offset_2 Second new sentence offset value
+ * @param[in] new_char_offset First new char offset value
+ * @param[in] new_sentence_offset First new sentence offset value
  */
 extern void
 Put_One_Value_And_Two_Offset_Types_To_Document_Word_List
 (
         struct Document_Word_List* const object,
         const uint_fast32_t new_value,
-        const CHAR_OFFSET_TYPE new_char_offset_1,
-        const CHAR_OFFSET_TYPE new_char_offset_2,
-        const SENTENCE_OFFSET_TYPE new_sentence_offset_1,
-        const SENTENCE_OFFSET_TYPE new_sentence_offset_2
+        const CHAR_OFFSET_TYPE new_char_offset,
+        const SENTENCE_OFFSET_TYPE new_sentence_offset
 )
 {
     ASSERT_MSG(object != NULL, "Object is NULL !");
 
-    Put_One_Value_And_Offets_To_Document_Word_List(object, new_value, new_char_offset_1, new_char_offset_2);
+    Put_One_Value_And_Offets_To_Document_Word_List(object, new_value, new_char_offset);
     const uint_fast32_t next_free_array = object->next_free_array;
 
     // Because the last function alters the array length value, it is necessary to undo this
     object->arrays_lengths [next_free_array] --;
-    object->data_struct.sentence_offsets_1 [next_free_array][object->arrays_lengths [next_free_array]] = new_sentence_offset_1;
-    object->data_struct.sentence_offsets_2 [next_free_array][object->arrays_lengths [next_free_array]] = new_sentence_offset_2;
+    object->data_struct.sentence_offsets [next_free_array][object->arrays_lengths [next_free_array]] = new_sentence_offset;
     object->arrays_lengths [next_free_array] ++;
 
     return;
@@ -854,10 +808,8 @@ Create_Main_Object_Structure
     new_object->number_of_arrays = number_of_arrays;
     new_object->next_free_array = 0;
 
-    new_object->data_struct.char_offsets_1 = NULL;
-    new_object->data_struct.char_offsets_2 = NULL;
-    new_object->data_struct.sentence_offsets_1 = NULL;
-    new_object->data_struct.sentence_offsets_2 = NULL;
+    new_object->data_struct.char_offsets = NULL;
+    new_object->data_struct.sentence_offsets = NULL;
 
     return new_object;
 }
@@ -904,36 +856,26 @@ static void Increase_Data_Array_Size
     // If the object is a intersection data, then the offset arrays also need a resize operation
     if (object->intersection_data)
     {
-        CHAR_OFFSET_TYPE* tmp_ptr_offset_1 = (CHAR_OFFSET_TYPE*) REALLOC(object->data_struct.char_offsets_1 [data_array_index],
+        CHAR_OFFSET_TYPE* tmp_ptr_offset = (CHAR_OFFSET_TYPE*) REALLOC(object->data_struct.char_offsets [data_array_index],
                 (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (CHAR_OFFSET_TYPE));
-        ASSERT_ALLOC(tmp_ptr_offset_1, "Cannot increase the data array size !",
+        ASSERT_ALLOC(tmp_ptr_offset, "Cannot increase the data array size !",
                 (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (CHAR_OFFSET_TYPE))
-        CHAR_OFFSET_TYPE* tmp_ptr_offset_2 = (CHAR_OFFSET_TYPE*) REALLOC(object->data_struct.char_offsets_2 [data_array_index],
-                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (CHAR_OFFSET_TYPE));
-        ASSERT_ALLOC(tmp_ptr_offset_2, "Cannot increase the data array size !",
-                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (CHAR_OFFSET_TYPE))
-        object->data_struct.char_offsets_1 [data_array_index] = tmp_ptr_offset_1;
-        object->data_struct.char_offsets_2 [data_array_index] = tmp_ptr_offset_2;
 
-        SENTENCE_OFFSET_TYPE* tmp_ptr_sentence_offset_1 = (SENTENCE_OFFSET_TYPE*) REALLOC(object->data_struct.sentence_offsets_1 [data_array_index],
+        object->data_struct.char_offsets [data_array_index] = tmp_ptr_offset;
+
+        SENTENCE_OFFSET_TYPE* tmp_ptr_sentence_offset = (SENTENCE_OFFSET_TYPE*) REALLOC(object->data_struct.sentence_offsets [data_array_index],
                 (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (SENTENCE_OFFSET_TYPE));
-        ASSERT_ALLOC(tmp_ptr_sentence_offset_1, "Cannot increase the data array size !",
+        ASSERT_ALLOC(tmp_ptr_sentence_offset, "Cannot increase the data array size !",
                 (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (SENTENCE_OFFSET_TYPE))
-        SENTENCE_OFFSET_TYPE* tmp_ptr_sentence_offset_2 = (SENTENCE_OFFSET_TYPE*) REALLOC(object->data_struct.sentence_offsets_2 [data_array_index],
-                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (SENTENCE_OFFSET_TYPE));
-        ASSERT_ALLOC(tmp_ptr_sentence_offset_2, "Cannot increase the data array size !",
-                (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (SENTENCE_OFFSET_TYPE))
-        object->data_struct.sentence_offsets_1 [data_array_index] = tmp_ptr_sentence_offset_1;
-        object->data_struct.sentence_offsets_2 [data_array_index] = tmp_ptr_sentence_offset_2;
+
+        object->data_struct.sentence_offsets [data_array_index] = tmp_ptr_sentence_offset;
 
         // Init the new memory (No zero, because a zero is a valid offset !)
         for (size_t i = object->allocated_array_size [data_array_index];
                 i < (object->allocated_array_size [data_array_index] + increase_number_of_objects); ++ i)
         {
-            object->data_struct.char_offsets_1 [data_array_index][i] = CHAR_OFFSET_TYPE_MAX;
-            object->data_struct.char_offsets_2 [data_array_index][i] = CHAR_OFFSET_TYPE_MAX;
-            object->data_struct.sentence_offsets_1 [data_array_index][i] = SENTENCE_OFFSET_TYPE_MAX;
-            object->data_struct.sentence_offsets_2 [data_array_index][i] = SENTENCE_OFFSET_TYPE_MAX;
+            object->data_struct.char_offsets [data_array_index][i] = CHAR_OFFSET_TYPE_MAX;
+            object->data_struct.sentence_offsets [data_array_index][i] = SENTENCE_OFFSET_TYPE_MAX;
         }
 
         object->realloc_calls += 4;

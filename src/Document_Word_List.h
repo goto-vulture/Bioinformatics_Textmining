@@ -40,37 +40,9 @@ struct Document_Word_List
 {
     struct Data_And_Offsets
     {
-        uint_fast32_t** data;       ///< 2 dimensional Array with the data
-
-        /**
-         * @brief Char offsets of the first data set (only valid data, when the object is intersection data).
-         *
-         * In normal cases only one of the char offsets is relevant as result. But in the calculation it is not possible to
-         * determine, whether the first or the second offsets are relevant. So the solution: calculate and save both.
-         */
-        CHAR_OFFSET_TYPE** char_offsets_1;
-        /**
-         * @brief Char offsets of the second data set (only valid data, when the object is intersection data).
-         *
-         * In normal cases only one of the char offsets is relevant as result. But in the calculation it is not possible to
-         * determine, whether the first or the second offsets are relevant. So the solution: calculate and save both.
-         */
-        CHAR_OFFSET_TYPE** char_offsets_2;
-
-        /**
-         * @brief Here we have a similar situation compared with the char offsets.
-         *
-         * And we have here also similar problems: in the calculation it is not possible to determine, whether the first
-         * or the second offsets are relevant. So the solution: calculate and save both.
-         */
-        SENTENCE_OFFSET_TYPE** sentence_offsets_1;
-        /**
-         * @brief Here we have a similar situation compared with the char offsets.
-         *
-         * And we have here also similar problems: in the calculation it is not possible to determine, whether the first
-         * or the second offsets are relevant. So the solution: calculate and save both.
-         */
-        SENTENCE_OFFSET_TYPE** sentence_offsets_2;
+        uint_fast32_t** data;                       ///< 2 dimensional Array with the data
+        CHAR_OFFSET_TYPE** char_offsets;            ///< Char offsets
+        SENTENCE_OFFSET_TYPE** sentence_offsets;    ///< Sentence offsets
     } data_struct;
 
     size_t* arrays_lengths;         ///< 1 dimensional Array with the data length information
@@ -184,8 +156,7 @@ DocumentWordList_AppendData
  *
  * @param[in] object Document_Word_List
  * @param[in] new_data New data
- * @param[in] new_offsets_1 First offset array
- * @param[in] new_offsets_2 Second offset array
+ * @param[in] new_offsets Offset array
  * @param[in] data_length Length of the new data
  */
 extern void
@@ -193,8 +164,7 @@ DocumentWordList_AppendDataWithOffsets
 (
         struct Document_Word_List* const object,
         const uint_fast32_t* const new_data,
-        const CHAR_OFFSET_TYPE* const new_offsets_1,
-        const CHAR_OFFSET_TYPE* const new_offsets_2,
+        const CHAR_OFFSET_TYPE* const new_offsets,
         const size_t data_length
 );
 
@@ -208,10 +178,8 @@ DocumentWordList_AppendDataWithOffsets
  *
  * @param[in] object Document_Word_List
  * @param[in] new_data New data
- * @param[in] new_char_offsets_1 First char offset array
- * @param[in] new_char_offsets_2 Second char offset array
- * @param[in] new_sentence_offsets_1 First sentence offset array
- * @param[in] new_sentence_offsets_2 Second sentence offset array
+ * @param[in] new_char_offsets Char offset array
+ * @param[in] new_sentence_offsets Sentence offset array
  * @param[in] data_length Length of the new data
  */
 extern void
@@ -219,10 +187,8 @@ DocumentWordList_AppendDataWithTwoTypeOffsets
 (
         struct Document_Word_List* const object,
         const uint_fast32_t* const new_data,
-        const CHAR_OFFSET_TYPE* const new_char_offsets_1,
-        const CHAR_OFFSET_TYPE* const new_char_offsets_2,
-        const SENTENCE_OFFSET_TYPE* const new_sentence_offsets_1,
-        const SENTENCE_OFFSET_TYPE* const new_sentence_offsets_2,
+        const CHAR_OFFSET_TYPE* const new_char_offsets,
+        const SENTENCE_OFFSET_TYPE* const new_sentence_offsets,
         const size_t data_length
 );
 
@@ -277,16 +243,14 @@ Put_One_Value_To_Document_Word_List
  *
  * @param[in] object Document_Word_List
  * @param[in] new_value New value
- * @param[in] new_offset_1 First new offset value
- * @param[in] new_offset_2 Second new offset value
+ * @param[in] new_offset New offset value
  */
 extern void
 Put_One_Value_And_Offets_To_Document_Word_List
 (
         struct Document_Word_List* const object,
         const uint_fast32_t new_value,
-        const CHAR_OFFSET_TYPE new_offset_1,
-        const CHAR_OFFSET_TYPE new_offset_2
+        const CHAR_OFFSET_TYPE new_offset
 );
 
 /**
@@ -301,20 +265,16 @@ Put_One_Value_And_Offets_To_Document_Word_List
  *
  * @param[in] object Document_Word_List
  * @param[in] new_value New value
- * @param[in] new_char_offset_1 First new char offset value
- * @param[in] new_char_offset_2 Second new char offset value
- * @param[in] new_sentence_offset_1 First new sentence offset value
- * @param[in] new_sentence_offset_2 Second new sentence offset value
+ * @param[in] new_char_offset First new char offset value
+ * @param[in] new_sentence_offset First new sentence offset value
  */
 extern void
 Put_One_Value_And_Two_Offset_Types_To_Document_Word_List
 (
         struct Document_Word_List* const object,
         const uint_fast32_t new_value,
-        const CHAR_OFFSET_TYPE new_char_offset_1,
-        const CHAR_OFFSET_TYPE new_char_offset_2,
-        const SENTENCE_OFFSET_TYPE new_sentence_offset_1,
-        const SENTENCE_OFFSET_TYPE new_sentence_offset_2
+        const CHAR_OFFSET_TYPE new_char_offset,
+        const SENTENCE_OFFSET_TYPE new_sentence_offset
 );
 
 /**
