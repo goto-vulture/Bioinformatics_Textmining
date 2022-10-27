@@ -73,10 +73,15 @@ extern "C"
 #ifndef ALL_PTR
 #define ALL_PTR(type, type_def)                                                                                         \
     TYPE_PTR(type, type_def),                                                                                           \
+    TYPE_PTR(const type, type_def),                                                                                     \
     TYPE_PTR_PTR(type, type_def),                                                                                       \
+    TYPE_PTR_PTR(const type, type_def),                                                                                 \
     TYPE_PTR_PTR_PTR(type, type_def),                                                                                   \
+    TYPE_PTR_PTR_PTR(const type, type_def),                                                                             \
     TYPE_PTR_PTR_PTR_PTR(type, type_def),                                                                               \
-    TYPE_PTR_PTR_PTR_PTR_PTR(type, type_def)
+    TYPE_PTR_PTR_PTR_PTR(const type, type_def),                                                                         \
+    TYPE_PTR_PTR_PTR_PTR_PTR(type, type_def),                                                                           \
+    TYPE_PTR_PTR_PTR_PTR_PTR(const type, type_def)
 #else
 #error "The macro \"ALL_PTR\" is already defined !"
 #endif /* ALL_PTR */
@@ -114,10 +119,15 @@ extern "C"
 #ifndef INT_TYPES
 #define INT_TYPES                                                                                                       \
     ALL_POSSIBLE_TYPES_WITH_UNSIGNED(char, TYPE_TYPE),                                                                  \
+    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(const char, TYPE_TYPE),                                                            \
     ALL_POSSIBLE_TYPES_WITH_UNSIGNED(short int, TYPE_TYPE),                                                             \
+    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(const short int, TYPE_TYPE),                                                       \
     ALL_POSSIBLE_TYPES_WITH_UNSIGNED(int, TYPE_TYPE),                                                                   \
+    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(const int, TYPE_TYPE),                                                             \
     ALL_POSSIBLE_TYPES_WITH_UNSIGNED(long int, TYPE_TYPE),                                                              \
-    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(long long int, TYPE_TYPE)
+    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(const long int, TYPE_TYPE),                                                        \
+    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(long long int, TYPE_TYPE),                                                         \
+    ALL_POSSIBLE_TYPES_WITH_UNSIGNED(const long long int, TYPE_TYPE)
 #else
 #error "The macro \"INT_TYPES\" is already defined !"
 #endif /* INT_TYPES */
@@ -125,14 +135,19 @@ extern "C"
 #ifndef FLOAT_TYPES
 #define FLOAT_TYPES                                                                                                     \
     ALL_POSSIBLE_TYPES(float, TYPE_TYPE),                                                                               \
+    ALL_POSSIBLE_TYPES(const float, TYPE_TYPE),                                                                         \
     ALL_POSSIBLE_TYPES(double, TYPE_TYPE),                                                                              \
-    ALL_POSSIBLE_TYPES(long double, TYPE_TYPE)
+    ALL_POSSIBLE_TYPES(const double, TYPE_TYPE),                                                                        \
+    ALL_POSSIBLE_TYPES(long double, TYPE_TYPE),                                                                         \
+    ALL_POSSIBLE_TYPES(const long double, TYPE_TYPE)
 #else
 #error "The macro \"FLOAT_TYPES\" is already defined !"
 #endif /* FLOAT_TYPES */
 
 #ifndef VOID_TYPES
-#define VOID_TYPES ALL_PTR(void, TYPE_TYPE)
+#define VOID_TYPES                                                                                                      \
+    ALL_PTR(void, TYPE_TYPE),                                                                                           \
+    ALL_PTR(const void, TYPE_TYPE)
 #else
 #error "The macro \"VOID_TYPES\" is already defined !"
 #endif /* VOID_TYPES */
@@ -185,7 +200,7 @@ extern "C"
  */
 #ifndef IS_PTR
 #define IS_PTR(value)                                                                                                   \
-    _Static_assert(PTR_CHECK(value, TYPE_VALID, false), #value " needs to be a pointer !")
+    _Static_assert(PTR_CHECK(value, TYPE_VALID, false), #value " needs to be a pointer !");
 #else
 #error "The macro \"IS_PTR\" is already defined !"
 #endif /* IS_PTR */
@@ -255,18 +270,31 @@ extern "C"
 #define GET_FORMAT_STR(value)                                                                                           \
     _Generic((value),                                                                                                   \
     char: "%c",                                                                                                         \
+	const char: "%c",                                                                                                   \
     unsigned char: "%hhu",                                                                                              \
+    const unsigned char: "%hhu",                                                                                        \
     short int: "%hi",                                                                                                   \
+    const short int: "%hi",                                                                                             \
     unsigned short int: "%hu",                                                                                          \
+    const unsigned short int: "%hu",                                                                                    \
     int: "%d",                                                                                                          \
+    const int: "%d",                                                                                                    \
     unsigned int: "%lu",                                                                                                \
+    const unsigned int: "%lu",                                                                                          \
     long int: "%ld",                                                                                                    \
+    const long int: "%ld",                                                                                              \
     unsigned long int: "%lu",                                                                                           \
+    const unsigned long int: "%lu",                                                                                     \
     long long int: "%lld",                                                                                              \
+    const long long int: "%lld",                                                                                        \
     unsigned long long int: "%llu",                                                                                     \
+    const unsigned long long int: "%llu",                                                                               \
     float: "%f",                                                                                                        \
+    const float: "%f",                                                                                                  \
     double: "%f",                                                                                                       \
+    const double: "%f",                                                                                                 \
     long double: "%Lf",                                                                                                 \
+    const long double: "%Lf",                                                                                           \
     ALL_PTR(char, TYPE_PTR_FMT_STR),                                                                                    \
     ALL_PTR(unsigned char, TYPE_PTR_FMT_STR),                                                                           \
     ALL_PTR(short int, TYPE_PTR_FMT_STR),                                                                               \
