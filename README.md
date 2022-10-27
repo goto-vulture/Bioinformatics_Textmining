@@ -43,9 +43,9 @@ The CLI accepts the following main inputs, that are required:
 - `-i`, `--input=<str>`: First input file
 - `-j`, `--input2=<str>`: Second input file
 - `-o`, `--output=<str>`: Output file
-- `-f`, `--format`: Format the output for better readability in a normal editor?
 
 Optional arguments:
+- `-f`, `--format`: Format the output for better readability in a normal editor?
 - `-h`, `--help`: Show a help message and exit
 - `-A`, `--abort=<float>`: Abort the calculation after X percent
 - `-T`, `--run_all_test_functions`: Runing all test functions (Only useful for debugging)
