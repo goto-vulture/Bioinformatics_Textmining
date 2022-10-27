@@ -222,18 +222,17 @@ TokenIntMapping_AddToken
     _Bool token_already_in_list = false;
     for (uint_fast32_t i = 0; i < c_str_array_length; ++ i)
     {
-        // Before the comparison: Have the strings the same length ?
-        //if (new_token_length != strlen(&(to_str [i * MAX_TOKEN_LENGTH]))) { continue; }
-
-        //if (strncmp (new_token, &(to_str [i * MAX_TOKEN_LENGTH]), new_token_length) == 0)
         // Pre check the first char to avoid strncmp calls
-        //if (new_token [0] == to_str [0])
-        if (*new_token == *to_str)
+        if (new_token [0] == to_str [0])
         {
-            if (strncmp (new_token, to_str, new_token_length) == 0)
+            // Before the comparison: Have the strings the same length ?
+            if (new_token_length == strlen (to_str))
             {
-                token_already_in_list = true;
-                break;
+                if (strncmp (new_token, to_str, new_token_length) == 0)
+                {
+                    token_already_in_list = true;
+                    break;
+                }
             }
         }
         to_str += MAX_TOKEN_LENGTH;
@@ -416,18 +415,17 @@ TokenIntMapping_TokenToInt
     // Search in the C-String, where the token would be, when it is already in the mapping list
     for (; i < c_str_array_length; ++ i)
     {
-        // Before the comparison: Have the strings the same length ?
-        //if (search_token_length != strlen(&(c_string_array [i * MAX_TOKEN_LENGTH]))) { continue; }
-
-        //if (strncmp (search_token, &(c_string_array [i * MAX_TOKEN_LENGTH]), search_token_length) == 0)
         // Pre check the first char to avoid strncmp calls
-        // if (search_token [0] == c_string_array [0])
-        if (*search_token == *c_string_array)
+        if (search_token [0] == c_string_array [0])
         {
-            if (strncmp (search_token, c_string_array, search_token_length) == 0)
+            // Before the comparison: Have the strings the same length ?
+            if (search_token_length == strlen(c_string_array))
             {
-                token_found = true;
-                break;
+                if (strncmp (search_token, c_string_array, search_token_length) == 0)
+                {
+                    token_found = true;
+                    break;
+                }
             }
         }
         c_string_array += MAX_TOKEN_LENGTH;
