@@ -113,8 +113,12 @@ IntersectionApproach_HeapSortAndBinarySearch
  *      data_1_length = 0
  *      data_2 != NULL
  *      data_2_length = 0
+ *      char_offset != NULL
+ *      sentence_offset != NULL
  *
  * @param[in] data_1 Data, that will be used for the intersection with the second data array
+ * @param[in] char_offsets Char offsets of the data focused on the source file, that was also the source for data_1
+ * @param[in] sentence_offsets Sentence offsets of the data focused on the source file, that was also the source for data_1
  * @param[in] data_1_length Number of the elements in the first data array
  * @param[in] data_2 Data, that will be used for the intersection with the first data array
  * @param[in] data_2_length Number of the elements in the second data array
@@ -127,12 +131,10 @@ extern struct Document_Word_List*
 IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 (
     const uint_fast32_t* const restrict data_1,
-    const CHAR_OFFSET_TYPE* const restrict char_offsets_1,
-    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets_1,
+    const CHAR_OFFSET_TYPE* const restrict char_offsets,
+    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets,
     const size_t data_1_length,
     const uint_fast32_t* const restrict data_2,
-    const CHAR_OFFSET_TYPE* const restrict char_offsets_2,
-    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets_2,
     const size_t data_2_length,
     const char* const restrict id_1,
     const char* const restrict id_2

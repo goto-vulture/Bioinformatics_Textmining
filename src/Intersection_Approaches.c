@@ -315,8 +315,12 @@ IntersectionApproach_HeapSortAndBinarySearch
  *      data_1_length = 0
  *      data_2 != NULL
  *      data_2_length = 0
+ *      char_offset != NULL
+ *      sentence_offset != NULL
  *
  * @param[in] data_1 Data, that will be used for the intersection with the second data array
+ * @param[in] char_offsets Char offsets of the data focused on the source file, that was also the source for data_1
+ * @param[in] sentence_offsets Sentence offsets of the data focused on the source file, that was also the source for data_1
  * @param[in] data_1_length Number of the elements in the first data array
  * @param[in] data_2 Data, that will be used for the intersection with the first data array
  * @param[in] data_2_length Number of the elements in the second data array
@@ -329,12 +333,10 @@ extern struct Document_Word_List*
 IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 (
     const uint_fast32_t* const restrict data_1,
-    const CHAR_OFFSET_TYPE* const restrict char_offsets_1,
-    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets_1,
+    const CHAR_OFFSET_TYPE* const restrict char_offsets,
+    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets,
     const size_t data_1_length,
     const uint_fast32_t* const restrict data_2,
-    const CHAR_OFFSET_TYPE* const restrict char_offsets_2,
-    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets_2,
     const size_t data_2_length,
     const char* const restrict id_1,
     const char* const restrict id_2
@@ -344,6 +346,9 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     ASSERT_MSG(data_1_length > 0, "Length of the data 1 is 0 !");
     ASSERT_MSG(data_2 != NULL, "Data 2 is NULL !");
     ASSERT_MSG(data_2_length > 0, "Length of the data 2 is 0 !");
+    ASSERT_MSG(char_offsets != NULL, "Char offset is NULL !");
+    ASSERT_MSG(sentence_offsets != NULL, "Sentence offset is NULL !");
+
 #ifndef __STDC_NO_VLA__
     #ifndef UNSAFE_VLA_USAGE
         ASSERT_FMSG(data_1_length <= MAX_VLA_LENGTH, "Length of the data 1 is too large for VLA ! Max. valid: %zu; Got %zu !",
@@ -410,7 +415,7 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
                 {
                     //Put_One_Value_To_Document_Word_List(intersection_result, data_1 [d1]);
                     Put_One_Value_And_Two_Offset_Types_To_Document_Word_List(intersection_result, data_1 [d1],
-                            char_offsets_1 [d1], char_offsets_2 [d2], sentence_offsets_1 [d1], sentence_offsets_2 [d2]);
+                            char_offsets [d1], sentence_offsets [d1]);
                     // intersection_result->data [0][intersection_result->arrays_lengths [0]] = data_1 [d1];
                     //++ intersection_result->arrays_lengths [0];
                     multiple_guard_data_1 [d1] = true;

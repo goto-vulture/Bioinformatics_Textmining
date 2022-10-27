@@ -472,14 +472,11 @@ Exec_Intersection
             struct Document_Word_List* intersection_result = IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
             (
                     source_int_values_1->data_struct.data [selected_data_1_array],
-                    source_int_values_1->data_struct.char_offsets_1 [selected_data_1_array],
-                    source_int_values_1->data_struct.sentence_offsets_1 [selected_data_1_array],
+                    source_int_values_1->data_struct.char_offsets [selected_data_1_array],
+                    source_int_values_1->data_struct.sentence_offsets [selected_data_1_array],
                     source_int_values_1->arrays_lengths [selected_data_1_array],
 
                     source_int_values_2->data_struct.data [selected_data_2_array],
-                    // Yes "char_offsets_1" instead of "char_offsets_2" is correct !
-                    source_int_values_2->data_struct.char_offsets_1 [selected_data_2_array],
-                    source_int_values_2->data_struct.sentence_offsets_1 [selected_data_2_array],
                     source_int_values_2->arrays_lengths [selected_data_2_array],
 
                     NULL, NULL
@@ -564,9 +561,9 @@ Exec_Intersection
                     const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
                             intersection_result->data_struct.data [0][i]);
 
-                    cJSON* char_offset = cJSON_CreateNumber(intersection_result->data_struct.char_offsets_1 [0][i]);
+                    cJSON* char_offset = cJSON_CreateNumber(intersection_result->data_struct.char_offsets [0][i]);
                     ASSERT_MSG(char_offset != NULL, "char offset is NULL !");
-                    cJSON* sentence_offset = cJSON_CreateNumber(intersection_result->data_struct.sentence_offsets_1 [0][i]);
+                    cJSON* sentence_offset = cJSON_CreateNumber(intersection_result->data_struct.sentence_offsets [0][i]);
                     ASSERT_MSG(sentence_offset != NULL, "sentence offset is NULL !");
 
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
@@ -781,7 +778,7 @@ Add_General_Information_To_Export_File
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Sentence offset", sentence_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation mode", creation_mode);
 
-    cJSON* creation_time = cJSON_CreateString(time_string);
+    cJSON* creation_time = cJSON_CreateString("123");
     cJSON_NOT_NULL(creation_time);
 
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "First file", first_file);
@@ -921,9 +918,7 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
                     document_word_list,
                     token_int_values,
                     token_list_container->token_lists [i].char_offsets,
-                    NULL,
                     token_list_container->token_lists [i].sentence_offsets,
-                    NULL,
                     next_free_value
             );
         }
