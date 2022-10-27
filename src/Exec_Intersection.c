@@ -134,17 +134,6 @@ _Static_assert(RESULT_FILE_BUFFER_SIZE > 0, "The macro \"RESULT_FILE_BUFFER_SIZE
 
 
 /**
- * @brief Simple switch for the output formatting.
- */
-#ifndef UNFORMATTED_OUTPUT
-#define UNFORMATTED_OUTPUT
-#else
-#error "The macro \"UNFORMATTED_OUTPUT\" is already defined !"
-#endif /* UNFORMATTED_OUTPUT */
-
-
-
-/**
  * @brief Add general information to the export cJSON object.
  *
  * General information are:
@@ -469,11 +458,8 @@ Exec_Intersection
     int file_operation_ret_value = 0;
 
     // Insert the general information to the result file
-#ifdef UNFORMATTED_OUTPUT
-    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, false);
-#else
-    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, true);
-#endif /* UNFORMATTED_OUTPUT */
+    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, GLOBAL_CLI_FORMAT_OUTPUT);
+
     ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
     const size_t general_information_as_str_len = strlen (general_information_as_str);
     // Remove the last two char from the string representation ('\n' and '}')
@@ -485,17 +471,21 @@ Exec_Intersection
             strerror(errno));
     result_file_size = result_file_size + (general_information_as_str_len - 2);
 
-#ifdef UNFORMATTED_OUTPUT
-    file_operation_ret_value = fputs("},\n", result_file);
-    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
-            strerror(errno));
-    result_file_size += strlen("},\n");
-#else
-    file_operation_ret_value = fputc(',', result_file);
-    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
-            strerror(errno));
-    ++ result_file_size;
-#endif /* UNFORMATTED_OUTPUT */
+    if (GLOBAL_CLI_FORMAT_OUTPUT)
+    {
+        file_operation_ret_value = fputc(',', result_file);
+        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+                strerror(errno));
+        ++ result_file_size;
+    }
+    else
+    {
+        file_operation_ret_value = fputs("},\n", result_file);
+        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+                strerror(errno));
+        result_file_size += strlen("},\n");
+    }
+
 
     cJSON_FULL_FREE_AND_SET_TO_NULL(general_information);
     free(general_information_as_str);
@@ -701,11 +691,8 @@ Exec_Intersection
             // Second problem: The string, that will be created from cJSON_PrintBuffered, is in some cases too large for
             // a single call at the end.
             // So the only possibility: Intermediate calls
-#ifdef UNFORMATTED_OUTPUT
-            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, false);
-#else
-            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, true);
-#endif /* UNFORMATTED_OUTPUT */
+            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, GLOBAL_CLI_FORMAT_OUTPUT);
+
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
             const size_t json_export_str_len = strlen (json_export_str);
 
@@ -724,17 +711,20 @@ Exec_Intersection
                     GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
             result_file_size = result_file_size + (json_export_str_len - 3);
 
-#ifdef UNFORMATTED_OUTPUT
-            file_operation_ret_value = fputs("},\n", result_file);
-            ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
-                    GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
-            result_file_size += strlen("},\n");
-#else
-            file_operation_ret_value = fputc(',', result_file);
-            ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
-                    GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
-            ++ result_file_size;
-#endif /* UNFORMATTED_OUTPUT */
+            if (GLOBAL_CLI_FORMAT_OUTPUT)
+            {
+                file_operation_ret_value = fputc(',', result_file);
+                ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
+                        GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
+                ++ result_file_size;
+            }
+            else
+            {
+                file_operation_ret_value = fputs("},\n", result_file);
+                ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
+                        GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
+                result_file_size += strlen("},\n");
+            }
 
             free(orig_ptr);
             orig_ptr = NULL;
@@ -1182,7 +1172,3 @@ cJSON_Determine_Full_Memory_Usage
 #ifdef INTERSECTIONS
 #undef INTERSECTIONS
 #endif /* INTERSECTIONS */
-
-#ifdef UNFORMATTED_OUTPUT
-#undef UNFORMATTED_OUTPUT
-#endif /* UNFORMATTED_OUTPUT */

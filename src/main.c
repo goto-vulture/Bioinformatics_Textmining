@@ -229,6 +229,7 @@ int main (const int argc, const char* argv [])
             OPT_STRING('i', "input", &GLOBAL_CLI_INPUT_FILE, "First input file", NULL, 0, 0),
             OPT_STRING('j', "input2", &GLOBAL_CLI_INPUT_FILE2, "Second input file", NULL, 0, 0),
             OPT_STRING('o', "output", &GLOBAL_CLI_OUTPUT_FILE, "Output file", NULL, 0, 0),
+            OPT_BOOLEAN('f', "format", &GLOBAL_CLI_FORMAT_OUTPUT, "Format the output for better readability in a normal editor ?", NULL, 0, 0),
 
             OPT_GROUP("Debug / test functions"),
             OPT_BOOLEAN('T', "run_all_test_functions", &GLOBAL_RUN_ALL_TEST_FUNCTIONS,

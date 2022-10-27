@@ -35,6 +35,8 @@ extern const char* GLOBAL_CLI_INPUT_FILE2; ///< Second input file
 
 extern const char* GLOBAL_CLI_OUTPUT_FILE; ///< Output file
 
+extern _Bool GLOBAL_CLI_FORMAT_OUTPUT; ///< Format the output ?
+
 extern _Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS; ///< Run all test functions ?
 
 /**
