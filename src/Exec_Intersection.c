@@ -114,6 +114,35 @@ _Static_assert(RESULT_FILE_BUFFER_SIZE > 0, "The macro \"RESULT_FILE_BUFFER_SIZE
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 
+// Here are some #defines for abbreviations
+// If a abbreviation not wanted, simply alter the #define
+#ifndef OFFSET
+#define OFFSET "offs."
+//#define OFFSET "offset"
+#else
+#error "The macro \"OFFSET\" is already defined !"
+#endif /* OFFSET */
+
+#ifndef INTERSECTIONS
+#define INTERSECTIONS "Inters."
+//#define INTERSECTIONS "Intersections"
+#else
+#error "The macro \"INTERSECTIONS\" is already defined !"
+#endif /* INTERSECTIONS */
+
+
+
+/**
+ * @brief Simple switch for the output formatting.
+ */
+#ifndef UNFORMATTED_OUTPUT
+#define UNFORMATTED_OUTPUT
+#else
+#error "The macro \"UNFORMATTED_OUTPUT\" is already defined !"
+#endif /* UNFORMATTED_OUTPUT */
+
+
+
 /**
  * @brief Add general information to the export cJSON object.
  *
@@ -291,6 +320,42 @@ cJSON_Determine_Full_Memory_Usage
  * Asserts:
  *      N/A
  *
+    "General infos":    {
+        "Creation mode":    {
+            "Part match":   true,
+            "Full match":   true,
+            "Stop word list used":  true,
+            "Char offset":  true,
+            "Sentence offset":  true
+        },
+        "First file":   "/bph/home/domhab/Downloads/Testdaten/test_ebm.json",
+        "Second file":  "/bph/home/domhab/Downloads/Testdaten/xaa",
+        "Creation time":    "Thu Oct 20 13:53:18 2022"
+    },
+    "name_syn_0_0_0":   {
+        "tokens":   ["Re-combinant", "human", "choriogonadotropin"],
+        "tokens w/o stop words":    ["Re-combinant", "human", "choriogonadotropin"],
+        "Inters. (partial)":    {
+            "16427787": {
+                "tokens":   ["human"],
+                "char offs.":   [41],
+                "sentence offs.":   [0]
+            },
+            "9573502":  {
+                "tokens":   ["human"],
+                "char offs.":   [74],
+                "sentence offs.":   [0]
+            },
+            "21393467": {
+                "tokens":   ["human"],
+                "char offs.":   [82],
+                "sentence offs.":   [0]
+            }
+        },
+        "Inters. (full)":   {
+        }
+    },
+    "name_syn_1_1_1":   {
  * @param[in] abort_progress_percent After this progress percent value the process will be stopped
  *
  * @return Status value (0: Success; != 0 Error)
@@ -403,7 +468,11 @@ Exec_Intersection
     int file_operation_ret_value = 0;
 
     // Insert the general information to the result file
+#ifdef UNFORMATTED_OUTPUT
+    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, false);
+#else
     char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, true);
+#endif /* UNFORMATTED_OUTPUT */
     ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
     const size_t general_information_as_str_len = strlen (general_information_as_str);
     // Remove the last two char from the string representation ('\n' and '}')
@@ -415,10 +484,17 @@ Exec_Intersection
             strerror(errno));
     result_file_size = result_file_size + (general_information_as_str_len - 2);
 
+#ifdef UNFORMATTED_OUTPUT
+    file_operation_ret_value = fputs("},\n", result_file);
+    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+            strerror(errno));
+    result_file_size += strlen("},\n");
+#else
     file_operation_ret_value = fputc(',', result_file);
     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
             strerror(errno));
     ++ result_file_size;
+#endif /* UNFORMATTED_OUTPUT */
 
     cJSON_FULL_FREE_AND_SET_TO_NULL(general_information);
     free(general_information_as_str);
@@ -581,8 +657,8 @@ Exec_Intersection
                 cJSON* two_array_container = NULL;
                 cJSON_NEW_OBJ_CHECK(two_array_container);
                 cJSON_AddItemToObject(two_array_container, "tokens", tokens_array);
-                cJSON_AddItemToObject(two_array_container, "char offsets", char_offset_array);
-                cJSON_AddItemToObject(two_array_container, "sentence offsets", sentence_offset_array);
+                cJSON_AddItemToObject(two_array_container, "char " OFFSET, char_offset_array);
+                cJSON_AddItemToObject(two_array_container, "sentence " OFFSET, sentence_offset_array);
                 // Add data to the specific cJSON object
                 // For the comparison it is important to use "src_tokens_array_wo_stop_words" instead of
                 // "src_tokens_array"; Because a full match means a equalness with the list, that contains NO stop
@@ -614,8 +690,8 @@ Exec_Intersection
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
         {
-            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "Intersections (partial)", intersections_partial_match);
-            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "Intersections (full)", intersections_full_match);
+            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, INTERSECTIONS " (partial)", intersections_partial_match);
+            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, INTERSECTIONS " (full)", intersections_full_match);
             cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, dataset_id_2, outer_object);
 
             // In theory it is possible to create the string of our cJSON structure at the end of all calculations
@@ -624,7 +700,11 @@ Exec_Intersection
             // Second problem: The string, that will be created from cJSON_PrintBuffered, is in some cases too large for
             // a single call at the end.
             // So the only possibility: Intermediate calls
+#ifdef UNFORMATTED_OUTPUT
+            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, false);
+#else
             char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, true);
+#endif /* UNFORMATTED_OUTPUT */
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
             const size_t json_export_str_len = strlen (json_export_str);
 
@@ -643,10 +723,17 @@ Exec_Intersection
                     GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
             result_file_size = result_file_size + (json_export_str_len - 3);
 
+#ifdef UNFORMATTED_OUTPUT
+            file_operation_ret_value = fputs("},\n", result_file);
+            ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
+                    GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
+            result_file_size += strlen("},\n");
+#else
             file_operation_ret_value = fputc(',', result_file);
             ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
                     GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
             ++ result_file_size;
+#endif /* UNFORMATTED_OUTPUT */
 
             free(orig_ptr);
             orig_ptr = NULL;
@@ -771,6 +858,7 @@ Add_General_Information_To_Export_File
     cJSON_NOT_NULL(char_offset);
     cJSON* sentence_offset = cJSON_CreateBool(true);
     cJSON_NOT_NULL(sentence_offset);
+
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Full match", full_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Stop word list used", stop_word_list);
@@ -1082,3 +1170,15 @@ cJSON_Determine_Full_Memory_Usage
 #ifdef RESULT_FILE_BUFFER_SIZE
 #undef RESULT_FILE_BUFFER_SIZE
 #endif /* RESULT_FILE_BUFFER_SIZE */
+
+#ifdef OFFSET
+#undef OFFSET
+#endif /* OFFSET */
+
+#ifdef INTERSECTIONS
+#undef INTERSECTIONS
+#endif /* INTERSECTIONS */
+
+#ifdef UNFORMATTED_OUTPUT
+#undef UNFORMATTED_OUTPUT
+#endif /* UNFORMATTED_OUTPUT */
