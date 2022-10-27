@@ -201,6 +201,8 @@ int main (const int argc, const char* argv [])
     // Runtime check of the system
     // This check is necessary, because a _Static_assert test is only available in C11
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ < 201112L
+    #include <limits.h> // Necessary for "CHAR_BIT"
+
     ASSERT_MSG(CHAR_BIT == 8, "A char must be exact 8 bit long !");
     ASSERT_MSG(sizeof(size_t) >= 4, "The type \"size_t\" needs to be at least 4 byte wide !");
     ASSERT_MSG(sizeof(time_t) >= 4, "The type \"time_t\" needs to be at least 4 byte wide !");
