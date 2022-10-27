@@ -295,32 +295,54 @@ extern "C"
  */
 #ifndef IS_IN_TYPE_LIST_2
 #define IS_IN_TYPE_LIST_2(value, exp_type_1, exp_type_2)                                                                \
-    _Static_assert(_Generic((value), exp_type_1: true, exp_type_2: true, default: false),                               \
-            #value " has the wrong type. Expected types: " #exp_type_1 " or " #exp_type_2 " !");
+    _Static_assert(_Generic((value),                                                                                    \
+    exp_type_1: true,                                                                                                   \
+    exp_type_2: true,                                                                                                   \
+    default: false),                                                                                                    \
+        #value " has the wrong type. Expected types: "                                                                  \
+        #exp_type_1 " or " #exp_type_2 " !");
 #else
 #error "The macro \"IS_IN_TYPE_LIST_2\" is already defined !"
 #endif /* IS_IN_TYPE_LIST_2 */
 
 #ifndef IS_IN_TYPE_LIST_3
 #define IS_IN_TYPE_LIST_3(value, exp_type_1, exp_type_2, exp_type_3)                                                    \
-    _Static_assert(_Generic((value), exp_type_1: true, exp_type_2: true, exp_type_3: true, default: false),             \
-            #value " has the wrong type. Expected types: " #exp_type_1 ", " #exp_type_2 " or " #exp_type_3 " !");
+    _Static_assert(_Generic((value),                                                                                    \
+    exp_type_1: true,                                                                                                   \
+    exp_type_2: true,                                                                                                   \
+    exp_type_3: true,                                                                                                   \
+    default: false),                                                                                                    \
+        #value " has the wrong type. Expected types: "                                                                  \
+        #exp_type_1 ", " #exp_type_2 " or " #exp_type_3 " !");
 #else
 #error "The macro \"IS_IN_TYPE_LIST_3\" is already defined !"
 #endif /* IS_IN_TYPE_LIST_3 */
 
 #ifndef IS_IN_TYPE_LIST_4
-#define IS_IN_TYPE_LIST_4(value, exp_type_1, exp_type_2, exp_type_3, exp_type_4)                                                \
-    _Static_assert(_Generic((value), exp_type_1: true, exp_type_2: true, exp_type_3: true, exp_type_4: true, default: false),   \
-            #value " has the wrong type. Expected types: " #exp_type_1 ", " #exp_type_2 ", " #exp_type_3 " or " #exp_type_4 " !");
+#define IS_IN_TYPE_LIST_4(value, exp_type_1, exp_type_2, exp_type_3, exp_type_4)                                        \
+    _Static_assert(_Generic((value),                                                                                    \
+    exp_type_1: true,                                                                                                   \
+    exp_type_2: true,                                                                                                   \
+    exp_type_3: true,                                                                                                   \
+    exp_type_4: true,                                                                                                   \
+    default: false),                                                                                                    \
+        #value " has the wrong type. Expected types: "                                                                  \
+        #exp_type_1 ", " #exp_type_2 ", " #exp_type_3 " or " #exp_type_4 " !");
 #else
 #error "The macro \"IS_IN_TYPE_LIST_4\" is already defined !"
 #endif /* IS_IN_TYPE_LIST_4 */
 
 #ifndef IS_IN_TYPE_LIST_5
-#define IS_IN_TYPE_LIST_5(value, exp_type_1, exp_type_2, exp_type_3, exp_type_4, exp_type_5)                                                    \
-    _Static_assert(_Generic((value), exp_type_1: true, exp_type_2: true, exp_type_3: true, exp_type_4: true, exp_type_5: true, default: false), \
-            #value " has the wrong type. Expected types: " #exp_type_1 ", " #exp_type_2 ", " #exp_type_3 ", " #exp_type_4 " or " #exp_type_5 " !");
+#define IS_IN_TYPE_LIST_5(value, exp_type_1, exp_type_2, exp_type_3, exp_type_4, exp_type_5)                            \
+    _Static_assert(_Generic((value),                                                                                    \
+    exp_type_1: true,                                                                                                   \
+    exp_type_2: true,                                                                                                   \
+    exp_type_3: true,                                                                                                   \
+    exp_type_4: true,                                                                                                   \
+    exp_type_5: true,                                                                                                   \
+    default: false),                                                                                                    \
+        #value " has the wrong type. Expected types: "                                                                  \
+        #exp_type_1 ", " #exp_type_2 ", " #exp_type_3 ", " #exp_type_4 " or " #exp_type_5 " !");
 #else
 #error "The macro \"IS_IN_TYPE_LIST_5\" is already defined !"
 #endif /* IS_IN_TYPE_LIST_5 */
@@ -348,37 +370,59 @@ extern "C"
  *
  * It is comparable with a black list for invalid variable types.
  */
-#ifndef IS_NOT_TYPE_LIST_2
-#define IS_NOT_TYPE_LIST_2(value, not_allowed_type_1, not_allowed_type_2)                                               \
-    _Static_assert(_Generic((value), not_allowed_type_1: false, not_allowed_type_2: false, default: true),              \
-        #value " has the wrong type. The types " #not_allowed_type_1 " and " #not_allowed_type_2 " are not allowed !");
+#ifndef IS_NOT_IN_TYPE_LIST_2
+#define IS_NOT_IN_TYPE_LIST_2(value, not_allowed_type_1, not_allowed_type_2)                                            \
+    _Static_assert(_Generic((value),                                                                                    \
+    not_allowed_type_1: false,                                                                                          \
+    not_allowed_type_2: false,                                                                                          \
+    default: true),                                                                                                     \
+        #value " has the wrong type. The types "                                                                        \
+        #not_allowed_type_1 " and " #not_allowed_type_2 " are not allowed !");
 #else
-#error "The macro \"IS_NOT_TYPE_LIST_2\" is already defined !"
-#endif /* IS_NOT_TYPE_LIST_2 */
+#error "The macro \"IS_NOT_IN_TYPE_LIST_2\" is already defined !"
+#endif /* IS_NOT_IN_TYPE_LIST_2 */
 
-#ifndef IS_NOT_TYPE_LIST_3
-#define IS_NOT_TYPE_LIST_3(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3)                                           \
-    _Static_assert(_Generic((value), not_allowed_type_1: false, not_allowed_type_2: false, not_allowed_type_3: false, default: true),   \
-        #value " has the wrong type. The types " #not_allowed_type_1 ", " #not_allowed_type_2 " and " #not_allowed_type_3 " are not allowed !");
+#ifndef IS_NOT_IN_TYPE_LIST_3
+#define IS_NOT_IN_TYPE_LIST_3(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3)                        \
+    _Static_assert(_Generic((value),                                                                                    \
+    not_allowed_type_1: false,                                                                                          \
+    not_allowed_type_2: false,                                                                                          \
+    not_allowed_type_3: false,                                                                                          \
+    default: true),                                                                                                     \
+        #value " has the wrong type. The types "                                                                        \
+        #not_allowed_type_1 ", " #not_allowed_type_2 " and " #not_allowed_type_3 " are not allowed !");
 #else
-#error "The macro \"IS_NOT_TYPE_LIST_3\" is already defined !"
-#endif /* IS_NOT_TYPE_LIST_3 */
+#error "The macro \"IS_NOT_IN_TYPE_LIST_3\" is already defined !"
+#endif /* IS_NOT_IN_TYPE_LIST_3 */
 
-#ifndef IS_NOT_TYPE_LIST_4
-#define IS_NOT_TYPE_LIST_4(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3, not_allowed_type_4)                                                   \
-    _Static_assert(_Generic((value), not_allowed_type_1: false, not_allowed_type_2: false, not_allowed_type_3: false, not_allowed_type_4: false, default: true),    \
-        #value " has the wrong type. The types " #not_allowed_type_1 ", " #not_allowed_type_2 ", " not_allowed_type_3 " and " #not_allowed_type_4 " are not allowed !");
+#ifndef IS_NOT_IN_TYPE_LIST_4
+#define IS_NOT_IN_TYPE_LIST_4(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3, not_allowed_type_4)    \
+    _Static_assert(_Generic((value),                                                                                    \
+    not_allowed_type_1: false,                                                                                          \
+    not_allowed_type_2: false,                                                                                          \
+    not_allowed_type_3: false,                                                                                          \
+    not_allowed_type_4: false,                                                                                          \
+    default: true),                                                                                                     \
+        #value " has the wrong type. The types "                                                                        \
+        #not_allowed_type_1 ", " #not_allowed_type_2 ", " not_allowed_type_3 " and " #not_allowed_type_4 " are not allowed !");
 #else
-#error "The macro \"IS_NOT_TYPE_LIST_4\" is already defined !"
-#endif /* IS_NOT_TYPE_LIST_4 */
+#error "The macro \"IS_NOT_IN_TYPE_LIST_4\" is already defined !"
+#endif /* IS_NOT_IN_TYPE_LIST_4 */
 
-#ifndef IS_NOT_TYPE_LIST_5
-#define IS_NOT_TYPE_LIST_5(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3, not_allowed_type_4, not_allowed_type_5)                                                       \
-    _Static_assert(_Generic((value), not_allowed_type_1: false, not_allowed_type_2: false, not_allowed_type_3: false, not_allowed_type_4: false, not_allowed_type_5: false, default: true), \
-        #value " has the wrong type. The types " #not_allowed_type_1 ", " #not_allowed_type_2 ", " #not_allowed_type_3 ", " #not_allowed_type_4 " and " #not_allowed_type_5 " are not allowed !");
+#ifndef IS_NOT_IN_TYPE_LIST_5
+#define IS_NOT_IN_TYPE_LIST_5(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3, not_allowed_type_4, not_allowed_type_5) \
+    _Static_assert(_Generic((value),                                                                                    \
+    not_allowed_type_1: false,                                                                                          \
+    not_allowed_type_2: false,                                                                                          \
+    not_allowed_type_3: false,                                                                                          \
+    not_allowed_type_4: false,                                                                                          \
+    not_allowed_type_5: false,                                                                                          \
+    default: true),                                                                                                     \
+        #value " has the wrong type. The types "                                                                        \
+        #not_allowed_type_1 ", " #not_allowed_type_2 ", " #not_allowed_type_3 ", " #not_allowed_type_4 " and " #not_allowed_type_5 " are not allowed !");
 #else
-#error "The macro \"IS_NOT_TYPE_LIST_5\" is already defined !"
-#endif /* IS_NOT_TYPE_LIST_5 */
+#error "The macro \"IS_NOT_IN_TYPE_LIST_5\" is already defined !"
+#endif /* IS_NOT_IN_TYPE_LIST_5 */
 
 #else //================================================================================================================
 
@@ -569,29 +613,29 @@ extern "C"
 
 
 
-#ifndef IS_NOT_TYPE_LIST_2
-#define IS_NOT_TYPE_LIST_2(value, not_allowed_type_1, not_allowed_type_2)
+#ifndef IS_NOT_IN_TYPE_LIST_2
+#define IS_NOT_IN_TYPE_LIST_2(value, not_allowed_type_1, not_allowed_type_2)
 #else
-#error "The macro \"IS_NOT_TYPE_LIST_2\" is already defined !"
-#endif /* IS_NOT_TYPE_LIST_2 */
+#error "The macro \"IS_NOT_IN_TYPE_LIST_2\" is already defined !"
+#endif /* IS_NOT_IN_TYPE_LIST_2 */
 
-#ifndef IS_NOT_TYPE_LIST_3
-#define IS_NOT_TYPE_LIST_3(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3)
+#ifndef IS_NOT_IN_TYPE_LIST_3
+#define IS_NOT_IN_TYPE_LIST_3(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3)
 #else
-#error "The macro \"IS_NOT_TYPE_LIST_3\" is already defined !"
-#endif /* IS_NOT_TYPE_LIST_3 */
+#error "The macro \"IS_NOT_IN_TYPE_LIST_3\" is already defined !"
+#endif /* IS_NOT_IN_TYPE_LIST_3 */
 
-#ifndef IS_NOT_TYPE_LIST_4
-#define IS_NOT_TYPE_LIST_4(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3, not_allowed_type_4)
+#ifndef IS_NOT_IN_TYPE_LIST_4
+#define IS_NOT_IN_TYPE_LIST_4(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3, not_allowed_type_4)
 #else
-#error "The macro \"IS_NOT_TYPE_LIST_4\" is already defined !"
-#endif /* IS_NOT_TYPE_LIST_4 */
+#error "The macro \"IS_NOT_IN_TYPE_LIST_4\" is already defined !"
+#endif /* IS_NOT_IN_TYPE_LIST_4 */
 
-#ifndef IS_NOT_TYPE_LIST_5
-#define IS_NOT_TYPE_LIST_5(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3, not_allowed_type_4, not_allowed_type_5)
+#ifndef IS_NOT_IN_TYPE_LIST_5
+#define IS_NOT_IN_TYPE_LIST_5(value, not_allowed_type_1, not_allowed_type_2, not_allowed_type_3, not_allowed_type_4, not_allowed_type_5)
 #else
-#error "The macro \"IS_NOT_TYPE_LIST_5\" is already defined !"
-#endif /* IS_NOT_TYPE_LIST_5 */
+#error "The macro \"IS_NOT_IN_TYPE_LIST_5\" is already defined !"
+#endif /* IS_NOT_IN_TYPE_LIST_5 */
 
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
