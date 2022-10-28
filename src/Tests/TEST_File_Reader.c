@@ -80,11 +80,13 @@ extern void TEST_Number_Of_Tokenarrays (void)
     _Bool err_occurred = true;
     const _Bool md5_sum_check_result = Check_Test_File_MD5_Sum(TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5,
             &err_occurred);
-    ASSERT_EQUALS(md5_sum_check_result, true);
     ASSERT_MSG(err_occurred == false, "Error occurred while checking a MD5 sum of a file !");
+    ASSERT_FMSG(md5_sum_check_result == true, "MD5 sum of the file (%s) is not equal with the expected sum (%s) !",
+            TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5);
 
     struct Token_List_Container* token_container_input_1 = TokenListContainer_CreateObject (TEST_FILE_READER_TEST_FILE);
 
+    ASSERT_EQUALS(true, true); // Placeholder test
     TokenListContainer_DeleteObject(token_container_input_1);
 
     return;
@@ -100,8 +102,9 @@ extern void TEST_Max_Dataset_ID_Length (void)
     _Bool err_occurred = true;
     const _Bool md5_sum_check_result = Check_Test_File_MD5_Sum(TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5,
             &err_occurred);
-    ASSERT_EQUALS(md5_sum_check_result, true);
     ASSERT_MSG(err_occurred == false, "Error occurred while checking a MD5 sum of a file !");
+    ASSERT_FMSG(md5_sum_check_result == true, "MD5 sum of the file (%s) is not equal with the expected sum (%s) !",
+            TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5);
 
     struct Token_List_Container* token_container_input_1 = TokenListContainer_CreateObject (TEST_FILE_READER_TEST_FILE);
 
@@ -121,8 +124,9 @@ extern void TEST_Max_Tokenarray_Length (void)
     _Bool err_occurred = true;
     const _Bool md5_sum_check_result = Check_Test_File_MD5_Sum(TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5,
             &err_occurred);
-    ASSERT_EQUALS(md5_sum_check_result, true);
     ASSERT_MSG(err_occurred == false, "Error occurred while checking a MD5 sum of a file !");
+    ASSERT_FMSG(md5_sum_check_result == true, "MD5 sum of the file (%s) is not equal with the expected sum (%s) !",
+            TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5);
 
     struct Token_List_Container* token_container_input_1 = TokenListContainer_CreateObject (TEST_FILE_READER_TEST_FILE);
 
@@ -142,11 +146,13 @@ extern void TEST_Length_Of_The_First_25_Tokenarrays (void)
     _Bool err_occurred = true;
     const _Bool md5_sum_check_result = Check_Test_File_MD5_Sum(TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5,
             &err_occurred);
-    ASSERT_EQUALS(md5_sum_check_result, true);
     ASSERT_MSG(err_occurred == false, "Error occurred while checking a MD5 sum of a file !");
+    ASSERT_FMSG(md5_sum_check_result == true, "MD5 sum of the file (%s) is not equal with the expected sum (%s) !",
+            TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5);
 
     struct Token_List_Container* token_container_input_1 = TokenListContainer_CreateObject (TEST_FILE_READER_TEST_FILE);
 
+    ASSERT_EQUALS(true, true); // Placeholder test
     TokenListContainer_DeleteObject(token_container_input_1);
 
     return;
