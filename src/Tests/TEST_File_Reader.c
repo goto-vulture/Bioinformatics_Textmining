@@ -70,45 +70,6 @@ _Static_assert(sizeof(TEST_FILE_READER_TEST_FILE_MD5) == 32 + 1,
         "The macro \"TEST_FILE_READER_TEST_FILE_MD5\" needs to be exact 32 char (+ '\0') !");
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
-/**
- * @brief Compare the MD5 sum of the file with the expected one.
- *
- * @param file_name File name
- * @param expected_md5_sum Expected MD5 sum of the file
- * @return true, if the MD5 sum is equal, else false
- */
-static _Bool Check_Test_File_MD5_Sum
-(
-        const char* const restrict file_name,
-        const char* const restrict expected_md5_sum
-);
-
-/**
- * @brief Print a MD5 sum in hexadecimal notation.
- *
- * @param md5_hash MD5 sum
- */
-static void Print_Hash
-(
-        const uint8_t* const md5_hash
-);
-
-/**
- * @brief Convert two char, that represents a byte, to a binary result.
- *
- * Got code from here:
- * @link https://stackoverflow.com/questions/10156409/convert-hex-string-char-to-int
- *
- * @param char_1 First char of the byte representation as string
- * @param char_2 Second char of the byte representation as string
- * @return Binary result
- */
-static uint8_t Hex_Char_To_Byte
-(
-        const char char_1,
-        const char char_2
-);
-
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -116,12 +77,14 @@ static uint8_t Hex_Char_To_Byte
  */
 extern void TEST_Number_Of_Tokenarrays (void)
 {
-    const _Bool md5_sum_check_result = Check_Test_File_MD5_Sum(TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5);
+    _Bool err_occurred = true;
+    const _Bool md5_sum_check_result = Check_Test_File_MD5_Sum(TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5,
+            &err_occurred);
     ASSERT_EQUALS(md5_sum_check_result, true);
+    ASSERT_MSG(err_occurred == false, "Error occurred while checking a MD5 sum of a file !");
 
     struct Token_List_Container* token_container_input_1 = TokenListContainer_CreateObject (TEST_FILE_READER_TEST_FILE);
 
-    ASSERT_EQUALS(true, true);
     TokenListContainer_DeleteObject(token_container_input_1);
 
     return;
@@ -134,8 +97,11 @@ extern void TEST_Number_Of_Tokenarrays (void)
  */
 extern void TEST_Max_Dataset_ID_Length (void)
 {
-    const _Bool md5_sum_check_result = Check_Test_File_MD5_Sum(TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5);
+    _Bool err_occurred = true;
+    const _Bool md5_sum_check_result = Check_Test_File_MD5_Sum(TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5,
+            &err_occurred);
     ASSERT_EQUALS(md5_sum_check_result, true);
+    ASSERT_MSG(err_occurred == false, "Error occurred while checking a MD5 sum of a file !");
 
     struct Token_List_Container* token_container_input_1 = TokenListContainer_CreateObject (TEST_FILE_READER_TEST_FILE);
 
@@ -152,8 +118,11 @@ extern void TEST_Max_Dataset_ID_Length (void)
  */
 extern void TEST_Max_Tokenarray_Length (void)
 {
-    const _Bool md5_sum_check_result = Check_Test_File_MD5_Sum(TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5);
+    _Bool err_occurred = true;
+    const _Bool md5_sum_check_result = Check_Test_File_MD5_Sum(TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5,
+            &err_occurred);
     ASSERT_EQUALS(md5_sum_check_result, true);
+    ASSERT_MSG(err_occurred == false, "Error occurred while checking a MD5 sum of a file !");
 
     struct Token_List_Container* token_container_input_1 = TokenListContainer_CreateObject (TEST_FILE_READER_TEST_FILE);
 
@@ -170,145 +139,17 @@ extern void TEST_Max_Tokenarray_Length (void)
  */
 extern void TEST_Length_Of_The_First_25_Tokenarrays (void)
 {
-    const _Bool md5_sum_check_result = Check_Test_File_MD5_Sum(TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5);
+    _Bool err_occurred = true;
+    const _Bool md5_sum_check_result = Check_Test_File_MD5_Sum(TEST_FILE_READER_TEST_FILE, TEST_FILE_READER_TEST_FILE_MD5,
+            &err_occurred);
     ASSERT_EQUALS(md5_sum_check_result, true);
+    ASSERT_MSG(err_occurred == false, "Error occurred while checking a MD5 sum of a file !");
 
     struct Token_List_Container* token_container_input_1 = TokenListContainer_CreateObject (TEST_FILE_READER_TEST_FILE);
 
-    ASSERT_EQUALS(true, true);
     TokenListContainer_DeleteObject(token_container_input_1);
 
     return;
-}
-
-//=====================================================================================================================
-
-/**
- * @brief Compare the MD5 sum of the file with the expected one.
- *
- * @param file_name File name
- * @param expected_md5_sum Expected MD5 sum of the file
- * @return true, if the MD5 sum is equal, else false
- */
-static _Bool Check_Test_File_MD5_Sum
-(
-        const char* const restrict file_name,
-        const char* const restrict expected_md5_sum
-)
-{
-    FILE* test_file = fopen(file_name, "r");
-    ASSERT_FMSG(test_file != NULL, "Cannot open the test file \"%s\" !", file_name);
-
-    uint8_t* created_md5 = md5File(test_file);
-    ASSERT_FMSG(created_md5 != NULL, "Cannot create the MD5 sum of the test file \"%s\" !", file_name);
-
-    FCLOSE_AND_SET_TO_NULL(test_file);
-
-    // Convert expected md5 sum (char array) to uint8_t array
-    uint8_t expected_md5_sum_hex [MD5_SUM_LENGTH];
-    memset (expected_md5_sum_hex, '\0', sizeof(expected_md5_sum_hex));
-    uint8_t current_byte = 0;
-
-    for (int i = 0; i < MD5_SUM_LENGTH * 2; i += 2) // MD5_SUM_LENGTH * 2, because every byte are encoded with 2 char
-    {
-        expected_md5_sum_hex [current_byte] = Hex_Char_To_Byte (expected_md5_sum [i], expected_md5_sum [i + 1]);
-        ++ current_byte;
-    }
-
-    // Compare MD5 sums
-    _Bool result = true;
-    for (int i = 0; i < MD5_SUM_LENGTH; ++ i)
-    {
-        if (expected_md5_sum_hex [i] != created_md5 [i])
-        {
-            result = false;
-            break;
-        }
-    }
-
-    if (! result)
-    {
-        printf("Expected result: ");
-        Print_Hash(expected_md5_sum_hex);
-        printf("\nGot:             ");
-        Print_Hash(created_md5);
-        puts("");
-    }
-    else
-    {
-        printf("Checked MD5 sum of the file \"%s\": ", TEST_FILE_READER_TEST_FILE);
-        Print_Hash(expected_md5_sum_hex);
-        puts("");
-    }
-
-    // ! NO "FREE_AND_SET_TO_NULL" because this memory block was created in the MD5 lib with a simple malloc() call !
-    free (created_md5);
-    created_md5 = NULL;
-    //FREE_AND_SET_TO_NULL(created_md5);
-
-    return result;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-/**
- * @brief Print a MD5 sum in hexadecimal notation.
- *
- * @param md5_hash MD5 sum
- */
-static void Print_Hash
-(
-        const uint8_t* const md5_hash
-)
-{
-    for (unsigned char i = 0; i < MD5_SUM_LENGTH; ++ i)
-    {
-        printf("%02x", md5_hash [i]);
-    }
-
-    return;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-
-/**
- * @brief Convert two char, that represents a byte, to a binary result.
- *
- * Got code from here:
- * @link https://stackoverflow.com/questions/10156409/convert-hex-string-char-to-int
- *
- * @param char_1 First char of the byte representation as string
- * @param char_2 Second char of the byte representation as string
- * @return Binary result
- */
-static uint8_t Hex_Char_To_Byte
-(
-        const char char_1,
-        const char char_2
-)
-{
-    uint8_t result = 0;
-
-    const char input_char [2] = { char_1, char_2 };
-
-    for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(input_char); i ++)
-    {
-        // get current character then increment
-        uint8_t byte = (uint8_t) tolower(input_char [i]);
-        // transform hex character to the 4bit equivalent number, using the ascii table indexes
-        if (byte >= '0' && byte <= '9')
-        {
-            byte = (uint8_t) (byte - '0');
-        }
-        else if (byte >= 'a' && byte <='f')
-        {
-            byte = (uint8_t) (byte - 'a' + 10);
-        }
-        // shift 4 to make space for new digit, and add the 4 bits of the new digit
-        result = (uint8_t) ((result << 4) | (byte & 0xF));
-    }
-
-    return result;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
