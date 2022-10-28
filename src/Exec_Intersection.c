@@ -21,6 +21,7 @@
 #include "Defines.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Error_Handling/Assert_Msg.h"
+#include "Error_Handling/_Generics.h"
 #include "Print_Tools.h"
 #include "Stop_Words/Stop_Words.h"
 #include "JSON_Parser/cJSON.h"
@@ -112,6 +113,9 @@
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(CJSON_PRINT_BUFFER_SIZE > 0, "The macro \"CJSON_PRINT_BUFFER_SIZE\" needs to be at least 1 !");
 _Static_assert(RESULT_FILE_BUFFER_SIZE > 0, "The macro \"RESULT_FILE_BUFFER_SIZE\" needs to be at least 1 !");
+
+IS_TYPE(CJSON_PRINT_BUFFER_SIZE, int)
+IS_TYPE(RESULT_FILE_BUFFER_SIZE, int)
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 
@@ -130,6 +134,14 @@ _Static_assert(RESULT_FILE_BUFFER_SIZE > 0, "The macro \"RESULT_FILE_BUFFER_SIZE
 #else
 #error "The macro \"INTERSECTIONS\" is already defined !"
 #endif /* INTERSECTIONS */
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+_Static_assert(sizeof(OFFSET) > 0 + 1, "The macro \"OFFSET\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(INTERSECTIONS) > 0 + 1, "The macro \"INTERSECTIONS\" needs at least one char (plus '\0') !");
+
+IS_CONST_STR(OFFSET)
+IS_CONST_STR(INTERSECTIONS)
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 
 
