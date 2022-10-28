@@ -233,6 +233,9 @@ TEST_FILE_READER_C = ./src/Tests/TEST_File_Reader.c
 
 EXEC_CONFIG_H = ./src/Exec_Config.h
 EXEC_CONFIG_C = ./src/Exec_Config.c
+
+TEST_EXEC_INTERSECTION_H = ./src/Tests/TEST_Exec_Intersection.h
+TEST_EXEC_INTERSECTION_C = ./src/Tests/TEST_Exec_Intersection.c
 ##### ##### ##### ENDE Uebersetzungseinheiten ##### ##### #####
 
 
@@ -255,11 +258,11 @@ endif
 	@echo
 	@echo Bioinformatics_Textmining build completed !
 
-$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o  Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o Exec_Config.o
+$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o  Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o Exec_Config.o TEST_Exec_Intersection.o
 	@echo
 	@echo Linking object files ...
 	@echo
-	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o Exec_Config.o $(LIBS)
+	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o Exec_Config.o TEST_Exec_Intersection.o $(LIBS)
 
 ##### BEGINN Die einzelnen Uebersetzungseinheiten #####
 main.o: $(MAIN_C)
@@ -356,6 +359,9 @@ TEST_File_Reader.o: $(TEST_FILE_READER_C)
 
 Exec_Config.o: $(EXEC_CONFIG_C)
 	$(CC) $(CCFLAGS) -c $(EXEC_CONFIG_C)
+
+TEST_Exec_Intersection.o: $(TEST_EXEC_INTERSECTION_C)
+	$(CC) $(CCFLAGS) -c $(TEST_EXEC_INTERSECTION_C)
 ##### ENDE Die einzelnen Uebersetzungseinheiten #####
 
 # Alles wieder aufraeumen

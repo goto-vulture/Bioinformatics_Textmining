@@ -156,6 +156,7 @@
 #include "Tests/tinytest.h"
 #include "Tests/TEST_cJSON_Parser.h"
 #include "Tests/TEST_File_Reader.h"
+#include "Tests/TEST_Exec_Intersection.h"
 
 
 
@@ -297,7 +298,7 @@ int main (const int argc, const char* argv [])
     puts("");
 
     // Execute the intersection process
-    Exec_Intersection((! isnan(GLOBAL_ABORT_PROCESS_PERCENT)) ? GLOBAL_ABORT_PROCESS_PERCENT : NAN);
+    Exec_Intersection((! isnan(GLOBAL_ABORT_PROCESS_PERCENT)) ? GLOBAL_ABORT_PROCESS_PERCENT : NAN, NULL, NULL);
 
     return EXIT_SUCCESS;
 }
@@ -321,6 +322,9 @@ Run_All_Test_Functions
     RUN(TEST_Max_Dataset_ID_Length);
     RUN(TEST_Max_Tokenarray_Length);
     RUN(TEST_Length_Of_The_First_25_Tokenarrays);
+
+    RUN(TEST_Number_Of_Tokens_Found);
+    RUN(TEST_Number_Of_Sets_Found);
 
     return;
 }
