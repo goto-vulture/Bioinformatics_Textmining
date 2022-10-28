@@ -37,9 +37,11 @@
 /**
  * @brief Check, whether the macro values are valid.
  */
-#if __STDC_VERSION__ >= 201112L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(C_STR_ALLOCATION_STEP_SIZE > 0, "The marco \"C_STR_ALLOCATION_STEP_SIZE\" is zero !");
-#endif /* __STDC_VERSION__ */
+
+IS_TYPE(C_STR_ALLOCATION_STEP_SIZE, int)
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 /**
  * @brief A very very very simple "hash function".

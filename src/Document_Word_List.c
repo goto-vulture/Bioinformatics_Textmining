@@ -17,6 +17,7 @@
 #include <limits.h>
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
+#include "Error_Handling/_Generics.h"
 #include "Misc.h"
 #include "Print_Tools.h"
 #include "Intersection_Approaches.h"
@@ -35,9 +36,11 @@
 /**
  * @brief Check, whether the macro value are valid.
  */
-#if __STDC_VERSION__ >= 201112L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(INT_ALLOCATION_STEP_SIZE > 0, "The marco \"INT_ALLOCATION_STEP_SIZE\" is zero !");
-#endif /* __STDC_VERSION__ */
+
+IS_TYPE(INT_ALLOCATION_STEP_SIZE, int)
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 /**
  * @brief Create a new Document_Word_List and initialize the main structure.

@@ -17,6 +17,7 @@
 #include <limits.h>
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
+#include "Error_Handling/_Generics.h"
 #include "Print_Tools.h"
 #include "Misc.h"
 #include "JSON_Parser/cJSON.h"
@@ -54,6 +55,9 @@
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(TOKENS_ALLOCATION_STEP_SIZE > 0, "The marco \"TOKENS_ALLOCATION_STEP_SIZE\" is zero !");
 _Static_assert(TOKEN_CONTAINER_ALLOCATION_STEP_SIZE > 0, "The marco \"TOKEN_CONTAINER_ALLOCATION_STEP_SIZE\" is zero !");
+
+IS_TYPE(TOKENS_ALLOCATION_STEP_SIZE, int)
+IS_TYPE(TOKEN_CONTAINER_ALLOCATION_STEP_SIZE, int)
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ */
 
 /**

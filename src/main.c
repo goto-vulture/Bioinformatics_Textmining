@@ -133,6 +133,15 @@
     #error "The macro \"N_A\" is already defined !"
 #endif /* N_A */
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+#include "Error_Handling/_Generics.h"
+
+_Static_assert(sizeof(N_A) > 0 + 1, "The macro \"N_A\" needs at least one char (plus '\0') !");
+IS_CONST_STR(N_A)
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
+
+
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
