@@ -39,3 +39,6 @@ Documentation/
 # Programmausgaben, die in eine Datei weitergeleitet werden
 out.txt
 out_error.txt
+
+# Testausgaben als JSON Datei
+out.json
