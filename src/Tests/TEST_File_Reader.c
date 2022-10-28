@@ -16,6 +16,7 @@
 #include "md5.h"
 #include "../Error_Handling/Dynamic_Memory.h"
 #include "../Error_Handling/Assert_Msg.h"
+#include "../Error_Handling/_Generics.h"
 #include "tinytest.h"
 
 
@@ -68,6 +69,13 @@ _Static_assert(MAX_TOKENARRAY_LENGTH > 0, "The macro \"MAX_TOKENARRAY_LENGTH\" n
 _Static_assert(sizeof(TEST_FILE_READER_TEST_FILE) > 0 + 1, "The macro \"TEST_FILE_READER_TEST_FILE\" is empty !");
 _Static_assert(sizeof(TEST_FILE_READER_TEST_FILE_MD5) == 32 + 1,
         "The macro \"TEST_FILE_READER_TEST_FILE_MD5\" needs to be exact 32 char (+ '\0') !");
+
+IS_CONST_STR(TEST_FILE_READER_TEST_FILE)
+IS_CONST_STR(TEST_FILE_READER_TEST_FILE_MD5)
+IS_TYPE(MD5_SUM_LENGTH, int)
+IS_TYPE(NUMBER_OF_TOKENARRAYS, int)
+IS_TYPE(MAX_DATASET_ID_LENGTH, int)
+IS_TYPE(MAX_TOKENARRAY_LENGTH, int)
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 //---------------------------------------------------------------------------------------------------------------------
