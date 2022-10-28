@@ -36,12 +36,6 @@
 #error "The macro \"TEST_FILE_READER_TEST_FILE_MD5\" is already defined !"
 #endif /* TEST_FILE_READER_TEST_FILE_MD5 */
 
-#ifndef LENGTH_MD5_SUM
-#define MD5_SUM_LENGTH 16 ///< Length (number of bytes) of a MD5 sum
-#else
-#error "The macro \"LENGTH_MD5_SUM\" is already defined !"
-#endif /* LENGTH_MD5_SUM */
-
 #ifndef NUMBER_OF_TOKENARRAYS
 #define NUMBER_OF_TOKENARRAYS 191 ///< Expected number of token arrays
 #else
@@ -62,7 +56,6 @@
 
 // #define checks only works with C11 and higher
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
-_Static_assert(MD5_SUM_LENGTH == 16, "The macro \"MD5_SUM_LENGTH\" needs to be exact 16 !");
 _Static_assert(NUMBER_OF_TOKENARRAYS > 0, "The macro \"NUMBER_OF_TOKENARRAYS\" needs to be at least one !");
 _Static_assert(MAX_DATASET_ID_LENGTH > 0, "The macro \"MAX_DATASET_ID_LENGTH\" needs to be at least one !");
 _Static_assert(MAX_TOKENARRAY_LENGTH > 0, "The macro \"MAX_TOKENARRAY_LENGTH\" need to be at least one !");
@@ -72,7 +65,6 @@ _Static_assert(sizeof(TEST_FILE_READER_TEST_FILE_MD5) == 32 + 1,
 
 IS_CONST_STR(TEST_FILE_READER_TEST_FILE)
 IS_CONST_STR(TEST_FILE_READER_TEST_FILE_MD5)
-IS_TYPE(MD5_SUM_LENGTH, int)
 IS_TYPE(NUMBER_OF_TOKENARRAYS, int)
 IS_TYPE(MAX_DATASET_ID_LENGTH, int)
 IS_TYPE(MAX_TOKENARRAY_LENGTH, int)
@@ -167,3 +159,23 @@ extern void TEST_Length_Of_The_First_25_Tokenarrays (void)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+#ifdef TEST_FILE_READER_TEST_FILE
+#undef TEST_FILE_READER_TEST_FILE
+#endif /* TEST_FILE_READER_TEST_FILE */
+
+#ifdef TEST_FILE_READER_TEST_FILE_MD5
+#undef TEST_FILE_READER_TEST_FILE_MD5
+#endif /* TEST_FILE_READER_TEST_FILE_MD5 */
+
+#ifdef NUMBER_OF_TOKENARRAYS
+#undef NUMBER_OF_TOKENARRAYS
+#endif /* NUMBER_OF_TOKENARRAYS */
+
+#ifdef MAX_DATASET_ID_LENGTH
+#undef MAX_DATASET_ID_LENGTH
+#endif /* MAX_DATASET_ID_LENGTH */
+
+#ifdef MAX_TOKENARRAY_LENGTH
+#undef MAX_TOKENARRAY_LENGTH
+#endif /* MAX_TOKENARRAY_LENGTH */
