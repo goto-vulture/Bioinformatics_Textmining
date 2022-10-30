@@ -592,15 +592,17 @@ DocumentWordList_ShowAttributes
 {
     ASSERT_MSG(object != NULL, "Object is NULL !");
 
-    const int formatter_int = (int) MAX(Count_Number_Of_Digits(object->number_of_arrays),
+    // Int formatter for the output
+    int formatter_int = (int) MAX(Count_Number_Of_Digits(object->number_of_arrays),
                 Count_Number_Of_Digits(object->max_array_length));
+    formatter_int = MAX((int) Count_Number_Of_Digits(object->malloc_calloc_calls), formatter_int);
 
     puts("");
     printf("Full document word list container size: ");
     Print_Memory_Size_As_B_KB_MB(DocumentWordList_GetAllocatedMemSize(object));
 
     puts ("> Attributes <");
-    printf ("Intersection data:     %s\n", (object->intersection_data /* == true */) ? "YES" : "NO");
+    printf ("Intersection data:     %*s\n",  formatter_int, (object->intersection_data /* == true */) ? "YES" : "NO");
     printf ("Number of arrays:      %*zu\n", formatter_int, object->number_of_arrays);
     printf ("Max. array length:     %*zu\n", formatter_int, object->max_array_length);
     printf ("Malloc / calloc calls: %*zu\n", formatter_int, object->malloc_calloc_calls);
