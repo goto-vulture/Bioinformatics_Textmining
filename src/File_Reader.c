@@ -252,6 +252,9 @@ TokenListContainer_CreateObject
         new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
     }
 
+    // Create the container for too long token
+    new_container->list_of_too_long_token = Create_Two_Dim_C_String_Array (10);
+
     clock_t start       = 0;
     clock_t end         = 0;
     float used_seconds  = 0.0f;
@@ -368,8 +371,21 @@ TokenListContainer_CreateObject
 
                     char* res_mem_for_curr_token = Get_Address_Of_Next_Free_Token (current_token_list_obj);
 
+                    const size_t current_token_len = strlen (curr_token->valuestring);
+
                     // Copy token to the current Token_List
                     strncpy(res_mem_for_curr_token, curr_token->valuestring, current_token_list_obj->max_token_length - 1);
+
+                    // Save the full token, if it is too long
+                    if (current_token_len > (current_token_list_obj->max_token_length - 1))
+                    {
+                        Append_New_String_In_Two_Dim_C_String_Array
+                        (
+                                new_container->list_of_too_long_token,
+                                curr_token->valuestring,
+                                current_token_len
+                        );
+                    }
 
                     // Adjust the next offset value
                     // Zero for the fist element
@@ -402,8 +418,7 @@ TokenListContainer_CreateObject
                     tokens_found ++;
 
                     // Is the current token longer than the previous tokens ?
-                    new_container->longest_token_length = MAX(new_container->longest_token_length,
-                            strlen (curr_token->valuestring));
+                    new_container->longest_token_length = MAX(new_container->longest_token_length, current_token_len);
 
                     curr_token = curr_token->next;
                 }
@@ -427,6 +442,13 @@ TokenListContainer_CreateObject
         //input_file_data [input_file_length] = '\0';
     }
     // ===== ===== ===== END Read file line by line ===== ===== =====
+
+    // Print tokens, that was longer than the expected length
+    if (new_container->list_of_too_long_token->next_free_c_str > 0)
+    {
+        puts("\n\nTokens, that are longer than expected:");
+        Print_All_Strings_From_Two_Dim_C_String_Array(new_container->list_of_too_long_token);
+    }
 
     CLOCK_WITH_RETURN_CHECK(end);
     used_seconds = DETERMINE_USED_TIME(start, end);
@@ -456,6 +478,9 @@ TokenListContainer_DeleteObject
 )
 {
     ASSERT_MSG(object != NULL, "Token_List_Container is NULL !");
+
+    Delete_Two_Dim_C_String_Array (object->list_of_too_long_token);
+    object->list_of_too_long_token = NULL;
 
     if (object->token_lists != NULL)
     {

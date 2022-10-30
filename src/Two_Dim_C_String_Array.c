@@ -325,6 +325,33 @@ Show_Attributes_From_Two_Dim_C_String_Array
     return;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Print all strings in the container.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object The Two_Dim_C_String_Array
+ */
+extern void
+Print_All_Strings_From_Two_Dim_C_String_Array
+(
+        const struct Two_Dim_C_String_Array* const object
+)
+{
+    ASSERT_MSG (object != NULL, "Object is NULL !");
+
+    for (uint_fast32_t i = 0; i < object->next_free_c_str; ++ i)
+    {
+        printf("%*" PRIuFAST32 ": %s\n", (int) Count_Number_Of_Digits(object->next_free_c_str),  i + 1, object->data [i]);
+    }
+    fflush(stdout);
+
+    return;
+}
+
 //=====================================================================================================================
 
 /**

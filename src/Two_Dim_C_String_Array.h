@@ -182,6 +182,20 @@ Show_Attributes_From_Two_Dim_C_String_Array
         const struct Two_Dim_C_String_Array* const object
 );
 
+/**
+ * @brief Print all strings in the container.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object The Two_Dim_C_String_Array
+ */
+extern void
+Print_All_Strings_From_Two_Dim_C_String_Array
+(
+        const struct Two_Dim_C_String_Array* const object
+);
+
 
 
 #ifdef __cplusplus
