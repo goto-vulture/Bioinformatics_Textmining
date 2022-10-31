@@ -531,7 +531,10 @@ Exec_Intersection
 
 
     cJSON_FULL_FREE_AND_SET_TO_NULL(general_information);
-    FREE_AND_SET_TO_NULL(general_information_as_str)
+    // Don't use the macro "FREE_AND_SET_TO_NULL" because it increases the free counter. But this memory was
+    // allocated from the JSON lib !
+    free(general_information_as_str);
+    general_information_as_str = NULL;
 
     uint_fast64_t intersection_tokens_found_counter    = 0;
     uint_fast64_t intersection_sets_found_counter      = 0;
@@ -769,7 +772,10 @@ Exec_Intersection
                 result_file_size += strlen("},\n");
             }
 
-            FREE_AND_SET_TO_NULL(orig_ptr)
+            // Don't use the macro "FREE_AND_SET_TO_NULL" because it increases the free counter. But this memory was
+            // allocated from the JSON lib !
+            free(orig_ptr);
+            orig_ptr = NULL;
             json_export_str = NULL;
 
             // Delete the full object will all child-objectsintersection_sets_found_counter
