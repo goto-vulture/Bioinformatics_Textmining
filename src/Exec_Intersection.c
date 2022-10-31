@@ -389,6 +389,14 @@ Exec_Intersection
     {
         intersection_settings |= SENTENCE_OFFSET;
     }
+    if (GLOBAL_CLI_NO_PART_MATCHES)
+    {
+        if (intersection_settings & PART_MATCH) { intersection_settings ^= PART_MATCH; }
+    }
+    if (GLOBAL_CLI_NO_FULL_MATCHES)
+    {
+        if (intersection_settings & FULL_MATCH) { intersection_settings ^= FULL_MATCH; }
+    }
 
     int result = 0;
 

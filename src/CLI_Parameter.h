@@ -41,6 +41,10 @@ extern _Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS; ///< Run all test functions ?
 
 extern _Bool GLOBAL_CLI_SENTENCE_OFFSET; ///< Create sentence offsets in the calculation ?
 
+extern _Bool GLOBAL_CLI_NO_PART_MATCHES; ///< Do not show part matches in the result file
+
+extern _Bool GLOBAL_CLI_NO_FULL_MATCHES; ///< Do not show full matches in the result file
+
 /**
  * @brief On which percent in the calculation should be aborted ? This is for development and debugging purposes useful
  * to limit the calculation process.
