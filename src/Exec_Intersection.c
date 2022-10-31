@@ -360,9 +360,9 @@ cJSON_Determine_Full_Memory_Usage
     "name_syn_1_1_1":   {
  *
  * @param[in] abort_progress_percent After this progress percent value the process will be stopped
- * @param[in] number_of_intersection_tokens If pointer given, it "returns" the number of tokens, that were found in the
+ * @param[out] number_of_intersection_tokens If pointer given, it "returns" the number of tokens, that were found in the
  *      whole intersection calculations
- * @param[in] number_of_intersection_sets If pointer given, it "returns" the number of sets, that were found in the
+ * @param[out] number_of_intersection_sets If pointer given, it "returns" the number of sets, that were found in the
  *      whole intersection calculations
  *
  * @return Status value (0: Success; != 0 Error)
