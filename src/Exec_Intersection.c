@@ -25,6 +25,7 @@
 #include "Print_Tools.h"
 #include "Stop_Words/Stop_Words.h"
 #include "JSON_Parser/cJSON.h"
+#include "Exec_Config.h"
 
 
 
@@ -163,11 +164,14 @@ IS_CONST_STR(INTERSECTIONS)
  *      export_results != NULL
  *
  * @param export_results The main cJSON pointer for the export JSON file
+ * @param export_settings Settings for the export (Which information will be occur in the general information ?)
+ *
  */
 static void
 Add_General_Information_To_Export_File
 (
-        cJSON* const export_results
+        cJSON* const export_results,
+        const unsigned int export_settings
 );
 
 /**
@@ -375,6 +379,17 @@ Exec_Intersection
         uint_fast64_t* const restrict number_of_intersection_sets
 )
 {
+    unsigned int intersection_settings = Exec_Config_Default_Settings();
+    // A missing output formatting reduces the output file size
+    if (! GLOBAL_CLI_FORMAT_OUTPUT)
+    {
+        intersection_settings |= SHORTEN_OUTPUT;
+    }
+    if (GLOBAL_CLI_SENTENCE_OFFSET)
+    {
+        intersection_settings |= SENTENCE_OFFSET;
+    }
+
     int result = 0;
 
     // >>> Read files and extract the tokens <<<
@@ -471,13 +486,14 @@ Exec_Intersection
     cJSON* general_information              = cJSON_CreateObject();
     cJSON_NOT_NULL(general_information);
 
-    Add_General_Information_To_Export_File(general_information);
+    Add_General_Information_To_Export_File(general_information, intersection_settings);
 
     size_t result_file_size = 0;
     int file_operation_ret_value = 0;
 
     // Insert the general information to the result file
-    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, GLOBAL_CLI_FORMAT_OUTPUT);
+    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE,
+            !(intersection_settings & SHORTEN_OUTPUT)); // No shorten output => Using formatting
 
     ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
     const size_t general_information_as_str_len = strlen (general_information_as_str);
@@ -490,7 +506,7 @@ Exec_Intersection
             strerror(errno));
     result_file_size = result_file_size + (general_information_as_str_len - 2);
 
-    if (GLOBAL_CLI_FORMAT_OUTPUT)
+    if (intersection_settings & SHORTEN_OUTPUT)
     {
         file_operation_ret_value = fputc(',', result_file);
         ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
@@ -527,8 +543,8 @@ Exec_Intersection
     {
         cJSON_NEW_OBJ_CHECK(export_results);
 
-        cJSON_NEW_OBJ_CHECK(intersections_partial_match);
-        cJSON_NEW_OBJ_CHECK(intersections_full_match);
+        if (intersection_settings & PART_MATCH) { cJSON_NEW_OBJ_CHECK(intersections_partial_match); }
+        if (intersection_settings & FULL_MATCH) { cJSON_NEW_OBJ_CHECK(intersections_full_match); }
         cJSON_NEW_OBJ_CHECK(outer_object);
         _Bool data_found = false;
 
@@ -569,15 +585,6 @@ Exec_Intersection
 //                    token_container_input_2->token_lists [selected_data_2_array].dataset_id
             );
 
-            // Copy the two dataset IDs and use them for the export JSON file
-            // memset(dataset_id_1, '\0', sizeof (dataset_id_1));
-            // strncpy do the memset for the c string
-//            strncpy (dataset_id_1, intersection_result->dataset_id_1, COUNT_ARRAY_ELEMENTS(dataset_id_1) - 1);
-//            dataset_id_1 [COUNT_ARRAY_ELEMENTS(dataset_id_1) - 1] = '\0';
-            // memset(dataset_id_2, '\0', sizeof (dataset_id_2));
-            // strncpy do the memset for the c string
-//            strncpy (dataset_id_2, intersection_result->dataset_id_2, COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1);
-//            dataset_id_2 [COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1] = '\0';
 
             // Remove stop words from the result
             size_t tokens_left = intersection_result->arrays_lengths [0];
@@ -630,7 +637,7 @@ Exec_Intersection
                 }
 
                 cJSON_NEW_ARR_CHECK(char_offset_array);
-                if (GLOBAL_CLI_SENTENCE_OFFSET) { cJSON_NEW_ARR_CHECK(sentence_offset_array); }
+                if (intersection_settings & SENTENCE_OFFSET) { cJSON_NEW_ARR_CHECK(sentence_offset_array); }
                 cJSON_NEW_ARR_CHECK(tokens_array);
 
                 //fputs("Found tokens_array in:\n", result_file);
@@ -649,7 +656,7 @@ Exec_Intersection
                     cJSON* sentence_offset = NULL;
                     cJSON* char_offset = cJSON_CreateNumber(intersection_result->data_struct.char_offsets [0][i]);
                     ASSERT_MSG(char_offset != NULL, "char offset is NULL !");
-                    if (GLOBAL_CLI_SENTENCE_OFFSET)
+                    if (intersection_settings & SENTENCE_OFFSET)
                     {
                         sentence_offset = cJSON_CreateNumber(intersection_result->data_struct.sentence_offsets [0][i]);
                         ASSERT_MSG(sentence_offset != NULL, "sentence offset is NULL !");
@@ -657,7 +664,7 @@ Exec_Intersection
 
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(char_offset_array, char_offset);
-                    if (GLOBAL_CLI_SENTENCE_OFFSET) { cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset); }
+                    if (intersection_settings & SENTENCE_OFFSET) { cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset); }
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(tokens_array, token);
 
                     ++ intersection_tokens_found_counter;
@@ -676,13 +683,19 @@ Exec_Intersection
                 // words !
                 if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
                 {
-                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match,
-                            token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
+                    if (intersection_settings & FULL_MATCH)
+                    {
+                        cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match,
+                                token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
+                    }
                 }
                 else
                 {
-                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match,
-                            token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
+                    if (intersection_settings & PART_MATCH)
+                    {
+                        cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match,
+                                token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
+                    }
                 }
             }
 
@@ -701,8 +714,10 @@ Exec_Intersection
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
         {
-            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, INTERSECTIONS " (partial)", intersections_partial_match);
-            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, INTERSECTIONS " (full)", intersections_full_match);
+            if (intersection_settings & PART_MATCH)
+            { cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, INTERSECTIONS " (partial)", intersections_partial_match); }
+            if (intersection_settings & FULL_MATCH)
+            { cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, INTERSECTIONS " (full)", intersections_full_match); }
             cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, dataset_id_2, outer_object);
 
             // In theory it is possible to create the string of our cJSON structure at the end of all calculations
@@ -711,7 +726,8 @@ Exec_Intersection
             // Second problem: The string, that will be created from cJSON_PrintBuffered, is in some cases too large for
             // a single call at the end.
             // So the only possibility: Intermediate calls
-            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, GLOBAL_CLI_FORMAT_OUTPUT);
+            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE,
+                    !(intersection_settings & SHORTEN_OUTPUT)); // No shorten output => Use formatting
 
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
             const size_t json_export_str_len = strlen (json_export_str);
@@ -731,7 +747,7 @@ Exec_Intersection
                     GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
             result_file_size = result_file_size + (json_export_str_len - 3);
 
-            if (GLOBAL_CLI_FORMAT_OUTPUT)
+            if (!(intersection_settings & SHORTEN_OUTPUT))
             {
                 file_operation_ret_value = fputc(',', result_file);
                 ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
@@ -833,11 +849,13 @@ abort_label:
  *      export_results != NULL
  *
  * @param export_results The main cJSON pointer for the export JSON file
+ * @param export_settings Settings for the export (Which information will be occur in the general information ?)
  */
 static void
 Add_General_Information_To_Export_File
 (
-        cJSON* const export_results
+        cJSON* const export_results,
+        const unsigned int export_settings
 )
 {
     ASSERT_MSG(export_results != NULL, "Main cJSON result pointer is NULL !");
@@ -868,17 +886,17 @@ Add_General_Information_To_Export_File
     // Creation mode (Part match ? Full match ? Part and full match ?)
     cJSON* creation_mode = cJSON_CreateObject();
     cJSON_NOT_NULL(creation_mode);
-    cJSON* part_match = cJSON_CreateBool(true);
+    cJSON* part_match = cJSON_CreateBool(export_settings & PART_MATCH);
     cJSON_NOT_NULL(part_match);
-    cJSON* full_match = cJSON_CreateBool(true);
+    cJSON* full_match = cJSON_CreateBool(export_settings & FULL_MATCH);
     cJSON_NOT_NULL(full_match);
-    cJSON* stop_word_list = cJSON_CreateBool(true);
+    cJSON* stop_word_list = cJSON_CreateBool(export_settings & STOP_WORD_LIST);
     cJSON_NOT_NULL(stop_word_list);
 
     // Up to now there will be no switch or similar structure to alter this export behavior
-    cJSON* char_offset = cJSON_CreateBool(true);
+    cJSON* char_offset = cJSON_CreateBool(export_settings & CHAR_OFFSET);
     cJSON_NOT_NULL(char_offset);
-    cJSON* sentence_offset = cJSON_CreateBool(true);
+    cJSON* sentence_offset = cJSON_CreateBool(export_settings & SENTENCE_OFFSET);
     cJSON_NOT_NULL(sentence_offset);
 
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
@@ -891,10 +909,19 @@ Add_General_Information_To_Export_File
     cJSON* creation_time = cJSON_CreateString("123");
     cJSON_NOT_NULL(creation_time);
 
-    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "First file", first_file);
-    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Second file", second_file);
-    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Program version", program_version);
-    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation time", creation_time);
+    if (!(export_settings & NO_FILENAMES))
+    {
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "First file", first_file);
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Second file", second_file);
+    }
+    if (!(export_settings & NO_PROGRAM_VERSION))
+    {
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Program version", program_version);
+    }
+    if (!(export_settings & NO_CREATION_TIME))
+    {
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation time", creation_time);
+    }
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "General infos", general_infos);
 
     return;
