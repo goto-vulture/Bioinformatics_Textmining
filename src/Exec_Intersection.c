@@ -371,8 +371,8 @@ extern int
 Exec_Intersection
 (
         const float abort_progress_percent,
-        uint_fast64_t* const number_of_intersection_tokens,
-        uint_fast64_t* const number_of_intersection_sets
+        uint_fast64_t* const restrict number_of_intersection_tokens,
+        uint_fast64_t* const restrict number_of_intersection_sets
 )
 {
     int result = 0;
