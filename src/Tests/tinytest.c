@@ -134,7 +134,7 @@ int tt_report (void)
             printf ("Failed function %2d: %s\n", i + 1, tt_failed_function_names [i]);
         }
 
-        printf ("\n%c%sFAILED%c%s [%s] (passed:%d, failed:%d, total:%d)\n",
+        printf ("\n%c%sFAILED%c%s [%s] (passed:%d, failed:%d, total:%d) :(\n",
         TT_COLOR_CODE, TT_COLOR_RED, TT_COLOR_CODE, TT_COLOR_RESET, tt_current_file, tt_passes, tt_fails,
                 tt_passes + tt_fails);
 
@@ -142,7 +142,7 @@ int tt_report (void)
     }
     else
     {
-        printf ("\n%c%sPASSED%c%s [%s] (total:%d)\n",
+        printf ("\n%c%sPASSED%c%s [%s] (total:%d) :D\n",
         TT_COLOR_CODE, TT_COLOR_GREEN, TT_COLOR_CODE, TT_COLOR_RESET, tt_current_file, tt_passes);
         return 0;
     }
