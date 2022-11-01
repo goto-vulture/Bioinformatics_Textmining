@@ -166,6 +166,7 @@ IS_CONST_STR(N_A)
 #include "Tests/TEST_cJSON_Parser.h"
 #include "Tests/TEST_File_Reader.h"
 #include "Tests/TEST_Exec_Intersection.h"
+#include "Tests/TEST_Etc.h"
 
 
 
@@ -333,6 +334,8 @@ Run_All_Test_Functions
 
     RUN(TEST_Number_Of_Tokens_Found);
     RUN(TEST_Number_Of_Sets_Found);
+
+    RUN(TEST_Number_Of_Free_Calls);
 
     return;
 }
