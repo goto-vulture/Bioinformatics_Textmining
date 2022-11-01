@@ -200,9 +200,6 @@ At_Exit_Function
  */
 int main (const int argc, const char* argv [])
 {
-    const char* test = 0;
-    IS_PTR(test)
-
     // Init pseudo random number generator
     const time_t curr_time = time (NULL);
     ASSERT_MSG(curr_time != (time_t) (-1), "time () return value is (time_t) (-1) !");
