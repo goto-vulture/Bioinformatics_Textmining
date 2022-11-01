@@ -35,6 +35,22 @@ extern void TEST_Number_Of_Tokens_Found (void);
  */
 extern void TEST_Number_Of_Sets_Found (void);
 
+/**
+ * @brief Check, whether the number of tokens is equal with switched input files.
+ *
+ * For the calculation it does not matter, if file A is used as first or second file. This is also for file B. The
+ * reason for that is, that the intersection operation is symmetric.
+ */
+extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files (void);
+
+/**
+ * @brief Check, whether the number of sets is equal with switched input files.
+ *
+ * For the calculation it does not matter, if file A is used as first or second file. This is also for file B. The
+ * reason for that is, that the intersection operation is symmetric.
+ */
+extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files (void);
+
 
 
 #ifdef __cplusplus

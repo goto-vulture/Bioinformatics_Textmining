@@ -130,6 +130,68 @@ extern void TEST_Number_Of_Sets_Found (void)
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Check, whether the number of tokens is equal with switched input files.
+ *
+ * For the calculation it does not matter, if file A is used as first or second file. This is also for file B. The
+ * reason for that is, that the intersection operation is symmetric.
+ */
+extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files (void)
+{
+    uint_fast64_t number_of_intersection_tokens_1 = 0;
+    uint_fast64_t number_of_intersection_tokens_2 = 0;
+
+    // Adjust the CLI parameter to make the test runnable
+    GLOBAL_CLI_INPUT_FILE = FILE_1;
+    GLOBAL_CLI_INPUT_FILE2 = FILE_2;
+    GLOBAL_CLI_OUTPUT_FILE = OUT_FILE;
+
+    Exec_Intersection(NAN, &number_of_intersection_tokens_1, NULL); // First intersection call
+
+    // Swap the input files
+    GLOBAL_CLI_INPUT_FILE = FILE_2;
+    GLOBAL_CLI_INPUT_FILE2 = FILE_1;
+
+    Exec_Intersection(NAN, &number_of_intersection_tokens_2, NULL); // Second intersection call
+
+    ASSERT_EQUALS(number_of_intersection_tokens_1, number_of_intersection_tokens_2);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Check, whether the number of sets is equal with switched input files.
+ *
+ * For the calculation it does not matter, if file A is used as first or second file. This is also for file B. The
+ * reason for that is, that the intersection operation is symmetric.
+ */
+extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files (void)
+{
+    uint_fast64_t number_of_intersection_sets_1 = 0;
+    uint_fast64_t number_of_intersection_sets_2 = 0;
+
+    // Adjust the CLI parameter to make the test runnable
+    GLOBAL_CLI_INPUT_FILE = FILE_1;
+    GLOBAL_CLI_INPUT_FILE2 = FILE_2;
+    GLOBAL_CLI_OUTPUT_FILE = OUT_FILE;
+
+    Exec_Intersection(NAN, NULL, &number_of_intersection_sets_1); // First intersection call
+
+    // Swap the input files
+    GLOBAL_CLI_INPUT_FILE = FILE_2;
+    GLOBAL_CLI_INPUT_FILE2 = FILE_1;
+
+    Exec_Intersection(NAN, NULL, &number_of_intersection_sets_2); // Second intersection call
+
+    ASSERT_EQUALS(number_of_intersection_sets_1, number_of_intersection_sets_2);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 
 
 #ifdef FILE_1
