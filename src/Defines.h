@@ -28,17 +28,35 @@ extern "C"
 #error "The macro \"CHAR_OFFSET_TYPE\" is already defined !"
 #endif /* CHAR_OFFSET_TYPE */
 
-#ifndef CHAR_OFFSET_TYPE_FSTR_SPECIFIER
-#define CHAR_OFFSET_TYPE_FSTR_SPECIFIER "hu"    ///< Specifier for the char offset type
-#else
-#error "The macro \"CHAR_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
-#endif /* CHAR_OFFSET_TYPE_FSTR_SPECIFIER */
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+    /**
+     * @brief Get suitable format specifier with a _Generic expression.
+     */
+    #ifndef CHAR_OFFSET_TYPE_FSTR_SPECIFIER
+    #define CHAR_OFFSET_TYPE_FSTR_SPECIFIER GET_FORMAT_STR((CHAR_OFFSET_TYPE) 42)
+    #else
+    #error "The macro \"CHAR_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
+    #endif /* CHAR_OFFSET_TYPE_FSTR_SPECIFIER */
 
-#ifndef CHAR_OFFSET_TYPE_MAX
-#define CHAR_OFFSET_TYPE_MAX USHRT_MAX          ///< Max value for the char offset type
+    #ifndef CHAR_OFFSET_TYPE_MAX
+    #define CHAR_OFFSET_TYPE_MAX USHRT_MAX          ///< Max value for the char offset type
+    #else
+    #error "The macro \"CHAR_OFFSET_TYPE_MAX\" is already defined !"
+    #endif /* CHAR_OFFSET_TYPE_MAX */
 #else
-#error "The macro \"CHAR_OFFSET_TYPE_MAX\" is already defined !"
-#endif /* CHAR_OFFSET_TYPE_MAX */
+    #ifndef CHAR_OFFSET_TYPE_FSTR_SPECIFIER
+    #define CHAR_OFFSET_TYPE_FSTR_SPECIFIER "hu"    ///< Specifier for the char offset type
+    #else
+    #error "The macro \"CHAR_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
+    #endif /* CHAR_OFFSET_TYPE_FSTR_SPECIFIER */
+
+    #ifndef CHAR_OFFSET_TYPE_MAX
+    #define CHAR_OFFSET_TYPE_MAX USHRT_MAX          ///< Max value for the char offset type
+    #else
+    #error "The macro \"CHAR_OFFSET_TYPE_MAX\" is already defined !"
+    #endif /* CHAR_OFFSET_TYPE_MAX */
+#endif /* #defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
 
 
 #ifndef SENTENCE_OFFSET_TYPE
@@ -47,17 +65,36 @@ extern "C"
 #error "The macro \"SENTENCE_OFFSET_TYPE\" is already defined !"
 #endif /* SENTENCE_OFFSET_TYPE */
 
-#ifndef SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER
-#define SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER "cu"///< Type for the sentence offsets
-#else
-#error "The macro \"SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
-#endif /* SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER */
+// If C11 available -> auto determining the printf specifier and max value
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+    /**
+     * @brief Get suitable format specifier with a _Generic expression.
+     */
+    #ifndef SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER
+    #define SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER GET_FORMAT_STR((SENTENCE_OFFSET_TYPE) 42)
+    #else
+    #error "The macro \"SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
+    #endif /* SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER */
 
-#ifndef SENTENCE_OFFSET_TYPE_MAX
-#define SENTENCE_OFFSET_TYPE_MAX UCHAR_MAX      ///< Max value for the sentence offset type
+    #ifndef SENTENCE_OFFSET_TYPE_MAX
+    #define SENTENCE_OFFSET_TYPE_MAX UCHAR_MAX      ///< Max value for the sentence offset type
+    #else
+    #error "The macro \"SENTENCE_OFFSET_TYPE_MAX\" is already defined !"
+    #endif /* SENTENCE_OFFSET_TYPE_MAX */
 #else
-#error "The macro \"SENTENCE_OFFSET_TYPE_MAX\" is already defined !"
-#endif /* SENTENCE_OFFSET_TYPE_MAX */
+    #ifndef SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER
+    #define SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER "cu"///< Type for the sentence offsets
+    #else
+    #error "The macro \"SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
+    #endif /* SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER */
+
+    #ifndef SENTENCE_OFFSET_TYPE_MAX
+    #define SENTENCE_OFFSET_TYPE_MAX UCHAR_MAX      ///< Max value for the sentence offset type
+    #else
+    #error "The macro \"SENTENCE_OFFSET_TYPE_MAX\" is already defined !"
+    #endif /* SENTENCE_OFFSET_TYPE_MAX */
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
 
 
 #ifndef WORD_OFFSET_TYPE
@@ -66,17 +103,36 @@ extern "C"
 #error "The macro \"WORD_OFFSET_TYPE\" is already defined !"
 #endif /* WORD_OFFSET_TYPE */
 
-#ifndef WORD_OFFSET_TYPE_FSTR_SPECIFIER
-#define WORD_OFFSET_TYPE_FSTR_SPECIFIER "cu" ///< Format specifier for the sentence offsets
-#else
-#error "The macro \"WORD_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
-#endif /* WORD_OFFSET_TYPE_FSTR_SPECIFIER */
+// If C11 available -> auto determining the printf specifier and max value
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+    /**
+     * @brief Get suitable format specifier with a _Generic expression.
+     */
+    #ifndef WORD_OFFSET_TYPE_FSTR_SPECIFIER
+    #define WORD_OFFSET_TYPE_FSTR_SPECIFIER GET_FORMAT_STR((WORD_OFFSET_TYPE) 42)
+    #else
+    #error "The macro \"WORD_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
+    #endif /* WORD_OFFSET_TYPE_FSTR_SPECIFIER */
 
-#ifndef WORD_OFFSET_TYPE_MAX
-#define WORD_OFFSET_TYPE_MAX UCHAR_MAX      ///< Max value for the sentence offset type
+    #ifndef WORD_OFFSET_TYPE_MAX
+    #define WORD_OFFSET_TYPE_MAX UCHAR_MAX      ///< Max value for the sentence offset type
+    #else
+    #error "The macro \"WORD_OFFSET_TYPE_MAX\" is already defined !"
+    #endif /* WORD_OFFSET_TYPE_MAX */
 #else
-#error "The macro \"WORD_OFFSET_TYPE_MAX\" is already defined !"
-#endif /* WORD_OFFSET_TYPE_MAX */
+    #ifndef WORD_OFFSET_TYPE_FSTR_SPECIFIER
+    #define WORD_OFFSET_TYPE_FSTR_SPECIFIER "cu" ///< Format specifier for the sentence offsets
+    #else
+    #error "The macro \"WORD_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
+    #endif /* WORD_OFFSET_TYPE_FSTR_SPECIFIER */
+
+    #ifndef WORD_OFFSET_TYPE_MAX
+    #define WORD_OFFSET_TYPE_MAX UCHAR_MAX      ///< Max value for the sentence offset type
+    #else
+    #error "The macro \"WORD_OFFSET_TYPE_MAX\" is already defined !"
+    #endif /* WORD_OFFSET_TYPE_MAX */
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
 
 
 #ifndef INT_MAPPING_TYPE
