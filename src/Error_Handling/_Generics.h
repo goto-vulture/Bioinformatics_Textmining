@@ -274,28 +274,34 @@ extern "C"
 	const char: "%c",                                                                                                   \
     unsigned char: "%hhu",                                                                                              \
     const unsigned char: "%hhu",                                                                                        \
+    \
     short int: "%hi",                                                                                                   \
     const short int: "%hi",                                                                                             \
     unsigned short int: "%hu",                                                                                          \
     const unsigned short int: "%hu",                                                                                    \
+    \
     int: "%d",                                                                                                          \
     const int: "%d",                                                                                                    \
     unsigned int: "%lu",                                                                                                \
     const unsigned int: "%lu",                                                                                          \
+    \
     long int: "%ld",                                                                                                    \
     const long int: "%ld",                                                                                              \
     unsigned long int: "%lu",                                                                                           \
     const unsigned long int: "%lu",                                                                                     \
+    \
     long long int: "%lld",                                                                                              \
     const long long int: "%lld",                                                                                        \
     unsigned long long int: "%llu",                                                                                     \
     const unsigned long long int: "%llu",                                                                               \
+    \
     float: "%f",                                                                                                        \
     const float: "%f",                                                                                                  \
     double: "%f",                                                                                                       \
     const double: "%f",                                                                                                 \
     long double: "%Lf",                                                                                                 \
     const long double: "%Lf",                                                                                           \
+    \
     ALL_PTR(char, TYPE_PTR_FMT_STR),                                                                                    \
     ALL_PTR(unsigned char, TYPE_PTR_FMT_STR),                                                                           \
     ALL_PTR(short int, TYPE_PTR_FMT_STR),                                                                               \
@@ -317,26 +323,34 @@ extern "C"
 
 /**
  * @brief This macro determines the max value of the given type.
+ *
+ * ! For the _Generic keyword are "char" and "signed char" | "const signed char" and "const char" different types !
  */
 #ifndef GET_MAX
 #define GET_MAX(value)                                                                                                  \
     _Generic((value),                                                                                                   \
     char: CHAR_MAX,                                                                                                     \
     const char: CHAR_MAX,                                                                                               \
+    signed char: CHAR_MAX,                                                                                              \
+    const signed char: CHAR_MAX,                                                                                        \
     unsigned char: UCHAR_MAX,                                                                                           \
     const unsigned char: UCHAR_MAX,                                                                                     \
+    \
     short int: SHRT_MAX,                                                                                                \
     const short int: SHRT_MAX,                                                                                          \
     unsigned short int: USHRT_MAX,                                                                                      \
     const unsigned short int: USHRT_MAX,                                                                                \
+    \
     int: INT_MAX,                                                                                                       \
     const int: INT_MAX,                                                                                                 \
     unsigned int: UINT_MAX,                                                                                             \
     const unsigned int: UINT_MAX,                                                                                       \
+    \
     long int: LONG_MAX,                                                                                                 \
     const long int: LONG_MAX,                                                                                           \
     unsigned long int: ULONG_MAX,                                                                                       \
     const unsigned long int: ULONG_MAX,                                                                                 \
+    \
     long long int: LLONG_MAX,                                                                                           \
     const long long int: LLONG_MAX,                                                                                     \
     unsigned long long int: ULLONG_MAX,                                                                                 \
@@ -348,30 +362,38 @@ extern "C"
 
 /**
  * @brief This macro determines the min value of the given type.
+ *
+ * ! For the _Generic keyword are "char" and "signed char" | "const signed char" and "const char" different types !
  */
 #ifndef GET_MIN
 #define GET_MIN(value)                                                                                                  \
     _Generic((value),                                                                                                   \
     char: CHAR_MIN,                                                                                                     \
     const char: CHAR_MIN,                                                                                               \
-    unsigned char: UCHAR_MIN,                                                                                           \
-    const unsigned char: UCHAR_MIN,                                                                                     \
+    signed char: CHAR_MIN,                                                                                              \
+    const signed char: CHAR_MIN,                                                                                        \
+    unsigned char: 0,                                                                                                   \
+    const unsigned char: 0,                                                                                             \
+    \
     short int: SHRT_MIN,                                                                                                \
     const short int: SHRT_MIN,                                                                                          \
-    unsigned short int: USHRT_MIN,                                                                                      \
-    const unsigned short int: USHRT_MIN,                                                                                \
+    unsigned short int: 0,                                                                                              \
+    const unsigned short int: 0,                                                                                        \
+    \
     int: INT_MIN,                                                                                                       \
     const int: INT_MIN,                                                                                                 \
-    unsigned int: UINT_MIN,                                                                                             \
-    const unsigned int: UINT_MIN,                                                                                       \
+    unsigned int: 0,                                                                                                    \
+    const unsigned int: 0,                                                                                              \
+    \
     long int: LONG_MIN,                                                                                                 \
     const long int: LONG_MIN,                                                                                           \
-    unsigned long int: ULONG_MIN,                                                                                       \
-    const unsigned long int: ULONG_MIN,                                                                                 \
+    unsigned long int: 0,                                                                                               \
+    const unsigned long int: 0,                                                                                         \
+    \
     long long int: LLONG_MIN,                                                                                           \
     const long long int: LLONG_MIN,                                                                                     \
-    unsigned long long int: ULLONG_MIN,                                                                                 \
-    const unsigned long long int: ULLONG_MIN,                                                                           \
+    unsigned long long int: 0,                                                                                          \
+    const unsigned long long int: 0,                                                                                    \
     default: -1)
 #else
 #error "The macro \"GET_MIN\" is already defined !"
