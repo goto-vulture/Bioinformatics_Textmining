@@ -266,12 +266,16 @@ extern "C"
 
 /**
  * @brief This macro returns the format string specifier of the given variable, if possible.
+ *
+ * ! For the _Generic keyword are "char" and "signed char" | "const signed char" and "const char" different types !
  */
 #ifndef GET_FORMAT_STR
 #define GET_FORMAT_STR(value)                                                                                           \
     _Generic((value),                                                                                                   \
     char: "%c",                                                                                                         \
 	const char: "%c",                                                                                                   \
+	signed char: "%c",                                                                                                  \
+	const signed char: "%c",                                                                                            \
     unsigned char: "%hhu",                                                                                              \
     const unsigned char: "%hhu",                                                                                        \
     \
