@@ -60,6 +60,25 @@ extern "C"
 #endif /* SENTENCE_OFFSET_TYPE_MAX */
 
 
+#ifndef WORD_OFFSET_TYPE
+#define WORD_OFFSET_TYPE unsigned char      ///< Type for the word offsets
+#else
+#error "The macro \"WORD_OFFSET_TYPE\" is already defined !"
+#endif /* WORD_OFFSET_TYPE */
+
+#ifndef WORD_OFFSET_TYPE_FSTR_SPECIFIER
+#define WORD_OFFSET_TYPE_FSTR_SPECIFIER "cu" ///< Format specifier for the sentence offsets
+#else
+#error "The macro \"WORD_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
+#endif /* WORD_OFFSET_TYPE_FSTR_SPECIFIER */
+
+#ifndef WORD_OFFSET_TYPE_MAX
+#define WORD_OFFSET_TYPE_MAX UCHAR_MAX      ///< Max value for the sentence offset type
+#else
+#error "The macro \"WORD_OFFSET_TYPE_MAX\" is already defined !"
+#endif /* WORD_OFFSET_TYPE_MAX */
+
+
 #ifndef INT_MAPPING_TYPE
 #define INT_MAPPING_TYPE unsigned int           ///< Int mapping type
 #else
