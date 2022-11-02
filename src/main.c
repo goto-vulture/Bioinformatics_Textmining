@@ -241,6 +241,7 @@ int main (const int argc, const char* argv [])
             OPT_STRING('o', "output", &GLOBAL_CLI_OUTPUT_FILE, "Output file", NULL, 0, 0),
             OPT_BOOLEAN('f', "format", &GLOBAL_CLI_FORMAT_OUTPUT, "Format the output for better readability in a normal editor ?", NULL, 0, 0),
             OPT_BOOLEAN('s', "sentence_offset", &GLOBAL_CLI_SENTENCE_OFFSET, "Calculate sentence offsets ?", NULL, 0, 0),
+            OPT_BOOLEAN('w', "word_offset", &GLOBAL_CLI_WORD_OFFSET, "Calculate word offsets ?", NULL, 0, 0),
             OPT_BOOLEAN('\0', "no_part_matches", &GLOBAL_CLI_NO_PART_MATCHES, "Don't show partitial matches in the output file", NULL, 0, 0),
             OPT_BOOLEAN('\0', "no_full_matches", &GLOBAL_CLI_NO_FULL_MATCHES, "Don't show full matches in the output file", NULL, 0, 0),
 
