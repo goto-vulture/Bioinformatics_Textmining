@@ -38,8 +38,11 @@ extern "C"
     #error "The macro \"CHAR_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
     #endif /* CHAR_OFFSET_TYPE_FSTR_SPECIFIER */
 
+    /**
+     * @brief Max value for the char offset type. (Get the value with a _Generic expression)
+     */
     #ifndef CHAR_OFFSET_TYPE_MAX
-    #define CHAR_OFFSET_TYPE_MAX USHRT_MAX          ///< Max value for the char offset type
+    #define CHAR_OFFSET_TYPE_MAX GET_MAX((CHAR_OFFSET_TYPE) 42)
     #else
     #error "The macro \"CHAR_OFFSET_TYPE_MAX\" is already defined !"
     #endif /* CHAR_OFFSET_TYPE_MAX */
@@ -76,8 +79,11 @@ extern "C"
     #error "The macro \"SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
     #endif /* SENTENCE_OFFSET_TYPE_FSTR_SPECIFIER */
 
+    /**
+     * @brief Max value for the sentence offset type. (Get the value with a _Generic expression)
+     */
     #ifndef SENTENCE_OFFSET_TYPE_MAX
-    #define SENTENCE_OFFSET_TYPE_MAX UCHAR_MAX      ///< Max value for the sentence offset type
+    #define SENTENCE_OFFSET_TYPE_MAX GET_MAX((SENTENCE_OFFSET_TYPE) 42)
     #else
     #error "The macro \"SENTENCE_OFFSET_TYPE_MAX\" is already defined !"
     #endif /* SENTENCE_OFFSET_TYPE_MAX */
@@ -114,8 +120,11 @@ extern "C"
     #error "The macro \"WORD_OFFSET_TYPE_FSTR_SPECIFIER\" is already defined !"
     #endif /* WORD_OFFSET_TYPE_FSTR_SPECIFIER */
 
+    /**
+     * @brief Max value for the word offset type. (Get the value with a _Generic expression)
+     */
     #ifndef WORD_OFFSET_TYPE_MAX
-    #define WORD_OFFSET_TYPE_MAX UCHAR_MAX      ///< Max value for the sentence offset type
+    #define WORD_OFFSET_TYPE_MAX GET_MAX((WORD_OFFSET_TYPE) 42)
     #else
     #error "The macro \"WORD_OFFSET_TYPE_MAX\" is already defined !"
     #endif /* WORD_OFFSET_TYPE_MAX */

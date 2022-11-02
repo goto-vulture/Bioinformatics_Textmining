@@ -22,6 +22,7 @@ extern "C"
 
 
 #include <stdbool.h>
+#include <limits.h>
 
 
 
@@ -313,6 +314,68 @@ extern "C"
 #else
 #error "The macro \"GET_FORMAT_STR\" is already defined !"
 #endif /* GET_FORMAT_STR */
+
+/**
+ * @brief This macro determines the max value of the given type.
+ */
+#ifndef GET_MAX
+#define GET_MAX(value)                                                                                                  \
+    _Generic((value),                                                                                                   \
+    char: CHAR_MAX,                                                                                                     \
+    const char: CHAR_MAX,                                                                                               \
+    unsigned char: UCHAR_MAX,                                                                                           \
+    const unsigned char: UCHAR_MAX,                                                                                     \
+    short int: SHRT_MAX,                                                                                                \
+    const short int: SHRT_MAX,                                                                                          \
+    unsigned short int: USHRT_MAX,                                                                                      \
+    const unsigned short int: USHRT_MAX,                                                                                \
+    int: INT_MAX,                                                                                                       \
+    const int: INT_MAX,                                                                                                 \
+    unsigned int: UINT_MAX,                                                                                             \
+    const unsigned int: UINT_MAX,                                                                                       \
+    long int: LONG_MAX,                                                                                                 \
+    const long int: LONG_MAX,                                                                                           \
+    unsigned long int: ULONG_MAX,                                                                                       \
+    const unsigned long int: ULONG_MAX,                                                                                 \
+    long long int: LLONG_MAX,                                                                                           \
+    const long long int: LLONG_MAX,                                                                                     \
+    unsigned long long int: ULLONG_MAX,                                                                                 \
+    const unsigned long long int: ULLONG_MAX,                                                                           \
+    default: -1)
+#else
+#error "The macro \"GET_MAX\" is already defined !"
+#endif /* GET_MAX */
+
+/**
+ * @brief This macro determines the min value of the given type.
+ */
+#ifndef GET_MIN
+#define GET_MIN(value)                                                                                                  \
+    _Generic((value),                                                                                                   \
+    char: CHAR_MIN,                                                                                                     \
+    const char: CHAR_MIN,                                                                                               \
+    unsigned char: UCHAR_MIN,                                                                                           \
+    const unsigned char: UCHAR_MIN,                                                                                     \
+    short int: SHRT_MIN,                                                                                                \
+    const short int: SHRT_MIN,                                                                                          \
+    unsigned short int: USHRT_MIN,                                                                                      \
+    const unsigned short int: USHRT_MIN,                                                                                \
+    int: INT_MIN,                                                                                                       \
+    const int: INT_MIN,                                                                                                 \
+    unsigned int: UINT_MIN,                                                                                             \
+    const unsigned int: UINT_MIN,                                                                                       \
+    long int: LONG_MIN,                                                                                                 \
+    const long int: LONG_MIN,                                                                                           \
+    unsigned long int: ULONG_MIN,                                                                                       \
+    const unsigned long int: ULONG_MIN,                                                                                 \
+    long long int: LLONG_MIN,                                                                                           \
+    const long long int: LLONG_MIN,                                                                                     \
+    unsigned long long int: ULLONG_MIN,                                                                                 \
+    const unsigned long long int: ULLONG_MIN,                                                                           \
+    default: -1)
+#else
+#error "The macro \"GET_MIN\" is already defined !"
+#endif /* GET_MIN */
 
 
 
@@ -633,11 +696,25 @@ extern "C"
 #error "The macro \"IS_NOT_TYPE\" is already defined !"
 #endif /* IS_NOT_TYPE */
 
+
+
 #ifndef GET_FORMAT_STR
 #define GET_FORMAT_STR(value)
 #else
 #error "The macro \"GET_FORMAT_STR\" is already defined !"
 #endif /* GET_FORMAT_STR */
+
+#ifndef GET_MAX
+#define GET_MAX(value)
+#else
+#error "The macro \"GET_MAX\" is already defined !"
+#endif /* GET_MAX */
+
+#ifndef GET_MIN
+#define GET_MIN(value)
+#else
+#error "The macro \"GET_MIN\" is already defined !"
+#endif /* GET_MIN */
 
 
 
