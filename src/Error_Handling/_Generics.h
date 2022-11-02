@@ -190,7 +190,9 @@ extern "C"
     ALL_PTR(float, type_def),                                                                                           \
     ALL_PTR(double, type_def),                                                                                          \
     ALL_PTR(long double, type_def),                                                                                     \
+    ALL_PTR(_Bool, type_def),                                                                                           \
     ALL_PTR(void, type_def),                                                                                            \
+    \
     default: default_result)
 #else
 #error "The macro \"PTR_CHECK\" is already defined !"
@@ -306,6 +308,8 @@ extern "C"
     long double: "%Lf",                                                                                                 \
     const long double: "%Lf",                                                                                           \
     \
+    _Bool: "%d",                                                                                                        \
+    \
     ALL_PTR(char, TYPE_PTR_FMT_STR),                                                                                    \
     ALL_PTR(unsigned char, TYPE_PTR_FMT_STR),                                                                           \
     ALL_PTR(short int, TYPE_PTR_FMT_STR),                                                                               \
@@ -319,7 +323,9 @@ extern "C"
     ALL_PTR(float, TYPE_PTR_FMT_STR),                                                                                   \
     ALL_PTR(double, TYPE_PTR_FMT_STR),                                                                                  \
     ALL_PTR(long double, TYPE_PTR_FMT_STR),                                                                             \
+    ALL_PTR(_Bool, TYPE_PTR_FMT_STR),                                                                                   \
     ALL_PTR(void, TYPE_PTR_FMT_STR),                                                                                    \
+    \
     default: "N/A")
 #else
 #error "The macro \"GET_FORMAT_STR\" is already defined !"
@@ -359,6 +365,9 @@ extern "C"
     const long long int: LLONG_MAX,                                                                                     \
     unsigned long long int: ULLONG_MAX,                                                                                 \
     const unsigned long long int: ULLONG_MAX,                                                                           \
+    \
+    _Bool: true,                                                                                                        \
+    \
     default: -1)
 #else
 #error "The macro \"GET_MAX\" is already defined !"
@@ -398,6 +407,9 @@ extern "C"
     const long long int: LLONG_MIN,                                                                                     \
     unsigned long long int: 0,                                                                                          \
     const unsigned long long int: 0,                                                                                    \
+    \
+    _Bool: false,                                                                                                       \
+    \
     default: -1)
 #else
 #error "The macro \"GET_MIN\" is already defined !"
