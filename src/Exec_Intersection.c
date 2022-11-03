@@ -538,6 +538,12 @@ Exec_Intersection
     size_t result_file_size = 0;
     int file_operation_ret_value = 0;
 
+    // Start export file
+    file_operation_ret_value = fputc ('{', result_file);
+    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+            strerror(errno));
+    ++ result_file_size;
+
     // Create general information and write them to the result file
     cJSON* general_information = cJSON_CreateObject();
     cJSON_NOT_NULL(general_information);
@@ -777,17 +783,22 @@ Exec_Intersection
 
             if (!(intersection_settings & SHORTEN_OUTPUT))
             {
-                file_operation_ret_value = fputc(',', result_file);
-                ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
-                        GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
-                ++ result_file_size;
+                if ((selected_data_2_array + 1) < source_int_values_2->next_free_array)
+                {
+                    file_operation_ret_value = fputc(',', result_file);
+                    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
+                            GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
+                    ++ result_file_size;
+                }
             }
             else
             {
-                file_operation_ret_value = fputs("},\n", result_file);
+                const char* output_str = ((selected_data_2_array + 1) < source_int_values_2->next_free_array) ? "},\n" : "}\n";
+
+                file_operation_ret_value = fputs(output_str, result_file);
                 ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
                         GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
-                result_file_size += strlen("},\n");
+                result_file_size += strlen(output_str);
             }
 
             // Don't use the macro "FREE_AND_SET_TO_NULL" because it increases the free counter. But this memory was
@@ -1052,24 +1063,26 @@ Append_cJSON_Object_To_Result_File
     general_information_as_str [general_information_as_str_len - 1] = '\0';
     general_information_as_str [general_information_as_str_len - 2] = '\0';
 
-    file_operation_ret_value = fputs(general_information_as_str, result_file);
+    // "+ 1" to avoid the first char. It is in every case a '{'.
+    // In every situation this char will create a invalid JSON file (except the file is empty)
+    file_operation_ret_value = fputs(general_information_as_str + 1, result_file);
     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
             strerror(errno));
     written_bytes = written_bytes + (general_information_as_str_len - 2);
 
     if (export_settings & SHORTEN_OUTPUT)
     {
-        file_operation_ret_value = fputc(',', result_file);
-        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
-                strerror(errno));
-        ++ written_bytes;
-    }
-    else
-    {
         file_operation_ret_value = fputs("},\n", result_file);
         ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
                 strerror(errno));
-        written_bytes += strlen("},\n");
+        written_bytes += strlen ("},\n");
+    }
+    else
+    {
+        file_operation_ret_value = fputs(",\n", result_file);
+        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+                strerror(errno));
+        written_bytes += strlen(",\n");
     }
 
     // Don't use the macro "FREE_AND_SET_TO_NULL" because it increases the free counter. But this memory was
