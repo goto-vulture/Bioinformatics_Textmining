@@ -175,6 +175,47 @@ Add_General_Information_To_Export_File
 );
 
 /**
+ * @brief Add too long tokens from the two input file to a JSON block. (One array for each file)
+ *
+ * Asserts:
+ *      export_results != NULL
+ *      token_container_input_1 != NULL
+ *      token_container_input_2 != NULL
+ *
+ * @param export_results Preallocated cJSON object as result for the operation
+ * @param token_container_input_1 Token_List_Container of the first file
+ * @param token_container_input_2 Token_List_Container of the first file
+ */
+static void
+Add_Too_Long_Tokens_To_Export_File
+(
+        cJSON* const export_results,
+        const struct Token_List_Container* const restrict token_container_input_1,
+        const struct Token_List_Container* const restrict token_container_input_2
+);
+
+/**
+ * @brief Convert a cJSON object to a c string and append it to a already opened file.
+ *
+ * Asserts:
+ *      result_file != NULL,
+ *      cJSON_obj != NULL
+ *
+ * @param result_file Already opened result file
+ * @param cJSON_obj cJSON object
+ * @param export_settings Global export settings (This is necessary to determine, if a formatted output is expected)
+ *
+ * @return The number of written bytes
+ */
+static size_t
+Append_cJSON_Object_To_Result_File
+(
+        FILE* restrict result_file,
+        const cJSON* const restrict cJSON_obj,
+        const unsigned int export_settings
+);
+
+/**
  * @brief Append the data from a Token_List_Container object (-> data from a input file) to the Token_Int_Mapping.
  *
  * Asserts:
@@ -491,50 +532,27 @@ Exec_Intersection
                                                     // source set)
     cJSON* outer_object                     = NULL; // Outer object, that contains the intersections and token arrays
     cJSON* export_results                   = NULL;
-    cJSON* general_information              = cJSON_CreateObject();
-    cJSON_NOT_NULL(general_information);
 
-    Add_General_Information_To_Export_File(general_information, intersection_settings);
+
 
     size_t result_file_size = 0;
     int file_operation_ret_value = 0;
 
-    // Insert the general information to the result file
-    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE,
-            !(intersection_settings & SHORTEN_OUTPUT)); // No shorten output => Using formatting
-
-    ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
-    const size_t general_information_as_str_len = strlen (general_information_as_str);
-    // Remove the last two char from the string representation ('\n' and '}')
-    general_information_as_str [general_information_as_str_len - 1] = '\0';
-    general_information_as_str [general_information_as_str_len - 2] = '\0';
-
-    file_operation_ret_value = fputs(general_information_as_str, result_file);
-    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
-            strerror(errno));
-    result_file_size = result_file_size + (general_information_as_str_len - 2);
-
-    if (intersection_settings & SHORTEN_OUTPUT)
-    {
-        file_operation_ret_value = fputc(',', result_file);
-        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
-                strerror(errno));
-        ++ result_file_size;
-    }
-    else
-    {
-        file_operation_ret_value = fputs("},\n", result_file);
-        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
-                strerror(errno));
-        result_file_size += strlen("},\n");
-    }
-
-
+    // Create general information and write them to the result file
+    cJSON* general_information = cJSON_CreateObject();
+    cJSON_NOT_NULL(general_information);
+    Add_General_Information_To_Export_File(general_information, intersection_settings);
+    result_file_size += Append_cJSON_Object_To_Result_File(result_file, general_information, intersection_settings);
     cJSON_FULL_FREE_AND_SET_TO_NULL(general_information);
-    // Don't use the macro "FREE_AND_SET_TO_NULL" because it increases the free counter. But this memory was
-    // allocated from the JSON lib !
-    free(general_information_as_str);
-    general_information_as_str = NULL;
+
+    // Create a list with too long token and append them to the result file
+    cJSON* too_long_tokens = cJSON_CreateObject();
+    cJSON_NOT_NULL(too_long_tokens);
+    Add_Too_Long_Tokens_To_Export_File(too_long_tokens, token_container_input_1, token_container_input_2);
+    result_file_size += Append_cJSON_Object_To_Result_File(result_file, too_long_tokens, intersection_settings);
+    cJSON_FULL_FREE_AND_SET_TO_NULL(too_long_tokens);
+
+
 
     uint_fast64_t intersection_tokens_found_counter    = 0;
     uint_fast64_t intersection_sets_found_counter      = 0;
@@ -937,6 +955,129 @@ Add_General_Information_To_Export_File
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "General infos", general_infos);
 
     return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Add too long tokens from the two input file to a JSON block. (One array for each file)
+ *
+ * Asserts:
+ *      export_results != NULL
+ *      token_container_input_1 != NULL
+ *      token_container_input_2 != NULL
+ *
+ * @param export_results Preallocated cJSON object as result for the operation
+ * @param token_container_input_1 Token_List_Container of the first file
+ * @param token_container_input_2 Token_List_Container of the first file
+ */
+static void
+Add_Too_Long_Tokens_To_Export_File
+(
+        cJSON* const export_results,
+        const struct Token_List_Container* const restrict token_container_input_1,
+        const struct Token_List_Container* const restrict token_container_input_2
+)
+{
+    ASSERT_MSG(export_results != NULL, "cJSON result pointer is NULL !");
+    ASSERT_MSG(token_container_input_1 != NULL, "First Token_List_Container is NULL !");
+    ASSERT_MSG(token_container_input_2 != NULL, "Second Token_List_Container is NULL !");
+
+    cJSON* too_long_token_list = cJSON_CreateObject();
+    cJSON_NOT_NULL(too_long_token_list);
+    cJSON* list_first_file = cJSON_CreateArray();
+    cJSON_NOT_NULL(list_first_file);
+    cJSON* list_second_file = cJSON_CreateArray();
+    cJSON_NOT_NULL(list_second_file);
+
+    // Too long tokens from the first Token_Container_List
+    for (size_t i = 0; i < token_container_input_1->list_of_too_long_token->next_free_c_str; ++ i)
+    {
+        cJSON* cjson_str = cJSON_CreateString(token_container_input_1->list_of_too_long_token->data [i]);
+        cJSON_NOT_NULL(cjson_str);
+        cJSON_ADD_ITEM_TO_ARRAY_CHECK(list_first_file, cjson_str);
+    }
+
+    // Too long tokens from the second Token_Container_List
+    for (size_t i = 0; i < token_container_input_2->list_of_too_long_token->next_free_c_str; ++ i)
+    {
+        cJSON* cjson_str = cJSON_CreateString(token_container_input_2->list_of_too_long_token->data [i]);
+        cJSON_NOT_NULL(cjson_str);
+        cJSON_ADD_ITEM_TO_ARRAY_CHECK(list_first_file, cjson_str);
+    }
+
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(too_long_token_list, "In first file:", list_first_file);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(too_long_token_list, "In second file:", list_second_file);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "Too long tokens", too_long_token_list);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Convert a cJSON object to a c string and append it to a already opened file.
+ *
+ * Asserts:
+ *      result_file != NULL,
+ *      cJSON_obj != NULL
+ *
+ * @param result_file Already opened result file
+ * @param cJSON_obj cJSON object
+ * @param export_settings Global export settings (This is necessary to determine, if a formatted output is expected)
+ *
+ * @return The number of written bytes
+ */
+static size_t
+Append_cJSON_Object_To_Result_File
+(
+        FILE* restrict result_file,
+        const cJSON* const restrict cJSON_obj,
+        const unsigned int export_settings
+)
+{
+    ASSERT_MSG(result_file != NULL, "The result file is NULL !");
+    ASSERT_MSG(cJSON_obj != NULL, "cJSON object is NULL !");
+
+    size_t written_bytes = 0;
+    int file_operation_ret_value = 0;
+
+    // Insert the general information to the result file
+    char* general_information_as_str = cJSON_PrintBuffered(cJSON_obj, CJSON_PRINT_BUFFER_SIZE,
+            !(export_settings & SHORTEN_OUTPUT)); // No shorten output => Using formatting
+
+    ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
+    const size_t general_information_as_str_len = strlen (general_information_as_str);
+    // Remove the last two char from the string representation ('\n' and '}')
+    general_information_as_str [general_information_as_str_len - 1] = '\0';
+    general_information_as_str [general_information_as_str_len - 2] = '\0';
+
+    file_operation_ret_value = fputs(general_information_as_str, result_file);
+    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+            strerror(errno));
+    written_bytes = written_bytes + (general_information_as_str_len - 2);
+
+    if (export_settings & SHORTEN_OUTPUT)
+    {
+        file_operation_ret_value = fputc(',', result_file);
+        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+                strerror(errno));
+        ++ written_bytes;
+    }
+    else
+    {
+        file_operation_ret_value = fputs("},\n", result_file);
+        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+                strerror(errno));
+        written_bytes += strlen("},\n");
+    }
+
+    // Don't use the macro "FREE_AND_SET_TO_NULL" because it increases the free counter. But this memory was
+    // allocated from the JSON lib !
+    free(general_information_as_str);
+    general_information_as_str = NULL;
+
+    return written_bytes;
 }
 
 //---------------------------------------------------------------------------------------------------------------------

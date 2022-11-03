@@ -43,6 +43,8 @@ extern _Bool GLOBAL_CLI_SENTENCE_OFFSET; ///< Create sentence offsets in the cal
 
 extern _Bool GLOBAL_CLI_WORD_OFFSET; ///< Create word offsets in the calculation ?
 
+extern _Bool GLOBAL_CLI_SHOW_TOO_LONG_TOKENS; ///< Show too long tokens in the result file
+
 extern _Bool GLOBAL_CLI_NO_PART_MATCHES; ///< Do not show part matches in the result file
 
 extern _Bool GLOBAL_CLI_NO_FULL_MATCHES; ///< Do not show full matches in the result file
