@@ -126,12 +126,33 @@ extern void Show_Dynamic_Memory_Status (void);
  */
 #ifndef FCLOSE_AND_SET_TO_NULL
     #define FCLOSE_AND_SET_TO_NULL(pointer)                                                                             \
-        fclose (pointer);                                                                                               \
+        if (fclose (pointer) == EOF)                                                                                    \
+        {                                                                                                               \
+            ASSERT_MSG(stderr, "Cannot close the file ! EOF was returned !")                                            \
+        }                                                                                                               \
         pointer = NULL;                                                                                                 \
         IS_TYPE(pointer, FILE*)
 #else
     #error "The macro \"FCLOSE_AND_SET_TO_NULL\" is already defined !"
 #endif /* FCLOSE_AND_SET_TO_NULL */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Close an file and set the FILE pointer to NULL.
+ */
+#ifndef FCLOSE_WITH_NAME_AND_SET_TO_NULL
+    #define FCLOSE_WITH_NAME_AND_SET_TO_NULL(pointer, file_name)                                                        \
+        if (fclose (pointer) == EOF)                                                                                    \
+        {                                                                                                               \
+            ASSERT_FMSG(stderr, "Cannot close the file \"%s\"! EOF was returned !", file_name)                          \
+        }                                                                                                               \
+        pointer = NULL;                                                                                                 \
+        IS_TYPE(pointer, FILE*)                                                                                         \
+		IS_IN_TYPE_LIST_4(file_name, char*, const char*, char* const, const char* const)
+#else
+    #error "The macro \"FCLOSE_WITH_NAME_AND_SET_TO_NULL\" is already defined !"
+#endif /* FCLOSE_WITH_NAME_AND_SET_TO_NULL */
 
 //---------------------------------------------------------------------------------------------------------------------
 

@@ -16,6 +16,7 @@
 #include <math.h>
 #include <stdbool.h>
 #include "Print_Tools.h"
+#include "String_Tools.h"
 #include "Error_Handling/Dynamic_Memory.h"
 
 
@@ -51,10 +52,14 @@ float GLOBAL_ABORT_PROCESS_PERCENT = NAN;
  */
 void Check_CLI_Parameter_CLI_INPUT_FILE (void)
 {
-    if (GLOBAL_CLI_INPUT_FILE == NULL || strlen (GLOBAL_CLI_INPUT_FILE) == 0)
+    if (GLOBAL_CLI_INPUT_FILE == NULL)
     {
-        FPRINTF_FFLUSH_NO_VA_ARGS (stderr, "Invalid input file ! Either the file name is NULL or the name length is "
-                "zero !\n");
+        FPRINTF_FFLUSH_NO_VA_ARGS (stderr, "Invalid input file name ! The first input file name is NULL !\n");
+        exit(1);
+    }
+    if (IS_STRING_LENGTH_ZERO(GLOBAL_CLI_INPUT_FILE))
+    {
+        FPRINTF_FFLUSH_NO_VA_ARGS (stderr, "Invalid input file name ! The first input file name length is zero !\n");
         exit(1);
     }
 
@@ -67,7 +72,7 @@ void Check_CLI_Parameter_CLI_INPUT_FILE (void)
         exit(1);
     }
 
-    FCLOSE_AND_SET_TO_NULL(input_file);
+    FCLOSE_WITH_NAME_AND_SET_TO_NULL(input_file, GLOBAL_CLI_INPUT_FILE);
 
     return;
 }
@@ -79,10 +84,14 @@ void Check_CLI_Parameter_CLI_INPUT_FILE (void)
  */
 void Check_CLI_Parameter_CLI_INPUT_FILE2 (void)
 {
-    if (GLOBAL_CLI_INPUT_FILE2 == NULL || strlen (GLOBAL_CLI_INPUT_FILE2) == 0)
+    if (GLOBAL_CLI_INPUT_FILE2 == NULL)
     {
-        FPRINTF_FFLUSH_NO_VA_ARGS (stderr, "Invalid input file ! Either the file name is NULL or the name length is "
-                "zero !\n");
+        FPRINTF_FFLUSH_NO_VA_ARGS (stderr, "Invalid input file name ! The second input file name is NULL !\n");
+        exit(1);
+    }
+    if (IS_STRING_LENGTH_ZERO(GLOBAL_CLI_INPUT_FILE2))
+    {
+        FPRINTF_FFLUSH_NO_VA_ARGS (stderr, "Invalid input file name ! The second input file name length is zero !\n");
         exit(1);
     }
 
@@ -95,7 +104,7 @@ void Check_CLI_Parameter_CLI_INPUT_FILE2 (void)
         exit(1);
     }
 
-    FCLOSE_AND_SET_TO_NULL(input_file);
+    FCLOSE_WITH_NAME_AND_SET_TO_NULL(input_file, GLOBAL_CLI_INPUT_FILE2);
 
     return;
 }
@@ -107,10 +116,14 @@ void Check_CLI_Parameter_CLI_INPUT_FILE2 (void)
  */
 void Check_CLI_Parameter_CLI_OUTPUT_FILE (void)
 {
-    if (GLOBAL_CLI_OUTPUT_FILE == NULL || strlen (GLOBAL_CLI_OUTPUT_FILE) == 0)
+    if (GLOBAL_CLI_OUTPUT_FILE == NULL)
     {
-        FPRINTF_FFLUSH_NO_VA_ARGS (stderr, "Invalid output file name ! Either the file name is NULL or the name length "
-                "is zero !\n");
+        FPRINTF_FFLUSH_NO_VA_ARGS (stderr, "Invalid output file name ! The output file name is NULL !\n");
+        exit(1);
+    }
+    if (IS_STRING_LENGTH_ZERO(GLOBAL_CLI_OUTPUT_FILE))
+    {
+        FPRINTF_FFLUSH_NO_VA_ARGS (stderr, "Invalid output file name ! The output file name length is zero !\n");
         exit(1);
     }
 
@@ -123,7 +136,7 @@ void Check_CLI_Parameter_CLI_OUTPUT_FILE (void)
         exit(1);
     }
 
-    FCLOSE_AND_SET_TO_NULL(output_file);
+    FCLOSE_WITH_NAME_AND_SET_TO_NULL(output_file, GLOBAL_CLI_OUTPUT_FILE);
 
     return;
 }
