@@ -253,7 +253,7 @@ TokenListContainer_CreateObject
     }
 
     // Create the container for too long token
-    new_container->list_of_too_long_token = Create_Two_Dim_C_String_Array (10);
+    new_container->list_of_too_long_token = TwoDimCStrArray_CreateObject (10);
 
     clock_t start       = 0;
     clock_t end         = 0;
@@ -379,7 +379,7 @@ TokenListContainer_CreateObject
                     // Save the full token, if it is too long
                     if (current_token_len > (current_token_list_obj->max_token_length - 1))
                     {
-                        Append_New_String_In_Two_Dim_C_String_Array
+                        TwoDimCStrArray_AppendNewString
                         (
                                 new_container->list_of_too_long_token,
                                 curr_token->valuestring,
@@ -447,7 +447,7 @@ TokenListContainer_CreateObject
     if (new_container->list_of_too_long_token->next_free_c_str > 0)
     {
         puts("\n\nTokens, that are longer than expected:");
-        Print_All_Strings_From_Two_Dim_C_String_Array(new_container->list_of_too_long_token);
+        TwoDimCStrArray_PrintAllStrings(new_container->list_of_too_long_token);
     }
 
     CLOCK_WITH_RETURN_CHECK(end);
@@ -479,7 +479,7 @@ TokenListContainer_DeleteObject
 {
     ASSERT_MSG(object != NULL, "Token_List_Container is NULL !");
 
-    Delete_Two_Dim_C_String_Array (object->list_of_too_long_token);
+    TwoDimCStrArray_DeleteObject (object->list_of_too_long_token);
     object->list_of_too_long_token = NULL;
 
     if (object->token_lists != NULL)

@@ -66,7 +66,7 @@ Longer_C_String_Necessary
  * @return Address to the new dynamic Two_Dim_C_String_Array
  */
 extern struct Two_Dim_C_String_Array*
-Create_Two_Dim_C_String_Array
+TwoDimCStrArray_CreateObject
 (
         const size_t number_of_c_str
 )
@@ -118,7 +118,7 @@ Create_Two_Dim_C_String_Array
  * @param[in] object Two_Dim_C_String_Array object
  */
 extern void
-Delete_Two_Dim_C_String_Array
+TwoDimCStrArray_DeleteObject
 (
         struct Two_Dim_C_String_Array* object
 )
@@ -155,7 +155,7 @@ Delete_Two_Dim_C_String_Array
  * @param[in] append_data_length Length of the new data
  */
 extern void
-Append_Data_In_Two_Dim_C_String_Array
+TwoDimCStrArray_AppendDataToSpecificString
 (
         struct Two_Dim_C_String_Array* const restrict object,
         const size_t str_index,
@@ -203,7 +203,7 @@ Append_Data_In_Two_Dim_C_String_Array
  * @param[in] append_data_length New data length
  */
 extern void
-Append_Data_To_Current_String_In_Two_Dim_C_String_Array
+TwoDimCStrArray_AppendDataToNewestString
 (
         struct Two_Dim_C_String_Array* const restrict object,
         const char* const restrict append_data,
@@ -215,7 +215,7 @@ Append_Data_To_Current_String_In_Two_Dim_C_String_Array
     ASSERT_MSG(append_data_length > 0, "Append data length is 0 !");
 
     // Delegate it to the standard append function
-    Append_Data_In_Two_Dim_C_String_Array
+    TwoDimCStrArray_AppendDataToSpecificString
     (
             object,
             (object->next_free_c_str == 0) ? 0 : object->next_free_c_str,
@@ -240,7 +240,7 @@ Append_Data_To_Current_String_In_Two_Dim_C_String_Array
  * @param[in] new_str_length Length of the new c string
  */
 extern void
-Append_New_String_In_Two_Dim_C_String_Array
+TwoDimCStrArray_AppendNewString
 (
         struct Two_Dim_C_String_Array* const restrict object,
         const char* const restrict new_str,
@@ -286,7 +286,7 @@ Append_New_String_In_Two_Dim_C_String_Array
  * @param[in] object The Two_Dim_C_String_Array
  */
 extern void
-Show_Attributes_From_Two_Dim_C_String_Array
+TwoDimCStrArray_ShowAttributes
 (
         const struct Two_Dim_C_String_Array* const object
 )
@@ -336,7 +336,7 @@ Show_Attributes_From_Two_Dim_C_String_Array
  * @param[in] object The Two_Dim_C_String_Array
  */
 extern void
-Print_All_Strings_From_Two_Dim_C_String_Array
+TwoDimCStrArray_PrintAllStrings
 (
         const struct Two_Dim_C_String_Array* const object
 )
