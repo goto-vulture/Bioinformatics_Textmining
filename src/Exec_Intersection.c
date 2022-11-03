@@ -918,7 +918,7 @@ Add_General_Information_To_Export_File
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Sentence offset", sentence_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation mode", creation_mode);
 
-    cJSON* creation_time = cJSON_CreateString("123");
+    cJSON* creation_time = cJSON_CreateString(time_string);
     cJSON_NOT_NULL(creation_time);
 
     if (!(export_settings & NO_FILENAMES))
