@@ -216,28 +216,41 @@ DocumentWordList_DeleteObject
     // Inner dimension
     for (uint_fast32_t i = 0; i < object->number_of_arrays; ++ i)
     {
-        FREE_AND_SET_TO_NULL(object->data_struct.data [i]);
+        free(object->data_struct.data [i]);
+        // FREE_AND_SET_TO_NULL(object->data_struct.data [i]);
     }
+    GLOBAL_free_calls += object->number_of_arrays;
     if (object->intersection_data)
     {
         for (uint_fast32_t i = 0; i < object->number_of_arrays; ++ i)
         {
-            FREE_AND_SET_TO_NULL(object->data_struct.char_offsets [i]);
-            FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets [i]);
+            free(object->data_struct.char_offsets [i]);
+            // FREE_AND_SET_TO_NULL(object->data_struct.char_offsets [i]);
+            free(object->data_struct.sentence_offsets [i]);
+            // FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets [i]);
         }
+        GLOBAL_free_calls += 2 * object->number_of_arrays;
     }
+    free(object->data_struct.data);
+    // FREE_AND_SET_TO_NULL(object->data_struct.data);
+    ++ GLOBAL_free_calls;
 
-    // Outer dimension
-    FREE_AND_SET_TO_NULL(object->data_struct.data);
     if (object->intersection_data)
     {
-        FREE_AND_SET_TO_NULL(object->data_struct.char_offsets);
-        FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets);
+        free(object->data_struct.char_offsets);
+        // FREE_AND_SET_TO_NULL(object->data_struct.char_offsets);
+        free(object->data_struct.sentence_offsets);
+        // FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets);
+        GLOBAL_free_calls += 2;
     }
 
-    FREE_AND_SET_TO_NULL(object->allocated_array_size)
-    FREE_AND_SET_TO_NULL(object->arrays_lengths);
-    FREE_AND_SET_TO_NULL(object);
+    free(object->allocated_array_size);
+    // FREE_AND_SET_TO_NULL(object->allocated_array_size)
+    free(object->arrays_lengths);
+    // FREE_AND_SET_TO_NULL(object->arrays_lengths);
+    free(object);
+    // FREE_AND_SET_TO_NULL(object);
+    GLOBAL_free_calls += 3;
 
     return;
 }
