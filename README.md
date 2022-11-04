@@ -85,3 +85,9 @@ To make the implementation simple, the in and output will be created in a simple
 - Change focus of the offsets to the origial file (in the current implementation the offset is focused on preprocessed data (stop word removed etc.))
     - "Where are the objects in the source data?"
 - A more user-friendly interface. Maybe with a GUI. But the priority in this project is low.
+
+
+
+## Help
+
+If you have any questions or suggestions: Get in contact with me: goto-vulture@gmx.de
