@@ -28,8 +28,11 @@ const char* const GLOBAL_USAGES [] =
      NULL,
 };
 
-const char* const GLOBAL_PROGRAM_DESCRIPTION            = "Program description";
-const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION = "Additional program description";
+const char* const GLOBAL_PROGRAM_DESCRIPTION            =
+        "\nThe program do a determination of so-called \"dominating word sets\" from data sets in the field of bioinformatics.";
+const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION =
+        "\nThis idea will be develop as a project for the Ruhr University Bochum (RUB)."
+        "\nIf you have any questions or suggestions: Get in contact with me: goto-vulture@gmx.de";
 
 // Variables for the parsed CLI parameter
 const char* GLOBAL_CLI_INPUT_FILE = NULL;
