@@ -35,6 +35,8 @@ There are two switches for the building process:
 - `DEBUG`: Building the program with debug information in the binary file (default)
 - `RELEASE`: Building with compiler optimization.
 
+`make Debug=1` Build the project with debug settings.
+
 `make clean` removes all compilation files.
 
 ### Interface
