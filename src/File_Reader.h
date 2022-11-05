@@ -20,9 +20,10 @@ extern "C"
 
 
 
-#include <inttypes.h>   // uint_fast32_t
-#include <stddef.h>     // size_t
-#include "Defines.h"    // CHAR_OFFSET_TYPE
+#include <inttypes.h>               // uint_fast32_t
+#include <stddef.h>                 // size_t
+#include "Defines.h"                // CHAR_OFFSET_TYPE
+#include "Two_Dim_C_String_Array.h" // struct Two_Dim_C_String_Array
 
 
 
@@ -82,6 +83,8 @@ struct Token_List_Container
 
     size_t malloc_calloc_calls;             ///< How many malloc / calloc calls were done with this object ?
     size_t realloc_calls;                   ///< How many realloc calls were done with this object ?
+
+    struct Two_Dim_C_String_Array* list_of_too_long_token;  ///< List of tokens, that are longer than expected
 };
 
 //=====================================================================================================================

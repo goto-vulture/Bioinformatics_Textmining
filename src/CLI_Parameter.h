@@ -35,7 +35,19 @@ extern const char* GLOBAL_CLI_INPUT_FILE2; ///< Second input file
 
 extern const char* GLOBAL_CLI_OUTPUT_FILE; ///< Output file
 
+extern _Bool GLOBAL_CLI_FORMAT_OUTPUT; ///< Format the output ?
+
 extern _Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS; ///< Run all test functions ?
+
+extern _Bool GLOBAL_CLI_SENTENCE_OFFSET; ///< Create sentence offsets in the calculation ?
+
+extern _Bool GLOBAL_CLI_WORD_OFFSET; ///< Create word offsets in the calculation ?
+
+extern _Bool GLOBAL_CLI_SHOW_TOO_LONG_TOKENS; ///< Show too long tokens in the result file
+
+extern _Bool GLOBAL_CLI_NO_PART_MATCHES; ///< Do not show part matches in the result file
+
+extern _Bool GLOBAL_CLI_NO_FULL_MATCHES; ///< Do not show full matches in the result file
 
 /**
  * @brief On which percent in the calculation should be aborted ? This is for development and debugging purposes useful

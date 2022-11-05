@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct{
 	uint64_t size;        // Size of input in bytes
@@ -24,3 +25,18 @@ uint32_t H(uint32_t X, uint32_t Y, uint32_t Z);
 uint32_t I(uint32_t X, uint32_t Y, uint32_t Z);
 
 uint32_t rotateLeft(uint32_t x, uint32_t n);
+
+/**
+ * @brief Compare the MD5 sum of the file with the expected one.
+ *
+ * @param file_name File name
+ * @param expected_md5_sum Expected MD5 sum of the file
+ * @param err_occurred Occurred an error in the function ?
+ * @return true, if the MD5 sum is equal, else false
+ */
+extern _Bool Check_Test_File_MD5_Sum
+(
+        const char* const restrict file_name,
+        const char* const restrict expected_md5_sum,
+        _Bool* const restrict err_occurred
+);

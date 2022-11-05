@@ -17,6 +17,7 @@
 #include <limits.h>
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
+#include "Error_Handling/_Generics.h"
 #include "Misc.h"
 #include "Print_Tools.h"
 #include "Intersection_Approaches.h"
@@ -35,9 +36,11 @@
 /**
  * @brief Check, whether the macro value are valid.
  */
-#if __STDC_VERSION__ >= 201112L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(INT_ALLOCATION_STEP_SIZE > 0, "The marco \"INT_ALLOCATION_STEP_SIZE\" is zero !");
-#endif /* __STDC_VERSION__ */
+
+IS_TYPE(INT_ALLOCATION_STEP_SIZE, int)
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 /**
  * @brief Create a new Document_Word_List and initialize the main structure.
@@ -213,28 +216,41 @@ DocumentWordList_DeleteObject
     // Inner dimension
     for (uint_fast32_t i = 0; i < object->number_of_arrays; ++ i)
     {
-        FREE_AND_SET_TO_NULL(object->data_struct.data [i]);
+        free(object->data_struct.data [i]);
+        // FREE_AND_SET_TO_NULL(object->data_struct.data [i]);
     }
+    GLOBAL_free_calls += object->number_of_arrays;
     if (object->intersection_data)
     {
         for (uint_fast32_t i = 0; i < object->number_of_arrays; ++ i)
         {
-            FREE_AND_SET_TO_NULL(object->data_struct.char_offsets [i]);
-            FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets [i]);
+            free(object->data_struct.char_offsets [i]);
+            // FREE_AND_SET_TO_NULL(object->data_struct.char_offsets [i]);
+            free(object->data_struct.sentence_offsets [i]);
+            // FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets [i]);
         }
+        GLOBAL_free_calls += 2 * object->number_of_arrays;
     }
+    free(object->data_struct.data);
+    // FREE_AND_SET_TO_NULL(object->data_struct.data);
+    ++ GLOBAL_free_calls;
 
-    // Outer dimension
-    FREE_AND_SET_TO_NULL(object->data_struct.data);
     if (object->intersection_data)
     {
-        FREE_AND_SET_TO_NULL(object->data_struct.char_offsets);
-        FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets);
+        free(object->data_struct.char_offsets);
+        // FREE_AND_SET_TO_NULL(object->data_struct.char_offsets);
+        free(object->data_struct.sentence_offsets);
+        // FREE_AND_SET_TO_NULL(object->data_struct.sentence_offsets);
+        GLOBAL_free_calls += 2;
     }
 
-    FREE_AND_SET_TO_NULL(object->allocated_array_size)
-    FREE_AND_SET_TO_NULL(object->arrays_lengths);
-    FREE_AND_SET_TO_NULL(object);
+    free(object->allocated_array_size);
+    // FREE_AND_SET_TO_NULL(object->allocated_array_size)
+    free(object->arrays_lengths);
+    // FREE_AND_SET_TO_NULL(object->arrays_lengths);
+    free(object);
+    // FREE_AND_SET_TO_NULL(object);
+    GLOBAL_free_calls += 3;
 
     return;
 }
@@ -589,15 +605,17 @@ DocumentWordList_ShowAttributes
 {
     ASSERT_MSG(object != NULL, "Object is NULL !");
 
-    const int formatter_int = (int) MAX(Count_Number_Of_Digits(object->number_of_arrays),
+    // Int formatter for the output
+    int formatter_int = (int) MAX(Count_Number_Of_Digits(object->number_of_arrays),
                 Count_Number_Of_Digits(object->max_array_length));
+    formatter_int = MAX((int) Count_Number_Of_Digits(object->malloc_calloc_calls), formatter_int);
 
     puts("");
     printf("Full document word list container size: ");
     Print_Memory_Size_As_B_KB_MB(DocumentWordList_GetAllocatedMemSize(object));
 
     puts ("> Attributes <");
-    printf ("Intersection data:     %s\n", (object->intersection_data /* == true */) ? "YES" : "NO");
+    printf ("Intersection data:     %*s\n",  formatter_int, (object->intersection_data /* == true */) ? "YES" : "NO");
     printf ("Number of arrays:      %*zu\n", formatter_int, object->number_of_arrays);
     printf ("Max. array length:     %*zu\n", formatter_int, object->max_array_length);
     printf ("Malloc / calloc calls: %*zu\n", formatter_int, object->malloc_calloc_calls);

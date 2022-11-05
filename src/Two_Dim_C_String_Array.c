@@ -66,7 +66,7 @@ Longer_C_String_Necessary
  * @return Address to the new dynamic Two_Dim_C_String_Array
  */
 extern struct Two_Dim_C_String_Array*
-Create_Two_Dim_C_String_Array
+TwoDimCStrArray_CreateObject
 (
         const size_t number_of_c_str
 )
@@ -118,7 +118,7 @@ Create_Two_Dim_C_String_Array
  * @param[in] object Two_Dim_C_String_Array object
  */
 extern void
-Delete_Two_Dim_C_String_Array
+TwoDimCStrArray_DeleteObject
 (
         struct Two_Dim_C_String_Array* object
 )
@@ -155,7 +155,7 @@ Delete_Two_Dim_C_String_Array
  * @param[in] append_data_length Length of the new data
  */
 extern void
-Append_Data_In_Two_Dim_C_String_Array
+TwoDimCStrArray_AppendDataToSpecificString
 (
         struct Two_Dim_C_String_Array* const restrict object,
         const size_t str_index,
@@ -203,7 +203,7 @@ Append_Data_In_Two_Dim_C_String_Array
  * @param[in] append_data_length New data length
  */
 extern void
-Append_Data_To_Current_String_In_Two_Dim_C_String_Array
+TwoDimCStrArray_AppendDataToNewestString
 (
         struct Two_Dim_C_String_Array* const restrict object,
         const char* const restrict append_data,
@@ -215,7 +215,7 @@ Append_Data_To_Current_String_In_Two_Dim_C_String_Array
     ASSERT_MSG(append_data_length > 0, "Append data length is 0 !");
 
     // Delegate it to the standard append function
-    Append_Data_In_Two_Dim_C_String_Array
+    TwoDimCStrArray_AppendDataToSpecificString
     (
             object,
             (object->next_free_c_str == 0) ? 0 : object->next_free_c_str,
@@ -240,7 +240,7 @@ Append_Data_To_Current_String_In_Two_Dim_C_String_Array
  * @param[in] new_str_length Length of the new c string
  */
 extern void
-Append_New_String_In_Two_Dim_C_String_Array
+TwoDimCStrArray_AppendNewString
 (
         struct Two_Dim_C_String_Array* const restrict object,
         const char* const restrict new_str,
@@ -286,7 +286,7 @@ Append_New_String_In_Two_Dim_C_String_Array
  * @param[in] object The Two_Dim_C_String_Array
  */
 extern void
-Show_Attributes_From_Two_Dim_C_String_Array
+TwoDimCStrArray_ShowAttributes
 (
         const struct Two_Dim_C_String_Array* const object
 )
@@ -320,6 +320,33 @@ Show_Attributes_From_Two_Dim_C_String_Array
     printf ("Next free C string:            %zu\n", object->next_free_c_str);
     printf ("Longest allocated C string:    %zu\n", longest_allocated_c_str);
     printf ("Longest C string:              %zu\n", longest_c_str);
+    fflush(stdout);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Print all strings in the container.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object The Two_Dim_C_String_Array
+ */
+extern void
+TwoDimCStrArray_PrintAllStrings
+(
+        const struct Two_Dim_C_String_Array* const object
+)
+{
+    ASSERT_MSG (object != NULL, "Object is NULL !");
+
+    for (uint_fast32_t i = 0; i < object->next_free_c_str; ++ i)
+    {
+        printf("%*" PRIuFAST32 ": %s\n", (int) Count_Number_Of_Digits(object->next_free_c_str),  i + 1, object->data [i]);
+    }
     fflush(stdout);
 
     return;

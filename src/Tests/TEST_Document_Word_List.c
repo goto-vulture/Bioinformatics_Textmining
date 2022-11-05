@@ -14,6 +14,7 @@
 #include "../Misc.h"
 #include "../Error_Handling/Assert_Msg.h"
 #include "../Error_Handling/Dynamic_Memory.h"
+#include "../Error_Handling/_Generics.h"
 #include "../Print_Tools.h"
 #include "Create_Test_Data.h"
 
@@ -48,7 +49,12 @@
 _Static_assert(NUMBER_OF_ARRAYS > 0, "The macro \"NUMBER_OF_ARRAYS\" needs to be at least one !");
 _Static_assert(MAX_ARRAY_LENGTH > 0, "The macro \"MAX_ARRAY_LENGTH\" needs to be at least one !");
 _Static_assert(RAND_UPPER_BOUND > 0, "The macro \"RAND_UPPER_BOUND\" needs to be at least one !");
-_Static_assert(NUMBER_OF_RUNS > 0, "The macro \"NUMBER_OF_RUNS needs\" to be at least one !");
+_Static_assert(NUMBER_OF_RUNS > 0, "The macro \"NUMBER_OF_RUNS needs\" needs to be at least one !");
+
+IS_TYPE(NUMBER_OF_ARRAYS, int)
+IS_TYPE(MAX_ARRAY_LENGTH, int)
+IS_TYPE(RAND_UPPER_BOUND, int)
+IS_TYPE(NUMBER_OF_RUNS, int)
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 /**

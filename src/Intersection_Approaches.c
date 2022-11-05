@@ -24,6 +24,7 @@
 #include "Misc.h"
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
+#include "Error_Handling/_Generics.h"
 #include "Print_Tools.h"
 
 
@@ -33,6 +34,12 @@
 #else
 #error "The macro \"MULTIPLE_GUARD_ALLOC_STEP\" is already defined !"
 #endif /* MULTIPLE_GUARD_ALLOC_STEP */
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+_Static_assert(MULTIPLE_GUARD_ALLOC_STEP > 0, "The marco \"MULTIPLE_GUARD_ALLOC_STEP\" needs to be at least 1 !");
+
+IS_TYPE(MULTIPLE_GUARD_ALLOC_STEP, int)
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 /**
  * @brief Create a copy of the submitted Document_Word_List and initialize them.

@@ -19,6 +19,7 @@ extern "C"
 
 #include <stddef.h>
 #include <inttypes.h>
+#include "Error_Handling/_Generics.h"
 
 
 
@@ -43,10 +44,13 @@ extern "C"
 /**
  * @brief Check, whether the macro values are valid.
  */
-#if __STDC_VERSION__ >= 201112L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(C_STR_ALLOC_STEP_SIZE > 0, "The marco \"C_STR_ALLOC_STEP_SIZE\" is zero !");
 _Static_assert(C_STR_LENGTH_ALLOC_STEP_SIZE > 0, "The marco \"C_STR_LENGTH_ALLOC_STEP_SIZE\" is zero !");
-#endif /* __STDC_VERSION__ */
+
+IS_TYPE(C_STR_ALLOC_STEP_SIZE, int)
+IS_TYPE(C_STR_LENGTH_ALLOC_STEP_SIZE, int)
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 //=====================================================================================================================
 
@@ -79,7 +83,7 @@ struct Two_Dim_C_String_Array
  * @return Address to the new dynamic Two_Dim_C_String_Array
  */
 extern struct Two_Dim_C_String_Array*
-Create_Two_Dim_C_String_Array
+TwoDimCStrArray_CreateObject
 (
         const size_t number_of_c_str
 );
@@ -93,7 +97,7 @@ Create_Two_Dim_C_String_Array
  * @param[in] object Two_Dim_C_String_Array object
  */
 extern void
-Delete_Two_Dim_C_String_Array
+TwoDimCStrArray_DeleteObject
 (
         struct Two_Dim_C_String_Array* object
 );
@@ -113,7 +117,7 @@ Delete_Two_Dim_C_String_Array
  * @param[in] append_data_length Length of the new data
  */
 extern void
-Append_Data_In_Two_Dim_C_String_Array
+TwoDimCStrArray_AppendDataToSpecificString
 (
         struct Two_Dim_C_String_Array* const restrict object,
         const size_t str_index,
@@ -137,7 +141,7 @@ Append_Data_In_Two_Dim_C_String_Array
  * @param[in] append_data_length New data length
  */
 extern void
-Append_Data_To_Current_String_In_Two_Dim_C_String_Array
+TwoDimCStrArray_AppendDataToNewestString
 (
         struct Two_Dim_C_String_Array* const restrict object,
         const char* const restrict append_data,
@@ -157,7 +161,7 @@ Append_Data_To_Current_String_In_Two_Dim_C_String_Array
  * @param[in] new_str_length Length of the new c string
  */
 extern void
-Append_New_String_In_Two_Dim_C_String_Array
+TwoDimCStrArray_AppendNewString
 (
         struct Two_Dim_C_String_Array* const restrict object,
         const char* const restrict new_str,
@@ -173,7 +177,21 @@ Append_New_String_In_Two_Dim_C_String_Array
  * @param[in] object The Two_Dim_C_String_Array
  */
 extern void
-Show_Attributes_From_Two_Dim_C_String_Array
+TwoDimCStrArray_ShowAttributes
+(
+        const struct Two_Dim_C_String_Array* const object
+);
+
+/**
+ * @brief Print all strings in the container.
+ *
+ * Asserts:
+ *      object != NULL
+ *
+ * @param[in] object The Two_Dim_C_String_Array
+ */
+extern void
+TwoDimCStrArray_PrintAllStrings
 (
         const struct Two_Dim_C_String_Array* const object
 );

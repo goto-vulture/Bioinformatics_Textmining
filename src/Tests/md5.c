@@ -4,6 +4,7 @@
  */
 
 #include "md5.h"
+#include <ctype.h>
 
 /*
  * Constants defined by the MD5 algorithm
@@ -54,6 +55,44 @@ static uint8_t PADDING[] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+#define MD5_SUM_LENGTH 16
+
+/**
+ * @brief Compare the MD5 sum of the file with the expected one.
+ *
+ * @param file_name File name
+ * @param expected_md5_sum Expected MD5 sum of the file
+ * @param err_occurred Occurred an error in the function ?
+ * @return true, if the MD5 sum is equal, else false
+ */
+
+/**
+ * @brief Print a MD5 sum in hexadecimal notation.
+ *
+ * @param md5_hash MD5 sum
+ */
+static void Print_Hash
+(
+        const uint8_t* const md5_hash
+);
+
+/**
+ * @brief Convert two char, that represents a byte, to a binary result.
+ *
+ * Got code from here:
+ * @link https://stackoverflow.com/questions/10156409/convert-hex-string-char-to-int
+ *
+ * @param char_1 First char of the byte representation as string
+ * @param char_2 Second char of the byte representation as string
+ * @return Binary result
+ */
+static uint8_t Hex_Char_To_Byte
+(
+        const char char_1,
+        const char char_2
+);
+
 
 /*
  * Initialize a context
@@ -226,3 +265,142 @@ uint8_t* md5File(FILE *file){
 uint32_t rotateLeft(uint32_t x, uint32_t n){
 	return (x << n) | (x >> (32 - n));
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+
+extern _Bool Check_Test_File_MD5_Sum
+(
+        const char* const restrict file_name,
+        const char* const restrict expected_md5_sum,
+        _Bool* const restrict err_occurred
+)
+{
+    FILE* test_file = fopen(file_name, "r");
+    if (test_file == NULL && err_occurred != NULL)
+    {
+        *err_occurred = true;
+        return false;
+    }
+
+    uint8_t* created_md5 = md5File(test_file);
+    if (created_md5 == NULL && err_occurred != NULL)
+    {
+        *err_occurred = true;
+        return false;
+    }
+
+    fclose(test_file);
+    test_file = NULL;
+
+    // Convert expected md5 sum (char array) to uint8_t array
+    uint8_t expected_md5_sum_hex [MD5_SUM_LENGTH];
+    memset (expected_md5_sum_hex, '\0', sizeof(expected_md5_sum_hex));
+    uint8_t current_byte = 0;
+
+    for (int i = 0; i < MD5_SUM_LENGTH * 2; i += 2) // MD5_SUM_LENGTH * 2, because every byte are encoded with 2 char
+    {
+        expected_md5_sum_hex [current_byte] = Hex_Char_To_Byte (expected_md5_sum [i], expected_md5_sum [i + 1]);
+        ++ current_byte;
+    }
+
+    // Compare MD5 sums
+    _Bool result = true;
+    for (int i = 0; i < MD5_SUM_LENGTH; ++ i)
+    {
+        if (expected_md5_sum_hex [i] != created_md5 [i])
+        {
+            result = false;
+            break;
+        }
+    }
+
+    if (! result)
+    {
+        printf("Expected result: ");
+        Print_Hash(expected_md5_sum_hex);
+        printf("\nGot:             ");
+        Print_Hash(created_md5);
+        puts("");
+    }
+    else
+    {
+        printf("Checked MD5 sum of the file \"%s\": ", file_name);
+        Print_Hash(expected_md5_sum_hex);
+        puts("");
+    }
+
+    // ! NO "FREE_AND_SET_TO_NULL" because this memory block was created in the MD5 lib with a simple malloc() call !
+    free (created_md5);
+    created_md5 = NULL;
+    //FREE_AND_SET_TO_NULL(created_md5);
+
+    if (err_occurred != NULL)
+    {
+        *err_occurred = false;
+    }
+    return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Print a MD5 sum in hexadecimal notation.
+ *
+ * @param md5_hash MD5 sum
+ */
+static void Print_Hash
+(
+        const uint8_t* const md5_hash
+)
+{
+    for (unsigned char i = 0; i < MD5_SUM_LENGTH; ++ i)
+    {
+        printf("%02x", md5_hash [i]);
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Convert two char, that represents a byte, to a binary result.
+ *
+ * Got code from here:
+ * @link https://stackoverflow.com/questions/10156409/convert-hex-string-char-to-int
+ *
+ * @param char_1 First char of the byte representation as string
+ * @param char_2 Second char of the byte representation as string
+ * @return Binary result
+ */
+static uint8_t Hex_Char_To_Byte
+(
+        const char char_1,
+        const char char_2
+)
+{
+    uint8_t result = 0;
+
+    const char input_char [2] = { char_1, char_2 };
+
+    for (size_t i = 0; i < (sizeof (input_char) / sizeof (input_char [0])); i ++)
+    {
+        // get current character then increment
+        uint8_t byte = (uint8_t) tolower(input_char [i]);
+        // transform hex character to the 4bit equivalent number, using the ascii table indexes
+        if (byte >= '0' && byte <= '9')
+        {
+            byte = (uint8_t) (byte - '0');
+        }
+        else if (byte >= 'a' && byte <='f')
+        {
+            byte = (uint8_t) (byte - 'a' + 10);
+        }
+        // shift 4 to make space for new digit, and add the 4 bits of the new digit
+        result = (uint8_t) ((result << 4) | (byte & 0xF));
+    }
+
+    return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------

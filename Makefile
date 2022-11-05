@@ -10,7 +10,7 @@ DOXYGEN_PATH = $(shell command -v $(DOXYGEN) 2> /dev/null)
 
 
 # Flags, die sowohl im Debug- als auch im Release-Build, verwendet werden
-CCFLAGS = -std=c11 -pedantic -Wall -Wextra -Wconversion -fmessage-length=0
+CCFLAGS = -pedantic -Wall -Wextra -Wconversion -fmessage-length=0
 
 # Verwendete Libs
 LIBS = -lm
@@ -72,6 +72,9 @@ RELEASE_FLAGS += -fipa-pta
 DEBUG = 0
 RELEASE = 0
 
+# Default C Standard: C11
+CSTD = -std=c11
+
 PROJECT_NAME = Bioinformatics_Textmining
 DOCUMENTATION_PATH = ./Documentation
 NO_DOCUMENTATION = 1
@@ -120,6 +123,26 @@ else
 		endif
 	endif
 endif
+
+ifeq ($(STD), 99)
+	CSTD = -std=c99
+endif
+ifeq ($(std), 99)
+	CSTD = -std=c99
+endif
+ifeq ($(std), c99)
+	CSTD = -std=c99
+endif
+ifeq ($(STD), c99)
+	CSTD = -std=c99
+endif
+ifeq ($(std), C99)
+	CSTD = -std=c99
+endif
+ifeq ($(STD), C99)
+	CSTD = -std=c99
+endif
+CCFLAGS += $(CSTD)
 
 # Soll die Dokumentation mittels Doxygen erzeugt werden ? Die Erzeugung der Dokumentation benoetigt mit Abstand die meiste
 # Zeit bei der Erstellung des Programms
@@ -233,6 +256,12 @@ TEST_FILE_READER_C = ./src/Tests/TEST_File_Reader.c
 
 EXEC_CONFIG_H = ./src/Exec_Config.h
 EXEC_CONFIG_C = ./src/Exec_Config.c
+
+TEST_EXEC_INTERSECTION_H = ./src/Tests/TEST_Exec_Intersection.h
+TEST_EXEC_INTERSECTION_C = ./src/Tests/TEST_Exec_Intersection.c
+
+TEST_ETC_H = ./src/Tests/TEST_Etc.h
+TEST_ETC_C = ./src/Tests/TEST_Etc.c
 ##### ##### ##### ENDE Uebersetzungseinheiten ##### ##### #####
 
 
@@ -255,11 +284,11 @@ endif
 	@echo
 	@echo Bioinformatics_Textmining build completed !
 
-$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o  Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o Exec_Config.o
+$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o  Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o Exec_Config.o TEST_Exec_Intersection.o TEST_Etc.o
 	@echo
 	@echo Linking object files ...
 	@echo
-	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o Exec_Config.o $(LIBS)
+	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o Exec_Config.o TEST_Exec_Intersection.o TEST_Etc.o $(LIBS)
 
 ##### BEGINN Die einzelnen Uebersetzungseinheiten #####
 main.o: $(MAIN_C)
@@ -356,6 +385,12 @@ TEST_File_Reader.o: $(TEST_FILE_READER_C)
 
 Exec_Config.o: $(EXEC_CONFIG_C)
 	$(CC) $(CCFLAGS) -c $(EXEC_CONFIG_C)
+
+TEST_Exec_Intersection.o: $(TEST_EXEC_INTERSECTION_C)
+	$(CC) $(CCFLAGS) -c $(TEST_EXEC_INTERSECTION_C)
+
+TEST_Etc.o: $(TEST_ETC_C)
+	$(CC) $(CCFLAGS) -c $(TEST_ETC_C)
 ##### ENDE Die einzelnen Uebersetzungseinheiten #####
 
 # Alles wieder aufraeumen

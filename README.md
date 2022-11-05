@@ -1,8 +1,6 @@
 # Bioinformatics Textmining
 
-## EN (See german translation below)
-
-### Introduction
+## Introduction
 
 In our current time, more information will be collected than ever before. This trend extends to almost every area in our life. In the private area and also in the professional environment. Especially in science, an above average increase can be observed.
 
@@ -12,91 +10,89 @@ For example, when looking at Wikipedia articles that contains meaning-related to
 
 With small amounts of data, this sounds easy and trivial. But with larger amounts of data, a search of this type through the data is only possible with the help of computers.
 
----
 
-### General idea
+
+## General idea
 
 For a efficient search process, all words will be encoded in integers. With this encoded data, simple integer comparisons are possible in shortest time.
 
 With the help of some elementary set operations (the main important one: intersection), the set of words will be created, that appear in every source set.
 
----
 
-### Structure of the evaluation
+
+## Structure of the evaluation
 <img src="https://github.com/goto-vulture/Bioinformatics_Textmining/blob/Misc/Written_elaboration/Structure_of_the_evaluation_process_EN.png" width="50%" height="50%">
 
----
 
-### Technical information
+
+## Usage
+
+### Building
+
+make is the provided tool to build the program. To build the program with the default settings a simple `make` call is enough, because the program (and the used libraries) uses only the C standard lib. The compiler needs at least a C99 support; with a C11 support some C11 specific enhancements like `_Generic` and `_Static_assert` can be used.
+
+There are two switches for the building process:
+- `DEBUG`: Building the program with debug information in the binary file (default)
+- `RELEASE`: Building with compiler optimization.
+
+Another argument for the makefile is the C standard:
+- `STD` or `std`: STD=99 for C99 respectively STD=11 for C11 (C11 is the default setting)
+
+Some build examples:
+- `make Debug=1 C=99`: Build the project with debug settings and the C99 standard.
+- `make Release=1`: Build the project with release settings and the C11 standard.
+
+`make clean` removes all compilation files - including the object files.
+
+### Interface
+
+The CLI accepts the following main inputs, that are required:
+- `-i`, `--input=<str>`: First input file
+- `-j`, `--input2=<str>`: Second input file
+- `-o`, `--output=<str>`: Output file
+
+Optional arguments:
+- `-f`, `--format`: Format the output for better readability in a normal editor?
+- `-s`, `--sentence_offset`: Calculate sentence offsets? (In normal cases this is not necessary)
+- `-w`, `--word_offset`: Calculate word offsets?
+- `--show_too_long_tokens`: Show too long tokens in the export file
+- `--no_part_matches`: No part matches will appear in the export file
+- `--no_full_matches`: No full matches will appear in the export file
+- `-h`, `--help`: Show a help message and exit
+
+Debugging arguments:
+- `-A`, `--abort=<float>`: Abort the calculation after X percent
+- `-T`, `--run_all_test_functions`: Runing all test functions. This argument overrides all other arguments, except -h. (Only useful for debugging)
+
+
+
+## Technical information
 
 To make the implementation simple, the in and output will be created in a simple way. The name of the input files will be passed trough CLI parameter and the results will be represented as JSON file.
 
-#### Used libraries
+### Used libraries
 
 - *argparse*: Simple and powerful CLI parser. Here available on [GitHub](https://github.com/cofyc/argparse).
 - *cJSON*: Lightweight (and beautiful) JSON parser. Also available on [GitHub](https://github.com/DaveGamble/cJSON).
 - *TinyTest*: Simple and tiny test suite. You can find it here on [GitHub](https://github.com/joewalnes/tinytest).
 
----
 
-### Future features
 
-- Sentence offsets (The current implementation allows only a char offset)
-- Smaller result file with following ideas:
-    - Remove tabs
-    - Use abbreviations for array names in the JSON file (e.g.: "Intersections" -> "Inters.")
-    - Case insensitive comparison of the tokens
+## Future features
+
+- Determine the end of sentences (Using POS tags from the source files; list of common abbreviations; 3rd party sentence tokenizer)
+- Calculate the error rate of the sentence end determining
+- "Smart" Case insensitive comparison of the tokens:
+    - Abbreviations should be compared case-sensitive
+    - They need to be appear in their original representation in the result file
+    - In all other cases a case insensitive comparison
+- Word offsets (the current implementation provides char and sentence offsets)
+- Change focus of the offsets to the origial file (in the current implementation the offset is focused on preprocessed data (stop word removed etc.))
+    - "Where are the objects in the source data?"
 - A more user-friendly interface. Maybe with a GUI. But the priority in this project is low.
 
----
-<br>
 
-## DE
 
-### Einleitung
+## Help
 
-In unserer heutigen Zeit werden mehr Informationen gesammelt als jemals zuvor. Dieser Trend erstreckt sich in nahezu jedem Bereich. Sowohl im privaten als auch im beruflichen Umfeld. Besonders im Bereich der Forschung ist eine überdurchschnittliche stetige Zunahme an Daten zu erkennen.
-
-Um diesen Mengen an Daten mehr Informationen zu entlocken, werden diese im Zusammenhang mit anderen Daten gebracht, die in einer vergleichbaren Situation entstanden sind bzw. die sich auf ein vergleichbares Thema beziehen. Man kann sich das mithilfe eines einfachen Beispiels vor Augen führen wie dies aussehen kann:
-
-Z.B. bei der Betrachtung von Wikipedia-Artikeln, die sich mit sinnverwandten Themen beschäftigen. Ohne auf den Inhalt direkt eingehen zu müssen, kann bereits neues Wissen gewonnen werden, wenn betrachtet wird, welche Wörter in allen Artikeln vorkommen. Dadurch können Themen identifiziert werden, die in jedem einzelnen Artikel eine Rolle spielen.
-
-Bei kleinen Datenmengen klingt dies trivial. Bei größeren Mengen an Daten ist eine Durchsuchung dieser Art nur mittels Computern möglich.
-
----
-
-### Grundidee
-
-Um eine möglichst effiziente Durchsuchung der Daten vornehmen zu können, werden die verwendeten Begriffe als einfache Ganzzahlen codiert dargestellt. Dadurch sind Vergleichsoperationen in kürzester Zeit möglich.
-
-Nach der Codierung wird mittels einiger elementarer Mengenoperationen (vornehmlich durch die Bildung der Schnittmenge) die Wortmengen gebildet, die in allen Datensätzen auftauchen.
-
----
-
-### Struktur des Auswertungsprozesses
-<img src="https://github.com/goto-vulture/Bioinformatics_Textmining/blob/Misc/Written_elaboration/Structure_of_the_evaluation_process_DE.png" width="50%" height="50%">
-
----
-
-### Technische Details
-
-Um die Implementierung auf das wesentliche zu fokussieren, werden die Ein- und Ausgabemöglichkeiten des Programms einfach ausfallen. So werden die Dateien mittels CLI-Parameter eingelesen; und die Ergebnisse werden in Form einer JSON-Datei dargestellt.
-
-#### Verwendete Bibliotheken
-
-- *argparse*: Einfacher CLI Parser. Verfügbar auf [GitHub](https://github.com/cofyc/argparse).
-- *cJSON*: Wunderschöner und effizienter JSON Parser. Ebenfalls verfügbar auf [GitHub](https://github.com/DaveGamble/cJSON).
-- *TinyTest*: Minimalistische Testsuite. Hier verfügbar: [GitHub](https://github.com/joewalnes/tinytest).
-
----
-
-### Weitere Funktionen
-
-- Satz Offsets (Die aktuelle Implementierung unterstuetzt nur zeichen-basierte Offsets)
-- Kleinere Ergebnisdatei durch folgende Ansaetze:
-    - Tabs entfernen
-    - Abkuerzungen der Array Namen in der JSON Datei verwenden (e.g.: "Intersections" -> "Inters.")
-    - Gross- und Kleinschreibung beim Vergleich der Tokens ignorieren
-- Ein benutzerfreundlichere Bedienung; möglicherweise über eine GUI. Die Priorität ist allerdings gering, da diese auf der Funktionalität liegt.
-
----
+If you have any questions or suggestions: Get in contact with me: goto-vulture@gmx.de

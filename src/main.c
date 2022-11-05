@@ -133,6 +133,15 @@
     #error "The macro \"N_A\" is already defined !"
 #endif /* N_A */
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+#include "Error_Handling/_Generics.h"
+
+_Static_assert(sizeof(N_A) > 0 + 1, "The macro \"N_A\" needs at least one char (plus '\0') !");
+IS_CONST_STR(N_A)
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
+
+
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
@@ -156,6 +165,8 @@
 #include "Tests/tinytest.h"
 #include "Tests/TEST_cJSON_Parser.h"
 #include "Tests/TEST_File_Reader.h"
+#include "Tests/TEST_Exec_Intersection.h"
+#include "Tests/TEST_Etc.h"
 
 
 
@@ -190,9 +201,6 @@ At_Exit_Function
  */
 int main (const int argc, const char* argv [])
 {
-    const char* test = 0;
-    IS_PTR(test)
-
     // Init pseudo random number generator
     const time_t curr_time = time (NULL);
     ASSERT_MSG(curr_time != (time_t) (-1), "time () return value is (time_t) (-1) !");
@@ -231,6 +239,12 @@ int main (const int argc, const char* argv [])
             OPT_STRING('i', "input", &GLOBAL_CLI_INPUT_FILE, "First input file", NULL, 0, 0),
             OPT_STRING('j', "input2", &GLOBAL_CLI_INPUT_FILE2, "Second input file", NULL, 0, 0),
             OPT_STRING('o', "output", &GLOBAL_CLI_OUTPUT_FILE, "Output file", NULL, 0, 0),
+            OPT_BOOLEAN('f', "format", &GLOBAL_CLI_FORMAT_OUTPUT, "Format the output for better readability in a normal editor ?", NULL, 0, 0),
+            OPT_BOOLEAN('s', "sentence_offset", &GLOBAL_CLI_SENTENCE_OFFSET, "Calculate sentence offsets ?", NULL, 0, 0),
+            OPT_BOOLEAN('w', "word_offset", &GLOBAL_CLI_WORD_OFFSET, "Calculate word offsets ?", NULL, 0, 0),
+            OPT_BOOLEAN('\0', "show_too_long_tokens", &GLOBAL_CLI_SHOW_TOO_LONG_TOKENS, "Show too long tokens in the result file", NULL, 0, 0),
+            OPT_BOOLEAN('\0', "no_part_matches", &GLOBAL_CLI_NO_PART_MATCHES, "Don't show partitial matches in the output file", NULL, 0, 0),
+            OPT_BOOLEAN('\0', "no_full_matches", &GLOBAL_CLI_NO_FULL_MATCHES, "Don't show full matches in the output file", NULL, 0, 0),
 
             OPT_GROUP("Debug / test functions"),
             OPT_BOOLEAN('T', "run_all_test_functions", &GLOBAL_RUN_ALL_TEST_FUNCTIONS,
@@ -295,7 +309,7 @@ int main (const int argc, const char* argv [])
     puts("");
 
     // Execute the intersection process
-    Exec_Intersection((! isnan(GLOBAL_ABORT_PROCESS_PERCENT)) ? GLOBAL_ABORT_PROCESS_PERCENT : NAN);
+    Exec_Intersection((! isnan(GLOBAL_ABORT_PROCESS_PERCENT)) ? GLOBAL_ABORT_PROCESS_PERCENT : NAN, NULL, NULL);
 
     return EXIT_SUCCESS;
 }
@@ -319,6 +333,13 @@ Run_All_Test_Functions
     RUN(TEST_Max_Dataset_ID_Length);
     RUN(TEST_Max_Tokenarray_Length);
     RUN(TEST_Length_Of_The_First_25_Tokenarrays);
+
+    RUN(TEST_Number_Of_Tokens_Found);
+    RUN(TEST_Number_Of_Sets_Found);
+    RUN(TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files);
+    RUN(TEST_Number_Of_Sets_Equal_With_Switched_Input_Files);
+
+    RUN(TEST_Number_Of_Free_Calls);
 
     return;
 }

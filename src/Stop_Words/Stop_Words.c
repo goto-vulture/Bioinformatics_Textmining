@@ -9,9 +9,10 @@
 #include <string.h>
 #include <ctype.h>
 #include "../Error_Handling/Assert_Msg.h"
+#include "../Error_Handling/Dynamic_Memory.h"
+#include "../Error_Handling/_Generics.h"
 #include "../String_Tools.h"
 #include "../str2int.h"
-#include "../Error_Handling/Dynamic_Memory.h"
 #include "../Misc.h"
 
 
@@ -40,11 +41,15 @@
 /**
  * @brief Check, whether the macro values are valid.
  */
-#if __STDC_VERSION__ >= 201112L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(HASH_TABLE_NUMBER_OF_ARRAYS > 1, "The marco \"HASH_TABLE_NUMBER_OF_ARRAYS\" needs to be larger than 1 !");
 _Static_assert(HASH_TABLE_ARRAY_LENGTH > 1, "The marco \"HASH_TABLE_ARRAY_LENGTH\" needs to be larger than 1 !");
 _Static_assert(STOP_WORD_LIST_LENGTH > 1, "The marco \"STOP_WORD_LIST_LENGTH\" needs to be larger than 1 !");
-#endif /* __STDC_VERSION__ */
+
+IS_TYPE(HASH_TABLE_NUMBER_OF_ARRAYS, int)
+IS_TYPE(HASH_TABLE_ARRAY_LENGTH, int)
+IS_TYPE(STOP_WORD_LIST_LENGTH, int)
+#endif /* #defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 
 

@@ -21,9 +21,11 @@
 #include "Defines.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Error_Handling/Assert_Msg.h"
+#include "Error_Handling/_Generics.h"
 #include "Print_Tools.h"
 #include "Stop_Words/Stop_Words.h"
 #include "JSON_Parser/cJSON.h"
+#include "Exec_Config.h"
 
 
 
@@ -112,7 +114,36 @@
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(CJSON_PRINT_BUFFER_SIZE > 0, "The macro \"CJSON_PRINT_BUFFER_SIZE\" needs to be at least 1 !");
 _Static_assert(RESULT_FILE_BUFFER_SIZE > 0, "The macro \"RESULT_FILE_BUFFER_SIZE\" needs to be at least 1 !");
+
+IS_TYPE(CJSON_PRINT_BUFFER_SIZE, int)
+IS_TYPE(RESULT_FILE_BUFFER_SIZE, int)
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
+
+// Here are some #defines for abbreviations
+// If a abbreviation not wanted, simply alter the #define
+#ifndef OFFSET
+#define OFFSET "offs."
+//#define OFFSET "offset"
+#else
+#error "The macro \"OFFSET\" is already defined !"
+#endif /* OFFSET */
+
+#ifndef INTERSECTIONS
+#define INTERSECTIONS "Inters."
+//#define INTERSECTIONS "Intersections"
+#else
+#error "The macro \"INTERSECTIONS\" is already defined !"
+#endif /* INTERSECTIONS */
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+_Static_assert(sizeof(OFFSET) > 0 + 1, "The macro \"OFFSET\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(INTERSECTIONS) > 0 + 1, "The macro \"INTERSECTIONS\" needs at least one char (plus '\0') !");
+
+IS_CONST_STR(OFFSET)
+IS_CONST_STR(INTERSECTIONS)
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
 
 
 /**
@@ -133,11 +164,55 @@ _Static_assert(RESULT_FILE_BUFFER_SIZE > 0, "The macro \"RESULT_FILE_BUFFER_SIZE
  *      export_results != NULL
  *
  * @param export_results The main cJSON pointer for the export JSON file
+ * @param export_settings Settings for the export (Which information will be occur in the general information ?)
+ *
  */
 static void
 Add_General_Information_To_Export_File
 (
-        cJSON* const export_results
+        cJSON* const export_results,
+        const unsigned int export_settings
+);
+
+/**
+ * @brief Add too long tokens from the two input file to a JSON block. (One array for each file)
+ *
+ * Asserts:
+ *      export_results != NULL
+ *      token_container_input_1 != NULL
+ *      token_container_input_2 != NULL
+ *
+ * @param export_results Preallocated cJSON object as result for the operation
+ * @param token_container_input_1 Token_List_Container of the first file
+ * @param token_container_input_2 Token_List_Container of the first file
+ */
+static void
+Add_Too_Long_Tokens_To_Export_File
+(
+        cJSON* const export_results,
+        const struct Token_List_Container* const restrict token_container_input_1,
+        const struct Token_List_Container* const restrict token_container_input_2
+);
+
+/**
+ * @brief Convert a cJSON object to a c string and append it to a already opened file.
+ *
+ * Asserts:
+ *      result_file != NULL,
+ *      cJSON_obj != NULL
+ *
+ * @param result_file Already opened result file
+ * @param cJSON_obj cJSON object
+ * @param export_settings Global export settings (This is necessary to determine, if a formatted output is expected)
+ *
+ * @return The number of written bytes
+ */
+static size_t
+Append_cJSON_Object_To_Result_File
+(
+        FILE* restrict result_file,
+        const cJSON* const restrict cJSON_obj,
+        const unsigned int export_settings
 );
 
 /**
@@ -292,16 +367,78 @@ cJSON_Determine_Full_Memory_Usage
  * Asserts:
  *      N/A
  *
+    "General infos":    {
+        "Creation mode":    {
+            "Part match":   true,
+            "Full match":   true,
+            "Stop word list used":  true,
+            "Char offset":  true,
+            "Sentence offset":  true
+        },
+        "First file":   "/bph/home/domhab/Downloads/Testdaten/test_ebm.json",
+        "Second file":  "/bph/home/domhab/Downloads/Testdaten/xaa",
+        "Creation time":    "Thu Oct 20 13:53:18 2022"
+    },
+    "name_syn_0_0_0":   {
+        "tokens":   ["Re-combinant", "human", "choriogonadotropin"],
+        "tokens w/o stop words":    ["Re-combinant", "human", "choriogonadotropin"],
+        "Inters. (partial)":    {
+            "16427787": {
+                "tokens":   ["human"],
+                "char offs.":   [41],
+                "sentence offs.":   [0]
+            },
+            "9573502":  {
+                "tokens":   ["human"],
+                "char offs.":   [74],
+                "sentence offs.":   [0]
+            },
+            "21393467": {
+                "tokens":   ["human"],
+                "char offs.":   [82],
+                "sentence offs.":   [0]
+            }
+        },
+        "Inters. (full)":   {
+        }
+    },
+    "name_syn_1_1_1":   {
+ *
  * @param[in] abort_progress_percent After this progress percent value the process will be stopped
+ * @param[out] number_of_intersection_tokens If pointer given, it "returns" the number of tokens, that were found in the
+ *      whole intersection calculations
+ * @param[out] number_of_intersection_sets If pointer given, it "returns" the number of sets, that were found in the
+ *      whole intersection calculations
  *
  * @return Status value (0: Success; != 0 Error)
  */
 extern int
 Exec_Intersection
 (
-        const float abort_progress_percent
+        const float abort_progress_percent,
+        uint_fast64_t* const restrict number_of_intersection_tokens,
+        uint_fast64_t* const restrict number_of_intersection_sets
 )
 {
+    unsigned int intersection_settings = Exec_Config_Default_Settings();
+    // A missing output formatting reduces the output file size
+    if (! GLOBAL_CLI_FORMAT_OUTPUT)
+    {
+        intersection_settings |= SHORTEN_OUTPUT;
+    }
+    if (GLOBAL_CLI_SENTENCE_OFFSET)
+    {
+        intersection_settings |= SENTENCE_OFFSET;
+    }
+    if (GLOBAL_CLI_NO_PART_MATCHES)
+    {
+        if (intersection_settings & PART_MATCH) { intersection_settings ^= PART_MATCH; }
+    }
+    if (GLOBAL_CLI_NO_FULL_MATCHES)
+    {
+        if (intersection_settings & FULL_MATCH) { intersection_settings ^= FULL_MATCH; }
+    }
+
     int result = 0;
 
     // >>> Read files and extract the tokens <<<
@@ -395,35 +532,33 @@ Exec_Intersection
                                                     // source set)
     cJSON* outer_object                     = NULL; // Outer object, that contains the intersections and token arrays
     cJSON* export_results                   = NULL;
-    cJSON* general_information              = cJSON_CreateObject();
-    cJSON_NOT_NULL(general_information);
 
-    Add_General_Information_To_Export_File(general_information);
+
 
     size_t result_file_size = 0;
     int file_operation_ret_value = 0;
 
-    // Insert the general information to the result file
-    char* general_information_as_str = cJSON_PrintBuffered(general_information, CJSON_PRINT_BUFFER_SIZE, true);
-    ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
-    const size_t general_information_as_str_len = strlen (general_information_as_str);
-    // Remove the last two char from the string representation ('\n' and '}')
-    general_information_as_str [general_information_as_str_len - 1] = '\0';
-    general_information_as_str [general_information_as_str_len - 2] = '\0';
-
-    file_operation_ret_value = fputs(general_information_as_str, result_file);
-    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
-            strerror(errno));
-    result_file_size = result_file_size + (general_information_as_str_len - 2);
-
-    file_operation_ret_value = fputc(',', result_file);
+    // Start export file
+    file_operation_ret_value = fputc ('{', result_file);
     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
             strerror(errno));
     ++ result_file_size;
 
+    // Create general information and write them to the result file
+    cJSON* general_information = cJSON_CreateObject();
+    cJSON_NOT_NULL(general_information);
+    Add_General_Information_To_Export_File(general_information, intersection_settings);
+    result_file_size += Append_cJSON_Object_To_Result_File(result_file, general_information, intersection_settings);
     cJSON_FULL_FREE_AND_SET_TO_NULL(general_information);
-    free(general_information_as_str);
-    general_information_as_str = NULL;
+
+    // Create a list with too long token and append them to the result file
+    cJSON* too_long_tokens = cJSON_CreateObject();
+    cJSON_NOT_NULL(too_long_tokens);
+    Add_Too_Long_Tokens_To_Export_File(too_long_tokens, token_container_input_1, token_container_input_2);
+    result_file_size += Append_cJSON_Object_To_Result_File(result_file, too_long_tokens, intersection_settings);
+    cJSON_FULL_FREE_AND_SET_TO_NULL(too_long_tokens);
+
+
 
     uint_fast64_t intersection_tokens_found_counter    = 0;
     uint_fast64_t intersection_sets_found_counter      = 0;
@@ -442,8 +577,8 @@ Exec_Intersection
     {
         cJSON_NEW_OBJ_CHECK(export_results);
 
-        cJSON_NEW_OBJ_CHECK(intersections_partial_match);
-        cJSON_NEW_OBJ_CHECK(intersections_full_match);
+        if (intersection_settings & PART_MATCH) { cJSON_NEW_OBJ_CHECK(intersections_partial_match); }
+        if (intersection_settings & FULL_MATCH) { cJSON_NEW_OBJ_CHECK(intersections_full_match); }
         cJSON_NEW_OBJ_CHECK(outer_object);
         _Bool data_found = false;
 
@@ -484,15 +619,6 @@ Exec_Intersection
 //                    token_container_input_2->token_lists [selected_data_2_array].dataset_id
             );
 
-            // Copy the two dataset IDs and use them for the export JSON file
-            // memset(dataset_id_1, '\0', sizeof (dataset_id_1));
-            // strncpy do the memset for the c string
-//            strncpy (dataset_id_1, intersection_result->dataset_id_1, COUNT_ARRAY_ELEMENTS(dataset_id_1) - 1);
-//            dataset_id_1 [COUNT_ARRAY_ELEMENTS(dataset_id_1) - 1] = '\0';
-            // memset(dataset_id_2, '\0', sizeof (dataset_id_2));
-            // strncpy do the memset for the c string
-//            strncpy (dataset_id_2, intersection_result->dataset_id_2, COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1);
-//            dataset_id_2 [COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1] = '\0';
 
             // Remove stop words from the result
             size_t tokens_left = intersection_result->arrays_lengths [0];
@@ -545,7 +671,7 @@ Exec_Intersection
                 }
 
                 cJSON_NEW_ARR_CHECK(char_offset_array);
-                cJSON_NEW_ARR_CHECK(sentence_offset_array);
+                if (intersection_settings & SENTENCE_OFFSET) { cJSON_NEW_ARR_CHECK(sentence_offset_array); }
                 cJSON_NEW_ARR_CHECK(tokens_array);
 
                 //fputs("Found tokens_array in:\n", result_file);
@@ -561,14 +687,18 @@ Exec_Intersection
                     const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
                             intersection_result->data_struct.data [0][i]);
 
+                    cJSON* sentence_offset = NULL;
                     cJSON* char_offset = cJSON_CreateNumber(intersection_result->data_struct.char_offsets [0][i]);
                     ASSERT_MSG(char_offset != NULL, "char offset is NULL !");
-                    cJSON* sentence_offset = cJSON_CreateNumber(intersection_result->data_struct.sentence_offsets [0][i]);
-                    ASSERT_MSG(sentence_offset != NULL, "sentence offset is NULL !");
+                    if (intersection_settings & SENTENCE_OFFSET)
+                    {
+                        sentence_offset = cJSON_CreateNumber(intersection_result->data_struct.sentence_offsets [0][i]);
+                        ASSERT_MSG(sentence_offset != NULL, "sentence offset is NULL !");
+                    }
 
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(char_offset_array, char_offset);
-                    cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset);
+                    if (intersection_settings & SENTENCE_OFFSET) { cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset); }
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(tokens_array, token);
 
                     ++ intersection_tokens_found_counter;
@@ -579,21 +709,27 @@ Exec_Intersection
                 cJSON* two_array_container = NULL;
                 cJSON_NEW_OBJ_CHECK(two_array_container);
                 cJSON_AddItemToObject(two_array_container, "tokens", tokens_array);
-                cJSON_AddItemToObject(two_array_container, "char offsets", char_offset_array);
-                cJSON_AddItemToObject(two_array_container, "sentence offsets", sentence_offset_array);
+                cJSON_AddItemToObject(two_array_container, "char " OFFSET, char_offset_array);
+                cJSON_AddItemToObject(two_array_container, "sentence " OFFSET, sentence_offset_array);
                 // Add data to the specific cJSON object
                 // For the comparison it is important to use "src_tokens_array_wo_stop_words" instead of
                 // "src_tokens_array"; Because a full match means a equalness with the list, that contains NO stop
                 // words !
                 if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
                 {
-                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match,
-                            token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
+                    if (intersection_settings & FULL_MATCH)
+                    {
+                        cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match,
+                                token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
+                    }
                 }
                 else
                 {
-                    cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match,
-                            token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
+                    if (intersection_settings & PART_MATCH)
+                    {
+                        cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match,
+                                token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
+                    }
                 }
             }
 
@@ -612,8 +748,10 @@ Exec_Intersection
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
         {
-            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "Intersections (partial)", intersections_partial_match);
-            cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, "Intersections (full)", intersections_full_match);
+            if (intersection_settings & PART_MATCH)
+            { cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, INTERSECTIONS " (partial)", intersections_partial_match); }
+            if (intersection_settings & FULL_MATCH)
+            { cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, INTERSECTIONS " (full)", intersections_full_match); }
             cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, dataset_id_2, outer_object);
 
             // In theory it is possible to create the string of our cJSON structure at the end of all calculations
@@ -622,7 +760,9 @@ Exec_Intersection
             // Second problem: The string, that will be created from cJSON_PrintBuffered, is in some cases too large for
             // a single call at the end.
             // So the only possibility: Intermediate calls
-            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE, true);
+            char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE,
+                    !(intersection_settings & SHORTEN_OUTPUT)); // No shorten output => Use formatting
+
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
             const size_t json_export_str_len = strlen (json_export_str);
 
@@ -641,11 +781,28 @@ Exec_Intersection
                     GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
             result_file_size = result_file_size + (json_export_str_len - 3);
 
-            file_operation_ret_value = fputc(',', result_file);
-            ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
-                    GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
-            ++ result_file_size;
+            if (!(intersection_settings & SHORTEN_OUTPUT))
+            {
+                if ((selected_data_2_array + 1) < source_int_values_2->next_free_array)
+                {
+                    file_operation_ret_value = fputc(',', result_file);
+                    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
+                            GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
+                    ++ result_file_size;
+                }
+            }
+            else
+            {
+                const char* output_str = ((selected_data_2_array + 1) < source_int_values_2->next_free_array) ? "},\n" : "}\n";
 
+                file_operation_ret_value = fputs(output_str, result_file);
+                ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
+                        GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
+                result_file_size += strlen(output_str);
+            }
+
+            // Don't use the macro "FREE_AND_SET_TO_NULL" because it increases the free counter. But this memory was
+            // allocated from the JSON lib !
             free(orig_ptr);
             orig_ptr = NULL;
             json_export_str = NULL;
@@ -690,6 +847,15 @@ abort_label:
     printf ("=> Result file size: ");
     Print_Memory_Size_As_B_KB_MB(result_file_size);
 
+    if (number_of_intersection_tokens != NULL)
+    {
+        *number_of_intersection_tokens = intersection_tokens_found_counter;
+    }
+    if (number_of_intersection_sets != NULL)
+    {
+        *number_of_intersection_sets = intersection_sets_found_counter;
+    }
+
     DocumentWordList_DeleteObject(source_int_values_1);
     source_int_values_1 = NULL;
     DocumentWordList_DeleteObject(source_int_values_2);
@@ -724,11 +890,13 @@ abort_label:
  *      export_results != NULL
  *
  * @param export_results The main cJSON pointer for the export JSON file
+ * @param export_settings Settings for the export (Which information will be occur in the general information ?)
  */
 static void
 Add_General_Information_To_Export_File
 (
-        cJSON* const export_results
+        cJSON* const export_results,
+        const unsigned int export_settings
 )
 {
     ASSERT_MSG(export_results != NULL, "Main cJSON result pointer is NULL !");
@@ -759,18 +927,19 @@ Add_General_Information_To_Export_File
     // Creation mode (Part match ? Full match ? Part and full match ?)
     cJSON* creation_mode = cJSON_CreateObject();
     cJSON_NOT_NULL(creation_mode);
-    cJSON* part_match = cJSON_CreateBool(true);
+    cJSON* part_match = cJSON_CreateBool(export_settings & PART_MATCH);
     cJSON_NOT_NULL(part_match);
-    cJSON* full_match = cJSON_CreateBool(true);
+    cJSON* full_match = cJSON_CreateBool(export_settings & FULL_MATCH);
     cJSON_NOT_NULL(full_match);
-    cJSON* stop_word_list = cJSON_CreateBool(true);
+    cJSON* stop_word_list = cJSON_CreateBool(export_settings & STOP_WORD_LIST);
     cJSON_NOT_NULL(stop_word_list);
 
     // Up to now there will be no switch or similar structure to alter this export behavior
-    cJSON* char_offset = cJSON_CreateBool(true);
+    cJSON* char_offset = cJSON_CreateBool(export_settings & CHAR_OFFSET);
     cJSON_NOT_NULL(char_offset);
-    cJSON* sentence_offset = cJSON_CreateBool(true);
+    cJSON* sentence_offset = cJSON_CreateBool(export_settings & SENTENCE_OFFSET);
     cJSON_NOT_NULL(sentence_offset);
+
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Full match", full_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Stop word list used", stop_word_list);
@@ -778,16 +947,150 @@ Add_General_Information_To_Export_File
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Sentence offset", sentence_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation mode", creation_mode);
 
-    cJSON* creation_time = cJSON_CreateString("123");
+    cJSON* creation_time = cJSON_CreateString(time_string);
     cJSON_NOT_NULL(creation_time);
 
-    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "First file", first_file);
-    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Second file", second_file);
-    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Program version", program_version);
-    cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation time", creation_time);
+    if (!(export_settings & NO_FILENAMES))
+    {
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "First file", first_file);
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Second file", second_file);
+    }
+    if (!(export_settings & NO_PROGRAM_VERSION))
+    {
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Program version", program_version);
+    }
+    if (!(export_settings & NO_CREATION_TIME))
+    {
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation time", creation_time);
+    }
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "General infos", general_infos);
 
     return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Add too long tokens from the two input file to a JSON block. (One array for each file)
+ *
+ * Asserts:
+ *      export_results != NULL
+ *      token_container_input_1 != NULL
+ *      token_container_input_2 != NULL
+ *
+ * @param export_results Preallocated cJSON object as result for the operation
+ * @param token_container_input_1 Token_List_Container of the first file
+ * @param token_container_input_2 Token_List_Container of the first file
+ */
+static void
+Add_Too_Long_Tokens_To_Export_File
+(
+        cJSON* const export_results,
+        const struct Token_List_Container* const restrict token_container_input_1,
+        const struct Token_List_Container* const restrict token_container_input_2
+)
+{
+    ASSERT_MSG(export_results != NULL, "cJSON result pointer is NULL !");
+    ASSERT_MSG(token_container_input_1 != NULL, "First Token_List_Container is NULL !");
+    ASSERT_MSG(token_container_input_2 != NULL, "Second Token_List_Container is NULL !");
+
+    cJSON* too_long_token_list = cJSON_CreateObject();
+    cJSON_NOT_NULL(too_long_token_list);
+    cJSON* list_first_file = cJSON_CreateArray();
+    cJSON_NOT_NULL(list_first_file);
+    cJSON* list_second_file = cJSON_CreateArray();
+    cJSON_NOT_NULL(list_second_file);
+
+    // Too long tokens from the first Token_Container_List
+    for (size_t i = 0; i < token_container_input_1->list_of_too_long_token->next_free_c_str; ++ i)
+    {
+        cJSON* cjson_str = cJSON_CreateString(token_container_input_1->list_of_too_long_token->data [i]);
+        cJSON_NOT_NULL(cjson_str);
+        cJSON_ADD_ITEM_TO_ARRAY_CHECK(list_first_file, cjson_str);
+    }
+
+    // Too long tokens from the second Token_Container_List
+    for (size_t i = 0; i < token_container_input_2->list_of_too_long_token->next_free_c_str; ++ i)
+    {
+        cJSON* cjson_str = cJSON_CreateString(token_container_input_2->list_of_too_long_token->data [i]);
+        cJSON_NOT_NULL(cjson_str);
+        cJSON_ADD_ITEM_TO_ARRAY_CHECK(list_first_file, cjson_str);
+    }
+
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(too_long_token_list, "In first file:", list_first_file);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(too_long_token_list, "In second file:", list_second_file);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "Too long tokens", too_long_token_list);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Convert a cJSON object to a c string and append it to a already opened file.
+ *
+ * Asserts:
+ *      result_file != NULL,
+ *      cJSON_obj != NULL
+ *
+ * @param result_file Already opened result file
+ * @param cJSON_obj cJSON object
+ * @param export_settings Global export settings (This is necessary to determine, if a formatted output is expected)
+ *
+ * @return The number of written bytes
+ */
+static size_t
+Append_cJSON_Object_To_Result_File
+(
+        FILE* restrict result_file,
+        const cJSON* const restrict cJSON_obj,
+        const unsigned int export_settings
+)
+{
+    ASSERT_MSG(result_file != NULL, "The result file is NULL !");
+    ASSERT_MSG(cJSON_obj != NULL, "cJSON object is NULL !");
+
+    size_t written_bytes = 0;
+    int file_operation_ret_value = 0;
+
+    // Insert the general information to the result file
+    char* general_information_as_str = cJSON_PrintBuffered(cJSON_obj, CJSON_PRINT_BUFFER_SIZE,
+            !(export_settings & SHORTEN_OUTPUT)); // No shorten output => Using formatting
+
+    ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
+    const size_t general_information_as_str_len = strlen (general_information_as_str);
+    // Remove the last two char from the string representation ('\n' and '}')
+    general_information_as_str [general_information_as_str_len - 1] = '\0';
+    general_information_as_str [general_information_as_str_len - 2] = '\0';
+
+    // "+ 1" to avoid the first char. It is in every case a '{'.
+    // In every situation this char will create a invalid JSON file (except the file is empty)
+    file_operation_ret_value = fputs(general_information_as_str + 1, result_file);
+    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+            strerror(errno));
+    written_bytes = written_bytes + (general_information_as_str_len - 2);
+
+    if (export_settings & SHORTEN_OUTPUT)
+    {
+        file_operation_ret_value = fputs("},\n", result_file);
+        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+                strerror(errno));
+        written_bytes += strlen ("},\n");
+    }
+    else
+    {
+        file_operation_ret_value = fputs(",\n", result_file);
+        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+                strerror(errno));
+        written_bytes += strlen(",\n");
+    }
+
+    // Don't use the macro "FREE_AND_SET_TO_NULL" because it increases the free counter. But this memory was
+    // allocated from the JSON lib !
+    free(general_information_as_str);
+    general_information_as_str = NULL;
+
+    return written_bytes;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1081,3 +1384,11 @@ cJSON_Determine_Full_Memory_Usage
 #ifdef RESULT_FILE_BUFFER_SIZE
 #undef RESULT_FILE_BUFFER_SIZE
 #endif /* RESULT_FILE_BUFFER_SIZE */
+
+#ifdef OFFSET
+#undef OFFSET
+#endif /* OFFSET */
+
+#ifdef INTERSECTIONS
+#undef INTERSECTIONS
+#endif /* INTERSECTIONS */
