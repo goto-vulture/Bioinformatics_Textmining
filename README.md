@@ -29,15 +29,20 @@ With the help of some elementary set operations (the main important one: interse
 
 ### Building
 
-make is the provided tool to build the program. To build the program with the default settings a simple `make` call is enough.
+make is the provided tool to build the program. To build the program with the default settings a simple `make` call is enough, because the program (and the used libraries) uses only the C standard lib. The compiler needs at least a C99 support; with a C11 support some C11 specific enhancements like `_Generic` and `_Static_assert` can be used.
 
 There are two switches for the building process:
 - `DEBUG`: Building the program with debug information in the binary file (default)
 - `RELEASE`: Building with compiler optimization.
 
-`make Debug=1` Build the project with debug settings.
+Another argument for the makefile is the C standard:
+- `STD` or `std`: STD=99 for C99 respectively STD=11 for C11 (C11 is the default setting)
 
-`make clean` removes all compilation files.
+Some build examples:
+- `make Debug=1 C=99`: Build the project with debug settings and the C99 standard.
+- `make Release=1`: Build the project with release settings and the C11 standard.
+
+`make clean` removes all compilation files - including the object files.
 
 ### Interface
 
@@ -57,7 +62,7 @@ Optional arguments:
 
 Debugging arguments:
 - `-A`, `--abort=<float>`: Abort the calculation after X percent
-- `-T`, `--run_all_test_functions`: Runing all test functions. This argument overrides all other arguments, except -h.(Only useful for debugging)
+- `-T`, `--run_all_test_functions`: Runing all test functions. This argument overrides all other arguments, except -h. (Only useful for debugging)
 
 
 

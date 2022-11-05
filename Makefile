@@ -10,7 +10,7 @@ DOXYGEN_PATH = $(shell command -v $(DOXYGEN) 2> /dev/null)
 
 
 # Flags, die sowohl im Debug- als auch im Release-Build, verwendet werden
-CCFLAGS = -std=c11 -pedantic -Wall -Wextra -Wconversion -fmessage-length=0
+CCFLAGS = -pedantic -Wall -Wextra -Wconversion -fmessage-length=0
 
 # Verwendete Libs
 LIBS = -lm
@@ -72,6 +72,9 @@ RELEASE_FLAGS += -fipa-pta
 DEBUG = 0
 RELEASE = 0
 
+# Default C Standard: C11
+CSTD = -std=c11
+
 PROJECT_NAME = Bioinformatics_Textmining
 DOCUMENTATION_PATH = ./Documentation
 NO_DOCUMENTATION = 1
@@ -120,6 +123,26 @@ else
 		endif
 	endif
 endif
+
+ifeq ($(STD), 99)
+	CSTD = -std=c99
+endif
+ifeq ($(std), 99)
+	CSTD = -std=c99
+endif
+ifeq ($(std), c99)
+	CSTD = -std=c99
+endif
+ifeq ($(STD), c99)
+	CSTD = -std=c99
+endif
+ifeq ($(std), C99)
+	CSTD = -std=c99
+endif
+ifeq ($(STD), C99)
+	CSTD = -std=c99
+endif
+CCFLAGS += $(CSTD)
 
 # Soll die Dokumentation mittels Doxygen erzeugt werden ? Die Erzeugung der Dokumentation benoetigt mit Abstand die meiste
 # Zeit bei der Erstellung des Programms
