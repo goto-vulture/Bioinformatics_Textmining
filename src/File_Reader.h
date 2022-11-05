@@ -58,6 +58,11 @@ struct Token_List_Container
         SENTENCE_OFFSET_TYPE* sentence_offsets;
 
         /**
+         * @brief Word offsets of each token.
+         */
+        WORD_OFFSET_TYPE* word_offsets;
+
+        /**
          * @brief Max. possible length for one token (inkl. terminator symbol)
          */
         size_t max_token_length;

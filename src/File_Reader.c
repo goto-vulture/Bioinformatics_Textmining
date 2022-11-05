@@ -241,11 +241,18 @@ TokenListContainer_CreateObject
         ASSERT_ALLOC(new_container->token_lists [i].sentence_offsets, "Cannot create data for a Token object !",
                 TOKENS_ALLOCATION_STEP_SIZE * sizeof (SENTENCE_OFFSET_TYPE));
         new_container->malloc_calloc_calls ++;
+
+        new_container->token_lists [i].word_offsets = (WORD_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (WORD_OFFSET_TYPE));
+        ASSERT_ALLOC(new_container->token_lists [i].word_offsets, "Cannot create data for a Token object !",
+                TOKENS_ALLOCATION_STEP_SIZE * sizeof (WORD_OFFSET_TYPE));
+        new_container->malloc_calloc_calls ++;
+
         // Init new values
         for (size_t i2 = 0; i2 < TOKENS_ALLOCATION_STEP_SIZE; ++ i2)
         {
             new_container->token_lists [i].char_offsets [i2] = CHAR_OFFSET_TYPE_MAX;
             new_container->token_lists [i].sentence_offsets [i2] = SENTENCE_OFFSET_TYPE_MAX;
+            new_container->token_lists [i].word_offsets [i2] = WORD_OFFSET_TYPE_MAX;
         }
 
         new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
@@ -393,25 +400,50 @@ TokenListContainer_CreateObject
                     {
                         current_token_list_obj->char_offsets [0] = 0;
                         current_token_list_obj->sentence_offsets [0] = 0;
+                        current_token_list_obj->word_offsets [0] = 0;
                     }
                     else
                     {
                         const char* last_token =
                                 Get_Address_Of_Token (current_token_list_obj, current_token_list_obj->next_free_element - 1);
+                        const size_t last_token_length = strlen(last_token);
 
                         const size_t tmp_result =
                                 current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
-                                strlen(last_token);
+                                last_token_length;
                         const size_t new_sentence_offset =
                                 current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element - 1] +
                                 (last_token [0] == '.') ? 1 : 0;
-                                //strlen (current_token_list_obj->data + (current_token_list_obj->max_token_length * (current_token_list_obj->next_free_element - 1)));
+
+                        // This is the way, when every token (including punctuation character like dots) should be
+                        // interpreted as word for the word offset
+                        // In other words all char of a token are printable
+                        // Almost all tokens of the input files will be pass this test
+                        size_t new_word_offset = 0;
+                        new_word_offset = current_token_list_obj->word_offsets [current_token_list_obj->next_free_element - 1];
+                        if (Is_String_Printable(last_token, last_token_length))
+                        {
+                            ++ new_word_offset;
+                        }
+                        // If the token only contains alphanumeric char, then it will be interpreted as word for the
+                        // word offset
+// Actual this is NOT the way to check the tokens !
+//                        if (Contain_String_Only_Alnum_Char(last_token, last_token_length))
+//                        {
+//                            ++ new_word_offset;
+//                        }
+                        
+                        // When the new char offset is larger that are saveable in this type, then will be the calculation
+                        // aborted, because in such a situation exists no possibility to "save" this problem
                         ASSERT_FMSG(tmp_result < CHAR_OFFSET_TYPE_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
                                 tmp_result, CHAR_OFFSET_TYPE_MAX - 1);
+
                         current_token_list_obj->char_offsets [current_token_list_obj->next_free_element] =
                                 (CHAR_OFFSET_TYPE) tmp_result;
                         current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element] =
                                 (SENTENCE_OFFSET_TYPE) new_sentence_offset;
+                        current_token_list_obj->word_offsets [current_token_list_obj->next_free_element] =
+                                (WORD_OFFSET_TYPE) new_word_offset;
                     }
 
                     current_token_list_obj->next_free_element ++;
@@ -490,6 +522,7 @@ TokenListContainer_DeleteObject
             FREE_AND_SET_TO_NULL(object->token_lists [i].data);
             FREE_AND_SET_TO_NULL(object->token_lists [i].char_offsets);
             FREE_AND_SET_TO_NULL(object->token_lists [i].sentence_offsets);
+            FREE_AND_SET_TO_NULL(object->token_lists [i].word_offsets);
         }
     }
 
@@ -1059,12 +1092,19 @@ Increase_Number_Of_Token_Lists
                 (SENTENCE_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (SENTENCE_OFFSET_TYPE));
         ASSERT_ALLOC(token_list_container->token_lists [i].sentence_offsets, "Cannot create data for a Token object !",
                 TOKENS_ALLOCATION_STEP_SIZE * sizeof (SENTENCE_OFFSET_TYPE));
+
+        token_list_container->token_lists [i].word_offsets =
+                        (WORD_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (WORD_OFFSET_TYPE));
+        ASSERT_ALLOC(token_list_container->token_lists [i].word_offsets, "Cannot create data for a Token object !",
+                TOKENS_ALLOCATION_STEP_SIZE * sizeof (WORD_OFFSET_TYPE));
+
         token_list_container->malloc_calloc_calls ++;
         // Init new values
         for (size_t i2 = 0; i2 < TOKENS_ALLOCATION_STEP_SIZE; ++ i2)
         {
             token_list_container->token_lists [i].char_offsets [i2] = CHAR_OFFSET_TYPE_MAX;
             token_list_container->token_lists [i].sentence_offsets [i2] = SENTENCE_OFFSET_TYPE_MAX;
+            token_list_container->token_lists [i].word_offsets [i2] = WORD_OFFSET_TYPE_MAX;
         }
 
         token_list_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
@@ -1115,15 +1155,23 @@ Increase_Number_Of_Tokens
             (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (SENTENCE_OFFSET_TYPE));
     ASSERT_ALLOC(tmp_ptr2, "Cannot create data for a Token object !",
             (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (SENTENCE_OFFSET_TYPE));
+
+    WORD_OFFSET_TYPE* tmp_ptr4 = (WORD_OFFSET_TYPE*) REALLOC (token_list->word_offsets,
+            (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (WORD_OFFSET_TYPE));
+    ASSERT_ALLOC(tmp_ptr4, "Cannot create data for a Token object !",
+            (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * sizeof (WORD_OFFSET_TYPE))
+
     // Init new values
     for (size_t i2 = old_tokens_size; i2 < (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE); ++ i2)
     {
         tmp_ptr2 [i2] = CHAR_OFFSET_TYPE_MAX;
         tmp_ptr3 [i2] = SENTENCE_OFFSET_TYPE_MAX;
+        tmp_ptr4 [i2] = WORD_OFFSET_TYPE_MAX;
     }
     token_list->data = tmp_ptr;
     token_list->char_offsets = tmp_ptr2;
     token_list->sentence_offsets = tmp_ptr3;
+    token_list->word_offsets = tmp_ptr4;
     token_list->allocated_tokens += TOKENS_ALLOCATION_STEP_SIZE;
 
     return;
