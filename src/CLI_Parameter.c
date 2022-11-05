@@ -17,6 +17,7 @@
 #include <stdbool.h>
 #include "Print_Tools.h"
 #include "String_Tools.h"
+#include "Defines.h"
 #include "Error_Handling/Dynamic_Memory.h"
 
 
@@ -29,10 +30,15 @@ const char* const GLOBAL_USAGES [] =
 };
 
 const char* const GLOBAL_PROGRAM_DESCRIPTION            =
-        "\nThe program do a determination of so-called \"dominating word sets\" from data sets in the field of bioinformatics.";
+        "\nThe program do a determination of so-called \"dominating word sets\" from data sets in the field of bioinformatics (v" VERSION_STR ").";
 const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION =
         "\nThis idea will be develop as a project for the Ruhr University Bochum (RUB)."
-        "\nIf you have any questions or suggestions: Get in contact with me: goto-vulture@gmx.de";
+        "\nIf you have any questions or suggestions: Get in contact with me: goto-vulture@gmx.de"
+        "\n"
+        "\nUsed libs"
+        "\n    cJSON    1.7.15 from Dave Gamble (https://github.com/DaveGamble/cJSON)"
+        "\n    argparse 1.1.0  from Yecheng Fu  (https://github.com/cofyc/argparse)"
+        "\n    tinytest n/a    from Joe Walnes  (https://github.com/joewalnes/tinytest)";
 
 // Variables for the parsed CLI parameter
 const char* GLOBAL_CLI_INPUT_FILE = NULL;
