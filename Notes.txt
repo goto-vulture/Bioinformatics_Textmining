@@ -1,0 +1,3 @@
+##### ##### ##### Questions for next meeting ##### ##### #####
+- Do the word offsets include stop words?
+- If yes do this offset also include non-word char like dots? (My ad-hoc answer: No)
