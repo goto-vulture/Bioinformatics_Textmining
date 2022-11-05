@@ -822,12 +822,12 @@ Create_Main_Object_Structure
     ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (size_t) * number_of_arrays);
     new_object->malloc_calloc_calls ++;
 
-    new_object->max_array_length = INT_ALLOCATION_STEP_SIZE;
-    new_object->number_of_arrays = number_of_arrays;
-    new_object->next_free_array = 0;
+    new_object->max_array_length    = INT_ALLOCATION_STEP_SIZE;
+    new_object->number_of_arrays    = number_of_arrays;
+    new_object->next_free_array     = 0;
 
-    new_object->data_struct.char_offsets = NULL;
-    new_object->data_struct.sentence_offsets = NULL;
+    new_object->data_struct.char_offsets        = NULL;
+    new_object->data_struct.sentence_offsets    = NULL;
 
     return new_object;
 }

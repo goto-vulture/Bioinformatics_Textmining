@@ -535,8 +535,8 @@ Exec_Intersection
 
 
 
-    size_t result_file_size = 0;
-    int file_operation_ret_value = 0;
+    size_t result_file_size         = 0;
+    int file_operation_ret_value    = 0;
 
     // Start export file
     file_operation_ret_value = fputc ('{', result_file);
@@ -560,11 +560,11 @@ Exec_Intersection
 
 
 
-    uint_fast64_t intersection_tokens_found_counter    = 0;
-    uint_fast64_t intersection_sets_found_counter      = 0;
-    size_t cJSON_mem_counter            = 0;
-    clock_t start                       = 0;
-    clock_t end                         = 0;
+    uint_fast64_t intersection_tokens_found_counter = 0;
+    uint_fast64_t intersection_sets_found_counter   = 0;
+    size_t cJSON_mem_counter    = 0;
+    clock_t start               = 0;
+    clock_t end                 = 0;
 
     // Determine the intersections
     CLOCK_WITH_RETURN_CHECK(start);
@@ -804,7 +804,7 @@ Exec_Intersection
             // Don't use the macro "FREE_AND_SET_TO_NULL" because it increases the free counter. But this memory was
             // allocated from the JSON lib !
             free(orig_ptr);
-            orig_ptr = NULL;
+            orig_ptr        = NULL;
             json_export_str = NULL;
 
             // Delete the full object will all child-objectsintersection_sets_found_counter
@@ -1050,8 +1050,8 @@ Append_cJSON_Object_To_Result_File
     ASSERT_MSG(result_file != NULL, "The result file is NULL !");
     ASSERT_MSG(cJSON_obj != NULL, "cJSON object is NULL !");
 
-    size_t written_bytes = 0;
-    int file_operation_ret_value = 0;
+    size_t written_bytes            = 0;
+    int file_operation_ret_value    = 0;
 
     // Insert the general information to the result file
     char* general_information_as_str = cJSON_PrintBuffered(cJSON_obj, CJSON_PRINT_BUFFER_SIZE,
@@ -1117,8 +1117,8 @@ Append_Token_List_Container_Data_To_Token_Int_Mapping
     ASSERT_MSG(token_list_container != NULL, "Token_List_Container is NULL !");
     ASSERT_MSG(token_int_mapping != NULL, "Token_Int_Mapping is NULL !");
 
-    const uint_fast8_t count_steps = 100;
-    uint_fast32_t inner_loop_runs = 0;
+    const uint_fast8_t count_steps  = 100;
+    uint_fast32_t inner_loop_runs   = 0;
     for (uint_fast32_t i = 0; i < token_list_container->next_free_element; ++ i)
     {
         inner_loop_runs += token_list_container->token_lists [i].next_free_element;
@@ -1126,9 +1126,8 @@ Append_Token_List_Container_Data_To_Token_Int_Mapping
     const uint_fast32_t print_steps = (((uint_fast32_t) inner_loop_runs / count_steps) == 0) ? 1 :
             ((uint_fast32_t) inner_loop_runs / count_steps);
     uint_fast32_t inner_loop_runs_before_last_print = 0;
-    uint_fast32_t inner_loop_counter = 0;
-
-    uint_fast32_t token_added_to_mapping = 0;
+    uint_fast32_t inner_loop_counter                = 0;
+    uint_fast32_t token_added_to_mapping            = 0;
 
     _Bool element_added = false;
     for (uint_fast32_t i = 0; i < token_list_container->next_free_element; ++ i)

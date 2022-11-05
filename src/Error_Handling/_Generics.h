@@ -26,6 +26,8 @@ extern "C"
 
 
 
+//---------------------------------------------------------------------------------------------------------------------
+
 // Is it a C11 compiler ? Because _Generic and _Static_assert are keywords that were introduced in the C11 standard.
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 
@@ -53,7 +55,7 @@ extern "C"
 #error "The macro \"TYPE_PTR_FMT_STR\" is already defined !"
 #endif /* TYPE_PTR_FMT_STR */
 
-
+//---------------------------------------------------------------------------------------------------------------------
 
 #ifndef ALL_POSSIBLE_TYPES
 #define ALL_POSSIBLE_TYPES(type, type_def)                                                                              \
@@ -169,7 +171,7 @@ extern "C"
 #error "The macro \"TYPE_NAME\" is already defined !"
 #endif /* TYPE_NAME */
 
-
+//---------------------------------------------------------------------------------------------------------------------
 
 /**
  * @brief Check whether x is a pointer. "type_def" defines, if a pointer should be valid or invalid.
@@ -238,7 +240,7 @@ extern "C"
 #error "The macro \"IS_NO_INT\" is already defined !"
 #endif /* IS_NO_INT */
 
-
+//---------------------------------------------------------------------------------------------------------------------
 
 /**
  * @brief Is the value a specific type ?
@@ -264,7 +266,7 @@ extern "C"
 #error "The macro \"IS_CONST_STR\" is already defined !"
 #endif /* IS_CONST_STR */
 
-
+//---------------------------------------------------------------------------------------------------------------------
 
 /**
  * @brief This macro returns the format string specifier of the given variable, if possible.
@@ -415,7 +417,7 @@ extern "C"
 #error "The macro \"GET_MIN\" is already defined !"
 #endif /* GET_MIN */
 
-
+//---------------------------------------------------------------------------------------------------------------------
 
 /**
  * @brief IS_IN_TYPE_LIST_2 - IS_IN_TYPE_LIST_5 have the same functionality like IS_TYPE. But with a list of valid types.
@@ -476,7 +478,7 @@ extern "C"
 #error "The macro \"IS_IN_TYPE_LIST_5\" is already defined !"
 #endif /* IS_IN_TYPE_LIST_5 */
 
-
+//---------------------------------------------------------------------------------------------------------------------
 
 /**
  * @brief Is the value not a specific type ?
@@ -491,7 +493,7 @@ extern "C"
 #error "The macro \"IS_NOT_TYPE\" is already defined !"
 #endif /* IS_NOT_TYPE */
 
-
+//---------------------------------------------------------------------------------------------------------------------
 
 /**
  * @brief IS_NOT_IN_TYPE_LIST_2 - IS_NOT_IN_TYPE_LIST_5 have the same functionality like IS_NOT_TYPE. But with a list
@@ -781,6 +783,8 @@ extern "C"
 #endif /* IS_NOT_IN_TYPE_LIST_5 */
 
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
+//---------------------------------------------------------------------------------------------------------------------
 
 
 
