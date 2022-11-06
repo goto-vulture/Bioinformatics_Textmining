@@ -315,7 +315,7 @@ else
 endif
 
 	@echo
-	$(CC) $(CCFLAGS) -c $(MAIN_C) $(DYNAMIC_MEMORY_H) $(ALKANE_H)
+	$(CC) $(CCFLAGS) -c $(MAIN_C)
 
 str2int.o: $(STR2INT_C)
 	$(CC) $(CCFLAGS) -c $(STR2INT_C)
