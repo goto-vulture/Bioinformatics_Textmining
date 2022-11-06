@@ -1,3 +1,7 @@
 ##### ##### ##### Questions for next meeting ##### ##### #####
 - Do the word offsets include stop words?
 - If yes do this offset also include non-word char like dots? (My ad-hoc answer: No)
+
+##### ##### ##### To Do ##### ##### #####
+- The CLI parser don't work with some inputs: -i ~/Downloads/Testdaten/test_ebm.json -j ~/Downloads/Testdaten/xaa -o ~/Downloads/out.json -f -s -w
+=> With this input the -o option will not recognized! 
