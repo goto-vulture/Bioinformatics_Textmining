@@ -389,6 +389,10 @@ Exec_Intersection
     {
         intersection_settings |= SENTENCE_OFFSET;
     }
+    if (GLOBAL_CLI_WORD_OFFSET)
+    {
+        intersection_settings |= WORD_OFFSET;
+    }
     if (GLOBAL_CLI_NO_PART_MATCHES)
     {
         if (intersection_settings & PART_MATCH) { intersection_settings ^= PART_MATCH; }
@@ -650,8 +654,8 @@ Exec_Intersection
                 }
 
                 cJSON_NEW_ARR_CHECK(char_offset_array);
-                cJSON_NEW_ARR_CHECK(word_offset_array);
-                if (intersection_settings & SENTENCE_OFFSET) { cJSON_NEW_ARR_CHECK(sentence_offset_array); }
+                if (intersection_settings & SENTENCE_OFFSET)    { cJSON_NEW_ARR_CHECK(sentence_offset_array); }
+                if (intersection_settings & WORD_OFFSET)        { cJSON_NEW_ARR_CHECK(word_offset_array); }
                 cJSON_NEW_ARR_CHECK(tokens_array);
 
                 //fputs("Found tokens_array in:\n", result_file);
@@ -668,8 +672,7 @@ Exec_Intersection
                             intersection_result->data_struct.data [0][i]);
 
                     cJSON* sentence_offset = NULL;
-                    cJSON* word_offset = cJSON_CreateNumber(intersection_result->data_struct.word_offsets [0][i]);
-                    ASSERT_MSG(word_offset != NULL, "word offset is NULL !");
+                    cJSON* word_offset = NULL;
                     cJSON* char_offset = cJSON_CreateNumber(intersection_result->data_struct.char_offsets [0][i]);
                     ASSERT_MSG(char_offset != NULL, "char offset is NULL !");
 
@@ -678,11 +681,16 @@ Exec_Intersection
                         sentence_offset = cJSON_CreateNumber(intersection_result->data_struct.sentence_offsets [0][i]);
                         ASSERT_MSG(sentence_offset != NULL, "sentence offset is NULL !");
                     }
+                    if (intersection_settings & WORD_OFFSET)
+                    {
+                        word_offset = cJSON_CreateNumber(intersection_result->data_struct.word_offsets [0][i]);
+                        ASSERT_MSG(word_offset != NULL, "word offset is NULL !");
+                    }
 
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(char_offset_array, char_offset);
-                    cJSON_ADD_ITEM_TO_ARRAY_CHECK(word_offset_array, word_offset);
-                    if (intersection_settings & SENTENCE_OFFSET) { cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset); }
+                    if (intersection_settings & SENTENCE_OFFSET)    { cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset); }
+                    if (intersection_settings & WORD_OFFSET)        { cJSON_ADD_ITEM_TO_ARRAY_CHECK(word_offset_array, word_offset); }
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(tokens_array, token);
 
                     ++ intersection_tokens_found_counter;
@@ -920,7 +928,7 @@ Add_General_Information_To_Export_File
     cJSON_NOT_NULL(char_offset);
     cJSON* sentence_offset = cJSON_CreateBool(export_settings & SENTENCE_OFFSET);
     cJSON_NOT_NULL(sentence_offset);
-    cJSON* word_offset = cJSON_CreateBool(true);
+    cJSON* word_offset = cJSON_CreateBool(export_settings & WORD_OFFSET);
     cJSON_NOT_NULL(sentence_offset);
 
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
