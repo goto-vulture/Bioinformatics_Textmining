@@ -1153,6 +1153,10 @@ Read_Next_Line
         const long int input_file_data_length
 )
 {
+    ASSERT_MSG(input_file != NULL, "FILE is NULL !");
+    ASSERT_MSG(input_file_data != NULL, "Input file data is NULL !");
+    ASSERT_MSG(input_file_data_length > 0, "Input file data length is zero !");
+
     size_t char_read = 0;
 
     for (int c = getc(input_file); c != EOF; c = getc(input_file), ++ char_read)
