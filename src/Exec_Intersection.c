@@ -484,6 +484,8 @@ Exec_Intersection
     cJSON* token                            = NULL; // Token
     cJSON* char_offset_array                = NULL; // Offset (number of char) of the intersection tokens
     cJSON* sentence_offset_array            = NULL; // Offset (number of sentences) of the intersection tokens
+    cJSON* word_offset_array                = NULL; // Offset of the words focused on the original data (comparable
+                                                    // to char_offset_array and sentence_offset_array)
     cJSON* tokens_array                     = NULL; // Array of tokens
     cJSON* intersections_partial_match      = NULL; // Intersections with a partial match (An intersection does not
                                                     // contain a full source set)
@@ -648,6 +650,7 @@ Exec_Intersection
                 }
 
                 cJSON_NEW_ARR_CHECK(char_offset_array);
+                cJSON_NEW_ARR_CHECK(word_offset_array);
                 if (intersection_settings & SENTENCE_OFFSET) { cJSON_NEW_ARR_CHECK(sentence_offset_array); }
                 cJSON_NEW_ARR_CHECK(tokens_array);
 
@@ -665,8 +668,11 @@ Exec_Intersection
                             intersection_result->data_struct.data [0][i]);
 
                     cJSON* sentence_offset = NULL;
+                    cJSON* word_offset = cJSON_CreateNumber(intersection_result->data_struct.word_offsets [0][i]);
+                    ASSERT_MSG(word_offset != NULL, "word offset is NULL !");
                     cJSON* char_offset = cJSON_CreateNumber(intersection_result->data_struct.char_offsets [0][i]);
                     ASSERT_MSG(char_offset != NULL, "char offset is NULL !");
+
                     if (intersection_settings & SENTENCE_OFFSET)
                     {
                         sentence_offset = cJSON_CreateNumber(intersection_result->data_struct.sentence_offsets [0][i]);
@@ -675,6 +681,7 @@ Exec_Intersection
 
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(char_offset_array, char_offset);
+                    cJSON_ADD_ITEM_TO_ARRAY_CHECK(word_offset_array, word_offset);
                     if (intersection_settings & SENTENCE_OFFSET) { cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset); }
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(tokens_array, token);
 
@@ -688,6 +695,8 @@ Exec_Intersection
                 cJSON_AddItemToObject(two_array_container, "tokens", tokens_array);
                 cJSON_AddItemToObject(two_array_container, "char " OFFSET, char_offset_array);
                 cJSON_AddItemToObject(two_array_container, "sentence " OFFSET, sentence_offset_array);
+                cJSON_AddItemToObject(two_array_container, "word " OFFSET, word_offset_array);
+
                 // Add data to the specific cJSON object
                 // For the comparison it is important to use "src_tokens_array_wo_stop_words" instead of
                 // "src_tokens_array"; Because a full match means a equalness with the list, that contains NO stop
@@ -911,12 +920,15 @@ Add_General_Information_To_Export_File
     cJSON_NOT_NULL(char_offset);
     cJSON* sentence_offset = cJSON_CreateBool(export_settings & SENTENCE_OFFSET);
     cJSON_NOT_NULL(sentence_offset);
+    cJSON* word_offset = cJSON_CreateBool(true);
+    cJSON_NOT_NULL(sentence_offset);
 
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Full match", full_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Stop word list used", stop_word_list);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Char offset", char_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Sentence offset", sentence_offset);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Word offset", word_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation mode", creation_mode);
 
     cJSON* creation_time = cJSON_CreateString("123");
