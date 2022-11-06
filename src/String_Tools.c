@@ -295,3 +295,47 @@ Multi_strncat
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Check every char with the given function.
+ *
+ * In normal cases the check functions are for example isalpha() or isalnum().
+ *
+ * Asserts / In this case normal if tests:
+ *      string != NULL
+ *      str_length > 0
+ *      check_func_ptr != NULL
+ *
+ * @param[in] string C string, that will be checked
+ * @param[in] str_len Length of the C string
+ * @param[in] check_func_ptr Check function
+ *
+ * @return true, if all char pass the check function, otherwise false (In error cases INT_MAX)
+ */
+extern int
+Check_Every_Char_With_Function
+(
+        const char* const string,
+        const size_t str_length,
+        int (*check_func_ptr)(int)
+)
+{
+    if (string == NULL)         { return INT_MAX; }
+    if (str_length == 0)        { return INT_MAX; }
+    if (check_func_ptr == NULL) { return INT_MAX; }
+
+    int return_value = true;
+
+    for (size_t i = 0; i < str_length; ++ i)
+    {
+        if (! (*check_func_ptr)(string [i]))
+        {
+            return_value = false;
+            break;
+        }
+    }
+
+    return return_value;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
