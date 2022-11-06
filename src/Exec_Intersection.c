@@ -585,6 +585,7 @@ Exec_Intersection
                     source_int_values_1->data_struct.data [selected_data_1_array],
                     source_int_values_1->data_struct.char_offsets [selected_data_1_array],
                     source_int_values_1->data_struct.sentence_offsets [selected_data_1_array],
+                    source_int_values_1->data_struct.word_offsets [selected_data_1_array],
                     source_int_values_1->arrays_lengths [selected_data_1_array],
 
                     source_int_values_2->data_struct.data [selected_data_2_array],
@@ -1057,17 +1058,18 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
         // Append data
         if (next_free_value > 0)
         {
-            // Without sentence offsets
+            // Without sentence offsets and word offsets
 //            DocumentWordList_AppendDataWithOffsets(document_word_list, token_int_values,
 //                    token_list_container->token_lists [i].char_offsets, NULL, next_free_value);
 
-            // With sentence offsets
-            DocumentWordList_AppendDataWithTwoTypeOffsets
+            // With sentence offsets and word offsets
+            DocumentWordList_AppendDataWithThreeTypeOffsets
             (
                     document_word_list,
                     token_int_values,
                     token_list_container->token_lists [i].char_offsets,
                     token_list_container->token_lists [i].sentence_offsets,
+                    token_list_container->token_lists [i].word_offsets,
                     next_free_value
             );
         }

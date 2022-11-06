@@ -113,15 +113,18 @@ IntersectionApproach_HeapSortAndBinarySearch
  *      data_1_length = 0
  *      data_2 != NULL
  *      data_2_length = 0
- *      char_offset != NULL
- *      sentence_offset != NULL
+ *      char_offsets != NULL
+ *      sentence_offsets != NULL
+ *      word_offsets != NULL
  *
  * @param[in] data_1 Data, that will be used for the intersection with the second data array
  * @param[in] char_offsets Char offsets of the data focused on the source file, that was also the source for data_1
  * @param[in] sentence_offsets Sentence offsets of the data focused on the source file, that was also the source for data_1
+ * @param[in] word_offset Offset of the words focused on the source file
  * @param[in] data_1_length Number of the elements in the first data array
  * @param[in] data_2 Data, that will be used for the intersection with the first data array
  * @param[in] data_2_length Number of the elements in the second data array
+ *
  * @param[in] id_1 ID of the first data array
  * @param[in] id_2 ID of the second data array
  *
@@ -133,9 +136,11 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     const uint_fast32_t* const restrict data_1,
     const CHAR_OFFSET_TYPE* const restrict char_offsets,
     const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets,
+    const WORD_OFFSET_TYPE* const restrict word_offsets,
     const size_t data_1_length,
     const uint_fast32_t* const restrict data_2,
     const size_t data_2_length,
+
     const char* const restrict id_1,
     const char* const restrict id_2
 );

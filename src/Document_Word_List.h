@@ -43,6 +43,7 @@ struct Document_Word_List
         uint_fast32_t** data;                       ///< 2 dimensional Array with the data
         CHAR_OFFSET_TYPE** char_offsets;            ///< Char offsets
         SENTENCE_OFFSET_TYPE** sentence_offsets;    ///< Sentence offsets
+        WORD_OFFSET_TYPE** word_offsets;            ///< Word offsets
     } data_struct;
 
     size_t* arrays_lengths;         ///< 1 dimensional Array with the data length information
@@ -169,7 +170,7 @@ DocumentWordList_AppendDataWithOffsets
 );
 
 /**
- * @brief Add data with up to two char and sentence offset arrays to a Document_Word_List.
+ * @brief Add data with up to three offsets (char, sentence and word offset) to a Document_Word_List.
  *
  * Asserts:
  *      object != NULL
@@ -180,15 +181,17 @@ DocumentWordList_AppendDataWithOffsets
  * @param[in] new_data New data
  * @param[in] new_char_offsets Char offset array
  * @param[in] new_sentence_offsets Sentence offset array
+ * @param[in] new_word_offsets Word offset array
  * @param[in] data_length Length of the new data
  */
 extern void
-DocumentWordList_AppendDataWithTwoTypeOffsets
+DocumentWordList_AppendDataWithThreeTypeOffsets
 (
         struct Document_Word_List* const object,
         const uint_fast32_t* const new_data,
         const CHAR_OFFSET_TYPE* const new_char_offsets,
         const SENTENCE_OFFSET_TYPE* const new_sentence_offsets,
+        const WORD_OFFSET_TYPE* const new_word_offsets,
         const size_t data_length
 );
 
@@ -232,29 +235,7 @@ Put_One_Value_To_Document_Word_List
 );
 
 /**
- * @brief Put one value with offsets to a Document_Word_List.
- *
- * The new value and the given offsets will be appended to the next free data array. Instead of
- * DocumentWordList_AppendOneValueAsNewDataSet, the new value will NOT be interpreted as new data set !
- * @see DocumentWordList_AppendOneValueAsNewDataSet
- *
- * Asserts:
- *      object != NULL
- *
- * @param[in] object Document_Word_List
- * @param[in] new_value New value
- * @param[in] new_offset New offset value
- */
-extern void
-Put_One_Value_And_Offets_To_Document_Word_List
-(
-        struct Document_Word_List* const object,
-        const uint_fast32_t new_value,
-        const CHAR_OFFSET_TYPE new_offset
-);
-
-/**
- * @brief Put one value with offsets of both types to a Document_Word_List.
+ * @brief Put one value with offsets of the three types to a Document_Word_List.
  *
  * The new value and the given offsets will be appended to the next free data array. Instead of
  * DocumentWordList_AppendOneValueAsNewDataSet, the new value will NOT be interpreted as new data set !
@@ -267,14 +248,16 @@ Put_One_Value_And_Offets_To_Document_Word_List
  * @param[in] new_value New value
  * @param[in] new_char_offset First new char offset value
  * @param[in] new_sentence_offset First new sentence offset value
+ * @param[in] new_word_offset First new word offset value
  */
 extern void
-Put_One_Value_And_Two_Offset_Types_To_Document_Word_List
+Put_One_Value_And_Offset_Types_To_Document_Word_List
 (
         struct Document_Word_List* const object,
         const uint_fast32_t new_value,
         const CHAR_OFFSET_TYPE new_char_offset,
-        const SENTENCE_OFFSET_TYPE new_sentence_offset
+        const SENTENCE_OFFSET_TYPE new_sentence_offset,
+        const WORD_OFFSET_TYPE new_word_offset
 );
 
 /**
