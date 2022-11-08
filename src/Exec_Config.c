@@ -16,7 +16,7 @@
  */
 extern unsigned int Exec_Config_Default_Settings (void)
 {
-    return PART_MATCH | FULL_MATCH | STOP_WORD_LIST | CHAR_OFFSET | CASE_SENSITIVE;
+    return PART_MATCH | FULL_MATCH | STOP_WORD_LIST | CHAR_OFFSET | WORD_OFFSET | CASE_SENSITIVE;
 }
 
 /**
