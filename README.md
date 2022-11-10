@@ -39,7 +39,7 @@ Another argument for the makefile is the C standard:
 - `STD` or `std`: STD=99 for C99 respectively STD=11 for C11 (C11 is the default setting)
 
 Some build examples:
-- `make Debug=1 C=99`: Build the project with debug settings and the C99 standard.
+- `make Debug=1 STD=99`: Build the project with debug settings and the C99 standard.
 - `make Release=1`: Build the project with release settings and the C11 standard.
 
 `make clean` removes all compilation files - including the object files.
