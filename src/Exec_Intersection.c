@@ -324,6 +324,17 @@ cJSON_Determine_Full_Memory_Usage
 );
 
 /**
+ * @brief Create the intersection settings out of the given CLI parameter.
+ *
+ * @return The intersection settings, that represents the CLI parameter
+ */
+static inline unsigned int
+Create_Intersection_Settings_With_CLI_Parameter
+(
+        void
+);
+
+/**
  * @brief Update the "data found" flag.
  *
  * If not partial- and full matches should be appear in the result file, then the data found flag needs to be updated,
@@ -443,28 +454,7 @@ Exec_Intersection
         uint_fast64_t* const restrict number_of_intersection_sets
 )
 {
-    unsigned int intersection_settings = Exec_Config_Default_Settings();
-    // A missing output formatting reduces the output file size
-    if (! GLOBAL_CLI_FORMAT_OUTPUT)
-    {
-        intersection_settings |= SHORTEN_OUTPUT;
-    }
-    if (GLOBAL_CLI_SENTENCE_OFFSET)
-    {
-        intersection_settings |= SENTENCE_OFFSET;
-    }
-    if (GLOBAL_CLI_WORD_OFFSET)
-    {
-        intersection_settings |= WORD_OFFSET;
-    }
-    if (GLOBAL_CLI_NO_PART_MATCHES)
-    {
-        if (intersection_settings & PART_MATCH) { intersection_settings ^= PART_MATCH; }
-    }
-    if (GLOBAL_CLI_NO_FULL_MATCHES)
-    {
-        if (intersection_settings & FULL_MATCH) { intersection_settings ^= FULL_MATCH; }
-    }
+    const unsigned int intersection_settings = Create_Intersection_Settings_With_CLI_Parameter();
 
     int result = 0;
 
@@ -1396,6 +1386,45 @@ cJSON_Determine_Full_Memory_Usage
     { result += strlen (cJSON_obj->string); }
 
     return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Create the intersection settings out of the given CLI parameter.
+ *
+ * @return The intersection settings, that represents the CLI parameter
+ */
+static inline unsigned int
+Create_Intersection_Settings_With_CLI_Parameter
+(
+        void
+)
+{
+    unsigned int intersection_settings = Exec_Config_Default_Settings();
+    // A missing output formatting reduces the output file size
+    if (! GLOBAL_CLI_FORMAT_OUTPUT)
+    {
+        intersection_settings |= SHORTEN_OUTPUT;
+    }
+    if (GLOBAL_CLI_SENTENCE_OFFSET)
+    {
+        intersection_settings |= SENTENCE_OFFSET;
+    }
+    if (GLOBAL_CLI_WORD_OFFSET)
+    {
+        intersection_settings |= WORD_OFFSET;
+    }
+    if (GLOBAL_CLI_NO_PART_MATCHES)
+    {
+        if (intersection_settings & PART_MATCH) { intersection_settings ^= PART_MATCH; }
+    }
+    if (GLOBAL_CLI_NO_FULL_MATCHES)
+    {
+        if (intersection_settings & FULL_MATCH) { intersection_settings ^= FULL_MATCH; }
+    }
+
+    return intersection_settings;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
