@@ -410,6 +410,10 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     ASSERT_ALLOC(multiple_guard_data_2, "Cannot create the multiple guard for data 2 !", data_2_length * sizeof (_Bool));
 #endif /* __STDC_NO_VLA__ */
 
+    // In an intersection the size of the result set can only be the max. size of the smaller source set
+    const size_t min_data_length = MIN(data_1_length, data_2_length);
+    size_t data_found_counter = 0;
+
     // Calculate intersection
     for (register size_t d1 = 0; d1 < data_1_length; ++ d1)
     {
@@ -417,6 +421,12 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
         {
             if (data_1 [d1] == data_2 [d2])
             {
+                // Try to leave the loops as early as possible
+                if (data_found_counter >= min_data_length)
+                {
+                    goto end;
+                }
+
                 // Was the current value already inserted in the intersection result ?
                 if (! multiple_guard_data_1 [d1] && ! multiple_guard_data_2 [d2])
                 {
@@ -427,10 +437,13 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
                     //++ intersection_result->arrays_lengths [0];
                     multiple_guard_data_1 [d1] = true;
                     multiple_guard_data_2 [d2] = true;
+
+                    ++ data_found_counter;
                 }
             }
         }
     }
+    end:
 
     intersection_result->intersection_data = true;
     if (id_1 != NULL)
