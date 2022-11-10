@@ -323,6 +323,29 @@ cJSON_Determine_Full_Memory_Usage
         const cJSON* const cJSON_obj
 );
 
+/**
+ * @brief Update the "data found" flag.
+ *
+ * If not partial- and full matches should be appear in the result file, then the data found flag needs to be updated,
+ * because this flag only shows, that data was found. There is no differentiation, weather this are partial or full
+ * match data.
+ *
+ * @param[in] intersection_settings Settings for the intersection process
+ * @param[in] current_data_flag Status of the current data found flag
+ * @param[in] intersections_partial_match cJSON object with the partial match data, if available
+ * @param[in] intersections_full_match cJSON object with the full match data, if available
+ *
+ * @return The updated data found flag
+ */
+static inline _Bool
+Update_Data_Found_Flag
+(
+        const unsigned int intersection_settings,
+        const _Bool current_data_flag,
+        const cJSON* const restrict intersections_partial_match,
+        const cJSON* const restrict intersections_full_match
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -762,6 +785,14 @@ Exec_Intersection
             intersection_result = NULL;
         }
         // ===== ===== ===== ===== ===== END Inner loop ===== ===== ===== ===== =====
+
+        data_found = Update_Data_Found_Flag
+        (
+                intersection_settings,
+                data_found,
+                intersections_partial_match,
+                intersections_full_match
+        );
 
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
@@ -1365,6 +1396,78 @@ cJSON_Determine_Full_Memory_Usage
     { result += strlen (cJSON_obj->string); }
 
     return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Update the "data found" flag.
+ *
+ * If not partial- and full matches should be appear in the result file, then the data found flag needs to be updated,
+ * because this flag only shows, that data was found. There is no differentiation, weather this are partial or full
+ * match data.
+ *
+ * @param[in] intersection_settings Settings for the intersection process
+ * @param[in] current_data_flag Status of the current data found flag
+ * @param[in] intersections_partial_match cJSON object with the partial match data, if available
+ * @param[in] intersections_full_match cJSON object with the full match data, if available
+ *
+ * @return The updated data found flag
+ */
+static inline _Bool
+Update_Data_Found_Flag
+(
+        const unsigned int intersection_settings,
+        const _Bool current_data_flag,
+        const cJSON* const restrict intersections_partial_match,
+        const cJSON* const restrict intersections_full_match
+)
+{
+    _Bool updated_data_found_flag = current_data_flag;
+
+    // An flag update can only cause a true to false
+    if (! current_data_flag)
+    {
+        return current_data_flag;
+    }
+
+    // The child pointer represents object in the inner nesting (NO next pointer, because this shows the next
+    // object on the same nesting level !)
+    if ((intersection_settings & PART_MATCH) && (intersection_settings & FULL_MATCH))
+    {
+        // In normal situations this statement should be always true; but it is not guaranteed !
+        if (intersections_full_match != NULL && intersections_partial_match != NULL)
+        {
+            if (intersections_full_match->child == NULL && intersections_partial_match->child == NULL)
+            {
+                updated_data_found_flag = false;
+            }
+        }
+    }
+    else if (intersection_settings & FULL_MATCH)
+    {
+        // In normal situations this statement should be always true; but it is not guaranteed !
+        if (intersections_full_match != NULL)
+        {
+            if (intersections_full_match->child == NULL)
+            {
+                updated_data_found_flag = false;
+            }
+        }
+    }
+    else if (intersection_settings & PART_MATCH)
+    {
+        // In normal situations this statement should be always true; but it is not guaranteed !
+        if (intersections_partial_match != NULL)
+        {
+            if (intersections_partial_match->child == NULL)
+            {
+                updated_data_found_flag = false;
+            }
+        }
+    }
+
+    return updated_data_found_flag;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
