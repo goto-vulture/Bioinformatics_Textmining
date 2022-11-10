@@ -252,3 +252,69 @@ Multi_strncat
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief The function returns true, if all char of a string are printable.
+ *
+ * A char is printable, if it is not a control char.
+ *
+ * @param[in] str String, that will be checked
+ * @param[in] str_len Length of the string
+ *
+ * @return True, if all char are printable. If not false
+ */
+extern _Bool
+Is_String_Printable
+(
+        const char* const str,
+        const size_t str_len
+)
+{
+    _Bool result = true;
+
+    for (size_t i = 0; i < str_len; ++ i)
+    {
+        if (! isprint(str [i]))
+        {
+            result = false;
+            break;
+        }
+    }
+
+    return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief The function returns true, if all char of a string are alphanumeric char.
+ *
+ * A char is a alphanumeric, if it a digit or a alphabetic char.
+ *
+ * @param[in] str String, that will be checked
+ * @param[in] str_len Length of the string
+ *
+ * @return True, if all char are alphanumeric. If not false
+ */
+extern _Bool
+Contain_String_Only_Alnum_Char
+(
+        const char* const str,
+        const size_t str_len
+)
+{
+    _Bool result = true;
+
+    for (size_t i = 0; i < str_len; ++ i)
+    {
+        if (! isalnum(str [i]))
+        {
+            result = false;
+            break;
+        }
+    }
+
+    return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------

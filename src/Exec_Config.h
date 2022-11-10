@@ -29,13 +29,14 @@ enum Exec_Config_Types
     STOP_WORD_LIST  = 1 << 3,   ///< Using a stop word list to filter the input tokens ? (This is recommend)
     CHAR_OFFSET     = 1 << 4,   ///< Char offset in the result file ?
     SENTENCE_OFFSET = 1 << 5,   ///< Sentence offset in the result file ?
-    CASE_SENSITIVE  = 1 << 6,   ///< Case sensitive comparison of the tokens ?
+    WORD_OFFSET     = 1 << 6,   ///< Word offset in the result file ?
+    CASE_SENSITIVE  = 1 << 7,   ///< Case sensitive comparison of the tokens ?
 
     // Additional settings
-    SHORTEN_OUTPUT      = 1 << 7,   ///< Shorten the output file ? (E.g. with removing the formation of the result JSON file)
-    NO_FILENAMES        = 1 << 8,   ///< Don't show the input file names in the general info block.
-    NO_CREATION_TIME    = 1 << 9,   ///< Don't show the creation time in the general info block.
-    NO_PROGRAM_VERSION  = 1 << 10   ///< Don't show the program version in the general info block.
+    SHORTEN_OUTPUT      = 1 << 8,   ///< Shorten the output file ? (E.g. with removing the formation of the result JSON file)
+    NO_FILENAMES        = 1 << 9,   ///< Don't show the input file names in the general info block.
+    NO_CREATION_TIME    = 1 << 10,  ///< Don't show the creation time in the general info block.
+    NO_PROGRAM_VERSION  = 1 << 11   ///< Don't show the program version in the general info block.
 };
 
 /**
