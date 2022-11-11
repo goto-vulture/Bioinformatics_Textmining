@@ -308,6 +308,8 @@ else
 	@echo Type: Debug
 endif
 
+	@echo C Std: $(CSTD)
+
 ifeq ($(NO_DOCUMENTATION), 1)
 	@echo Documentation: NO
 else
