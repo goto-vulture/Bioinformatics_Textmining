@@ -71,23 +71,23 @@ struct Token_List_Container
          * @brief Next free element in the memory. The specific address will be calculated at runtime.
          */
         uint_fast32_t next_free_element;
-        size_t allocated_tokens;                ///< Allocated number of tokens
+        size_t allocated_tokens;                            ///< Allocated number of tokens
         /**
          * @brief ID of the data set
          *
          * The ID is in our data sets sometimes a integer, sometimes a string. Therefore it is necessary to save the ID
          * as char array.
          */
-        char dataset_id [DATASET_ID_LENGTH];    ///< ID of the dataset
+        char dataset_id [DATASET_ID_LENGTH];                ///< ID of the dataset
     }* token_lists;
 
-    size_t longest_token_length;            ///< Length of the longest token in the whole container
+    size_t longest_token_length;                            ///< Length of the longest token in the whole container
 
-    uint_fast32_t next_free_element;        ///< Next free element in the Token_List array
-    size_t allocated_token_container;       ///< Allocated number of Token_List objects
+    uint_fast32_t next_free_element;                        ///< Next free element in the Token_List array
+    size_t allocated_token_container;                       ///< Allocated number of Token_List objects
 
-    size_t malloc_calloc_calls;             ///< How many malloc / calloc calls were done with this object ?
-    size_t realloc_calls;                   ///< How many realloc calls were done with this object ?
+    size_t malloc_calloc_calls;                             ///< How many malloc / calloc calls were done with this object ?
+    size_t realloc_calls;                                   ///< How many realloc calls were done with this object ?
 
     struct Two_Dim_C_String_Array* list_of_too_long_token;  ///< List of tokens, that are longer than expected
 };

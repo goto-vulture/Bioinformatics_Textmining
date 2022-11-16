@@ -37,11 +37,18 @@ extern "C"
 /**
  * @brief Copy a C-String and convert all upper-case char to lower-case.
  *
+ * Asserts / In this case normal if tests:
+ *      orig_string != NULL
+ *      to_lower_string != NULL
+ *      to_lower_string_size > 0
+ *
  * @param[in] orig_string Original C-String
  * @param[out] to_lower_string Memory for the result C-String
  * @param[in] to_lower_string_size Allocated length of the result C-String
+ *
+ * @return 0 or INT_MAX in error cases
  */
-extern void
+extern int
 String_To_Lower
 (
         const char* const restrict orig_string,
@@ -55,12 +62,18 @@ String_To_Lower
  * There might be a function "strncasecmp()" on your system with the same functionality. But this is an GNU extension
  * and no portable C code.
  *
+ * Asserts / In this case normal if tests:
+ *       string_1 != NULL
+ *       string_1_length > 0
+ *       string_2 != NULL
+ *       string_2_length > 0
+ *
  * @param[in] string_1 First C-String
  * @param[in] string_1_length Length of the first C-String
  * @param[in] string_2 Second C-String
  * @param[in] string_2_length Length of the second C-String
  *
- * @return 0, if the C-String equals, else != 0
+ * @return 0, if the C-String equals, else != 0 (In error cases INT_MAX)
  */
 extern int
 Compare_Strings_Case_Insensitive
@@ -74,18 +87,21 @@ Compare_Strings_Case_Insensitive
 /**
  * @brief Determine how many specific char exists in a C-String.
  *
- * The function cannot indicate any types of errors. For example: an input NULL pointer will be cause a segfault !
+ * Asserts / In this case normal if tests:
+ *      c_string != NULL
+ *      string_length != 0
+ *      searched_char != 0
  *
  * @param[in] c_string Input C-String
  * @param[in] string_length String length
  * @param[in] searched_char Char to be searched
  *
- * @return Counted number of char in the C-String
+ * @return Counted number of char in the C-String or INT_MAX in error cases
  */
-extern uint_fast8_t
+extern int
 Count_Char_In_String
 (
-        const char* const restrict c_string,
+        const char* const c_string,
         const size_t string_length,
         const char searched_char
 );
@@ -94,13 +110,18 @@ Count_Char_In_String
  * @brief Append X times the same char to a C-String. This function expects, that in the C-String is enough memory for
  * this operation !
  *
- * The function cannot indicate any types of errors. For example: an input NULL pointer will be cause a segfault !
+ * Asserts / In this case normal if tests:
+ *      str != NULL
+ *      character != '\0'
+ *      times > 0
  *
  * @param[in] str C-String, that will be extended
  * @param[in] character Char
  * @param[in] times How many times the char will be appended
+ *
+ * @return 0 or INT_MAX in error cases
  */
-extern void
+extern int
 Append_X_Times_Char
 (
         char* const str,
@@ -111,14 +132,16 @@ Append_X_Times_Char
 /**
  * @brief Contain a C-String only null bytes ('\0') ?
  *
- * The function cannot indicate any types of errors. For example: an input NULL pointer will be cause a segfault !
+ * Asserts / In this case normal if tests:
+ *      str != NULL
+ *      length > 0
  *
  * @param[in] str Input C-String
  * @param[in] length C-String length
  *
- * @return true, if there only '\0' bytes, otherwise false
+ * @return true, if there only '\0' bytes, otherwise false (in error case: INT_MAX)
  */
-extern _Bool
+extern int
 Contain_String_Only_Null_Symbols
 (
         const char* const str,
@@ -130,20 +153,20 @@ Contain_String_Only_Null_Symbols
  *
  * If there is not enough memory in the result C-String, the result is detached on the second last char !
  *
- * Asserts:
- * 		destination != NULL
- * 		destination_size > 1
- * 		count > 0
- * 		Every additional C-String != NULL
+ * Asserts / In this case normal if tests:
+ *      destination != NULL
+ *      destination_size > 1
+ *      count > 0
+ *      Every additionalC-String != NULL
  *
  * @param[in] destination Destination C-String
  * @param[in] destination_size Length of the destination C-String
  * @param[in] count Number of input C-Strings
  * @param[in] ... va_list C-Strings
  *
- * @return The number of appended char of SIZE_MAX in case of errors
+ * @return The number of appended char of INT_MAX in case of errors
  */
-extern size_t
+extern int
 Multi_strncat
 (
         char* const restrict destination,
@@ -184,6 +207,30 @@ Contain_String_Only_Alnum_Char
 (
         const char* const str,
         const size_t str_len
+);
+
+/**
+ * @brief Check every char with the given function.
+ *
+ * In normal cases the check functions are for example isalpha() or isalnum().
+ *
+ * Asserts / In this case normal if tests:
+ *      string != NULL
+ *      str_length > 0
+ *      check_func_ptr != NULL
+ *
+ * @param[in] string C string, that will be checked
+ * @param[in] str_len Length of the C string
+ * @param[in] check_func_ptr Check function
+ *
+ * @return true, if all char pass the check function, otherwise false (In error cases INT_MAX)
+ */
+extern int
+Check_Every_Char_With_Function
+(
+        const char* const string,
+        const size_t str_length,
+        int (*check_func_ptr)(int)
 );
 
 

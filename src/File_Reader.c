@@ -863,8 +863,8 @@ TokenListContainer_GetArrayIndexOfLongestTokenList
 {
     ASSERT_MSG(container != NULL, "Token_List_Container is NULL !");
 
-    size_t max_length = 0;
-    size_t result = 0;
+    size_t max_length   = 0;
+    size_t result       = 0;
 
     for (uint_fast32_t i = 0; i < container->next_free_element; ++ i)
     {
@@ -1136,8 +1136,8 @@ Increase_Number_Of_Tokens
 
     static size_t tokens_realloc_counter = 0;
     ++ tokens_realloc_counter;
-    const size_t old_tokens_size = token_list->allocated_tokens;
-    const size_t token_size = token_list->max_token_length;
+    const size_t old_tokens_size    = token_list->allocated_tokens;
+    const size_t token_size         = token_list->max_token_length;
 
     char* tmp_ptr = (char*) REALLOC(token_list->data,
             (old_tokens_size + TOKENS_ALLOCATION_STEP_SIZE) * token_size);
@@ -1168,11 +1168,12 @@ Increase_Number_Of_Tokens
         tmp_ptr3 [i2] = SENTENCE_OFFSET_TYPE_MAX;
         tmp_ptr4 [i2] = WORD_OFFSET_TYPE_MAX;
     }
-    token_list->data = tmp_ptr;
-    token_list->char_offsets = tmp_ptr2;
-    token_list->sentence_offsets = tmp_ptr3;
-    token_list->word_offsets = tmp_ptr4;
-    token_list->allocated_tokens += TOKENS_ALLOCATION_STEP_SIZE;
+
+    token_list->data                = tmp_ptr;
+    token_list->char_offsets        = tmp_ptr2;
+    token_list->sentence_offsets    = tmp_ptr3;
+    token_list->word_offsets        = tmp_ptr4;
+    token_list->allocated_tokens    += TOKENS_ALLOCATION_STEP_SIZE;
 
     return;
 }
@@ -1201,6 +1202,10 @@ Read_Next_Line
         const long int input_file_data_length
 )
 {
+    ASSERT_MSG(input_file != NULL, "FILE is NULL !");
+    ASSERT_MSG(input_file_data != NULL, "Input file data is NULL !");
+    ASSERT_MSG(input_file_data_length > 0, "Input file data length is zero !");
+
     size_t char_read = 0;
 
     for (int c = getc(input_file); c != EOF; c = getc(input_file), ++ char_read)
