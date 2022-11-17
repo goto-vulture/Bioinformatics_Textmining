@@ -913,8 +913,19 @@ abort_label:
     const int int_formatter = (int) MAX (Count_Number_Of_Digits(intersection_tokens_found_counter),
             Count_Number_Of_Digits(intersection_sets_found_counter));
     printf ("\nDone !");
+
     printf ("\n\nIntersection tokens found: %*" PRIuFAST64 "\n", int_formatter, intersection_tokens_found_counter);
+    if (intersection_settings & PART_MATCH)
+    { printf ("\tIn partial matches: %*" PRIuFAST64 "\n", int_formatter, counter_tokens_in_partital_sets); }
+    if (intersection_settings & FULL_MATCH)
+    { printf ("\tIn full matches:    %*" PRIuFAST64 "\n", int_formatter, counter_tokens_in_full_sets); }
+
     printf ("Intersection sets found:   %*" PRIuFAST64 "\n", int_formatter, intersection_sets_found_counter);
+    if (intersection_settings & PART_MATCH)
+    { printf ("\tPartial sets: %*" PRIuFAST64 "\n", int_formatter, counter_partial_sets); }
+    if (intersection_settings & FULL_MATCH)
+    { printf ("\tFull sets:    %*" PRIuFAST64 "\n\n", int_formatter, counter_full_sets); }
+
     printf ("cJSON objects memory usage: ");
     Print_Memory_Size_As_B_KB_MB(cJSON_mem_counter);
 
