@@ -175,6 +175,31 @@ Add_General_Information_To_Export_File
 );
 
 /**
+ * @brief Include counter information at the end of the export file.
+ *
+ * Asserts:
+ *      export_results != NULL
+ *
+ * @param export_results The main cJSON pointer for the export JSON file
+ * @param export_settings Settings for the export (Which information will be occur in the result file -> which counter
+ *      are relevant for the general information ?)
+ * @param number_of_partial_sets Number of sets with partial matches in the whole file
+ * @param number_of_full_sets Number of sets with full matches in the whole file
+ * @param number_of_token_in_partial_sets Sum of all tokens in all partial matches
+ * @param number_of_token_in_full_sets Sum of all tokens in all full matches
+ */
+static void
+Add_Counter_To_Export_File
+(
+        cJSON* const export_results,
+        const unsigned int export_settings,
+        const uint_fast64_t number_of_partial_sets,
+        const uint_fast64_t number_of_full_sets,
+        const uint_fast64_t number_of_token_in_partial_sets,
+        const uint_fast64_t number_of_token_in_full_sets
+);
+
+/**
  * @brief Add too long tokens from the two input file to a JSON block. (One array for each file)
  *
  * Asserts:
@@ -454,6 +479,9 @@ Exec_Intersection
         uint_fast64_t* const restrict number_of_intersection_sets
 )
 {
+    // The function could be unused -> Avoid a warning
+    (void) Add_Counter_To_Export_File;
+
     const unsigned int intersection_settings = Create_Intersection_Settings_With_CLI_Parameter();
 
     int result = 0;
@@ -579,11 +607,14 @@ Exec_Intersection
 
 
 
-    uint_fast64_t intersection_tokens_found_counter = 0;
-    uint_fast64_t intersection_sets_found_counter   = 0;
     size_t cJSON_mem_counter    = 0;
     clock_t start               = 0;
     clock_t end                 = 0;
+
+    uint_fast64_t counter_partial_sets              = 0;
+    uint_fast64_t counter_full_sets                 = 0;
+    uint_fast64_t counter_tokens_in_partital_sets   = 0;
+    uint_fast64_t counter_tokens_in_full_sets       = 0;
 
     // Determine the intersections
     CLOCK_WITH_RETURN_CHECK(start);
@@ -729,10 +760,7 @@ Exec_Intersection
                     if (intersection_settings & SENTENCE_OFFSET)    { cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset); }
                     if (intersection_settings & WORD_OFFSET)        { cJSON_ADD_ITEM_TO_ARRAY_CHECK(word_offset_array, word_offset); }
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(tokens_array, token);
-
-                    ++ intersection_tokens_found_counter;
                 }
-                ++ intersection_sets_found_counter;
 
                 // Create a object for the tow arrays (tokens / offset)
                 cJSON* two_array_container = NULL;
@@ -746,13 +774,16 @@ Exec_Intersection
                 // For the comparison it is important to use "src_tokens_array_wo_stop_words" instead of
                 // "src_tokens_array"; Because a full match means a equalness with the list, that contains NO stop
                 // words !
-                if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
+                const int tokens_array_size = cJSON_GetArraySize(tokens_array);
+                if (tokens_array_size == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
                 {
                     if (intersection_settings & FULL_MATCH)
                     {
                         cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match,
                                 token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
                     }
+                    counter_full_sets ++;
+                    counter_tokens_in_full_sets += (uint_fast64_t) tokens_array_size;
                 }
                 else
                 {
@@ -761,6 +792,8 @@ Exec_Intersection
                         cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match,
                                 token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
                     }
+                    counter_partial_sets ++;
+                    counter_tokens_in_partital_sets += (uint_fast64_t) tokens_array_size;
                 }
             }
 
@@ -875,6 +908,8 @@ abort_label:
     result_file_size += strlen ("\n}");
     FCLOSE_AND_SET_TO_NULL(result_file);
 
+    const uint_fast64_t intersection_tokens_found_counter = counter_tokens_in_full_sets + counter_tokens_in_partital_sets;
+    const uint_fast64_t intersection_sets_found_counter = counter_full_sets + counter_partial_sets;
     const int int_formatter = (int) MAX (Count_Number_Of_Digits(intersection_tokens_found_counter),
             Count_Number_Of_Digits(intersection_sets_found_counter));
     printf ("\nDone !");
@@ -1006,6 +1041,78 @@ Add_General_Information_To_Export_File
         cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation time", creation_time);
     }
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "General infos", general_infos);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Include counter information to the "General information" block of a result file.
+ *
+ * Asserts:
+ *      export_results != NULL
+ *
+ * @param export_results The main cJSON pointer for the export JSON file
+ * @param export_settings Settings for the export (Which information will be occur in the result file -> which counter
+ *      are relevant for the general information ?)
+ * @param number_of_partial_sets Number of sets with partial matches in the whole file
+ * @param number_of_full_sets Number of sets with full matches in the whole file
+ * @param number_of_token_in_partial_sets Sum of all tokens in all partial matches
+ * @param number_of_token_in_full_sets Sum of all tokens in all full matches
+ */
+static void
+Add_Counter_To_Export_File
+(
+        cJSON* const export_results,
+        const unsigned int export_settings,
+        const uint_fast64_t number_of_partial_sets,
+        const uint_fast64_t number_of_full_sets,
+        const uint_fast64_t number_of_token_in_partial_sets,
+        const uint_fast64_t number_of_token_in_full_sets
+)
+{
+    ASSERT_MSG(export_results != NULL, "Main cJSON result pointer is NULL !");
+
+    cJSON* counter = cJSON_CreateObject();
+    cJSON_NOT_NULL(counter);
+
+    // "cJSON_CreateNumber()" can only create double values !
+    const double d_number_of_partial_sets           = (double) number_of_partial_sets;
+    const double d_number_of_token_in_partial_sets  = (double) number_of_token_in_partial_sets;
+    const double d_number_of_full_sets              = (double) number_of_full_sets;
+    const double d_number_of_token_in_full_sets     = (double) number_of_token_in_full_sets;
+
+    if (export_settings & PART_MATCH)
+    {
+        cJSON* num_partial_sets = cJSON_CreateNumber(d_number_of_partial_sets);
+        cJSON_NOT_NULL(num_partial_sets);
+        cJSON* num_tokens_in_partial_sets = cJSON_CreateNumber(d_number_of_token_in_partial_sets);
+        cJSON_NOT_NULL(num_tokens_in_partial_sets);
+
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(counter, "Count partial matches", num_partial_sets);
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(counter, "Count tokens in partial matches", num_tokens_in_partial_sets);
+    }
+    if (export_settings & FULL_MATCH)
+    {
+        cJSON* num_full_sets = cJSON_CreateNumber(d_number_of_full_sets);
+        cJSON_NOT_NULL(num_full_sets);
+        cJSON* num_tokens_in_full_sets = cJSON_CreateNumber(d_number_of_token_in_full_sets);
+        cJSON_NOT_NULL(num_tokens_in_full_sets);
+
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(counter, "Count partial matches", num_full_sets);
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(counter, "Count tokens in partial matches", num_tokens_in_full_sets);
+    }
+
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "Counter", counter);
+
+    if (!(export_settings & PART_MATCH) && !(export_settings & FULL_MATCH))
+    {
+        cJSON* no_data_available = cJSON_CreateString("");
+        cJSON_NOT_NULL(no_data_available);
+
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "No data available !", no_data_available);
+    }
 
     return;
 }
