@@ -308,7 +308,7 @@ TokenListContainer_CreateObject
 
             // Print process information
             char_read_before_last_output = Process_Printer(print_steps, char_read_before_last_output,
-                    sum_char_read, unsigned_input_file_length,
+                    sum_char_read, unsigned_input_file_length, true,
                     Read_File_Process_Print_Function);
 
             if (! json)
@@ -1256,7 +1256,7 @@ Read_File_Process_Print_Function
     const float time_left   = Determine_Time_Left(char_read_interval_begin, char_read_interval_end, hundred_percent,
             interval_end - interval_begin);
 
-    PRINTF_FFLUSH("Read file: %*" PRIuFAST32 " KByte (%3.2f %% | %.2f sec.)   \r",
+    PRINTF_FFLUSH("Read file: %*" PRIuFAST32 " KByte (%3.2f %% | %.2f sec.)   ",
             (digits > 3) ? digits - 3 : 3, char_read_interval_begin / 1024,
                     Replace_NaN_And_Inf_With_Zero((percent > 100.0f) ? 100.0f : percent),
                     Replace_NaN_And_Inf_With_Zero(time_left));

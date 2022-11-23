@@ -646,7 +646,7 @@ Exec_Intersection
 
             // Print calculation steps
             intersection_calls_before_last_output = Process_Printer(print_steps, intersection_calls_before_last_output,
-                    intersection_call_counter, number_of_intersection_calls,
+                    intersection_call_counter, number_of_intersection_calls, true,
                     Exec_Intersection_Process_Print_Function);
 
             // Determine the current intersection
@@ -1296,7 +1296,7 @@ Append_Token_List_Container_Data_To_Token_Int_Mapping
         {
             // Print calculation steps
             inner_loop_runs_before_last_print = Process_Printer(print_steps, inner_loop_runs_before_last_print,
-                    inner_loop_counter, inner_loop_runs,
+                    inner_loop_counter, inner_loop_runs, true,
                     Exec_Add_Token_To_Mapping_Process_Print_Function);
 
             char* token = TokenListContainer_GetToken (token_list_container, i, i2);
@@ -1469,7 +1469,7 @@ Exec_Intersection_Process_Print_Function
     const float time_left   = Determine_Time_Left(call_counter_interval_begin, call_counter_interval_end,
             all_calls, interval_end - interval_begin);
 
-    PRINTF_FFLUSH("Calculate intersections (%3.2f %% | %.2f sec.)   \r", Replace_NaN_And_Inf_With_Zero(percent),
+    PRINTF_FFLUSH("Calculate intersections (%3.2f %% | %.2f sec.)   ", Replace_NaN_And_Inf_With_Zero(percent),
             Replace_NaN_And_Inf_With_Zero(time_left));
 
     return;
