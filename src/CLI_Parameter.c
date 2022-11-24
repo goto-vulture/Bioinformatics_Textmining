@@ -41,18 +41,18 @@ const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION =
         "\n    tinytest n/a    from Joe Walnes  (https://github.com/joewalnes/tinytest)";
 
 // Variables for the parsed CLI parameter
-const char* GLOBAL_CLI_INPUT_FILE = NULL;
-const char* GLOBAL_CLI_INPUT_FILE2 = NULL;
-const char* GLOBAL_CLI_OUTPUT_FILE = NULL;
-_Bool GLOBAL_CLI_FORMAT_OUTPUT = false;
-_Bool GLOBAL_CLI_SENTENCE_OFFSET = false;
-_Bool GLOBAL_CLI_WORD_OFFSET = false;
-_Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS = false;
-_Bool GLOBAL_CLI_SHOW_TOO_LONG_TOKENS = false;
-_Bool GLOBAL_CLI_NO_PART_MATCHES = false;
-_Bool GLOBAL_CLI_NO_FULL_MATCHES = false;
-_Bool GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN = false;
-float GLOBAL_ABORT_PROCESS_PERCENT = NAN;
+const char* GLOBAL_CLI_INPUT_FILE               = NULL;
+const char* GLOBAL_CLI_INPUT_FILE2              = NULL;
+const char* GLOBAL_CLI_OUTPUT_FILE              = NULL;
+_Bool GLOBAL_CLI_FORMAT_OUTPUT                  = false;
+_Bool GLOBAL_CLI_SENTENCE_OFFSET                = false;
+_Bool GLOBAL_CLI_WORD_OFFSET                    = false;
+_Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS             = false;
+_Bool GLOBAL_CLI_SHOW_TOO_LONG_TOKENS           = false;
+_Bool GLOBAL_CLI_NO_PART_MATCHES                = false;
+_Bool GLOBAL_CLI_NO_FULL_MATCHES                = false;
+_Bool GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN    = false;
+float GLOBAL_ABORT_PROCESS_PERCENT              = NAN;
 
 
 
