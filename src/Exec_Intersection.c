@@ -382,6 +382,26 @@ Update_Data_Found_Flag
         const cJSON* const restrict intersections_full_match
 );
 
+/**
+ * @brief Print some counter formatted on stdout.
+ *
+ * @param[in] counter_tokens_partial_match Number of tokens in partial matches
+ * @param[in] counter_tokens_full_match Number of tokens in full matches
+ * @param[in] counter_sets_partial_match Number of sets in partial matches
+ * @param[in] counter_sets_full_match Number of sets in full matches
+ *
+ * @param[in] intersection_settings Settings of the intersection calculation
+ */
+static void
+Print_Counter
+(
+        const uint_fast64_t counter_tokens_partial_match,
+        const uint_fast64_t counter_tokens_full_match,
+        const uint_fast64_t counter_sets_partial_match,
+        const uint_fast64_t counter_sets_full_match,
+        const unsigned int intersection_settings
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -403,7 +423,7 @@ Update_Data_Found_Flag
  *      -- the first two lowest digits (in decimal system) encodes the bucket. E.g.: xxx10 means, that this integer can
  *         found in the 11. bucket, when it exists in the mapping data
  *
- * - Use the token int mapping for the creation of a mapped token container (Two Document_Word_List)
+ * - Use the token int mapping for the creation of a mapped token container (Two Documen@param[in]t_Word_List)
  *      -- A Document_Word_List contains a 2 dimensional integer array
  *      -- In this array is the data for the intersection or for the intersection result (Yes Document_Word_List will
  *         be used for the intersection input data and for the intersection result !)
@@ -907,24 +927,11 @@ abort_label:
             strerror(errno));
     result_file_size += strlen ("\n}");
     FCLOSE_AND_SET_TO_NULL(result_file);
-
-    const uint_fast64_t intersection_tokens_found_counter = counter_tokens_in_full_sets + counter_tokens_in_partital_sets;
-    const uint_fast64_t intersection_sets_found_counter = counter_full_sets + counter_partial_sets;
-    const int int_formatter = (int) MAX (Count_Number_Of_Digits(intersection_tokens_found_counter),
-            Count_Number_Of_Digits(intersection_sets_found_counter));
     printf ("\nDone !");
 
-    printf ("\n\nIntersection tokens found: %*" PRIuFAST64 "\n", int_formatter, intersection_tokens_found_counter);
-    if (intersection_settings & PART_MATCH)
-    { printf ("\tIn partial matches: %*" PRIuFAST64 "\n", int_formatter, counter_tokens_in_partital_sets); }
-    if (intersection_settings & FULL_MATCH)
-    { printf ("\tIn full matches:    %*" PRIuFAST64 "\n", int_formatter, counter_tokens_in_full_sets); }
+    // Print the counter
+    Print_Counter(counter_tokens_in_partital_sets, counter_tokens_in_full_sets, counter_partial_sets, counter_full_sets, intersection_settings);
 
-    printf ("Intersection sets found:   %*" PRIuFAST64 "\n", int_formatter, intersection_sets_found_counter);
-    if (intersection_settings & PART_MATCH)
-    { printf ("\tPartial sets: %*" PRIuFAST64 "\n", int_formatter, counter_partial_sets); }
-    if (intersection_settings & FULL_MATCH)
-    { printf ("\tFull sets:    %*" PRIuFAST64 "\n\n", int_formatter, counter_full_sets); }
 
     printf ("cJSON objects memory usage: ");
     Print_Memory_Size_As_B_KB_MB(cJSON_mem_counter);
@@ -932,6 +939,8 @@ abort_label:
     printf ("=> Result file size: ");
     Print_Memory_Size_As_B_KB_MB(result_file_size);
 
+    const uint_fast64_t intersection_tokens_found_counter = counter_tokens_in_full_sets + counter_tokens_in_partital_sets;
+    const uint_fast64_t intersection_sets_found_counter = counter_full_sets + counter_partial_sets;
     if (number_of_intersection_tokens != NULL)
     {
         *number_of_intersection_tokens = intersection_tokens_found_counter;
@@ -1614,6 +1623,49 @@ Update_Data_Found_Flag
     }
 
     return updated_data_found_flag;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Print some counter formatted on stdout.
+ *
+ * @param[in] counter_tokens_partial_match Number of tokens in partial matches
+ * @param[in] counter_tokens_full_match Number of tokens in full matches
+ * @param[in] counter_sets_partial_match Number of sets in partial matches
+ * @param[in] counter_sets_full_match Number of sets in full matches
+ *
+ * @param[in] intersection_settings Settings of the intersection calculation
+ */
+static void
+Print_Counter
+(
+        const uint_fast64_t counter_tokens_partial_match,
+        const uint_fast64_t counter_tokens_full_match,
+        const uint_fast64_t counter_sets_partial_match,
+        const uint_fast64_t counter_sets_full_match,
+        const unsigned int intersection_settings
+)
+{
+    const uint_fast64_t intersection_tokens_found_counter = counter_tokens_full_match + counter_tokens_partial_match;
+    const uint_fast64_t intersection_sets_found_counter = counter_sets_full_match + counter_sets_partial_match;
+    const int int_formatter = (int) MAX (Count_Number_Of_Digits(intersection_tokens_found_counter),
+            Count_Number_Of_Digits(intersection_sets_found_counter));
+
+    printf ("\n\n");
+    printf ("Intersection tokens found:  %*" PRIuFAST64 "\n", int_formatter, intersection_tokens_found_counter);
+    if (intersection_settings & PART_MATCH)
+    { printf ("\tIn partial matches: %*" PRIuFAST64 "\n", int_formatter, counter_tokens_partial_match); }
+    if (intersection_settings & FULL_MATCH)
+    { printf ("\tIn full matches:    %*" PRIuFAST64 "\n", int_formatter, counter_tokens_full_match); }
+
+    printf ("Intersection sets found:    %*" PRIuFAST64 "\n", int_formatter, intersection_sets_found_counter);
+    if (intersection_settings & PART_MATCH)
+    { printf ("\tPartial sets:       %*" PRIuFAST64 "\n", int_formatter, counter_sets_partial_match); }
+    if (intersection_settings & FULL_MATCH)
+    { printf ("\tFull sets:          %*" PRIuFAST64 "\n\n", int_formatter, counter_sets_full_match); }
+
+    return;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
