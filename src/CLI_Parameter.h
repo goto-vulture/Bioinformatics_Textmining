@@ -50,6 +50,12 @@ extern _Bool GLOBAL_CLI_NO_PART_MATCHES; ///< Do not show part matches in the re
 extern _Bool GLOBAL_CLI_NO_FULL_MATCHES; ///< Do not show full matches in the result file
 
 /**
+ * @brief Shall be results with only one token written in the result file ? In normal cases such information are
+ * useless.
+ */
+extern _Bool GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN;
+
+/**
  * @brief On which percent in the calculation should be aborted ? This is for development and debugging purposes useful
  * to limit the calculation process.
  */

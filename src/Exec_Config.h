@@ -33,10 +33,11 @@ enum Exec_Config_Types
     CASE_SENSITIVE  = 1 << 7,   ///< Case sensitive comparison of the tokens ?
 
     // Additional settings
-    SHORTEN_OUTPUT      = 1 << 8,   ///< Shorten the output file ? (E.g. with removing the formation of the result JSON file)
-    NO_FILENAMES        = 1 << 9,   ///< Don't show the input file names in the general info block.
-    NO_CREATION_TIME    = 1 << 10,  ///< Don't show the creation time in the general info block.
-    NO_PROGRAM_VERSION  = 1 << 11   ///< Don't show the program version in the general info block.
+    SHORTEN_OUTPUT              = 1 << 8,   ///< Shorten the output file ? (E.g. with removing the formation of the result JSON file)
+    NO_FILENAMES                = 1 << 9,   ///< Don't show the input file names in the general info block.
+    NO_CREATION_TIME            = 1 << 10,  ///< Don't show the creation time in the general info block.
+    NO_PROGRAM_VERSION          = 1 << 11,  ///< Don't show the program version in the general info block.
+    KEEP_SINGLE_TOKEN_RESULTS   = 1 << 12   ///< Keep results with only one token
 };
 
 /**

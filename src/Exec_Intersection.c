@@ -641,6 +641,9 @@ Exec_Intersection
 
     uint_fast32_t last_used_selected_data_2_array = UINT_FAST32_MAX;
 
+    // How many tokens needs to be left for a valid data set?
+    register const size_t min_token_left_for_valid_data_set = (intersection_settings & KEEP_SINGLE_TOKEN_RESULTS) ? 1 : 2;
+
     // ===== ===== ===== ===== ===== ===== ===== ===== BEGIN Outer loop ===== ===== ===== ===== ===== ===== ===== =====
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
@@ -708,8 +711,9 @@ Exec_Intersection
                 }
             }
 
-            // Show only the data block, if there are intersection results
-            if (DocumentWordList_IsDataInObject(intersection_result) && tokens_left > 0)
+            // Show only the data block, if there are a valid number of intersection results
+            // In default cases a valid data block needs to contain at least 2 (!) tokens
+            if (DocumentWordList_IsDataInObject(intersection_result) && tokens_left >= min_token_left_for_valid_data_set)
             {
                 data_found = true;
 
@@ -1548,6 +1552,10 @@ Create_Intersection_Settings_With_CLI_Parameter
     if (GLOBAL_CLI_NO_FULL_MATCHES)
     {
         if (intersection_settings & FULL_MATCH) { intersection_settings ^= FULL_MATCH; }
+    }
+    if (GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN)
+    {
+        intersection_settings |= KEEP_SINGLE_TOKEN_RESULTS;
     }
 
     return intersection_settings;
