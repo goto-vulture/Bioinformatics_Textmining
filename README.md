@@ -86,9 +86,6 @@ To make the implementation simple, the in and output will be created in a simple
     - Abbreviations should be compared case-sensitive
     - They need to be appear in their original representation in the result file
     - In all other cases a case insensitive comparison
-- Word offsets (the current implementation provides char and sentence offsets)
-- Change focus of the offsets to the origial file (in the current implementation the offset is focused on preprocessed data (stop word removed etc.))
-    - "Where are the objects in the source data?"
 - A more user-friendly interface. Maybe with a GUI. But the priority in this project is low.
 
 
