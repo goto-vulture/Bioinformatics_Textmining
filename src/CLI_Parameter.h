@@ -83,6 +83,13 @@ extern void Check_CLI_Parameter_CLI_OUTPUT_FILE (void);
  */
 extern void Check_CLI_Parameter_GLOBAL_ABORT_PROCESS_PERCENT (void);
 
+/**
+ * @brief Set all CLI parameter to the default values.
+ *
+ * This is only useful for the TEST functions.
+ */
+extern void Set_CLI_Parameter_To_Default_Values (void);
+
 
 
 #ifdef __cplusplus

@@ -99,8 +99,12 @@ extern void TEST_Number_Of_Tokens_Found (void)
     GLOBAL_CLI_INPUT_FILE = FILE_1;
     GLOBAL_CLI_INPUT_FILE2 = FILE_2;
     GLOBAL_CLI_OUTPUT_FILE = OUT_FILE;
+    // Keep results with one token, because the expected value shows all results !
+    GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN = true;
 
     Exec_Intersection(NAN, &number_of_intersection_tokens, NULL);
+
+    GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN = false;
 
     ASSERT_EQUALS(number_of_intersection_tokens, EXPECTED_COUNT_INTERSECTIONS_TOKENS);
 
@@ -114,12 +118,16 @@ extern void TEST_Number_Of_Tokens_Found (void)
  */
 extern void TEST_Number_Of_Sets_Found (void)
 {
+    Set_CLI_Parameter_To_Default_Values();
+
     uint_fast64_t number_of_intersection_sets = 0;
 
     // Adjust the CLI parameter to make the test runnable
     GLOBAL_CLI_INPUT_FILE = FILE_1;
     GLOBAL_CLI_INPUT_FILE2 = FILE_2;
     GLOBAL_CLI_OUTPUT_FILE = OUT_FILE;
+    // Keep results with one token, because the expected value shows all results !
+    GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN = true;
 
     Exec_Intersection(NAN, NULL, &number_of_intersection_sets);
 
@@ -138,6 +146,8 @@ extern void TEST_Number_Of_Sets_Found (void)
  */
 extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files (void)
 {
+    Set_CLI_Parameter_To_Default_Values();
+
     uint_fast64_t number_of_intersection_tokens_1 = 0;
     uint_fast64_t number_of_intersection_tokens_2 = 0;
 
@@ -169,6 +179,8 @@ extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files (void)
  */
 extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files (void)
 {
+    Set_CLI_Parameter_To_Default_Values();
+
     uint_fast64_t number_of_intersection_sets_1 = 0;
     uint_fast64_t number_of_intersection_sets_2 = 0;
 

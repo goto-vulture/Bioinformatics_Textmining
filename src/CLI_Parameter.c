@@ -259,6 +259,31 @@ void Check_CLI_Parameter_GLOBAL_ABORT_PROCESS_PERCENT (void)
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Set all CLI parameter to the default values.
+ *
+ * This is only useful for the TEST functions.
+ */
+extern void Set_CLI_Parameter_To_Default_Values (void)
+{
+    GLOBAL_CLI_INPUT_FILE                   = GLOBAL_CLI_INPUT_FILE_DEFAULT;
+    GLOBAL_CLI_INPUT_FILE2                  = GLOBAL_CLI_INPUT_FILE_DEFAULT_2;
+    GLOBAL_CLI_OUTPUT_FILE                  = GLOBAL_CLI_OUTPUT_FILE_DEFAULT;
+    GLOBAL_CLI_FORMAT_OUTPUT                = GLOBAL_CLI_FORMAT_OUTPUT_DEFAULT;
+    GLOBAL_CLI_SENTENCE_OFFSET              = GLOBAL_CLI_SENTENCE_OFFSET_DEFAULT;
+    GLOBAL_CLI_WORD_OFFSET                  = GLOBAL_CLI_WORD_OFFSET_DEFAULT;
+    GLOBAL_RUN_ALL_TEST_FUNCTIONS           = GLOBAL_RUN_ALL_TEST_FUNCTIONS_DEFAULT;
+    GLOBAL_CLI_SHOW_TOO_LONG_TOKENS         = GLOBAL_CLI_SHOW_TOO_LONG_TOKENS_DEFAULT;
+    GLOBAL_CLI_NO_PART_MATCHES              = GLOBAL_CLI_NO_PART_MATCHES_DEFAULT;
+    GLOBAL_CLI_NO_FULL_MATCHES              = GLOBAL_CLI_NO_FULL_MATCHES_DEFAULT;
+    GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN  = GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN_DEFAULT;
+    GLOBAL_ABORT_PROCESS_PERCENT            = GLOBAL_ABORT_PROCESS_PERCENT_DEFAULT;
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 // Delete macros for the default values of the CLI parameter
 #ifdef GLOBAL_CLI_INPUT_FILE_DEFAULT
 #undef GLOBAL_CLI_INPUT_FILE_DEFAULT
