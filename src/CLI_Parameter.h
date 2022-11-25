@@ -64,22 +64,22 @@ extern float GLOBAL_ABORT_PROCESS_PERCENT;
 
 
 /**
- * @brief Testfunktion fuer den CLI Parameter, der die erste Eingabedatei beschreibt.
+ * @brief @brief Test function for the CLI parameter, that is used as first input file name.
  */
 extern void Check_CLI_Parameter_CLI_INPUT_FILE (void);
 
 /**
- * @brief Testfunktion fuer den CLI Parameter, der die zweite Eingabedatei beschreibt.
+ * @brief Test function for the CLI parameter, that is used as second input file name.
  */
 extern void Check_CLI_Parameter_CLI_INPUT_FILE2 (void);
 
 /**
- * @brief Testfunktion fuer den CLI Parameter, der die Ausgabedatei beschreibt.
+ * @brief Test function for the CLI parameter, that is used as output file name.
  */
 extern void Check_CLI_Parameter_CLI_OUTPUT_FILE (void);
 
 /**
- * @brief Testfunction for the abort percent value.
+ * @brief Test function for the abort percent value.
  */
 extern void Check_CLI_Parameter_GLOBAL_ABORT_PROCESS_PERCENT (void);
 
