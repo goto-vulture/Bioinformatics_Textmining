@@ -60,7 +60,7 @@ extern "C"
 #ifndef ALL_POSSIBLE_TYPES
 #define ALL_POSSIBLE_TYPES(type, type_def)                                                                              \
     type_def(type),                                                                                                     \
-	ALL_PTR(type, TYPE_DEF)
+	ALL_PTR(type, type_def)
 #else
 #error "The macro \"ALL_POSSIBLE_TYPES\" is already defined !"
 #endif /* ALL_POSSIBLE_TYPES */
