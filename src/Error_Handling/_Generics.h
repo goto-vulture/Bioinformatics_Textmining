@@ -240,6 +240,43 @@ extern "C"
 #error "The macro \"IS_NO_INT\" is already defined !"
 #endif /* IS_NO_INT */
 
+/**
+ * @brief Is the given type a floating point value ((const) float, (const) double, (const) long double) ?
+ */
+#ifndef IS_FLOAT
+#define IS_FLOAT(value)                                                                                                 \
+    _Static_assert(PTR_CHECK(value, TYPE_INVALID, true), #value " is a pointer ! Pointer are not allowed !");           \
+    _Static_assert(_Generic((value),                                                                                    \
+    float: true,                                                                                                        \
+    const float: true,                                                                                                  \
+    double: true,                                                                                                       \
+    const double: true,                                                                                                 \
+    long double: true,                                                                                                  \
+    const long double: true,                                                                                            \
+    default: false),                                                                                                    \
+        #value " is not a floating point type !");
+#else
+#error "The macro \"IS_FLOAT\" is already defined !"
+#endif /* IS_FLOAT */
+
+/**
+ * @brief Is the given type not a floating point value ((const) float, (const) double, (const) long double) ?
+ */
+#ifndef IS_NO_FLOAT
+#define IS_NO_FLOAT(value)                                                                                              \
+    _Static_assert(_Generic((value),                                                                                    \
+    float: false,                                                                                                       \
+    const float: false,                                                                                                 \
+    double: false,                                                                                                      \
+    const double: false,                                                                                                \
+    long double: false,                                                                                                 \
+    const long double: false,                                                                                           \
+    default: true),                                                                                                     \
+        #value " is a floating point type ! These types are not allowed !");
+#else
+#error "The macro \"IS_NO_FLOAT\" is already defined !"
+#endif /* IS_NO_FLOAT */
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -689,6 +726,18 @@ extern "C"
 #else
 #error "The macro \"IS_NO_INT\" is already defined !"
 #endif /* IS_NO_INT */
+
+#ifndef IS_FLOAT
+#define IS_FLOAT(value)
+#else
+#error "The macro \"IS_FLOAT\" is already defined !"
+#endif /* IS_FLOAT */
+
+#ifndef IS_NO_FLOAT
+#define IS_NO_FLOAT(value)
+#else
+#error "The macro \"IS_NO_FLOAT\" is already defined !"
+#endif /* IS_NO_FLOAT */
 
 
 
