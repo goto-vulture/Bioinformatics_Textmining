@@ -269,8 +269,12 @@ extern int_fast64_t Determine_FILE_Size (FILE* file)
 
 #ifdef USE_FALLBACK
     #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    // -Wcpp can occur on a system, that uses the GCC extension #warning -> Ignore such a warning for the next few lines
+    #pragma GCC diagnostic ignored "-Wcpp"
     #warning "Old fseek()/ftell() mechanism used for determining the file size ! This could lead to a file size limit of 2 GB."
         result = (int_fast64_t) Determine_FILE_Size_Fallback(file);
+    #pragma GCC diagnostic pop
     #endif /* __GNUC__ */
 #else
         // Pseudo using to avoid unused warnings
