@@ -242,7 +242,10 @@ extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const s
  * @param[in] hundred_percent Value that represents a process of 100 % (In other words: the value, that will appear
  *      when the operation is done)
  * @param[in] with_carriage_return Print a carriage return at the end of the line
+ *
  * @param[in] print_function This is the function, that will be called, when process information are to be printed
+ * @param[in] optional_parameter Optional parameter for the optional_second_print_function function ptr
+ * @param[in] optional_second_print_function An optional print function for additional work
  *
  * @return The new counter
  */
@@ -255,6 +258,11 @@ extern size_t Process_Printer (const size_t print_step_size, const size_t counte
             const size_t hundred_percent,
             const clock_t interval_begin,
             const clock_t interval_end
+        ),
+        void* optional_parameter,
+        void (*optional_second_print_function)
+        (
+                void* data
         )
 );
 
