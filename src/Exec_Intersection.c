@@ -1466,6 +1466,17 @@ Exec_Add_Token_To_Mapping_Process_Print_Function
 
 //---------------------------------------------------------------------------------------------------------------------
 
+#ifndef TIME_LEFT_COUNTER
+#define TIME_LEFT_COUNTER 500
+#else
+#error "The macro \"TIME_LEFT_COUNTER\" is already defined !"
+#endif /* TIME_LEFT_COUNTER */
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+_Static_assert(TIME_LEFT_COUNTER > 0, "The macro \"TIME_LEFT_COUNTER\" needs to be larger than 0 !");
+IS_TYPE(TIME_LEFT_COUNTER, int)
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
 /**
  * @brief A function, that will be used to show the intersection calculation process.
  *
@@ -1491,6 +1502,10 @@ Exec_Intersection_Process_Print_Function
         const clock_t interval_end
 )
 {
+    static float sum_time_left  = 0.0f;
+    static float last_time_left = 0.0f;
+    static int counter          = 0;
+
     const size_t call_counter_interval_begin    = (actual > hundred_percent) ? hundred_percent : actual;
     const size_t all_calls                      = hundred_percent;
     const size_t call_counter_interval_end      = (call_counter_interval_begin + print_step_size > all_calls) ?
@@ -1499,11 +1514,24 @@ Exec_Intersection_Process_Print_Function
     const float percent     = Replace_NaN_And_Inf_With_Zero(Determine_Percent(call_counter_interval_begin, all_calls));
     const float time_left   = Replace_NaN_And_Inf_With_Zero(Determine_Time_Left(call_counter_interval_begin,
             call_counter_interval_end, all_calls, interval_end - interval_begin));
+    sum_time_left += time_left;
 
-    PRINTF_FFLUSH("Calculate intersections (%5.2f%% | %5" PRIuFAST64 "s) ", percent, (uint_fast64_t) time_left);
+    if ((counter % TIME_LEFT_COUNTER) == 0)
+    {
+        last_time_left  = sum_time_left / TIME_LEFT_COUNTER;
+        sum_time_left   = 0.0f;
+        counter         = 0;
+    }
+
+    PRINTF_FFLUSH("Calculate intersections (%5.2f%% | %5" PRIuFAST64 "s) ", percent, (uint_fast64_t) last_time_left);
+    ++ counter;
 
     return;
 }
+
+#ifdef TIME_LEFT_COUNTER
+#undef TIME_LEFT_COUNTER
+#endif /* TIME_LEFT_COUNTER */
 
 //---------------------------------------------------------------------------------------------------------------------
 
