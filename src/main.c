@@ -287,7 +287,7 @@ int main (const int argc, const char* argv [])
     else
     {
         PUTS_FFLUSH ("Missing first input file. Option: [-i / --input]");
-        exit(EXIT_FAILURE);
+        EXIT(EXIT_FAILURE);
     }
     if (GLOBAL_CLI_INPUT_FILE2 != NULL)
     {
@@ -297,7 +297,7 @@ int main (const int argc, const char* argv [])
     else
     {
         PUTS_FFLUSH ("Missing second input file. Option: [-j / --input2]");
-        exit(EXIT_FAILURE);
+        EXIT(EXIT_FAILURE);
     }
     if (GLOBAL_CLI_OUTPUT_FILE != NULL)
     {
@@ -307,7 +307,7 @@ int main (const int argc, const char* argv [])
     else
     {
         PUTS_FFLUSH ("Missing output file. Option: [-o / --output]");
-        exit(EXIT_FAILURE);
+        EXIT(EXIT_FAILURE);
     }
     puts("");
 

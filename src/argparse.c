@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <errno.h>
 #include "argparse.h"
+#include "Misc.h"
 
 #define OPT_UNSET 1
 #define OPT_LONG  (1 << 1)
@@ -43,7 +44,7 @@ argparse_error(struct argparse *self, const struct argparse_option *opt,
     } else {
         fprintf(stderr, "error: option `-%c` %s\n", opt->short_name, reason);
     }
-    exit(EXIT_FAILURE);
+    EXIT(EXIT_FAILURE);
 }
 
 static int
@@ -285,7 +286,7 @@ unknown:
         fprintf(stderr, "error: unknown option `%s`\n", self->argv[0]);
         argparse_usage(self);
         if (!(self->flags & ARGPARSE_IGNORE_UNKNOWN_ARGS)) {
-            exit(EXIT_FAILURE);
+            EXIT(EXIT_FAILURE);
         }
     }
 
@@ -401,5 +402,5 @@ argparse_help_cb(struct argparse *self, const struct argparse_option *option)
 {
     (void)option;
     argparse_usage(self);
-    exit(EXIT_SUCCESS);
+    EXIT(EXIT_SUCCESS);
 }

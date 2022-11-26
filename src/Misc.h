@@ -161,6 +161,27 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief On windows systems a system command "PAUSE" is necessary, because the terminal window will close immediately
+ * after the exit call. So it is not possible to read the error message.
+ */
+#ifndef EXIT
+#ifdef _WIN32
+#define EXIT(exit_value)                                                                                                \
+    system("PAUSE");                                                                                                    \
+    exit(exit_value);                                                                                                   \
+    IS_INT(exit_value)
+#else
+#define EXIT(exit_value)                                                                                                \
+    exit(exit_value);                                                                                                   \
+    IS_INT(exit_value)
+#endif /* _WIN32 */
+#else
+#error "The macro \"EXIT\" is already defined !"
+#endif /* EXIT */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Count number of digits in a value.
  *
  * @param[in] value Value
