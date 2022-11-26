@@ -470,7 +470,7 @@ Add_Newline
 #else
     *parsing_result = '\n';
     parsing_result ++;
-    *parsing_result_mem_left --
+    *parsing_result_mem_left -= 1;
     ASSERT_FMSG(*parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
             "(Allocated size: %zu byte)", parsing_result_length);
 #endif /* _WIN32 */
