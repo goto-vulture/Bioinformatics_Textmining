@@ -21,6 +21,22 @@
 
 
 
+/**
+ * @brief Add the system specific newline byte sequence to the parsing result.
+ * 
+ * Linux: '\n'
+ * Windows: '\r\n'
+ 
+ * @return The new parsing_result pointer
+ */
+static char*
+Add_Newline
+(
+    char* restrict parsing_result,
+    size_t* const restrict parsing_result_mem_left,
+    const size_t parsing_result_length
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 extern void TEST_cJSON_Parse_JSON_Fragment (void)
@@ -287,7 +303,7 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
     // Allocate memory for the parsing result and execute the parsing process
     // For the sake of simplicity, I assume that the double length of the expected result is enough
     const size_t parsing_result_length = (size_t) (test_file_length * 2);
-    register size_t parsing_result_mem_left = parsing_result_length - 1;
+    size_t parsing_result_mem_left = parsing_result_length - 1;
     register char* parsing_result = (char*) CALLOC (parsing_result_length, sizeof (char));
     char* parsing_result_orig_ptr = parsing_result;
     ASSERT_ALLOC(parsing_result, "Cannot allocate memory for the parsing result !",
@@ -340,11 +356,8 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
 
             ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
                     "(Allocated size: %zu byte)", parsing_result_length);
-            *parsing_result = '\n';
-            parsing_result ++;
-            parsing_result_mem_left --;
-            ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
-                    "(Allocated size: %zu byte)", parsing_result_length);
+
+            parsing_result = Add_Newline(parsing_result, &parsing_result_mem_left, parsing_result_length);
             *parsing_result = '[';
             parsing_result ++;
             parsing_result_mem_left --;
@@ -398,20 +411,11 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
             parsing_result -= 2;
             *parsing_result = ']';
             parsing_result ++;
-            *parsing_result = '\n';
-            parsing_result ++;
-            ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
-                    "(Allocated size: %zu byte)", parsing_result_length);
-            // Faster way to copy one char than "strncat(parsing_result, "\n", parsing_result_mem_left);"
-            *parsing_result = '\n';
-            parsing_result ++;
-            parsing_result_mem_left --;
+            parsing_result = Add_Newline(parsing_result, &parsing_result_mem_left, parsing_result_length);
+            parsing_result = Add_Newline(parsing_result, &parsing_result_mem_left, parsing_result_length);
             curr = curr->next;
         }
-        *parsing_result = '\n';
-        parsing_result ++;
-        ASSERT_FMSG(parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
-                "(Allocated size: %zu byte)", parsing_result_length);
+        parsing_result = Add_Newline(parsing_result, &parsing_result_mem_left, parsing_result_length);
         *parsing_result = '\0';
 
         cJSON_Delete(json);
@@ -433,4 +437,44 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
     return;
 }
 
+//=====================================================================================================================
+
+/**
+ * @brief Add the system specific newline byte sequence to the parsing result.
+ * 
+ * Linux: '\n'
+ * Windows: '\r\n'
+ *
+ * @return The new parsing_result pointer
+ */
+static char*
+Add_Newline
+(
+    char* restrict parsing_result,
+    size_t* const restrict parsing_result_mem_left,
+    const size_t parsing_result_length
+)
+{
+    ASSERT_MSG(parsing_result != NULL, "parsing_result is NULL !");
+    ASSERT_MSG(parsing_result_mem_left != NULL, "parsing_result_mem_left is NULL !");
+
+// Using system specific newline char sequences
+#ifdef _WIN32
+    ASSERT_FMSG(*parsing_result_mem_left > 2, "Not enough memory allocated for the parsing result ! "
+            "(Allocated size: %zu byte)", parsing_result_length);
+    *parsing_result = '\r';
+    parsing_result ++;
+    *parsing_result = '\n';
+    parsing_result ++;
+    *parsing_result_mem_left -= 2;
+#else
+    *parsing_result = '\n';
+    parsing_result ++;
+    *parsing_result_mem_left --
+    ASSERT_FMSG(*parsing_result_mem_left > 0, "Not enough memory allocated for the parsing result ! "
+            "(Allocated size: %zu byte)", parsing_result_length);
+#endif /* _WIN32 */
+
+    return parsing_result;
+}
 //---------------------------------------------------------------------------------------------------------------------
