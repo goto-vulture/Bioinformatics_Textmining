@@ -1727,8 +1727,9 @@ Print_Counter
 {
     const uint_fast64_t intersection_tokens_found_counter = counter_tokens_full_match + counter_tokens_partial_match;
     const uint_fast64_t intersection_sets_found_counter = counter_sets_full_match + counter_sets_partial_match;
-    const int int_formatter = (int) MAX (Count_Number_Of_Digits(intersection_tokens_found_counter),
-            Count_Number_Of_Digits(intersection_sets_found_counter));
+    // The _Static_asserts in the main.c file guarantee, that size_t is at least 4 byte
+    const int int_formatter = (int) MAX (Count_Number_Of_Digits((size_t) intersection_tokens_found_counter),
+            Count_Number_Of_Digits((size_t) intersection_sets_found_counter));
 
     printf ("\n\n");
     printf ("Intersection tokens found:  %*" PRIuFAST64 "\n", int_formatter, intersection_tokens_found_counter);
