@@ -805,7 +805,7 @@ TokenListContainer_GetLenghOfLongestToken
     {
         for (uint_fast32_t i2 = 0; i2 < container->token_lists [i].next_free_element; ++ i2)
         {
-            result = MAX(result, strlen (&(container->token_lists [i].data [i2 * token_size])));
+            result = MAX_WITH_TYPE_CHECK(result, strlen (&(container->token_lists [i].data [i2 * token_size])));
         }
     }
 

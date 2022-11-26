@@ -543,7 +543,7 @@ Exec_Intersection
 
 
     // >>> Use the token int mapping for the creation of a mapped token container <<<
-    const size_t length_of_longest_token_container = MAX(TokenListContainer_GetLenghOfLongestTokenList(token_container_input_1),
+    const size_t length_of_longest_token_container = MAX_WITH_TYPE_CHECK(TokenListContainer_GetLenghOfLongestTokenList(token_container_input_1),
             TokenListContainer_GetLenghOfLongestTokenList(token_container_input_2));
 
     // token_container_input_1->next_free_element and token_container_input_2->next_free_element

@@ -598,9 +598,9 @@ DocumentWordList_ShowAttributes
     ASSERT_MSG(object != NULL, "Object is NULL !");
 
     // Int formatter for the output
-    int formatter_int = (int) MAX(Count_Number_Of_Digits(object->number_of_arrays),
+    int formatter_int = (int) MAX_WITH_TYPE_CHECK(Count_Number_Of_Digits(object->number_of_arrays),
                 Count_Number_Of_Digits(object->max_array_length));
-    formatter_int = MAX((int) Count_Number_Of_Digits(object->malloc_calloc_calls), formatter_int);
+    formatter_int = MAX_WITH_TYPE_CHECK((int) Count_Number_Of_Digits(object->malloc_calloc_calls), formatter_int);
 
     puts("");
     printf("Full document word list container size: ");

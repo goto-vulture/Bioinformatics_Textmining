@@ -95,6 +95,36 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Similar like MAX(x, y) but with a no pointer and a no floating point type check.
+ */
+#ifndef MAX_WITH_TYPE_CHECK
+#define MAX_WITH_TYPE_CHECK(x, y) MAX(x, y);                                                                            \
+    IS_NO_PTR(x)                                                                                                        \
+    IS_NO_PTR(y)                                                                                                        \
+    IS_NO_FLOAT(x)                                                                                                      \
+    IS_NO_FLOAT(y)
+#else
+#error "The macro \"MAX_WITH_TYPE_CHECK\" is already defined !"
+#endif /* MAX_WITH_TYPE_CHECK */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Similar like MIN(x, y) but with a no pointer and a no floating point type check.
+ */
+#ifndef MIN_WITH_TYPE_CHECK
+#define MIN_WITH_TYPE_CHECK(x, y) MIN(x, y);                                                                            \
+    IS_NO_PTR(x)                                                                                                        \
+    IS_NO_PTR(y)                                                                                                        \
+    IS_NO_FLOAT(x)                                                                                                      \
+    IS_NO_FLOAT(y)
+#else
+#error "The macro \"MIN_WITH_TYPE_CHECK\" is already defined !"
+#endif /* MIN_WITH_TYPE_CHECK */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Comparison macro to find the greater value.
  *
  * ! This is a macro, not a function !
