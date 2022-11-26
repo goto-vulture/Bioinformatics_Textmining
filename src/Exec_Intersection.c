@@ -579,7 +579,7 @@ Exec_Intersection
     char result_file_buffer [RESULT_FILE_BUFFER_SIZE];
     setvbuf (result_file, result_file_buffer, _IOFBF, RESULT_FILE_BUFFER_SIZE);
 
-    const uint_fast16_t count_steps                     = 10000;
+    const uint_fast16_t count_steps                     = 50000;
     const uint_fast32_t number_of_intersection_calls    = source_int_values_2->next_free_array *
             source_int_values_1->next_free_array;
     const uint_fast32_t print_steps                     =
@@ -1500,7 +1500,7 @@ Exec_Intersection_Process_Print_Function
     const float time_left   = Replace_NaN_And_Inf_With_Zero(Determine_Time_Left(call_counter_interval_begin,
             call_counter_interval_end, all_calls, interval_end - interval_begin));
 
-    PRINTF_FFLUSH("Calculate intersections (%5.2f %% | %6.2f sec.) ", percent, time_left);
+    PRINTF_FFLUSH("Calculate intersections (%5.2f%% | %5" PRIuFAST64 "s) ", percent, (uint_fast64_t) time_left);
 
     return;
 }
@@ -1525,7 +1525,7 @@ Print_Export_File_Size
 
     const size_t* const export_file_size_casted_ptr = (size_t*) export_file_size;
 
-    printf ("File size: %.2f MB", (float) *export_file_size_casted_ptr / 1024.0f / 1024.0f);
+    printf ("Result: %.2fMB", (float) *export_file_size_casted_ptr / 1024.0f / 1024.0f);
 
     return;
 }
