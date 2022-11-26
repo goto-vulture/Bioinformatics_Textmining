@@ -76,15 +76,10 @@ extern "C"
 #ifndef ALL_PTR
 #define ALL_PTR(type, type_def)                                                                                         \
     TYPE_PTR(type, type_def),                                                                                           \
-    TYPE_PTR(const type, type_def),                                                                                     \
     TYPE_PTR_PTR(type, type_def),                                                                                       \
-    TYPE_PTR_PTR(const type, type_def),                                                                                 \
     TYPE_PTR_PTR_PTR(type, type_def),                                                                                   \
-    TYPE_PTR_PTR_PTR(const type, type_def),                                                                             \
     TYPE_PTR_PTR_PTR_PTR(type, type_def),                                                                               \
-    TYPE_PTR_PTR_PTR_PTR(const type, type_def),                                                                         \
-    TYPE_PTR_PTR_PTR_PTR_PTR(type, type_def),                                                                           \
-    TYPE_PTR_PTR_PTR_PTR_PTR(const type, type_def)
+    TYPE_PTR_PTR_PTR_PTR_PTR(type, type_def)
 #else
 #error "The macro \"ALL_PTR\" is already defined !"
 #endif /* ALL_PTR */
