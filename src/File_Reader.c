@@ -309,7 +309,9 @@ TokenListContainer_CreateObject
             // Print process information
             char_read_before_last_output = Process_Printer(print_steps, char_read_before_last_output,
                     sum_char_read, unsigned_input_file_length, true,
-                    Read_File_Process_Print_Function);
+                    Read_File_Process_Print_Function,
+                    NULL,
+                    NULL);
 
             if (! json)
             {

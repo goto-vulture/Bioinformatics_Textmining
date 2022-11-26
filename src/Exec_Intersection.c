@@ -333,6 +333,20 @@ Exec_Intersection_Process_Print_Function
 );
 
 /**
+ * @brief Print the current export file size in a formatted way.
+ *
+ * The technique with a void* pointer is necessary to fit in the parameter list of the optional_second_print_function
+ * function pointer in the Process_Printer function.
+ *
+ * @param[in] export_file_size The current size of the export file in bytes
+ */
+static void
+Print_Export_File_Size
+(
+        void* export_file_size
+);
+
+/**
  * @brief Determine the full size (including str sizes) of a cJSON object.
  *
  * Asserts:
@@ -670,7 +684,9 @@ Exec_Intersection
             // Print calculation steps
             intersection_calls_before_last_output = Process_Printer(print_steps, intersection_calls_before_last_output,
                     intersection_call_counter, number_of_intersection_calls, true,
-                    Exec_Intersection_Process_Print_Function);
+                    Exec_Intersection_Process_Print_Function,
+                    &result_file_size,
+                    Print_Export_File_Size);
 
             // Determine the current intersection
             // The second array (source_int_values_2->data_struct.data [selected_data_array]) will be used for every data array in
@@ -1310,7 +1326,9 @@ Append_Token_List_Container_Data_To_Token_Int_Mapping
             // Print calculation steps
             inner_loop_runs_before_last_print = Process_Printer(print_steps, inner_loop_runs_before_last_print,
                     inner_loop_counter, inner_loop_runs, true,
-                    Exec_Add_Token_To_Mapping_Process_Print_Function);
+                    Exec_Add_Token_To_Mapping_Process_Print_Function,
+                    NULL,
+                    NULL);
 
             char* token = TokenListContainer_GetToken (token_list_container, i, i2);
             element_added = TokenIntMapping_AddToken(token_int_mapping, token, strlen(token));
@@ -1478,12 +1496,36 @@ Exec_Intersection_Process_Print_Function
     const size_t call_counter_interval_end      = (call_counter_interval_begin + print_step_size > all_calls) ?
             all_calls : (call_counter_interval_begin + print_step_size);
 
-    const float percent     = Determine_Percent(call_counter_interval_begin, all_calls);
-    const float time_left   = Determine_Time_Left(call_counter_interval_begin, call_counter_interval_end,
-            all_calls, interval_end - interval_begin);
+    const float percent     = Replace_NaN_And_Inf_With_Zero(Determine_Percent(call_counter_interval_begin, all_calls));
+    const float time_left   = Replace_NaN_And_Inf_With_Zero(Determine_Time_Left(call_counter_interval_begin,
+            call_counter_interval_end, all_calls, interval_end - interval_begin));
 
-    PRINTF_FFLUSH("Calculate intersections (%3.2f %% | %.2f sec.)   ", Replace_NaN_And_Inf_With_Zero(percent),
-            Replace_NaN_And_Inf_With_Zero(time_left));
+    PRINTF_FFLUSH("Calculate intersections (%5.2f %% | %6.2f sec.) ", percent, time_left);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Print the current export file size in a formatted way.
+ *
+ * The technique with a void* pointer is necessary to fit in the parameter list of the optional_second_print_function
+ * function pointer in the Process_Printer function.
+ *
+ * @param[in] export_file_size The current size of the export file in bytes
+ */
+static void
+Print_Export_File_Size
+(
+        void* export_file_size
+)
+{
+    ASSERT_MSG(export_file_size != NULL, "Input value (the size of the export file) is NULL !");
+
+    const size_t* const export_file_size_casted_ptr = (size_t*) export_file_size;
+
+    printf ("File size: %.2f MB", (float) *export_file_size_casted_ptr / 1024.0f / 1024.0f);
 
     return;
 }
