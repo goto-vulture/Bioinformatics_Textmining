@@ -81,9 +81,9 @@ extern "C"
  *
  * ! This is a macro, not a function !
  * It is important, that the "input parameter" have no side effects. (For example: MIN (x ++, ++ y) will determine
- * wrong and unexpected results.
+ * wrong and unexpected results.)
  *
- * Therefore it is recommended to use this macro only with "raw" valus and not with statements like "x + 2" to fully
+ * Therefore it is recommended to use this macro only with "raw" values and not with statements like "x + 2" to fully
  * avoid mistakes with side effects.
  */
 #ifndef MIN
@@ -99,9 +99,9 @@ extern "C"
  *
  * ! This is a macro, not a function !
  * It is important, that the "input parameter" have no side effects. (For example: MAX (x ++, ++ y) will determine
- * wrong and unexpected results.
+ * wrong and unexpected results.)
  *
- * Therefore it is recommended to use this macro only with "raw" valus and not with statements like "x + 2" to fully
+ * Therefore it is recommended to use this macro only with "raw" values and not with statements like "x + 2" to fully
  * avoid mistakes with side effects.
  */
 #ifndef MAX
