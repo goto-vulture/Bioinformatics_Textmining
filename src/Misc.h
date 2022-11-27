@@ -102,7 +102,8 @@ extern "C"
     IS_NO_PTR(x)                                                                                                        \
     IS_NO_PTR(y)                                                                                                        \
     IS_NO_FLOAT(x)                                                                                                      \
-    IS_NO_FLOAT(y)
+    IS_NO_FLOAT(y)                                                                                                      \
+    TYPE_EQUAL(x, y)
 #else
 #error "The macro \"MAX_WITH_TYPE_CHECK\" is already defined !"
 #endif /* MAX_WITH_TYPE_CHECK */
@@ -117,7 +118,8 @@ extern "C"
     IS_NO_PTR(x)                                                                                                        \
     IS_NO_PTR(y)                                                                                                        \
     IS_NO_FLOAT(x)                                                                                                      \
-    IS_NO_FLOAT(y)
+    IS_NO_FLOAT(y)                                                                                                      \
+    TYPE_EQUAL(x, y)
 #else
 #error "The macro \"MIN_WITH_TYPE_CHECK\" is already defined !"
 #endif /* MIN_WITH_TYPE_CHECK */
