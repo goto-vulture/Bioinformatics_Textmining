@@ -336,6 +336,9 @@ TokenListContainer_CreateObject
                 cJSON* tokens_array = cJSON_GetObjectItemCaseSensitive(name, "tokens");
                 if (! tokens_array) { continue; }
 
+                // If a array with offsets is available ? Use them
+                cJSON* char_offsets_array = cJSON_GetObjectItemCaseSensitive(name, "abs_char_offsets");
+
                 // Get all tokens from tokens array
                 //const int tokens_array_size = cJSON_GetArraySize(tokens_array);
                 register cJSON* curr_token = tokens_array->child;
@@ -410,26 +413,34 @@ TokenListContainer_CreateObject
                                 Get_Address_Of_Token (current_token_list_obj, current_token_list_obj->next_free_element - 1);
                         const size_t last_token_length = strlen(last_token);
 
-                        size_t tmp_result =
-                                current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
-                                last_token_length;
-                        // Don't forget, that the char offsets in original data includes the blanks between the tokens !
-                        // Example from test_ebm_formatted.json:
-                        /*
-                         "tokens": [
-                          "[",
-                          "The",
-                          "chemotherapy",
-                          "of",
-                        */
-                        /*
-                        "abs_char_offsets": [
-                          0,
-                          2,
-                          6,
-                          19,
-                        */
-                        /* => */ tmp_result ++;
+                        size_t new_char_offset = 0;
+                        if (char_offsets_array != NULL)
+                        {
+                            new_char_offset = (size_t) char_offsets_array->valueint;
+                        }
+                        else
+                        {
+                            new_char_offset = current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
+                                    last_token_length;
+
+                            // Don't forget, that the char offsets in original data includes the blanks between the tokens !
+                            // Example from test_ebm_formatted.json:
+                            /*
+                             "tokens": [
+                              "[",
+                              "The",
+                              "chemotherapy",
+                              "of",
+                            */
+                            /*
+                            "abs_char_offsets": [
+                              0,
+                              2,
+                              6,
+                              19,
+                            */
+                            /* => */ new_char_offset ++;
+                        }
 
                         const size_t new_sentence_offset =
                                 current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element - 1] +
@@ -441,7 +452,7 @@ TokenListContainer_CreateObject
                         // Almost all tokens of the input files will be pass this test
                         size_t new_word_offset = 0;
                         new_word_offset = current_token_list_obj->word_offsets [current_token_list_obj->next_free_element - 1];
-                        if (Is_String_Printable(last_token, last_token_length))
+                        //if (Is_String_Printable(last_token, last_token_length))
                         {
                             ++ new_word_offset;
                         }
@@ -455,11 +466,11 @@ TokenListContainer_CreateObject
                         
                         // When the new char offset is larger that are saveable in this type, then will be the calculation
                         // aborted, because in such a situation exists no possibility to "save" this problem
-                        ASSERT_FMSG(tmp_result < CHAR_OFFSET_TYPE_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
-                                tmp_result, CHAR_OFFSET_TYPE_MAX - 1);
+                        ASSERT_FMSG(new_char_offset < CHAR_OFFSET_TYPE_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
+                                new_char_offset, CHAR_OFFSET_TYPE_MAX - 1);
 
                         current_token_list_obj->char_offsets [current_token_list_obj->next_free_element] =
-                                (CHAR_OFFSET_TYPE) tmp_result;
+                                (CHAR_OFFSET_TYPE) new_char_offset;
                         current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element] =
                                 (SENTENCE_OFFSET_TYPE) new_sentence_offset;
                         current_token_list_obj->word_offsets [current_token_list_obj->next_free_element] =
@@ -473,6 +484,10 @@ TokenListContainer_CreateObject
                     new_container->longest_token_length = MAX(new_container->longest_token_length, current_token_len);
 
                     curr_token = curr_token->next;
+                    if (char_offsets_array != NULL)
+                    {
+                        char_offsets_array = char_offsets_array->next;
+                    }
                 }
                 // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
 
