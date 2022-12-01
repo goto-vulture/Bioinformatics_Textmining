@@ -410,9 +410,27 @@ TokenListContainer_CreateObject
                                 Get_Address_Of_Token (current_token_list_obj, current_token_list_obj->next_free_element - 1);
                         const size_t last_token_length = strlen(last_token);
 
-                        const size_t tmp_result =
+                        size_t tmp_result =
                                 current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
                                 last_token_length;
+                        // Don't forget, that the char offsets in original data includes the blanks between the tokens !
+                        // Example from test_ebm_formatted.json:
+                        /*
+                         "tokens": [
+                          "[",
+                          "The",
+                          "chemotherapy",
+                          "of",
+                        */
+                        /*
+                        "abs_char_offsets": [
+                          0,
+                          2,
+                          6,
+                          19,
+                        */
+                        /* => */ tmp_result ++;
+
                         const size_t new_sentence_offset =
                                 current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element - 1] +
                                 (last_token [0] == '.') ? 1 : 0;
