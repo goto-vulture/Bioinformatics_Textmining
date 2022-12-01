@@ -1467,14 +1467,14 @@ Exec_Add_Token_To_Mapping_Process_Print_Function
 //---------------------------------------------------------------------------------------------------------------------
 
 #ifndef TIME_LEFT_COUNTER
-#define TIME_LEFT_COUNTER 500
+#define TIME_LEFT_COUNTER (uint_fast32_t) 375
 #else
 #error "The macro \"TIME_LEFT_COUNTER\" is already defined !"
 #endif /* TIME_LEFT_COUNTER */
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(TIME_LEFT_COUNTER > 0, "The macro \"TIME_LEFT_COUNTER\" needs to be larger than 0 !");
-IS_TYPE(TIME_LEFT_COUNTER, int)
+IS_TYPE(TIME_LEFT_COUNTER, uint_fast32_t)
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 /**
@@ -1502,9 +1502,10 @@ Exec_Intersection_Process_Print_Function
         const clock_t interval_end
 )
 {
-    static float sum_time_left  = 0.0f;
-    static float last_time_left = 0.0f;
-    static int counter          = 0;
+    static float sum_time_left          = 0.0f;
+    static float last_time_left         = 0.0f;
+    static uint_fast32_t counter        = 0;
+    static uint_fast32_t last_counter   = 0;
 
     const size_t call_counter_interval_begin    = (actual > hundred_percent) ? hundred_percent : actual;
     const size_t all_calls                      = hundred_percent;
@@ -1516,15 +1517,15 @@ Exec_Intersection_Process_Print_Function
             call_counter_interval_end, all_calls, interval_end - interval_begin));
     sum_time_left += time_left;
 
-    if ((counter % TIME_LEFT_COUNTER) == 0)
+    if (last_counter - counter > TIME_LEFT_COUNTER)
     {
         last_time_left  = sum_time_left / TIME_LEFT_COUNTER;
         sum_time_left   = 0.0f;
-        counter         = 0;
+        counter         = last_counter;
     }
 
-    PRINTF_FFLUSH("Calculate intersections (%5.2f%% | %5" PRIuFAST64 "s) ", percent, (uint_fast64_t) last_time_left);
-    ++ counter;
+    printf("Calculate intersections (%5.2f%% | %6" PRIuFAST64 "s) ", percent, (uint_fast64_t) last_time_left);
+    ++ last_counter;
 
     return;
 }
@@ -1553,7 +1554,7 @@ Print_Export_File_Size
 
     const size_t* const export_file_size_casted_ptr = (size_t*) export_file_size;
 
-    printf ("Result: %.2fMB", (float) *export_file_size_casted_ptr / 1024.0f / 1024.0f);
+    printf ("Result size: %.2fMB", (float) *export_file_size_casted_ptr / 1024.0f / 1024.0f);
 
     return;
 }
