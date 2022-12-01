@@ -50,7 +50,7 @@ extern void Print_2D_String_Array (const char* const restrict drawing [], const 
     }
 
     PRINT_X_TIMES_SAME_CHAR(' ', line_number_print_size + 1u)
-    printf ("+");
+    fputs ("+", stdout);
     PRINT_X_TIMES_SAME_CHAR('-', longest_string)
     puts ("+");
     for (size_t i = 0; i < dim_1; ++ i)
@@ -59,7 +59,7 @@ extern void Print_2D_String_Array (const char* const restrict drawing [], const 
                 (int) (longest_string - strlen (drawing [i])), "");
     }
     PRINT_X_TIMES_SAME_CHAR(' ', line_number_print_size + 1u)
-    printf ("+");
+    fputs ("+", stdout);
     PRINT_X_TIMES_SAME_CHAR('-', longest_string)
     puts ("+");
 
@@ -81,13 +81,13 @@ extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const s
 {
     ASSERT_MSG(array != NULL, "array is NULL !");
 
-    printf ("[ ");
+    fputs ("[ ", stdout);
     for (size_t i = 0; i < array_length; ++ i)
     {
         printf ("%" PRIuFAST32, array [i]);
         if ((i + 1) < array_length)
         {
-            printf (", ");
+            fputs (", ", stdout);
         }
     }
     puts (" ]");
@@ -155,8 +155,9 @@ extern size_t Process_Printer (const size_t print_step_size, const size_t counte
 
         if (with_carriage_return)
         {
-           printf ("\r");
-           fflush(stdout);
+            // Using putchar() instead of printf() or putc(), because for one char this function is more efficient
+            putchar ('\r');
+            fflush(stdout);
         }
 
         // Update counter (The if statement before is also a underflow check)
@@ -208,7 +209,7 @@ extern void Print_Value_With_Decimal_Points (const long int value)
     // Print the converted long int value
     for (size_t i = 0; i < mod_3; ++ i)
     {
-        printf ("%c", value_to_str [i]);
+        putchar (value_to_str [i]);
     }
     if (mod_3 != 0) { putchar ('.'); }
     for (size_t i = mod_3; i < value_to_str_length; ++ i)
@@ -217,7 +218,7 @@ extern void Print_Value_With_Decimal_Points (const long int value)
         {
             putchar ('.');
         }
-        printf ("%c", value_to_str [i]);
+        putchar (value_to_str [i]);
     }
 
     return;
