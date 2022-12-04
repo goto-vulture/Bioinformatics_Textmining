@@ -64,7 +64,7 @@ extern "C"
         PRINTF_FFLUSH (format_string, __VA_ARGS__);                                                                     \
     }                                                                                                                   \
     IS_INT(file)                                                                                                        \
-	IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
+    IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"FPRINTF_FFLUSH\" is already defined !"
 #endif /* FPRINTF_FFLUSH */
@@ -110,7 +110,7 @@ extern "C"
         PRINTF_NO_VA_ARGS_FFLUSH (format_string);                                                                       \
     }                                                                                                                   \
     IS_INT(file)                                                                                                        \
-	IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
+    IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"FPRINTF_NO_VA_ARGS_FFLUSH\" is already defined !"
 #endif /* FPRINTF_NO_VA_ARGS_FFLUSH */
@@ -155,7 +155,7 @@ extern "C"
         PRINTF_NO_VA_ARGS_FFLUSH (format_string);                                                                       \
     }                                                                                                                   \
     IS_INT(file)                                                                                                        \
-	IS_IN_TYPE_LIST_4(string, char*, const char*, char* const, const char* const)
+    IS_IN_TYPE_LIST_4(string, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"FPUTS_FFLUSH\" is already defined !"
 #endif /* FPUTS_FFLUSH */

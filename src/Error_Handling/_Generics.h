@@ -60,7 +60,7 @@ extern "C"
 #ifndef ALL_POSSIBLE_TYPES
 #define ALL_POSSIBLE_TYPES(type, type_def)                                                                              \
     type_def(type),                                                                                                     \
-	ALL_PTR(type, type_def)
+    ALL_PTR(type, type_def)
 #else
 #error "The macro \"ALL_POSSIBLE_TYPES\" is already defined !"
 #endif /* ALL_POSSIBLE_TYPES */
@@ -332,9 +332,9 @@ extern "C"
 #define GET_FORMAT_STR(value)                                                                                           \
     _Generic((value),                                                                                                   \
     char: "%c",                                                                                                         \
-	const char: "%c",                                                                                                   \
-	signed char: "%c",                                                                                                  \
-	const signed char: "%c",                                                                                            \
+    const char: "%c",                                                                                                   \
+    signed char: "%c",                                                                                                  \
+    const signed char: "%c",                                                                                            \
     unsigned char: "%hhu",                                                                                              \
     const unsigned char: "%hhu",                                                                                        \
     \

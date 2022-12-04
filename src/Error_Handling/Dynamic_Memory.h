@@ -69,7 +69,7 @@ extern void Show_Dynamic_Memory_Status (void);
         calloc (number_of_elements, element_size);                                                                      \
         ++ GLOBAL_calloc_calls;                                                                                         \
         IS_INT(number_of_elements)                                                                                      \
-		IS_INT(element_size)
+        IS_INT(element_size)
 #else
     #error "The macro \"CALLOC\" is already defined !"
 #endif /* CALLOC */
@@ -149,7 +149,7 @@ extern void Show_Dynamic_Memory_Status (void);
         }                                                                                                               \
         pointer = NULL;                                                                                                 \
         IS_TYPE(pointer, FILE*)                                                                                         \
-		IS_IN_TYPE_LIST_4(file_name, char*, const char*, char* const, const char* const)
+        IS_IN_TYPE_LIST_4(file_name, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"FCLOSE_WITH_NAME_AND_SET_TO_NULL\" is already defined !"
 #endif /* FCLOSE_WITH_NAME_AND_SET_TO_NULL */

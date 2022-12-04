@@ -31,7 +31,7 @@ extern "C"
  */
 #ifndef ASSERT_MSG
     #define ASSERT_MSG(expr, message) assert (((void) (message), expr));                                                \
-		IS_IN_TYPE_LIST_4(message, char*, const char*, char* const, const char* const)
+        IS_IN_TYPE_LIST_4(message, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"ASSERT_MSG\" is already defined !"
 #endif /* ASSERT_MSG */
@@ -53,7 +53,7 @@ extern "C"
         fflush (stderr);                                                                                                \
         ASSERT_MSG(false, "See error message above !")                                                                  \
     }                                                                                                                   \
-	IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
+    IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"ASSERT_FMSG\" is already defined !"
 #endif /* ASSERT_FMSG */
@@ -74,8 +74,8 @@ extern "C"
         fflush (stderr);                                                                                                \
         ASSERT_MSG(false, message)                                                                                      \
     }                                                                                                                   \
-	IS_IN_TYPE_LIST_4(message, char*, const char*, char* const, const char* const)                                      \
-	IS_INT(memory_size)
+    IS_IN_TYPE_LIST_4(message, char*, const char*, char* const, const char* const)                                      \
+    IS_INT(memory_size)
 #else
     #error "The macro \"ASSERT_ALLOC\" is already defined !"
 #endif /* ASSERT_ALLOC */

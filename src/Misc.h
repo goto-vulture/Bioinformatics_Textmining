@@ -185,7 +185,7 @@ extern "C"
         ASSERT_MSG(time_value != (clock_t)(-1),                                                                         \
                 "Time values are not available on this system ! Return value: (clock_t)(-1) !");                        \
     }                                                                                                                   \
-	IS_TYPE(time_value, clock_t)
+    IS_TYPE(time_value, clock_t)
 #else
 #error "The macro \"CLOCK_WITH_RETURN_CHECK\" is already defined !"
 #endif /* CLOCK_WITH_RETURN_CHECK */
