@@ -1472,9 +1472,17 @@ Exec_Add_Token_To_Mapping_Process_Print_Function
 #error "The macro \"TIME_LEFT_COUNTER\" is already defined !"
 #endif /* TIME_LEFT_COUNTER */
 
+#ifndef TIME_PLACEHOLDER_LIMIT
+#define TIME_PLACEHOLDER_LIMIT 9999
+#else
+#error "The macro \"TIME_PLACEHOLDER_LIMIT\" is already defined !"
+#endif /* TIME_PLACEHOLDER_LIMIT */
+
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(TIME_LEFT_COUNTER > 0, "The macro \"TIME_LEFT_COUNTER\" needs to be larger than 0 !");
 IS_TYPE(TIME_LEFT_COUNTER, uint_fast32_t)
+_Static_assert(TIME_PLACEHOLDER_LIMIT > 0, "The macro \"TIME_PLACEHOLDER_LIMIT\" needs to be larger than 0 !");
+IS_TYPE(TIME_PLACEHOLDER_LIMIT, int)
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 /**
@@ -1524,7 +1532,14 @@ Exec_Intersection_Process_Print_Function
         counter         = last_counter;
     }
 
-    printf("Calculate intersections (%5.2f%% | %6" PRIuFAST64 "s) ", percent, (uint_fast64_t) last_time_left);
+    if (last_time_left > TIME_PLACEHOLDER_LIMIT)
+    {
+        printf("Calculate intersections (%5.2f%% | +%4ds) ", percent, TIME_PLACEHOLDER_LIMIT);
+    }
+    else
+    {
+        printf("Calculate intersections (%5.2f%% | %5ds) ", percent, (int) last_time_left);
+    }
     ++ last_counter;
 
     return;
@@ -1533,6 +1548,10 @@ Exec_Intersection_Process_Print_Function
 #ifdef TIME_LEFT_COUNTER
 #undef TIME_LEFT_COUNTER
 #endif /* TIME_LEFT_COUNTER */
+
+#ifndef TIME_PLACEHOLDER_LIMIT
+#undef TIME_PLACEHOLDER_LIMIT
+#endif /* TIME_PLACEHOLDER_LIMIT */
 
 //---------------------------------------------------------------------------------------------------------------------
 
