@@ -296,11 +296,12 @@ TokenListContainer_CreateObject
     size_t char_read_before_last_output = 0;
 
     CLOCK_WITH_RETURN_CHECK(start);
-    // ===== ===== ===== BEGIN Read file line by line ===== ===== =====
+    // ===== ===== ===== ===== ===== BEGIN Read file line by line ===== ===== ===== ===== =====
     while(char_read > 0)
     {
         ++ line_counter;
         const char* current_parsing_position = input_file_data;
+        // ===== ===== ===== ===== BEGIN Parse current line ===== ===== ===== =====
         while (*current_parsing_position != '\0')
         {
             // Parse the file JSON fragment per JSON fragment
@@ -326,51 +327,49 @@ TokenListContainer_CreateObject
             }
             cJSON* curr = json->child;
 
+            // ===== ===== ===== BEGIN Use current cJSON object ===== ===== =====
             while (curr != NULL)
             {
                 cJSON* name = cJSON_GetObjectItemCaseSensitive(json, curr->string);
-                if (! name) { continue; }
-                if (! name->string) { continue; }
+                if (! name) { curr = curr->next; continue; }
+                if (! name->string) { curr = curr->next; continue; }
 
                 // Exists a tokens array ?
                 cJSON* tokens_array = cJSON_GetObjectItemCaseSensitive(name, "tokens");
-                if (! tokens_array) { continue; }
+                if (! tokens_array) { curr = curr->next; continue; }
+                if (! cJSON_IsArray(tokens_array)) { curr = curr->next; continue; }
 
                 // If a array with offsets is available ? Use them
                 cJSON* char_offsets_array = cJSON_GetObjectItemCaseSensitive(name, "abs_char_offsets");
+                if (! char_offsets_array) { if (! cJSON_IsArray(char_offsets_array)) { char_offsets_array = NULL; } }
 
                 // Get all tokens from tokens array
                 //const int tokens_array_size = cJSON_GetArraySize(tokens_array);
                 register cJSON* curr_token = tokens_array->child;
+                if (! curr_token) { curr = curr->next; continue; }
+                register cJSON* curr_char_offset = NULL;
+                if (char_offsets_array != NULL) { curr_char_offset = char_offsets_array->child; }
 
-                // ===== ===== ===== BEGIN Realloc necessary ? ===== ===== =====
+
+                // Realloc necessary ?
                 // Is it necessary to realloc/increase the number of Token_List objects in the container ?
                 if (new_container->next_free_element >= new_container->allocated_token_container)
                 {
                     Increase_Number_Of_Token_Lists (new_container);
                 }
+                const size_t dataset_id_length =
+                        COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].dataset_id);
+                strncpy (new_container->token_lists [new_container->next_free_element].dataset_id, name->string,
+                        dataset_id_length - 1);
+                new_container->token_lists [new_container->next_free_element].dataset_id [dataset_id_length - 1] = '\0';
 
-                /*if (strlen (name->string) >= COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].id))
-                {
-                    ASSERT_MSG(false, "<->");
-                }
-                else*/
-                {
-                    const size_t dataset_id_length =
-                            COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].dataset_id);
-
-                    strncpy (new_container->token_lists [new_container->next_free_element].dataset_id, name->string,
-                            dataset_id_length - 1);
-                    new_container->token_lists [new_container->next_free_element].dataset_id [dataset_id_length - 1] = '\0';
-                }
-                // ===== ===== ===== END Realloc necessary ? ===== ===== =====
 
                 struct Token_List* const current_token_list_obj = &(new_container->token_lists [new_container->next_free_element]);
 
                 // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
                 while (curr_token != NULL)
                 {
-                    if (! curr_token->valuestring) { continue; }
+                    if (! curr_token->valuestring) { curr_token = curr_token->next; continue; }
 
                     // Is more memory for the new token in the Token_List necessary ?
                     if (current_token_list_obj->next_free_element >= current_token_list_obj->allocated_tokens)
@@ -414,9 +413,9 @@ TokenListContainer_CreateObject
                         const size_t last_token_length = strlen(last_token);
 
                         size_t new_char_offset = 0;
-                        if (char_offsets_array != NULL)
+                        if (curr_char_offset != NULL)
                         {
-                            new_char_offset = (size_t) char_offsets_array->valueint;
+                            new_char_offset = (size_t) curr_char_offset->valueint;
                         }
                         else
                         {
@@ -456,13 +455,6 @@ TokenListContainer_CreateObject
                         {
                             ++ new_word_offset;
                         }
-                        // If the token only contains alphanumeric char, then it will be interpreted as word for the
-                        // word offset
-// Actual this is NOT the way to check the tokens !
-//                        if (Contain_String_Only_Alnum_Char(last_token, last_token_length))
-//                        {
-//                            ++ new_word_offset;
-//                        }
                         
                         // When the new char offset is larger that are saveable in this type, then will be the calculation
                         // aborted, because in such a situation exists no possibility to "save" this problem
@@ -484,9 +476,9 @@ TokenListContainer_CreateObject
                     new_container->longest_token_length = MAX(new_container->longest_token_length, current_token_len);
 
                     curr_token = curr_token->next;
-                    if (char_offsets_array != NULL)
+                    if (curr_char_offset != NULL)
                     {
-                        char_offsets_array = char_offsets_array->next;
+                        curr_char_offset = curr_char_offset->next;
                     }
                 }
                 // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
@@ -496,10 +488,12 @@ TokenListContainer_CreateObject
                 // Use next element in the container
                 new_container->next_free_element ++;
             }
+            // ===== ===== ===== BEGIN Use current cJSON object ===== ===== =====
 
             cJSON_Delete(json);
             json = NULL;
         }
+        // ===== ===== ===== ===== BEGIN Parse current line ===== ===== ===== =====
 
         // Read next line
         char_read                       = Read_Next_Line (input_file, input_file_data, input_file_length);
@@ -508,7 +502,7 @@ TokenListContainer_CreateObject
         //fgets_res = fgets(input_file_data, (int) input_file_length, input_file);
         //input_file_data [input_file_length] = '\0';
     }
-    // ===== ===== ===== END Read file line by line ===== ===== =====
+    // ===== ===== ===== ===== ===== END Read file line by line ===== ===== ===== ===== =====
 
     // Print tokens, that was longer than the expected length
     if (new_container->list_of_too_long_token->next_free_c_str > 0)
