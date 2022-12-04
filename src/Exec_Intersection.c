@@ -1055,6 +1055,8 @@ Add_General_Information_To_Export_File
     cJSON_NOT_NULL(sentence_offset);
     cJSON* word_offset = cJSON_CreateBool(export_settings & WORD_OFFSET);
     cJSON_NOT_NULL(sentence_offset);
+    cJSON* keep_single_tokens_result = cJSON_CreateBool(export_settings & KEEP_SINGLE_TOKEN_RESULTS);
+    cJSON_NOT_NULL(sentence_offset);
 
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Full match", full_match);
@@ -1062,6 +1064,7 @@ Add_General_Information_To_Export_File
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Char offset", char_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Sentence offset", sentence_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Word offset", word_offset);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Keep single tokens result", keep_single_tokens_result);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation mode", creation_mode);
 
     cJSON* creation_time = cJSON_CreateString(time_string);
