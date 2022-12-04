@@ -1470,7 +1470,7 @@ Exec_Add_Token_To_Mapping_Process_Print_Function
 //---------------------------------------------------------------------------------------------------------------------
 
 #ifndef TIME_LEFT_COUNTER
-#define TIME_LEFT_COUNTER (uint_fast32_t) 375
+#define TIME_LEFT_COUNTER (uint_fast32_t) 20
 #else
 #error "The macro \"TIME_LEFT_COUNTER\" is already defined !"
 #endif /* TIME_LEFT_COUNTER */
@@ -1514,7 +1514,7 @@ Exec_Intersection_Process_Print_Function
 )
 {
     static float sum_time_left          = 0.0f;
-    static float last_time_left         = 0.0f;
+    static float last_time_left         = TIME_PLACEHOLDER_LIMIT + 1;
     static uint_fast32_t counter        = 0;
     static uint_fast32_t last_counter   = 0;
 
