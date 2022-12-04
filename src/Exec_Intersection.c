@@ -942,10 +942,20 @@ abort_label:
     ASSERT_FMSG(fseek_ret == 0, "Error in a fseek() call for the file \"%s\" occurred !", GLOBAL_CLI_OUTPUT_FILE);
     -- result_file_size;
 
-    file_operation_ret_value = fputs("\n}", result_file);
+    const char* end_file_string = NULL;
+    if (intersection_settings & SHORTEN_OUTPUT)
+    {
+        end_file_string = "}";
+    }
+    else
+    {
+        end_file_string = "}\n}";
+    }
+
+    file_operation_ret_value = fputs(end_file_string, result_file);
     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
             strerror(errno));
-    result_file_size += strlen ("\n}");
+    result_file_size += strlen (end_file_string);
     FCLOSE_AND_SET_TO_NULL(result_file);
     printf ("\nDone !");
 
