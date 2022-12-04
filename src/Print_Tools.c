@@ -50,7 +50,7 @@ extern void Print_2D_String_Array (const char* const restrict drawing [], const 
     }
 
     PRINT_X_TIMES_SAME_CHAR(' ', line_number_print_size + 1u)
-    printf ("+");
+    fputs ("+", stdout);
     PRINT_X_TIMES_SAME_CHAR('-', longest_string)
     puts ("+");
     for (size_t i = 0; i < dim_1; ++ i)
@@ -59,7 +59,7 @@ extern void Print_2D_String_Array (const char* const restrict drawing [], const 
                 (int) (longest_string - strlen (drawing [i])), "");
     }
     PRINT_X_TIMES_SAME_CHAR(' ', line_number_print_size + 1u)
-    printf ("+");
+    fputs ("+", stdout);
     PRINT_X_TIMES_SAME_CHAR('-', longest_string)
     puts ("+");
 
@@ -81,13 +81,13 @@ extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const s
 {
     ASSERT_MSG(array != NULL, "array is NULL !");
 
-    printf ("[ ");
+    fputs ("[ ", stdout);
     for (size_t i = 0; i < array_length; ++ i)
     {
         printf ("%" PRIuFAST32, array [i]);
         if ((i + 1) < array_length)
         {
-            printf (", ");
+            fputs (", ", stdout);
         }
     }
     puts (" ]");
@@ -110,12 +110,16 @@ extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const s
  * @param[in] actual_counter Actual process
  * @param[in] hundred_percent Value that represents a process of 100 % (In other words: the value, that will appear
  *      when the operation is done)
+ * @param[in] with_carriage_return Print a carriage return at the end of the line
+ *
  * @param[in] print_function This is the function, that will be called, when process information are to be printed
+ * @param[in] optional_parameter Optional parameter for the optional_second_print_function function ptr
+ * @param[in] optional_second_print_function An optional print function for additional work
  *
  * @return The new counter
  */
 extern size_t Process_Printer (const size_t print_step_size, const size_t counter_since_last_output,
-        const size_t actual_counter, const size_t hundred_percent,
+        const size_t actual_counter, const size_t hundred_percent, const _Bool with_carriage_return,
         void (*print_function)
         (
             const size_t print_step_size,
@@ -123,6 +127,11 @@ extern size_t Process_Printer (const size_t print_step_size, const size_t counte
             const size_t hundred_percent,
             const clock_t interval_begin,
             const clock_t interval_end
+        ),
+        void* optional_parameter,
+        void (*optional_second_print_function)
+        (
+                void* data
         )
 )
 {
@@ -137,6 +146,19 @@ extern size_t Process_Printer (const size_t print_step_size, const size_t counte
         CLOCK_WITH_RETURN_CHECK(interval_end);
         print_function(print_step_size, actual_counter, hundred_percent, interval_begin, interval_end);
         CLOCK_WITH_RETURN_CHECK(interval_begin);
+
+        // Use the optional function pointer, if it was given
+        if (optional_second_print_function != NULL)
+        {
+            optional_second_print_function(optional_parameter);
+        }
+
+        if (with_carriage_return)
+        {
+            // Using putchar() instead of printf() or putc(), because for one char this function is more efficient
+            putchar ('\r');
+            fflush(stdout);
+        }
 
         // Update counter (The if statement before is also a underflow check)
         new_counter -= print_step_size;
@@ -187,7 +209,7 @@ extern void Print_Value_With_Decimal_Points (const long int value)
     // Print the converted long int value
     for (size_t i = 0; i < mod_3; ++ i)
     {
-        printf ("%c", value_to_str [i]);
+        putchar (value_to_str [i]);
     }
     if (mod_3 != 0) { putchar ('.'); }
     for (size_t i = mod_3; i < value_to_str_length; ++ i)
@@ -196,7 +218,7 @@ extern void Print_Value_With_Decimal_Points (const long int value)
         {
             putchar ('.');
         }
-        printf ("%c", value_to_str [i]);
+        putchar (value_to_str [i]);
     }
 
     return;

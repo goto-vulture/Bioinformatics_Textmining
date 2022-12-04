@@ -50,6 +50,12 @@ extern _Bool GLOBAL_CLI_NO_PART_MATCHES; ///< Do not show part matches in the re
 extern _Bool GLOBAL_CLI_NO_FULL_MATCHES; ///< Do not show full matches in the result file
 
 /**
+ * @brief Shall be results with only one token written in the result file ? In normal cases such information are
+ * useless.
+ */
+extern _Bool GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN;
+
+/**
  * @brief On which percent in the calculation should be aborted ? This is for development and debugging purposes useful
  * to limit the calculation process.
  */
@@ -58,24 +64,31 @@ extern float GLOBAL_ABORT_PROCESS_PERCENT;
 
 
 /**
- * @brief Testfunktion fuer den CLI Parameter, der die erste Eingabedatei beschreibt.
+ * @brief @brief Test function for the CLI parameter, that is used as first input file name.
  */
 extern void Check_CLI_Parameter_CLI_INPUT_FILE (void);
 
 /**
- * @brief Testfunktion fuer den CLI Parameter, der die zweite Eingabedatei beschreibt.
+ * @brief Test function for the CLI parameter, that is used as second input file name.
  */
 extern void Check_CLI_Parameter_CLI_INPUT_FILE2 (void);
 
 /**
- * @brief Testfunktion fuer den CLI Parameter, der die Ausgabedatei beschreibt.
+ * @brief Test function for the CLI parameter, that is used as output file name.
  */
 extern void Check_CLI_Parameter_CLI_OUTPUT_FILE (void);
 
 /**
- * @brief Testfunction for the abort percent value.
+ * @brief Test function for the abort percent value.
  */
 extern void Check_CLI_Parameter_GLOBAL_ABORT_PROCESS_PERCENT (void);
+
+/**
+ * @brief Set all CLI parameter to the default values.
+ *
+ * This is only useful for the TEST functions.
+ */
+extern void Set_CLI_Parameter_To_Default_Values (void);
 
 
 

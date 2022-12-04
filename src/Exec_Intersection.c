@@ -175,6 +175,31 @@ Add_General_Information_To_Export_File
 );
 
 /**
+ * @brief Include counter information at the end of the export file.
+ *
+ * Asserts:
+ *      export_results != NULL
+ *
+ * @param export_results The main cJSON pointer for the export JSON file
+ * @param export_settings Settings for the export (Which information will be occur in the result file -> which counter
+ *      are relevant for the general information ?)
+ * @param number_of_partial_sets Number of sets with partial matches in the whole file
+ * @param number_of_full_sets Number of sets with full matches in the whole file
+ * @param number_of_token_in_partial_sets Sum of all tokens in all partial matches
+ * @param number_of_token_in_full_sets Sum of all tokens in all full matches
+ */
+static void
+Add_Counter_To_Export_File
+(
+        cJSON* const export_results,
+        const unsigned int export_settings,
+        const uint_fast64_t number_of_partial_sets,
+        const uint_fast64_t number_of_full_sets,
+        const uint_fast64_t number_of_token_in_partial_sets,
+        const uint_fast64_t number_of_token_in_full_sets
+);
+
+/**
  * @brief Add too long tokens from the two input file to a JSON block. (One array for each file)
  *
  * Asserts:
@@ -308,6 +333,20 @@ Exec_Intersection_Process_Print_Function
 );
 
 /**
+ * @brief Print the current export file size in a formatted way.
+ *
+ * The technique with a void* pointer is necessary to fit in the parameter list of the optional_second_print_function
+ * function pointer in the Process_Printer function.
+ *
+ * @param[in] export_file_size The current size of the export file in bytes
+ */
+static void
+Print_Export_File_Size
+(
+        void* export_file_size
+);
+
+/**
  * @brief Determine the full size (including str sizes) of a cJSON object.
  *
  * Asserts:
@@ -357,6 +396,26 @@ Update_Data_Found_Flag
         const cJSON* const restrict intersections_full_match
 );
 
+/**
+ * @brief Print some counter formatted on stdout.
+ *
+ * @param[in] counter_tokens_partial_match Number of tokens in partial matches
+ * @param[in] counter_tokens_full_match Number of tokens in full matches
+ * @param[in] counter_sets_partial_match Number of sets in partial matches
+ * @param[in] counter_sets_full_match Number of sets in full matches
+ *
+ * @param[in] intersection_settings Settings of the intersection calculation
+ */
+static void
+Print_Counter
+(
+        const uint_fast64_t counter_tokens_partial_match,
+        const uint_fast64_t counter_tokens_full_match,
+        const uint_fast64_t counter_sets_partial_match,
+        const uint_fast64_t counter_sets_full_match,
+        const unsigned int intersection_settings
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -378,7 +437,7 @@ Update_Data_Found_Flag
  *      -- the first two lowest digits (in decimal system) encodes the bucket. E.g.: xxx10 means, that this integer can
  *         found in the 11. bucket, when it exists in the mapping data
  *
- * - Use the token int mapping for the creation of a mapped token container (Two Document_Word_List)
+ * - Use the token int mapping for the creation of a mapped token container (Two Documen@param[in]t_Word_List)
  *      -- A Document_Word_List contains a 2 dimensional integer array
  *      -- In this array is the data for the intersection or for the intersection result (Yes Document_Word_List will
  *         be used for the intersection input data and for the intersection result !)
@@ -454,6 +513,9 @@ Exec_Intersection
         uint_fast64_t* const restrict number_of_intersection_sets
 )
 {
+    // The function could be unused -> Avoid a warning
+    (void) Add_Counter_To_Export_File;
+
     const unsigned int intersection_settings = Create_Intersection_Settings_With_CLI_Parameter();
 
     int result = 0;
@@ -481,7 +543,7 @@ Exec_Intersection
 
 
     // >>> Use the token int mapping for the creation of a mapped token container <<<
-    const size_t length_of_longest_token_container = MAX(TokenListContainer_GetLenghOfLongestTokenList(token_container_input_1),
+    const size_t length_of_longest_token_container = MAX_WITH_TYPE_CHECK(TokenListContainer_GetLenghOfLongestTokenList(token_container_input_1),
             TokenListContainer_GetLenghOfLongestTokenList(token_container_input_2));
 
     // token_container_input_1->next_free_element and token_container_input_2->next_free_element
@@ -517,7 +579,7 @@ Exec_Intersection
     char result_file_buffer [RESULT_FILE_BUFFER_SIZE];
     setvbuf (result_file, result_file_buffer, _IOFBF, RESULT_FILE_BUFFER_SIZE);
 
-    const uint_fast16_t count_steps                     = 10000;
+    const uint_fast16_t count_steps                     = 50000;
     const uint_fast32_t number_of_intersection_calls    = source_int_values_2->next_free_array *
             source_int_values_1->next_free_array;
     const uint_fast32_t print_steps                     =
@@ -579,16 +641,22 @@ Exec_Intersection
 
 
 
-    uint_fast64_t intersection_tokens_found_counter = 0;
-    uint_fast64_t intersection_sets_found_counter   = 0;
     size_t cJSON_mem_counter    = 0;
     clock_t start               = 0;
     clock_t end                 = 0;
+
+    uint_fast64_t counter_partial_sets              = 0;
+    uint_fast64_t counter_full_sets                 = 0;
+    uint_fast64_t counter_tokens_in_partital_sets   = 0;
+    uint_fast64_t counter_tokens_in_full_sets       = 0;
 
     // Determine the intersections
     CLOCK_WITH_RETURN_CHECK(start);
 
     uint_fast32_t last_used_selected_data_2_array = UINT_FAST32_MAX;
+
+    // How many tokens needs to be left for a valid data set?
+    register const size_t min_token_left_for_valid_data_set = (intersection_settings & KEEP_SINGLE_TOKEN_RESULTS) ? 1 : 2;
 
     // ===== ===== ===== ===== ===== ===== ===== ===== BEGIN Outer loop ===== ===== ===== ===== ===== ===== ===== =====
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
@@ -615,8 +683,10 @@ Exec_Intersection
 
             // Print calculation steps
             intersection_calls_before_last_output = Process_Printer(print_steps, intersection_calls_before_last_output,
-                    intersection_call_counter, number_of_intersection_calls,
-                    Exec_Intersection_Process_Print_Function);
+                    intersection_call_counter, number_of_intersection_calls, true,
+                    Exec_Intersection_Process_Print_Function,
+                    &result_file_size,
+                    Print_Export_File_Size);
 
             // Determine the current intersection
             // The second array (source_int_values_2->data_struct.data [selected_data_array]) will be used for every data array in
@@ -657,8 +727,9 @@ Exec_Intersection
                 }
             }
 
-            // Show only the data block, if there are intersection results
-            if (DocumentWordList_IsDataInObject(intersection_result) && tokens_left > 0)
+            // Show only the data block, if there are a valid number of intersection results
+            // In default cases a valid data block needs to contain at least 2 (!) tokens
+            if (DocumentWordList_IsDataInObject(intersection_result) && tokens_left >= min_token_left_for_valid_data_set)
             {
                 data_found = true;
 
@@ -729,10 +800,7 @@ Exec_Intersection
                     if (intersection_settings & SENTENCE_OFFSET)    { cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset); }
                     if (intersection_settings & WORD_OFFSET)        { cJSON_ADD_ITEM_TO_ARRAY_CHECK(word_offset_array, word_offset); }
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(tokens_array, token);
-
-                    ++ intersection_tokens_found_counter;
                 }
-                ++ intersection_sets_found_counter;
 
                 // Create a object for the tow arrays (tokens / offset)
                 cJSON* two_array_container = NULL;
@@ -746,13 +814,16 @@ Exec_Intersection
                 // For the comparison it is important to use "src_tokens_array_wo_stop_words" instead of
                 // "src_tokens_array"; Because a full match means a equalness with the list, that contains NO stop
                 // words !
-                if (cJSON_GetArraySize(tokens_array) == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
+                const int tokens_array_size = cJSON_GetArraySize(tokens_array);
+                if (tokens_array_size == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
                 {
                     if (intersection_settings & FULL_MATCH)
                     {
                         cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match,
                                 token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
                     }
+                    counter_full_sets ++;
+                    counter_tokens_in_full_sets += (uint_fast64_t) tokens_array_size;
                 }
                 else
                 {
@@ -761,6 +832,8 @@ Exec_Intersection
                         cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match,
                                 token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
                     }
+                    counter_partial_sets ++;
+                    counter_tokens_in_partital_sets += (uint_fast64_t) tokens_array_size;
                 }
             }
 
@@ -869,23 +942,35 @@ abort_label:
     ASSERT_FMSG(fseek_ret == 0, "Error in a fseek() call for the file \"%s\" occurred !", GLOBAL_CLI_OUTPUT_FILE);
     -- result_file_size;
 
-    file_operation_ret_value = fputs("\n}", result_file);
+    const char* end_file_string = NULL;
+    if (intersection_settings & SHORTEN_OUTPUT)
+    {
+        end_file_string = "}";
+    }
+    else
+    {
+        end_file_string = "}\n}";
+    }
+
+    file_operation_ret_value = fputs(end_file_string, result_file);
     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
             strerror(errno));
-    result_file_size += strlen ("\n}");
+    result_file_size += strlen (end_file_string);
     FCLOSE_AND_SET_TO_NULL(result_file);
-
-    const int int_formatter = (int) MAX (Count_Number_Of_Digits(intersection_tokens_found_counter),
-            Count_Number_Of_Digits(intersection_sets_found_counter));
     printf ("\nDone !");
-    printf ("\n\nIntersection tokens found: %*" PRIuFAST64 "\n", int_formatter, intersection_tokens_found_counter);
-    printf ("Intersection sets found:   %*" PRIuFAST64 "\n", int_formatter, intersection_sets_found_counter);
+
+    // Print the counter
+    Print_Counter(counter_tokens_in_partital_sets, counter_tokens_in_full_sets, counter_partial_sets, counter_full_sets, intersection_settings);
+
+
     printf ("cJSON objects memory usage: ");
     Print_Memory_Size_As_B_KB_MB(cJSON_mem_counter);
 
     printf ("=> Result file size: ");
     Print_Memory_Size_As_B_KB_MB(result_file_size);
 
+    const uint_fast64_t intersection_tokens_found_counter = counter_tokens_in_full_sets + counter_tokens_in_partital_sets;
+    const uint_fast64_t intersection_sets_found_counter = counter_full_sets + counter_partial_sets;
     if (number_of_intersection_tokens != NULL)
     {
         *number_of_intersection_tokens = intersection_tokens_found_counter;
@@ -980,6 +1065,8 @@ Add_General_Information_To_Export_File
     cJSON_NOT_NULL(sentence_offset);
     cJSON* word_offset = cJSON_CreateBool(export_settings & WORD_OFFSET);
     cJSON_NOT_NULL(sentence_offset);
+    cJSON* keep_single_tokens_result = cJSON_CreateBool(export_settings & KEEP_SINGLE_TOKEN_RESULTS);
+    cJSON_NOT_NULL(sentence_offset);
 
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Full match", full_match);
@@ -987,6 +1074,7 @@ Add_General_Information_To_Export_File
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Char offset", char_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Sentence offset", sentence_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Word offset", word_offset);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Keep single tokens result", keep_single_tokens_result);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation mode", creation_mode);
 
     cJSON* creation_time = cJSON_CreateString(time_string);
@@ -1006,6 +1094,78 @@ Add_General_Information_To_Export_File
         cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation time", creation_time);
     }
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "General infos", general_infos);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Include counter information to the "General information" block of a result file.
+ *
+ * Asserts:
+ *      export_results != NULL
+ *
+ * @param export_results The main cJSON pointer for the export JSON file
+ * @param export_settings Settings for the export (Which information will be occur in the result file -> which counter
+ *      are relevant for the general information ?)
+ * @param number_of_partial_sets Number of sets with partial matches in the whole file
+ * @param number_of_full_sets Number of sets with full matches in the whole file
+ * @param number_of_token_in_partial_sets Sum of all tokens in all partial matches
+ * @param number_of_token_in_full_sets Sum of all tokens in all full matches
+ */
+static void
+Add_Counter_To_Export_File
+(
+        cJSON* const export_results,
+        const unsigned int export_settings,
+        const uint_fast64_t number_of_partial_sets,
+        const uint_fast64_t number_of_full_sets,
+        const uint_fast64_t number_of_token_in_partial_sets,
+        const uint_fast64_t number_of_token_in_full_sets
+)
+{
+    ASSERT_MSG(export_results != NULL, "Main cJSON result pointer is NULL !");
+
+    cJSON* counter = cJSON_CreateObject();
+    cJSON_NOT_NULL(counter);
+
+    // "cJSON_CreateNumber()" can only create double values !
+    const double d_number_of_partial_sets           = (double) number_of_partial_sets;
+    const double d_number_of_token_in_partial_sets  = (double) number_of_token_in_partial_sets;
+    const double d_number_of_full_sets              = (double) number_of_full_sets;
+    const double d_number_of_token_in_full_sets     = (double) number_of_token_in_full_sets;
+
+    if (export_settings & PART_MATCH)
+    {
+        cJSON* num_partial_sets = cJSON_CreateNumber(d_number_of_partial_sets);
+        cJSON_NOT_NULL(num_partial_sets);
+        cJSON* num_tokens_in_partial_sets = cJSON_CreateNumber(d_number_of_token_in_partial_sets);
+        cJSON_NOT_NULL(num_tokens_in_partial_sets);
+
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(counter, "Count partial matches", num_partial_sets);
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(counter, "Count tokens in partial matches", num_tokens_in_partial_sets);
+    }
+    if (export_settings & FULL_MATCH)
+    {
+        cJSON* num_full_sets = cJSON_CreateNumber(d_number_of_full_sets);
+        cJSON_NOT_NULL(num_full_sets);
+        cJSON* num_tokens_in_full_sets = cJSON_CreateNumber(d_number_of_token_in_full_sets);
+        cJSON_NOT_NULL(num_tokens_in_full_sets);
+
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(counter, "Count partial matches", num_full_sets);
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(counter, "Count tokens in partial matches", num_tokens_in_full_sets);
+    }
+
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "Counter", counter);
+
+    if (!(export_settings & PART_MATCH) && !(export_settings & FULL_MATCH))
+    {
+        cJSON* no_data_available = cJSON_CreateString("");
+        cJSON_NOT_NULL(no_data_available);
+
+        cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "No data available !", no_data_available);
+    }
 
     return;
 }
@@ -1178,8 +1338,10 @@ Append_Token_List_Container_Data_To_Token_Int_Mapping
         {
             // Print calculation steps
             inner_loop_runs_before_last_print = Process_Printer(print_steps, inner_loop_runs_before_last_print,
-                    inner_loop_counter, inner_loop_runs,
-                    Exec_Add_Token_To_Mapping_Process_Print_Function);
+                    inner_loop_counter, inner_loop_runs, true,
+                    Exec_Add_Token_To_Mapping_Process_Print_Function,
+                    NULL,
+                    NULL);
 
             char* token = TokenListContainer_GetToken (token_list_container, i, i2);
             element_added = TokenIntMapping_AddToken(token_int_mapping, token, strlen(token));
@@ -1317,6 +1479,25 @@ Exec_Add_Token_To_Mapping_Process_Print_Function
 
 //---------------------------------------------------------------------------------------------------------------------
 
+#ifndef TIME_LEFT_COUNTER
+#define TIME_LEFT_COUNTER (uint_fast32_t) 20
+#else
+#error "The macro \"TIME_LEFT_COUNTER\" is already defined !"
+#endif /* TIME_LEFT_COUNTER */
+
+#ifndef TIME_PLACEHOLDER_LIMIT
+#define TIME_PLACEHOLDER_LIMIT 9999
+#else
+#error "The macro \"TIME_PLACEHOLDER_LIMIT\" is already defined !"
+#endif /* TIME_PLACEHOLDER_LIMIT */
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+_Static_assert(TIME_LEFT_COUNTER > 0, "The macro \"TIME_LEFT_COUNTER\" needs to be larger than 0 !");
+IS_TYPE(TIME_LEFT_COUNTER, uint_fast32_t)
+_Static_assert(TIME_PLACEHOLDER_LIMIT > 0, "The macro \"TIME_PLACEHOLDER_LIMIT\" needs to be larger than 0 !");
+IS_TYPE(TIME_PLACEHOLDER_LIMIT, int)
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
 /**
  * @brief A function, that will be used to show the intersection calculation process.
  *
@@ -1342,17 +1523,70 @@ Exec_Intersection_Process_Print_Function
         const clock_t interval_end
 )
 {
+    static float sum_time_left          = 0.0f;
+    static float last_time_left         = TIME_PLACEHOLDER_LIMIT + 1;
+    static uint_fast32_t counter        = 0;
+    static uint_fast32_t last_counter   = 0;
+
     const size_t call_counter_interval_begin    = (actual > hundred_percent) ? hundred_percent : actual;
     const size_t all_calls                      = hundred_percent;
     const size_t call_counter_interval_end      = (call_counter_interval_begin + print_step_size > all_calls) ?
             all_calls : (call_counter_interval_begin + print_step_size);
 
-    const float percent     = Determine_Percent(call_counter_interval_begin, all_calls);
-    const float time_left   = Determine_Time_Left(call_counter_interval_begin, call_counter_interval_end,
-            all_calls, interval_end - interval_begin);
+    const float percent     = Replace_NaN_And_Inf_With_Zero(Determine_Percent(call_counter_interval_begin, all_calls));
+    const float time_left   = Replace_NaN_And_Inf_With_Zero(Determine_Time_Left(call_counter_interval_begin,
+            call_counter_interval_end, all_calls, interval_end - interval_begin));
+    sum_time_left += time_left;
 
-    PRINTF_FFLUSH("Calculate intersections (%3.2f %% | %.2f sec.)   \r", Replace_NaN_And_Inf_With_Zero(percent),
-            Replace_NaN_And_Inf_With_Zero(time_left));
+    if (last_counter - counter > TIME_LEFT_COUNTER)
+    {
+        last_time_left  = sum_time_left / TIME_LEFT_COUNTER;
+        sum_time_left   = 0.0f;
+        counter         = last_counter;
+    }
+
+    if (last_time_left > TIME_PLACEHOLDER_LIMIT)
+    {
+        printf("Calculate intersections (%5.2f%% | +%4ds) ", percent, TIME_PLACEHOLDER_LIMIT);
+    }
+    else
+    {
+        printf("Calculate intersections (%5.2f%% | %5ds) ", percent, (int) last_time_left);
+    }
+    ++ last_counter;
+
+    return;
+}
+
+#ifdef TIME_LEFT_COUNTER
+#undef TIME_LEFT_COUNTER
+#endif /* TIME_LEFT_COUNTER */
+
+#ifndef TIME_PLACEHOLDER_LIMIT
+#undef TIME_PLACEHOLDER_LIMIT
+#endif /* TIME_PLACEHOLDER_LIMIT */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Print the current export file size in a formatted way.
+ *
+ * The technique with a void* pointer is necessary to fit in the parameter list of the optional_second_print_function
+ * function pointer in the Process_Printer function.
+ *
+ * @param[in] export_file_size The current size of the export file in bytes
+ */
+static void
+Print_Export_File_Size
+(
+        void* export_file_size
+)
+{
+    ASSERT_MSG(export_file_size != NULL, "Input value (the size of the export file) is NULL !");
+
+    const size_t* const export_file_size_casted_ptr = (size_t*) export_file_size;
+
+    printf ("Result size: %.2fMB", (float) *export_file_size_casted_ptr / 1024.0f / 1024.0f);
 
     return;
 }
@@ -1421,6 +1655,10 @@ Create_Intersection_Settings_With_CLI_Parameter
     if (GLOBAL_CLI_NO_FULL_MATCHES)
     {
         if (intersection_settings & FULL_MATCH) { intersection_settings ^= FULL_MATCH; }
+    }
+    if (GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN)
+    {
+        intersection_settings |= KEEP_SINGLE_TOKEN_RESULTS;
     }
 
     return intersection_settings;
@@ -1496,6 +1734,50 @@ Update_Data_Found_Flag
     }
 
     return updated_data_found_flag;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Print some counter formatted on stdout.
+ *
+ * @param[in] counter_tokens_partial_match Number of tokens in partial matches
+ * @param[in] counter_tokens_full_match Number of tokens in full matches
+ * @param[in] counter_sets_partial_match Number of sets in partial matches
+ * @param[in] counter_sets_full_match Number of sets in full matches
+ *
+ * @param[in] intersection_settings Settings of the intersection calculation
+ */
+static void
+Print_Counter
+(
+        const uint_fast64_t counter_tokens_partial_match,
+        const uint_fast64_t counter_tokens_full_match,
+        const uint_fast64_t counter_sets_partial_match,
+        const uint_fast64_t counter_sets_full_match,
+        const unsigned int intersection_settings
+)
+{
+    const uint_fast64_t intersection_tokens_found_counter = counter_tokens_full_match + counter_tokens_partial_match;
+    const uint_fast64_t intersection_sets_found_counter = counter_sets_full_match + counter_sets_partial_match;
+    // The _Static_asserts in the main.c file guarantee, that size_t is at least 4 byte
+    const int int_formatter = (int) MAX (Count_Number_Of_Digits((size_t) intersection_tokens_found_counter),
+            Count_Number_Of_Digits((size_t) intersection_sets_found_counter));
+
+    printf ("\n\n");
+    printf ("Intersection tokens found:  %*" PRIuFAST64 "\n", int_formatter, intersection_tokens_found_counter);
+    if (intersection_settings & PART_MATCH)
+    { printf ("\tIn partial matches: %*" PRIuFAST64 "\n", int_formatter, counter_tokens_partial_match); }
+    if (intersection_settings & FULL_MATCH)
+    { printf ("\tIn full matches:    %*" PRIuFAST64 "\n", int_formatter, counter_tokens_full_match); }
+
+    printf ("Intersection sets found:    %*" PRIuFAST64 "\n", int_formatter, intersection_sets_found_counter);
+    if (intersection_settings & PART_MATCH)
+    { printf ("\tPartial sets:       %*" PRIuFAST64 "\n", int_formatter, counter_sets_partial_match); }
+    if (intersection_settings & FULL_MATCH)
+    { printf ("\tFull sets:          %*" PRIuFAST64 "\n\n", int_formatter, counter_sets_full_match); }
+
+    return;
 }
 
 //---------------------------------------------------------------------------------------------------------------------

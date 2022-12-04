@@ -81,9 +81,9 @@ extern "C"
  *
  * ! This is a macro, not a function !
  * It is important, that the "input parameter" have no side effects. (For example: MIN (x ++, ++ y) will determine
- * wrong and unexpected results.
+ * wrong and unexpected results.)
  *
- * Therefore it is recommended to use this macro only with "raw" valus and not with statements like "x + 2" to fully
+ * Therefore it is recommended to use this macro only with "raw" values and not with statements like "x + 2" to fully
  * avoid mistakes with side effects.
  */
 #ifndef MIN
@@ -95,13 +95,45 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Similar like MAX(x, y) but with a no pointer and a no floating point type check.
+ */
+#ifndef MAX_WITH_TYPE_CHECK
+#define MAX_WITH_TYPE_CHECK(x, y) MAX(x, y);                                                                            \
+    IS_NO_PTR(x)                                                                                                        \
+    IS_NO_PTR(y)                                                                                                        \
+    IS_NO_FLOAT(x)                                                                                                      \
+    IS_NO_FLOAT(y)                                                                                                      \
+    TYPE_EQUAL(x, y)
+#else
+#error "The macro \"MAX_WITH_TYPE_CHECK\" is already defined !"
+#endif /* MAX_WITH_TYPE_CHECK */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Similar like MIN(x, y) but with a no pointer and a no floating point type check.
+ */
+#ifndef MIN_WITH_TYPE_CHECK
+#define MIN_WITH_TYPE_CHECK(x, y) MIN(x, y);                                                                            \
+    IS_NO_PTR(x)                                                                                                        \
+    IS_NO_PTR(y)                                                                                                        \
+    IS_NO_FLOAT(x)                                                                                                      \
+    IS_NO_FLOAT(y)                                                                                                      \
+    TYPE_EQUAL(x, y)
+#else
+#error "The macro \"MIN_WITH_TYPE_CHECK\" is already defined !"
+#endif /* MIN_WITH_TYPE_CHECK */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Comparison macro to find the greater value.
  *
  * ! This is a macro, not a function !
  * It is important, that the "input parameter" have no side effects. (For example: MAX (x ++, ++ y) will determine
- * wrong and unexpected results.
+ * wrong and unexpected results.)
  *
- * Therefore it is recommended to use this macro only with "raw" valus and not with statements like "x + 2" to fully
+ * Therefore it is recommended to use this macro only with "raw" values and not with statements like "x + 2" to fully
  * avoid mistakes with side effects.
  */
 #ifndef MAX
@@ -157,6 +189,27 @@ extern "C"
 #else
 #error "The macro \"CLOCK_WITH_RETURN_CHECK\" is already defined !"
 #endif /* CLOCK_WITH_RETURN_CHECK */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief On windows systems a system command "PAUSE" is necessary, because the terminal window will close immediately
+ * after the exit call. So it is not possible to read the error message.
+ */
+#ifndef EXIT
+#ifdef _WIN32
+#define EXIT(exit_value)                                                                                                \
+    system("PAUSE");                                                                                                    \
+    exit(exit_value);                                                                                                   \
+    IS_INT(exit_value)
+#else
+#define EXIT(exit_value)                                                                                                \
+    exit(exit_value);                                                                                                   \
+    IS_INT(exit_value)
+#endif /* _WIN32 */
+#else
+#error "The macro \"EXIT\" is already defined !"
+#endif /* EXIT */
 
 //---------------------------------------------------------------------------------------------------------------------
 

@@ -60,7 +60,7 @@ extern "C"
 #ifndef ALL_POSSIBLE_TYPES
 #define ALL_POSSIBLE_TYPES(type, type_def)                                                                              \
     type_def(type),                                                                                                     \
-	ALL_PTR(type, TYPE_DEF)
+	ALL_PTR(type, type_def)
 #else
 #error "The macro \"ALL_POSSIBLE_TYPES\" is already defined !"
 #endif /* ALL_POSSIBLE_TYPES */
@@ -76,15 +76,10 @@ extern "C"
 #ifndef ALL_PTR
 #define ALL_PTR(type, type_def)                                                                                         \
     TYPE_PTR(type, type_def),                                                                                           \
-    TYPE_PTR(const type, type_def),                                                                                     \
     TYPE_PTR_PTR(type, type_def),                                                                                       \
-    TYPE_PTR_PTR(const type, type_def),                                                                                 \
     TYPE_PTR_PTR_PTR(type, type_def),                                                                                   \
-    TYPE_PTR_PTR_PTR(const type, type_def),                                                                             \
     TYPE_PTR_PTR_PTR_PTR(type, type_def),                                                                               \
-    TYPE_PTR_PTR_PTR_PTR(const type, type_def),                                                                         \
-    TYPE_PTR_PTR_PTR_PTR_PTR(type, type_def),                                                                           \
-    TYPE_PTR_PTR_PTR_PTR_PTR(const type, type_def)
+    TYPE_PTR_PTR_PTR_PTR_PTR(type, type_def)
 #else
 #error "The macro \"ALL_PTR\" is already defined !"
 #endif /* ALL_PTR */
@@ -225,7 +220,7 @@ extern "C"
  */
 #ifndef IS_INT
 #define IS_INT(value)                                                                                                   \
-    _Static_assert(PTR_CHECK(value, TYPE_INVALID, true), #value " is a pointer ! Pointer are not allowed !");
+    _Static_assert(PTR_CHECK(value, TYPE_INVALID, true) && ! FLOAT_GENERIC_TRUE(value), #value " is a pointer ! Pointer are not allowed !");
 #else
 #error "The macro \"IS_INT\" is already defined !"
 #endif /* IS_INT */
@@ -239,6 +234,45 @@ extern "C"
 #else
 #error "The macro \"IS_NO_INT\" is already defined !"
 #endif /* IS_NO_INT */
+
+/**
+ * @brief Raw _Generic command to create a true, if the given value is a floating point value.
+ */
+#ifndef FLOAT_GENERIC_TRUE
+#define FLOAT_GENERIC_TRUE(value) _Generic((value),                                                                     \
+    float: true,                                                                                                        \
+    const float: true,                                                                                                  \
+    double: true,                                                                                                       \
+    const double: true,                                                                                                 \
+    long double: true,                                                                                                  \
+    const long double: true,                                                                                            \
+    default: false)
+#else
+#error "The macro \"FLOAT_GENERIC_TRUE\" is already defined !"
+#endif /* FLOAT_GENERIC_TRUE */
+
+/**
+ * @brief Is the given type a floating point value ((const) float, (const) double, (const) long double) ?
+ */
+#ifndef IS_FLOAT
+#define IS_FLOAT(value)                                                                                                 \
+    _Static_assert(PTR_CHECK(value, TYPE_INVALID, true), #value " is a pointer ! Pointer are not allowed !");           \
+    _Static_assert(FLOAT_GENERIC_TRUE(value),                                                                           \
+        #value " is not a floating point type !");
+#else
+#error "The macro \"IS_FLOAT\" is already defined !"
+#endif /* IS_FLOAT */
+
+/**
+ * @brief Is the given type not a floating point value ((const) float, (const) double, (const) long double) ?
+ */
+#ifndef IS_NO_FLOAT
+#define IS_NO_FLOAT(value)                                                                                              \
+    _Static_assert(! FLOAT_GENERIC_TRUE(value),                                                                         \
+        #value " is a floating point type ! These types are not allowed !");
+#else
+#error "The macro \"IS_NO_FLOAT\" is already defined !"
+#endif /* IS_NO_FLOAT */
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -265,6 +299,27 @@ extern "C"
 #else
 #error "The macro \"IS_CONST_STR\" is already defined !"
 #endif /* IS_CONST_STR */
+
+/**
+ * @brief This is a check, whether the types are the same. Because in C there is no typeof() command, this is a not
+ * bullet proof construction to simulate a type equal check.
+ */
+#ifndef TYPE_EQUAL
+#define TYPE_EQUAL(x, y)                                                                                                \
+    _Static_assert                                                                                                      \
+    (                                                                                                                   \
+            FLOAT_GENERIC_TRUE(x) == FLOAT_GENERIC_TRUE(y) &&                                                           \
+            PTR_CHECK(x, TYPE_VALID, false) == PTR_CHECK(y, TYPE_VALID, false) &&                                       \
+            sizeof(x) == sizeof(y) &&                                                                                   \
+            sizeof(TYPE_NAME(x)) == sizeof(TYPE_NAME(y)) &&                                                             \
+            sizeof(GET_FORMAT_STR(x)) == sizeof(GET_FORMAT_STR(y)) &&                                                   \
+            GET_MAX(x) == GET_MAX(y) &&                                                                                 \
+            GET_MIN(x) == GET_MIN(y),                                                                                   \
+            #x " and " #y " do not share the same type !"                                                               \
+    );
+#else
+#error "The macro \"TYPE_EQUAL\" is already defined !"
+#endif /* TYPE_EQUAL */
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -690,6 +745,24 @@ extern "C"
 #error "The macro \"IS_NO_INT\" is already defined !"
 #endif /* IS_NO_INT */
 
+#ifndef FLOAT_GENERIC_TRUE
+#define FLOAT_GENERIC_TRUE(value)
+#else
+#error "The macro \"FLOAT_GENERIC_TRUE\" is already defined !"
+#endif /* FLOAT_GENERIC_TRUE */
+
+#ifndef IS_FLOAT
+#define IS_FLOAT(value)
+#else
+#error "The macro \"IS_FLOAT\" is already defined !"
+#endif /* IS_FLOAT */
+
+#ifndef IS_NO_FLOAT
+#define IS_NO_FLOAT(value)
+#else
+#error "The macro \"IS_NO_FLOAT\" is already defined !"
+#endif /* IS_NO_FLOAT */
+
 
 
 #ifndef IS_TYPE
@@ -703,6 +776,12 @@ extern "C"
 #else
 #error "The macro \"IS_CONST_STR\" is already defined !"
 #endif /* IS_CONST_STR */
+
+#ifndef TYPE_EQUAL
+#define TYPE_EQUAL(x, y)
+#else
+#error "The macro \"TYPE_EQUAL\" is already defined !"
+#endif /* TYPE_EQUAL */
 
 
 
