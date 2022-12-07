@@ -944,7 +944,7 @@ abort_label:
 
     // TODO: In most cases both end file strings are wrong, because the cJSON lib creates a comma at the end of the last
     // JSON entry. Therefore there is one comma to much at the end. A solution is missing ...
-//    const char* end_file_string = NULL;
+    const char* end_file_string = "";
 //    if (intersection_settings & SHORTEN_OUTPUT)
 //    {
 //        end_file_string = "}";
