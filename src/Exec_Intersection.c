@@ -942,15 +942,17 @@ abort_label:
     ASSERT_FMSG(fseek_ret == 0, "Error in a fseek() call for the file \"%s\" occurred !", GLOBAL_CLI_OUTPUT_FILE);
     -- result_file_size;
 
-    const char* end_file_string = NULL;
-    if (intersection_settings & SHORTEN_OUTPUT)
-    {
-        end_file_string = "}";
-    }
-    else
-    {
-        end_file_string = "}\n}";
-    }
+    // TODO: In most cases both end file strings are wrong, because the cJSON lib creates a comma at the end of the last
+    // JSON entry. Therefore there is one comma to much at the end. A solution is missing ...
+//    const char* end_file_string = NULL;
+//    if (intersection_settings & SHORTEN_OUTPUT)
+//    {
+//        end_file_string = "}";
+//    }
+//    else
+//    {
+//        end_file_string = "}\n}";
+//    }
 
     file_operation_ret_value = fputs(end_file_string, result_file);
     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
