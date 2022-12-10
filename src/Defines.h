@@ -22,32 +22,6 @@ extern "C"
 
 
 
-#ifndef __GNUC__
-    /**
-     * @brief __attribute__((__nonnull__)) is a GNU extension. With this __attribute__ the compiler checks, if a function,
-     * that should not get an NULL pointer, will get such a pointer at compile time.
-     *
-     * It is an help to check this at compile time. Because an occurrence of a call with NULL is in most situations an
-     * bug in the code.
-     */
-    #ifndef __attribute__(__nonnull__)
-    #define __attribute__(__nonnull__)
-    #else
-    #error "The macro \"__attribute__(__nonnull__)\" is already defined !"
-    #endif /* __attribute__(__nonnull__) */
-
-    /**
-     * @brief Disable a unused warning.
-     */
-    #ifndef __attribute__(unused)
-    #define __attribute__(unused)
-    #else
-    #error "The macro \"__attribute__(unused)\" is already defined !"
-    #endif /* __attribute__(unused) */
-#endif /* __GNUC__ */
-
-
-
 #ifndef CHAR_OFFSET_TYPE
 #define CHAR_OFFSET_TYPE unsigned short int     ///< Char offset type
 #else

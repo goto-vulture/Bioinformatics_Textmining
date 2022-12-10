@@ -27,6 +27,21 @@ extern "C"
 
 
 
+/**
+ * @brief If we're not using GNU C, elide __attribute__
+ *
+ * @link http://unixwiz.net/techtips/gnu-c-attributes.html
+ */
+#ifndef __GNUC__
+    #ifndef __attribute__
+    #define  __attribute__(x)  /* NOTHING */
+    #else
+    #error "The macro \"__attribute__\" is already defined !"
+    #endif /* __attribute__ */
+#endif /* __GNUC__ */
+
+
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
