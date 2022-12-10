@@ -177,6 +177,32 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Print newlines to stdout with flush.
+ */
+#ifndef PRINT_NEWLINES
+    #define PRINT_NEWLINES(number_of_newlines)                                                                          \
+    if ((number_of_newlines) < 0)                                                                                       \
+    {                                                                                                                   \
+    	fprintf (stderr, "Negative number of newlines !\n"); fflush (stderr);                                           \
+    }                                                                                                                   \
+    for (unsigned long int print_newlines_counter = 0;                                                                  \
+            print_newlines_counter < (unsigned long int) (number_of_newlines);                                          \
+            ++ (number_of_newlines))                                                                                    \
+    {                                                                                                                   \
+        puts("");                                                                                                       \
+    }                                                                                                                   \
+    if ((number_of_newlines) > 0)                                                                                       \
+    {                                                                                                                   \
+    	fflush(stdout);                                                                                                 \
+    }                                                                                                                   \
+    IS_INT((number_of_newlines))
+#else
+    #error "The macro \"PRINT_NEWLINES\" is already defined !"
+#endif /* PRINT_NEWLINES */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Print a newline to stdout with flush.
  */
 #ifndef PRINT_NEWLINE
