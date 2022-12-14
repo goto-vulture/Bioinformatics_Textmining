@@ -33,8 +33,8 @@ extern "C"
  */
 #ifndef PRINTF_FFLUSH
     #define PRINTF_FFLUSH(format_string, ...)                                                                           \
-    printf (format_string, __VA_ARGS__); fflush (stdout);                                                               \
-    IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
+    printf ((format_string), __VA_ARGS__); fflush (stdout);                                                             \
+    IS_IN_TYPE_LIST_4((format_string), char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"PRINTF_FFLUSH\" is already defined !"
 #endif /* PRINTF_FFLUSH */
@@ -46,14 +46,14 @@ extern "C"
  */
 #ifndef FPRINTF_FFLUSH
     #define FPRINTF_FFLUSH(file, format_string, ...)                                                                    \
-    if (file != stdout && file != stderr)                                                                               \
+    if ((file) != stdout && (file) != stderr)                                                                           \
     {                                                                                                                   \
-        const int return_value_fprintf = fprintf (file, format_string, __VA_ARGS__);                                    \
+        const int return_value_fprintf = fprintf ((file), (format_string), __VA_ARGS__);                                \
         if (return_value_fprintf < 0)                                                                                   \
         {                                                                                                               \
             fprintf (stderr, "I/O error ! fprintf returned %d !", return_value_fprintf); fflush (stderr);               \
         }                                                                                                               \
-        const int return_value_fflush = fflush (file);                                                                  \
+        const int return_value_fflush = fflush ((file));                                                                \
         if (return_value_fflush == EOF)                                                                                 \
         {                                                                                                               \
             fprintf (stderr, "I/O error ! fflush returned EOF !"); fflush (stderr);                                     \
@@ -61,10 +61,10 @@ extern "C"
     }                                                                                                                   \
     else                                                                                                                \
     {                                                                                                                   \
-        PRINTF_FFLUSH (format_string, __VA_ARGS__);                                                                     \
+        PRINTF_FFLUSH ((format_string), __VA_ARGS__);                                                                   \
     }                                                                                                                   \
-    IS_INT(file)                                                                                                        \
-    IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
+    IS_INT((file))                                                                                                      \
+    IS_IN_TYPE_LIST_4((format_string), char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"FPRINTF_FFLUSH\" is already defined !"
 #endif /* FPRINTF_FFLUSH */
@@ -79,8 +79,8 @@ extern "C"
  */
 #ifndef PRINTF_NO_VA_ARGS_FFLUSH
     #define PRINTF_NO_VA_ARGS_FFLUSH(format_string)                                                                     \
-    printf (format_string); fflush (stdout);                                                                            \
-    IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
+    printf ((format_string)); fflush (stdout);                                                                          \
+    IS_IN_TYPE_LIST_4((format_string), char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"PRINTF_NO_VA_ARGS_FFLUSH\" is already defined !"
 #endif /* PRINTF_NO_VA_ARGS_FFLUSH */
@@ -92,14 +92,14 @@ extern "C"
  */
 #ifndef FPRINTF_NO_VA_ARGS_FFLUSH
     #define FPRINTF_FFLUSH_NO_VA_ARGS(file, format_string)                                                              \
-    if (file != stdout && file != stderr)                                                                               \
+    if ((file) != stdout && (file) != stderr)                                                                           \
     {                                                                                                                   \
-        const int return_value_fprintf = fprintf (file, format_string);                                                 \
+        const int return_value_fprintf = fprintf ((file), (format_string));                                             \
         if (return_value_fprintf < 0)                                                                                   \
         {                                                                                                               \
             fprintf (stderr, "I/O error ! fprintf returned %d !", return_value_fprintf); fflush (stderr);               \
         }                                                                                                               \
-        const int return_value_fflush = fflush (file);                                                                  \
+        const int return_value_fflush = fflush ((file));                                                                \
         if (return_value_fflush == EOF)                                                                                 \
         {                                                                                                               \
             fprintf (stderr, "I/O error ! fflush returned EOF !"); fflush (stderr);                                     \
@@ -107,10 +107,10 @@ extern "C"
     }                                                                                                                   \
     else                                                                                                                \
     {                                                                                                                   \
-        PRINTF_NO_VA_ARGS_FFLUSH (format_string);                                                                       \
+        PRINTF_NO_VA_ARGS_FFLUSH ((format_string));                                                                     \
     }                                                                                                                   \
-    IS_INT(file)                                                                                                        \
-    IS_IN_TYPE_LIST_4(format_string, char*, const char*, char* const, const char* const)
+    IS_INT((file))                                                                                                      \
+    IS_IN_TYPE_LIST_4((format_string), char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"FPRINTF_NO_VA_ARGS_FFLUSH\" is already defined !"
 #endif /* FPRINTF_NO_VA_ARGS_FFLUSH */
@@ -122,8 +122,8 @@ extern "C"
  */
 #ifndef PUTS_FFLUSH
     #define PUTS_FFLUSH(string)                                                                                         \
-    puts (string); fflush (stdout);                                                                                     \
-    IS_IN_TYPE_LIST_4(string, char*, const char*, char* const, const char* const)
+    puts ((string)); fflush (stdout);                                                                                   \
+    IS_IN_TYPE_LIST_4((string), char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"PUTS_FFLUSH\" is already defined !"
 #endif /* PUTS_FFLUSH */
@@ -137,14 +137,14 @@ extern "C"
  */
 #ifndef FPUTS_FFLUSH
     #define FPUTS_FFLUSH(file, string)                                                                                  \
-    if (file != stdout && file != stderr)                                                                               \
+    if ((file) != stdout && (file) != stderr)                                                                           \
     {                                                                                                                   \
-        const int return_value_fputs = fputs (file, string);                                                            \
+        const int return_value_fputs = fputs ((file), (string));                                                        \
         if (return_value_fprintf == EOF)                                                                                \
         {                                                                                                               \
             fprintf (stderr, "I/O error ! fputs returned %d !", return_value_fputs); fflush (stderr);                   \
         }                                                                                                               \
-        const int return_value_fflush = fflush (file);                                                                  \
+        const int return_value_fflush = fflush ((file));                                                                \
         if (return_value_fflush == EOF)                                                                                 \
         {                                                                                                               \
             fprintf (stderr, "I/O error ! fflush returned EOF !"); fflush (stderr);                                     \
@@ -152,10 +152,10 @@ extern "C"
     }                                                                                                                   \
     else                                                                                                                \
     {                                                                                                                   \
-        PRINTF_NO_VA_ARGS_FFLUSH (format_string);                                                                       \
+        PRINTF_NO_VA_ARGS_FFLUSH ((format_string));                                                                     \
     }                                                                                                                   \
-    IS_INT(file)                                                                                                        \
-    IS_IN_TYPE_LIST_4(string, char*, const char*, char* const, const char* const)
+    IS_INT((file))                                                                                                      \
+    IS_IN_TYPE_LIST_4((string), char*, const char*, char* const, const char* const)
 #else
     #error "The macro \"FPUTS_FFLUSH\" is already defined !"
 #endif /* FPUTS_FFLUSH */
@@ -169,10 +169,36 @@ extern "C"
  */
 #ifndef CLEAN_LINE
     #define CLEAN_LINE()                                                                                                \
-    printf ("\r"); PRINT_X_TIMES_SAME_CHAR(' ', 96) fflush (stdout);
+    putc ('\r'); PRINT_X_TIMES_SAME_CHAR(' ', 96) fflush (stdout);
 #else
     #error "The macro \"CLEAN_LINE\" is already defined !"
 #endif /* CLEAN_LINE */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Print newlines to stdout with flush.
+ */
+#ifndef PRINT_NEWLINES
+    #define PRINT_NEWLINES(number_of_newlines)                                                                          \
+    if ((number_of_newlines) < 0)                                                                                       \
+    {                                                                                                                   \
+    	fprintf (stderr, "Negative number of newlines !\n"); fflush (stderr);                                           \
+    }                                                                                                                   \
+    for (unsigned long int print_newlines_counter = 0;                                                                  \
+            print_newlines_counter < (unsigned long int) (number_of_newlines);                                          \
+            ++ (number_of_newlines))                                                                                    \
+    {                                                                                                                   \
+        puts("");                                                                                                       \
+    }                                                                                                                   \
+    if ((number_of_newlines) > 0)                                                                                       \
+    {                                                                                                                   \
+    	fflush(stdout);                                                                                                 \
+    }                                                                                                                   \
+    IS_INT((number_of_newlines))
+#else
+    #error "The macro \"PRINT_NEWLINES\" is already defined !"
+#endif /* PRINT_NEWLINES */
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -192,9 +218,20 @@ extern "C"
  */
 #ifndef PRINT_X_TIMES_SAME_CHAR
 #define PRINT_X_TIMES_SAME_CHAR(character, times)                                                                       \
-    for (size_t i = 0; i < (times); ++ i) { printf ("%c", (character)); } fflush (stdout);                              \
-    IS_INT(times)                                                                                                       \
-    IS_TYPE(character, int)
+    if ((character) < 0)                                                                                                \
+    {                                                                                                                   \
+        fprintf (stderr, "Negative number of newlines !\n"); fflush (stderr);                                           \
+    }                                                                                                                   \
+    for (unsigned long int i = 0; i < (unsigned long int) (times); ++ i)                                                \
+    {                                                                                                                   \
+        putc(character, stdout);                                                                                        \
+    }                                                                                                                   \
+    if ((times) > 0)                                                                                                    \
+    {                                                                                                                   \
+    	fflush (stdout);                                                                                                \
+    }                                                                                                                   \
+    IS_INT((times))                                                                                                     \
+    IS_TYPE((character), int)
 #else
     #error "The macro \"PRINT_X_TIMES_SAME_CHAR\" is already defined !"
 #endif /* PRINT_X_TIMES_SAME_CHAR */

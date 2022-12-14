@@ -639,7 +639,15 @@ Exec_Intersection
     result_file_size += Append_cJSON_Object_To_Result_File(result_file, too_long_tokens, intersection_settings);
     cJSON_FULL_FREE_AND_SET_TO_NULL(too_long_tokens);
 
-
+    // To have a newline after the general information and after the too long tokens
+    // In the formatted mode this is not necessary
+    if (intersection_settings & SHORTEN_OUTPUT)
+    {
+        file_operation_ret_value = fputc ('\n', result_file);
+        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+                strerror(errno));
+        ++ result_file_size;
+    }
 
     size_t cJSON_mem_counter    = 0;
     clock_t start               = 0;
@@ -659,6 +667,10 @@ Exec_Intersection
     register const size_t min_token_left_for_valid_data_set = (intersection_settings & KEEP_SINGLE_TOKEN_RESULTS) ? 1 : 2;
 
     // ===== ===== ===== ===== ===== ===== ===== ===== BEGIN Outer loop ===== ===== ===== ===== ===== ===== ===== =====
+    // Flag, if the first result set was written (This information is necessary to decide, whether a comma need to be
+    // printed or not
+    _Bool first_result_dataset_written = false;
+
     for (uint_fast32_t selected_data_2_array = 0; selected_data_2_array < source_int_values_2->next_free_array;
             ++ selected_data_2_array)
     {
@@ -866,6 +878,29 @@ Exec_Intersection
             { cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, INTERSECTIONS " (full)", intersections_full_match); }
             cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, dataset_id_2, outer_object);
 
+            if (!(intersection_settings & SHORTEN_OUTPUT))
+            {
+                if (first_result_dataset_written)
+                {
+                    file_operation_ret_value = fputc(',', result_file);
+                    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
+                            GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
+                    ++ result_file_size;
+                }
+            }
+            else
+            {
+                if (first_result_dataset_written)
+                {
+                    const char* output_str = (first_result_dataset_written) ? "},\n" : "}\n";
+
+                    file_operation_ret_value = fputs(output_str, result_file);
+                    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
+                            GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
+                    result_file_size += strlen(output_str);
+                }
+            }
+
             // In theory it is possible to create the string of our cJSON structure at the end of all calculations
             // But the problem is, that all temporary data needs to be saved until the end of calculations. With bigger
             // files more than 15 GB are possible !
@@ -883,45 +918,24 @@ Exec_Intersection
             // These steps are necessary, because the string objects meant to be stand alone JSON objects
             // But in our case we concatenate these JSON objects. So it is necessary to modify the objects for a valid
             // JSON result file
-            char* orig_ptr = json_export_str;
-            json_export_str ++;
-            orig_ptr [json_export_str_len - 1] = '\0';
-            orig_ptr [json_export_str_len - 2] = '\0';
+            json_export_str [json_export_str_len - 1] = '\0';
+            json_export_str [json_export_str_len - 2] = '\0';
 
-            file_operation_ret_value = fputs(json_export_str, result_file);
+            file_operation_ret_value = fputs(json_export_str + 1, result_file);
             ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
                     GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
             result_file_size = result_file_size + (json_export_str_len - 3);
 
-            if (!(intersection_settings & SHORTEN_OUTPUT))
-            {
-                if ((selected_data_2_array + 1) < source_int_values_2->next_free_array)
-                {
-                    file_operation_ret_value = fputc(',', result_file);
-                    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
-                            GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
-                    ++ result_file_size;
-                }
-            }
-            else
-            {
-                const char* output_str = ((selected_data_2_array + 1) < source_int_values_2->next_free_array) ? "},\n" : "}\n";
-
-                file_operation_ret_value = fputs(output_str, result_file);
-                ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
-                        GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
-                result_file_size += strlen(output_str);
-            }
-
             // Don't use the macro "FREE_AND_SET_TO_NULL" because it increases the free counter. But this memory was
             // allocated from the JSON lib !
-            free(orig_ptr);
-            orig_ptr        = NULL;
+            free(json_export_str);
             json_export_str = NULL;
 
             // Delete the full object will all child-objectsintersection_sets_found_counter
             // This is the reason why this call is enough to cleanup the full structure
             cJSON_FULL_FREE_AND_SET_TO_NULL(export_results);
+
+            first_result_dataset_written = true;
         }
         else
         {
@@ -938,21 +952,8 @@ Exec_Intersection
     // Label for a debugging end of the calculations
 abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
-    const int fseek_ret = fseek (result_file, -1, SEEK_CUR); // Remove the last "," from the file
-    ASSERT_FMSG(fseek_ret == 0, "Error in a fseek() call for the file \"%s\" occurred !", GLOBAL_CLI_OUTPUT_FILE);
-    -- result_file_size;
 
-    // TODO: In most cases both end file strings are wrong, because the cJSON lib creates a comma at the end of the last
-    // JSON entry. Therefore there is one comma to much at the end. A solution is missing ...
-    const char* end_file_string = "";
-//    if (intersection_settings & SHORTEN_OUTPUT)
-//    {
-//        end_file_string = "}";
-//    }
-//    else
-//    {
-//        end_file_string = "}\n}";
-//    }
+    const char* end_file_string = ((intersection_settings & SHORTEN_OUTPUT) ? "}}" : "\n}");
 
     file_operation_ret_value = fputs(end_file_string, result_file);
     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
@@ -963,7 +964,6 @@ abort_label:
 
     // Print the counter
     Print_Counter(counter_tokens_in_partital_sets, counter_tokens_in_full_sets, counter_partial_sets, counter_full_sets, intersection_settings);
-
 
     printf ("cJSON objects memory usage: ");
     Print_Memory_Size_As_B_KB_MB(cJSON_mem_counter);
@@ -1263,9 +1263,13 @@ Append_cJSON_Object_To_Result_File
 
     ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
     const size_t general_information_as_str_len = strlen (general_information_as_str);
-    // Remove the last two char from the string representation ('\n' and '}')
+
+    // Remove the last char(s), to make the fragment compatible as JSON fragment
     general_information_as_str [general_information_as_str_len - 1] = '\0';
-    general_information_as_str [general_information_as_str_len - 2] = '\0';
+    if (!(export_settings & SHORTEN_OUTPUT))
+    {
+        general_information_as_str [general_information_as_str_len - 2] = '\0';
+    }
 
     // "+ 1" to avoid the first char. It is in every case a '{'.
     // In every situation this char will create a invalid JSON file (except the file is empty)
@@ -1274,20 +1278,11 @@ Append_cJSON_Object_To_Result_File
             strerror(errno));
     written_bytes = written_bytes + (general_information_as_str_len - 2);
 
-    if (export_settings & SHORTEN_OUTPUT)
-    {
-        file_operation_ret_value = fputs("},\n", result_file);
-        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
-                strerror(errno));
-        written_bytes += strlen ("},\n");
-    }
-    else
-    {
-        file_operation_ret_value = fputs(",\n", result_file);
-        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
-                strerror(errno));
-        written_bytes += strlen(",\n");
-    }
+    file_operation_ret_value = fputc(',', result_file);
+    ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
+            strerror(errno));
+    written_bytes ++;
+    fflush(result_file);
 
     // Don't use the macro "FREE_AND_SET_TO_NULL" because it increases the free counter. But this memory was
     // allocated from the JSON lib !
