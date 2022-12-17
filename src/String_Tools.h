@@ -233,6 +233,53 @@ Check_Every_Char_With_Function
         int (*check_func_ptr)(int)
 );
 
+/**
+ * @brief Contain a the string a given char at least one times?
+ *
+ * The additional parameter pos_of_first_occurrence is optional and can be NULL !
+ *
+ * Asserts / In this case normal if checks:
+ *      string != NULL
+ *      str_length > 0
+ *
+ * @param[in] string Input C-String
+ * @param[in] str_length Length of the given C-String
+ * @param[in] search_char Search char
+ * @param[out] pos_of_first_occurrence Position of the first occurrence (optional ! -> A NULL is not an invalid input!)
+ *
+ * @return True, if the given char was found. False otherwise
+ */
+extern _Bool
+Is_Char_In_String
+(
+        const char* const restrict string,
+        const size_t str_length,
+        const char search_char,
+        size_t* const restrict pos_of_first_occurrence
+);
+
+/**
+ * Is the given C-String null terminated ?
+ *
+ * The function simply checks, if in the given memory is a '\0' symbol. It does not matter, whether it the terminate
+ * symbol is at the end or not.
+ *
+ * Asserts / In this case normal if checks:
+ *      string != NULL
+ *      str_length > 0
+ *
+ * @param[in] string Input C-String
+ * @param[in] str_length Length of the given C-String
+ *
+ * @return True, if the given C-String has a termination symbol, otherwise false.
+ */
+extern _Bool
+Is_String_Null_Terminated
+(
+        const char* const restrict string,
+        const size_t str_length
+);
+
 
 
 #ifdef __cplusplus
