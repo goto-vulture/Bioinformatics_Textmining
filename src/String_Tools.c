@@ -345,30 +345,23 @@ Check_Every_Char_With_Function
  *
  * A char is printable, if it is not a control char.
  *
+ * Asserts / Here normal if statements instead of ASSERT:
+ *      str != NULL
+ *      str_len != 0
+ *
  * @param[in] str String, that will be checked
  * @param[in] str_len Length of the string
  *
- * @return True, if all char are printable. If not false
+ * @return True, if all char are printable. If not false (In error cases INT_MAX)
  */
-extern _Bool
+extern int
 Is_String_Printable
 (
         const char* const str,
         const size_t str_len
 )
 {
-    _Bool result = true;
-
-    for (size_t i = 0; i < str_len; ++ i)
-    {
-        if (! isprint(str [i]))
-        {
-            result = false;
-            break;
-        }
-    }
-
-    return result;
+    return Check_Every_Char_With_Function(str, str_len, &isprint);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -378,30 +371,23 @@ Is_String_Printable
  *
  * A char is a alphanumeric, if it a digit or a alphabetic char.
  *
+ * Asserts / Here normal if statements instead of ASSERT:
+ *      str != NULL
+ *      str_len != 0
+ *
  * @param[in] str String, that will be checked
  * @param[in] str_len Length of the string
  *
- * @return True, if all char are alphanumeric. If not false
+ * @return True, if all char are alphanumeric. If not false (In error cases INT_MAX)
  */
-extern _Bool
+extern int
 Contain_String_Only_Alnum_Char
 (
         const char* const str,
         const size_t str_len
 )
 {
-    _Bool result = true;
-
-    for (size_t i = 0; i < str_len; ++ i)
-    {
-        if (! isalnum(str [i]))
-        {
-            result = false;
-            break;
-        }
-    }
-
-    return result;
+    return Check_Every_Char_With_Function(str, str_len, &isalnum);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -420,9 +406,9 @@ Contain_String_Only_Alnum_Char
  * @param[in] search_char Search char
  * @param[out] pos_of_first_occurrence Position of the first occurrence (optional ! -> A NULL is not an invalid input!)
  *
- * @return True, if the given char was found. False otherwise
+ * @return True, if the given char was found. False otherwise (In error cases INT_MAX)
  */
-extern _Bool
+extern int
 Is_Char_In_String
 (
         const char* const restrict string,
@@ -431,10 +417,10 @@ Is_Char_In_String
         size_t* const restrict pos_of_first_occurrence
 )
 {
-    _Bool result = false;
+    int result = false;
 
-    if (string == NULL)     { return false; }
-    if (str_length == 0)    { return false; }
+    if (string == NULL)     { return INT_MAX; }
+    if (str_length == 0)    { return INT_MAX; }
 
     for (register size_t i = 0; i < str_length; ++ i)
     {
@@ -467,9 +453,9 @@ Is_Char_In_String
  * @param[in] string Input C-String
  * @param[in] str_length Length of the given C-String
  *
- * @return True, if the given C-String has a termination symbol, otherwise false.
+ * @return True, if the given C-String has a termination symbol, otherwise false. (In error cases INT_MAX)
  */
-extern _Bool
+extern int
 Is_String_Null_Terminated
 (
         const char* const restrict string,

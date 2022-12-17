@@ -180,12 +180,16 @@ Multi_strncat
  *
  * A char is printable, if it is not a control char.
  *
+ * Asserts / Here normal if statements instead of ASSERT:
+ *      str != NULL
+ *      str_len != 0
+ *
  * @param[in] str String, that will be checked
  * @param[in] str_len Length of the string
  *
- * @return True, if all char are printable. If not false
+ * @return True, if all char are printable. If not false (In error cases INT_MAX)
  */
-extern _Bool
+extern int
 Is_String_Printable
 (
         const char* const str,
@@ -197,12 +201,16 @@ Is_String_Printable
  *
  * A char is a alphanumeric, if it a digit or a alphabetic char.
  *
+ * Asserts / Here normal if statements instead of ASSERT:
+ *      str != NULL
+ *      str_len != 0
+ *
  * @param[in] str String, that will be checked
  * @param[in] str_len Length of the string
  *
- * @return True, if all char are alphanumeric. If not false
+ * @return True, if all char are alphanumeric. If not false (In error cases INT_MAX)
  */
-extern _Bool
+extern int
 Contain_String_Only_Alnum_Char
 (
         const char* const str,
@@ -247,9 +255,9 @@ Check_Every_Char_With_Function
  * @param[in] search_char Search char
  * @param[out] pos_of_first_occurrence Position of the first occurrence (optional ! -> A NULL is not an invalid input!)
  *
- * @return True, if the given char was found. False otherwise
+ * @return True, if the given char was found. False otherwise (In error cases INT_MAX)
  */
-extern _Bool
+extern int
 Is_Char_In_String
 (
         const char* const restrict string,
@@ -271,9 +279,9 @@ Is_Char_In_String
  * @param[in] string Input C-String
  * @param[in] str_length Length of the given C-String
  *
- * @return True, if the given C-String has a termination symbol, otherwise false.
+ * @return True, if the given C-String has a termination symbol, otherwise false. (In error cases INT_MAX)
  */
-extern _Bool
+extern int
 Is_String_Null_Terminated
 (
         const char* const restrict string,
