@@ -50,7 +50,7 @@ extern void Print_2D_String_Array (const char* const restrict drawing [], const 
     }
 
     PRINT_X_TIMES_SAME_CHAR(' ', line_number_print_size + 1u)
-    fputs ("+", stdout);
+    putchar ('+');
     PRINT_X_TIMES_SAME_CHAR('-', longest_string)
     puts ("+");
     for (size_t i = 0; i < dim_1; ++ i)
@@ -59,7 +59,7 @@ extern void Print_2D_String_Array (const char* const restrict drawing [], const 
                 (int) (longest_string - strlen (drawing [i])), "");
     }
     PRINT_X_TIMES_SAME_CHAR(' ', line_number_print_size + 1u)
-    fputs ("+", stdout);
+    putchar ('+');
     PRINT_X_TIMES_SAME_CHAR('-', longest_string)
     puts ("+");
 

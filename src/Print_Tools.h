@@ -224,7 +224,7 @@ extern "C"
     }                                                                                                                   \
     for (unsigned long int i = 0; i < (unsigned long int) (times); ++ i)                                                \
     {                                                                                                                   \
-        putc(character, stdout);                                                                                        \
+        putchar(character);                                                                                             \
     }                                                                                                                   \
     if ((times) > 0)                                                                                                    \
     {                                                                                                                   \
