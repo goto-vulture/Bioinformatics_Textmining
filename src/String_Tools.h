@@ -26,11 +26,34 @@ extern "C"
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Simple check, if a C-String has the length zero.
+ */
 #ifndef IS_STRING_LENGTH_ZERO
-#define IS_STRING_LENGTH_ZERO(c_string) ((c_string) [0] == '\0') ///< Simple check, if a C-String has the length zero
+#define IS_STRING_LENGTH_ZERO(c_string) ((c_string) [0] == '\0')
 #else
 #error "The macro \"IS_STRING_LENGTH_ZERO\" is already defined !"
 #endif /* IS_STRING_LENGTH_ZERO */
+
+/**
+ * @brief Simple check, if a C-String has at least one char.
+ */
+#ifndef IS_STRING_LENGTH_NOT_ZERO
+#define IS_STRING_LENGTH_NOT_ZERO(c_string) ((c_string) [0] != '\0')
+#else
+#error "The macro \"IS_STRING_LENGTH_NOT_ZERO\" is already defined !"
+#endif /* IS_STRING_LENGTH_NOT_ZERO */
+
+/**
+ * @brief Simple check, if a C-String has the length one.
+ *
+ * Sometimes it is useful to know whether the string is exact one char long.
+ */
+#ifndef IS_STRING_LENGTH_ONE
+#define IS_STRING_LENGTH_ONE(c_string) ((c_string) [0] != '\0' && (c_string) [1] == '\0')
+#else
+#error "The macro \"IS_STRING_LENGTH_ONE\" is already defined !"
+#endif /* IS_STRING_LENGTH_ONE */
 
 //---------------------------------------------------------------------------------------------------------------------
 
