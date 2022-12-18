@@ -285,7 +285,7 @@ endif
 endif
 
 	@echo
-	@echo Bioinformatics_Textmining build completed !
+	@echo $(PROJECT_NAME) build completed !
 
 $(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o  Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o Exec_Config.o TEST_Exec_Intersection.o TEST_Etc.o utf8.o
 	@echo
@@ -403,7 +403,7 @@ utf8.o: $(UTF8_C)
 
 # Alles wieder aufraeumen
 clean:
-	@echo Clean Bioinformatics_Textmining build.
+	@echo Clean $(PROJECT_NAME) build.
 	@echo
 	@echo \> Deleting compilation files:
 	$(RM) -f $(PROJECT_NAME)* *.o ./src/Error_Handling/*.gch gmon.out
@@ -412,4 +412,4 @@ clean:
 	$(RM) -rf $(DOCUMENTATION_PATH)
 	$(MKDIR) $(DOCUMENTATION_PATH)
 	@echo
-	@echo Bioinformatics_Textmining build cleaned.
+	@echo $(PROJECT_NAME) build cleaned.
