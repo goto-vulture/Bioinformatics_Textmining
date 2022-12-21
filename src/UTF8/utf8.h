@@ -1,5 +1,9 @@
 #include <stdarg.h>
 #include <inttypes.h>
+// C99 check
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#include <stdbool.h>
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L */
 
 /* is c the start of a utf8 sequence? */
 #ifndef isutf
@@ -76,3 +80,12 @@ int u8_is_locale_utf8(char *locale);
    locale is UTF-8. */
 int u8_vprintf(char *fmt, va_list ap);
 int u8_printf(char *fmt, ...);
+
+// C99 check, because in this version the type _Bool was introduced
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+/* Contains the string at least one UTF8 char? */
+_Bool u8_contains_string_u8_char(char* str);
+#else
+/* Contains the string at least one UTF8 char? */
+int u8_contains_string_u8_char(char* str);
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L */

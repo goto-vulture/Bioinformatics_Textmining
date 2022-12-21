@@ -481,3 +481,42 @@ int u8_printf(char *fmt, ...)
     va_end(args);
     return cnt;
 }
+
+// C99 check, because in this version the type _Bool was introduced
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+/* Contains the string at least one UTF8 char? */
+_Bool u8_contains_string_u8_char(char* str)
+{
+    _Bool result = false;
+    int i = 0;
+    int last_i = i;
+
+    while (u8_nextchar(str, &i) != 0) {
+        if (i - last_i != 1) {
+            result = true;
+            break;
+        }
+        last_i = i;
+    }
+
+    return result;
+}
+#else
+/* Contains the string at least one UTF8 char? */
+int u8_contains_string_u8_char(char* str)
+{
+    int result = 0;
+    int i = 0;
+    int last_i = i;
+
+    while (u8_nextchar(str, &i) != 0) {
+        if (i - last_i != 1) {
+            result = 1;
+            break;
+        }
+        last_i = i;
+    }
+
+    return result;
+}
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L */
