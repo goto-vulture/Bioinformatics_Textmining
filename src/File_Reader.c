@@ -51,6 +51,24 @@
 #endif /* TOKEN_CONTAINER_ALLOCATION_STEP_SIZE */
 
 /**
+ * @brief Name of the JSON array with the tokens.
+ */
+#ifndef JSON_TOKENS_ARRAY_NAME
+#define JSON_TOKENS_ARRAY_NAME "tokens"
+#else
+#error "The macro \"JSON_TOKENS_ARRAY_NAME\" is already defined !"
+#endif /* JSON_TOKENS_ARRAY_NAME */
+
+/**
+ * @brief Name of the JSON array with the char offsets.
+ */
+#ifndef JSON_CHAR_OFFSET_ARRAY_NAME
+#define JSON_CHAR_OFFSET_ARRAY_NAME "abs_char_offsets"
+#else
+#error "The macro \"JSON_CHAR_OFFSET_ARRAY_NAME\" is already defined !"
+#endif /* JSON_CHAR_OFFSET_ARRAY_NAME */
+
+/**
  * @brief Check, whether the macro values are valid.
  */
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
@@ -59,6 +77,11 @@ _Static_assert(TOKEN_CONTAINER_ALLOCATION_STEP_SIZE > 0, "The marco \"TOKEN_CONT
 
 IS_TYPE(TOKENS_ALLOCATION_STEP_SIZE, int)
 IS_TYPE(TOKEN_CONTAINER_ALLOCATION_STEP_SIZE, int)
+
+_Static_assert(sizeof(JSON_TOKENS_ARRAY_NAME) > 0 + 1, "The macro \"JSON_TOKENS_ARRAY_NAME\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(JSON_CHAR_OFFSET_ARRAY_NAME) > 0 + 1, "The macro \"JSON_CHAR_OFFSET_ARRAY_NAME\" needs at least one char (plus '\0') !");
+IS_CONST_STR(JSON_TOKENS_ARRAY_NAME)
+IS_CONST_STR(JSON_CHAR_OFFSET_ARRAY_NAME)
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ */
 
 /**
@@ -190,6 +213,28 @@ Read_File_Process_Print_Function
         const clock_t interval_end
 );
 
+/**
+ * @brief Use the current cJSON object and identify the tokens and the offsets of them in this object.
+ *
+ * The function expects, that all given pointer are valid !
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param[in] main_json Main cJSON object (It holds the object, that works direct with the source file)
+ * @param[in] curr The current cJSON object
+ * @param[in] new_container The new container, that will save the new information
+ *
+ * @return Number of tokens, that were found (This value can be 0)
+ */
+static uint_fast32_t
+Use_Current_JSON_Fragment
+(
+        const cJSON* const main_json,
+        const cJSON* const curr,
+        struct Token_List_Container* const new_container
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -285,7 +330,7 @@ TokenListContainer_CreateObject
     new_container->malloc_calloc_calls ++;
 
     uint_fast32_t line_counter              = 0;
-    uint_fast32_t tokens_found              = 0;
+    uint_fast32_t sum_tokens_found          = 0;
     const uint_fast8_t count_steps          = 200;
     const size_t unsigned_input_file_length = (size_t) input_file_length;
     const uint_fast32_t print_steps         = ((unsigned_input_file_length / count_steps) == 0) ?
@@ -331,191 +376,9 @@ TokenListContainer_CreateObject
             // ===== ===== ===== BEGIN Use current cJSON object ===== ===== =====
             while (curr != NULL)
             {
-                cJSON* name = cJSON_GetObjectItemCaseSensitive(json, curr->string);
-                if (! name) { curr = curr->next; continue; }
-                if (! name->string) { curr = curr->next; continue; }
-
-                // Exists a tokens array ?
-                cJSON* tokens_array = cJSON_GetObjectItemCaseSensitive(name, "tokens");
-                if (! tokens_array) { curr = curr->next; continue; }
-                if (! cJSON_IsArray(tokens_array)) { curr = curr->next; continue; }
-
-                // If a array with offsets is available ? Use them
-                cJSON* char_offsets_array = cJSON_GetObjectItemCaseSensitive(name, "abs_char_offsets");
-                if (! char_offsets_array) { if (! cJSON_IsArray(char_offsets_array)) { char_offsets_array = NULL; } }
-
-                // Get all tokens from tokens array
-                //const int tokens_array_size = cJSON_GetArraySize(tokens_array);
-                register cJSON* curr_token = tokens_array->child;
-                if (! curr_token) { curr = curr->next; continue; }
-                register cJSON* curr_char_offset = NULL;
-                if (char_offsets_array != NULL) { curr_char_offset = char_offsets_array->child; }
-
-
-                // Realloc necessary ?
-                // Is it necessary to realloc/increase the number of Token_List objects in the container ?
-                if (new_container->next_free_element >= new_container->allocated_token_container)
-                {
-                    Increase_Number_Of_Token_Lists (new_container);
-                }
-                const size_t dataset_id_length =
-                        COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].dataset_id);
-                strncpy (new_container->token_lists [new_container->next_free_element].dataset_id, name->string,
-                        dataset_id_length - 1);
-                new_container->token_lists [new_container->next_free_element].dataset_id [dataset_id_length - 1] = '\0';
-
-
-                struct Token_List* const current_token_list_obj = &(new_container->token_lists [new_container->next_free_element]);
-
-                // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
-                while (curr_token != NULL)
-                {
-                    if (! curr_token->valuestring) { curr_token = curr_token->next; continue; }
-
-                    // Is more memory for the new token in the Token_List necessary ?
-                    if (current_token_list_obj->next_free_element >= current_token_list_obj->allocated_tokens)
-                    {
-                        Increase_Number_Of_Tokens (current_token_list_obj);
-
-                        // Adjust the number of reallocs in the upper container
-                        new_container->realloc_calls += 3;
-                    }
-
-                    char* res_mem_for_curr_token = Get_Address_Of_Next_Free_Token (current_token_list_obj);
-
-                    const size_t current_token_len = strlen (curr_token->valuestring);
-
-                    // Copy token to the current Token_List
-                    strncpy(res_mem_for_curr_token, curr_token->valuestring, current_token_list_obj->max_token_length - 1);
-
-                    // Save the full token, if it is too long
-                    if (current_token_len > (current_token_list_obj->max_token_length - 1))
-                    {
-                        TwoDimCStrArray_AppendNewString
-                        (
-                                new_container->list_of_too_long_token,
-                                curr_token->valuestring,
-                                current_token_len
-                        );
-                    }
-
-                    // Adjust the next offset value
-                    // Zero for the fist element
-                    if (current_token_list_obj->next_free_element == 0)
-                    {
-                        current_token_list_obj->char_offsets [0] = 0;
-                        current_token_list_obj->sentence_offsets [0] = 0;
-                        current_token_list_obj->word_offsets [0] = 0;
-                    }
-                    else
-                    {
-                        const char* last_token =
-                                Get_Address_Of_Token (current_token_list_obj, current_token_list_obj->next_free_element - 1);
-                        // VVV This is the old way without notifying UTF8 char VVV
-                        // const size_t last_token_length = strlen(last_token);
-                        const size_t last_token_length = (size_t) u8_strlen((char*) last_token);
-
-                        // Such a check is not necessary:
-                        // "It was designed for backward compatibility with ASCII: the first 128 characters of Unicode,
-                        // which correspond one-to-one with ASCII, are encoded using a single byte with the same binary
-                        // value as ASCII, so that valid ASCII text is valid UTF-8-encoded Unicode as well."
-                        //
-                        // @see https://en.wikipedia.org/wiki/UTF-8
-                        //
-//                        // > UTF-8 check <
-//                        // If the string contains at least one UTF8 symbol the suitable function to determine the length
-//                        // of a string with UTF8 symbols will be called
-//                        // In all other situations the standard way (strlen()) will be used
-//#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-//                        if (u8_contains_string_u8_char((char*) last_token)) // It is necessary to discard the const qualifier
-//#else
-//                        if (u8_contains_string_u8_char((char*) last_token)) // It is necessary to discard the const qualifier
-//#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L */
-//
-//                        {
-//                            // Here it is also necessary to discard the const qualifier -.-
-//                            last_token_length = (size_t) u8_strlen((char*) last_token);
-//                        }
-//                        else
-//                        {
-//                            last_token_length = strlen(last_token);
-//                        }
-
-                        size_t new_char_offset = 0;
-                        if (curr_char_offset != NULL)
-                        {
-                            new_char_offset = (size_t) curr_char_offset->valueint;
-                        }
-                        else
-                        {
-                            new_char_offset = current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
-                                    last_token_length;
-
-                            // Don't forget, that the char offsets in original data includes the blanks between the tokens !
-                            // Example from test_ebm_formatted.json:
-                            /*
-                             "tokens": [
-                              "[",
-                              "The",
-                              "chemotherapy",
-                              "of",
-                            */
-                            /*
-                            "abs_char_offsets": [
-                              0,
-                              2,
-                              6,
-                              19,
-                            */
-                            /* => */ new_char_offset ++;
-                        }
-
-                        const size_t new_sentence_offset =
-                                current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element - 1] +
-                                (last_token [0] == '.') ? 1 : 0;
-
-                        // This is the way, when every token (including punctuation character like dots) should be
-                        // interpreted as word for the word offset
-                        // In other words all char of a token are printable
-                        // Almost all tokens of the input files will be pass this test
-                        size_t new_word_offset = 0;
-                        new_word_offset = current_token_list_obj->word_offsets [current_token_list_obj->next_free_element - 1];
-                        //if (Is_String_Printable(last_token, last_token_length))
-                        {
-                            ++ new_word_offset;
-                        }
-                        
-                        // When the new char offset is larger that are saveable in this type, then will be the calculation
-                        // aborted, because in such a situation exists no possibility to "save" this problem
-                        ASSERT_FMSG(new_char_offset < CHAR_OFFSET_TYPE_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
-                                new_char_offset, CHAR_OFFSET_TYPE_MAX - 1);
-
-                        current_token_list_obj->char_offsets [current_token_list_obj->next_free_element] =
-                                (CHAR_OFFSET_TYPE) new_char_offset;
-                        current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element] =
-                                (SENTENCE_OFFSET_TYPE) new_sentence_offset;
-                        current_token_list_obj->word_offsets [current_token_list_obj->next_free_element] =
-                                (WORD_OFFSET_TYPE) new_word_offset;
-                    }
-
-                    current_token_list_obj->next_free_element ++;
-                    tokens_found ++;
-
-                    // Is the current token longer than the previous tokens ?
-                    new_container->longest_token_length = MAX(new_container->longest_token_length, current_token_len);
-
-                    curr_token = curr_token->next;
-                    if (curr_char_offset != NULL)
-                    {
-                        curr_char_offset = curr_char_offset->next;
-                    }
-                }
-                // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
-
+                // Extract the information from the current cJSON object
+                sum_tokens_found += Use_Current_JSON_Fragment(json, curr, new_container);
                 curr = curr->next;
-
-                // Use next element in the container
-                new_container->next_free_element ++;
             }
             // ===== ===== ===== BEGIN Use current cJSON object ===== ===== =====
 
@@ -543,7 +406,7 @@ TokenListContainer_CreateObject
     CLOCK_WITH_RETURN_CHECK(end);
     used_seconds = DETERMINE_USED_TIME(start, end);
     printf ("\n=> %3.3fs (~ %.3f MB/s) for parsing the whole file (%" PRIuFAST32 " tokens found)\n", used_seconds,
-            ((float) input_file_length / 1024.0f / 1024.0f) / used_seconds, tokens_found);
+            ((float) input_file_length / 1024.0f / 1024.0f) / used_seconds, sum_tokens_found);
 
     FCLOSE_AND_SET_TO_NULL(input_file);
     FREE_AND_SET_TO_NULL(input_file_data);
@@ -1323,6 +1186,219 @@ Read_File_Process_Print_Function
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Use the current cJSON object and identify the tokens and the offsets of them in this object.
+ *
+ * The function expects, that all given pointer are valid !
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param[in] main_json Main cJSON object (It holds the object, that works direct with the source file)
+ * @param[in] curr The current cJSON object
+ * @param[in] new_container The new container, that will save the new information
+ *
+ * @return Number of tokens, that were found (This value can be 0)
+ */
+static uint_fast32_t
+Use_Current_JSON_Fragment
+(
+        const cJSON* const main_json,
+        const cJSON* const curr,
+        struct Token_List_Container* const new_container
+)
+{
+    uint_fast32_t tokens_found = 0;
+
+    const cJSON* const name = cJSON_GetObjectItemCaseSensitive(main_json, curr->string);
+    if (! name)                         { return 0; }
+    if (! name->string)                 { return 0; }
+
+    // Exists a tokens array ?
+    const cJSON* const tokens_array = cJSON_GetObjectItemCaseSensitive(name, JSON_TOKENS_ARRAY_NAME);
+    if (! tokens_array)                 { return 0; }
+    if (! cJSON_IsArray(tokens_array))  { return 0; }
+
+    // If a array with offsets is available ? Use them
+    const cJSON* char_offsets_array = cJSON_GetObjectItemCaseSensitive(name, JSON_CHAR_OFFSET_ARRAY_NAME);
+    if (! char_offsets_array) { if (! cJSON_IsArray(char_offsets_array)) { char_offsets_array = NULL; } }
+
+    // Get all tokens from tokens array
+    //const int tokens_array_size = cJSON_GetArraySize(tokens_array);
+    register const cJSON* curr_token = tokens_array->child;
+    if (! curr_token)                   { return 0; }
+    register const cJSON* curr_char_offset = NULL;
+    if (char_offsets_array != NULL) { curr_char_offset = char_offsets_array->child; }
+
+
+    // Realloc necessary ?
+    // Is it necessary to realloc/increase the number of Token_List objects in the container ?
+    if (new_container->next_free_element >= new_container->allocated_token_container)
+    {
+        Increase_Number_Of_Token_Lists (new_container);
+    }
+    const size_t dataset_id_length =
+            COUNT_ARRAY_ELEMENTS(new_container->token_lists [new_container->next_free_element].dataset_id);
+    strncpy (new_container->token_lists [new_container->next_free_element].dataset_id, name->string,
+            dataset_id_length - 1);
+    new_container->token_lists [new_container->next_free_element].dataset_id [dataset_id_length - 1] = '\0';
+
+
+    struct Token_List* const current_token_list_obj = &(new_container->token_lists [new_container->next_free_element]);
+
+    // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
+    while (curr_token != NULL)
+    {
+        if (! curr_token->valuestring) { curr_token = curr_token->next; continue; }
+
+        // Is more memory for the new token in the Token_List necessary ?
+        if (current_token_list_obj->next_free_element >= current_token_list_obj->allocated_tokens)
+        {
+            Increase_Number_Of_Tokens (current_token_list_obj);
+
+            // Adjust the number of reallocs in the upper container
+            new_container->realloc_calls += 3;
+        }
+
+        char* res_mem_for_curr_token = Get_Address_Of_Next_Free_Token (current_token_list_obj);
+
+        const size_t current_token_len = strlen (curr_token->valuestring);
+
+        // Copy token to the current Token_List
+        strncpy(res_mem_for_curr_token, curr_token->valuestring, current_token_list_obj->max_token_length - 1);
+
+        // Save the full token, if it is too long
+        if (current_token_len > (current_token_list_obj->max_token_length - 1))
+        {
+            TwoDimCStrArray_AppendNewString
+            (
+                    new_container->list_of_too_long_token,
+                    curr_token->valuestring,
+                    current_token_len
+            );
+        }
+
+        // Adjust the next offset value
+        // Zero for the fist element
+        if (current_token_list_obj->next_free_element == 0)
+        {
+            current_token_list_obj->char_offsets [0]        = 0;
+            current_token_list_obj->sentence_offsets [0]    = 0;
+            current_token_list_obj->word_offsets [0]        = 0;
+        }
+        else
+        {
+            const char* last_token =
+                    Get_Address_Of_Token (current_token_list_obj, current_token_list_obj->next_free_element - 1);
+            // VVV This is the old way without notifying UTF8 char VVV
+            // const size_t last_token_length = strlen(last_token);
+            const size_t last_token_length = (size_t) u8_strlen((char*) last_token);
+
+            // Such a check is not necessary:
+            // "It was designed for backward compatibility with ASCII: the first 128 characters of Unicode,
+            // which correspond one-to-one with ASCII, are encoded using a single byte with the same binary
+            // value as ASCII, so that valid ASCII text is valid UTF-8-encoded Unicode as well."
+            //
+            // @see https://en.wikipedia.org/wiki/UTF-8
+            //
+//                        // > UTF-8 check <
+//                        // If the string contains at least one UTF8 symbol the suitable function to determine the length
+//                        // of a string with UTF8 symbols will be called
+//                        // In all other situations the standard way (strlen()) will be used
+//#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+//                        if (u8_contains_string_u8_char((char*) last_token)) // It is necessary to discard the const qualifier
+//#else
+//                        if (u8_contains_string_u8_char((char*) last_token)) // It is necessary to discard the const qualifier
+//#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L */
+//
+//                        {
+//                            // Here it is also necessary to discard the const qualifier -.-
+//                            last_token_length = (size_t) u8_strlen((char*) last_token);
+//                        }
+//                        else
+//                        {
+//                            last_token_length = strlen(last_token);
+//                        }
+
+            size_t new_char_offset = 0;
+            if (curr_char_offset != NULL)
+            {
+                new_char_offset = (size_t) curr_char_offset->valueint;
+            }
+            else
+            {
+                new_char_offset = current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
+                        last_token_length;
+
+                // Don't forget, that the char offsets in original data includes the blanks between the tokens !
+                // Example from test_ebm_formatted.json:
+                /*
+                 "tokens": [
+                  "[",
+                  "The",
+                  "chemotherapy",
+                  "of",
+                */
+                /*
+                "abs_char_offsets": [
+                  0,
+                  2,
+                  6,
+                  19,
+                */
+                /* => */ new_char_offset ++;
+            }
+
+            const size_t new_sentence_offset =
+                    current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element - 1] +
+                    (last_token [0] == '.') ? 1 : 0;
+
+            // This is the way, when every token (including punctuation character like dots) should be
+            // interpreted as word for the word offset
+            // In other words all char of a token are printable
+            // Almost all tokens of the input files will be pass this test
+            size_t new_word_offset = 0;
+            new_word_offset = current_token_list_obj->word_offsets [current_token_list_obj->next_free_element - 1];
+            //if (Is_String_Printable(last_token, last_token_length))
+            {
+                ++ new_word_offset;
+            }
+
+            // When the new char offset is larger that are saveable in this type, then will be the calculation
+            // aborted, because in such a situation exists no possibility to "save" this problem
+            ASSERT_FMSG(new_char_offset < CHAR_OFFSET_TYPE_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
+                    new_char_offset, CHAR_OFFSET_TYPE_MAX - 1);
+
+            current_token_list_obj->char_offsets [current_token_list_obj->next_free_element] =
+                    (CHAR_OFFSET_TYPE) new_char_offset;
+            current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element] =
+                    (SENTENCE_OFFSET_TYPE) new_sentence_offset;
+            current_token_list_obj->word_offsets [current_token_list_obj->next_free_element] =
+                    (WORD_OFFSET_TYPE) new_word_offset;
+        }
+
+        current_token_list_obj->next_free_element ++;
+        tokens_found ++;
+
+        // Is the current token longer than the previous tokens ?
+        new_container->longest_token_length = MAX(new_container->longest_token_length, current_token_len);
+
+        curr_token = curr_token->next;
+        if (curr_char_offset != NULL)
+        {
+            curr_char_offset = curr_char_offset->next;
+        }
+    }
+    // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
+
+    // Use next element in the container
+    new_container->next_free_element ++;
+
+    return tokens_found;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 
 
 #ifdef TOKENS_ALLOCATION_STEP_SIZE
@@ -1332,3 +1408,11 @@ Read_File_Process_Print_Function
 #ifdef TOKEN_CONTAINER_ALLOCATION_STEP_SIZE
 #undef TOKEN_CONTAINER_ALLOCATION_STEP_SIZE
 #endif /* TOKEN_CONTAINER_ALLOCATION_STEP_SIZE */
+
+#ifdef JSON_TOKENS_ARRAY_NAME
+#undef JSON_TOKENS_ARRAY_NAME
+#endif /* JSON_TOKENS_ARRAY_NAME */
+
+#ifdef JSON_CHAR_OFFSET_ARRAY_NAME
+#undef JSON_CHAR_OFFSET_ARRAY_NAME
+#endif /* JSON_CHAR_OFFSET_ARRAY_NAME */
