@@ -82,6 +82,19 @@ extern "C"
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief An assert, that is designed to fail.
+ *
+ * Useful for debugging.
+ */
+#ifndef FAIL_ASSERT
+#define FAIL_ASSERT ASSERT_MSG(false, "FAIL_ASSERT reached; this assert is designed to fail !")
+#else
+#error "The macro \"FAIL_ASSERT\" is already defined !"
+#endif /* FAIL_ASSERT */
+
+//---------------------------------------------------------------------------------------------------------------------
+
 
 
 #ifdef __cplusplus
