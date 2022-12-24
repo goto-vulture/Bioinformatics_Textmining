@@ -441,17 +441,57 @@ extern "C"
 // ===== ===== ===== ===== ===== ===== ===== ===== END Main ANSI set macros ===== ===== ===== ===== ===== ===== ===== ====
 
 // ===== ===== ===== ===== ===== ===== ===== ===== BEGIN Reset set macros ===== ===== ===== ===== ===== ===== ===== =====
-#ifndef ANSI_TEXT_UNDERLINE_OFF
-#define ANSI_TEXT_UNDERLINE_OFF     ANSI_MAIN_ESC_SEQ(STRFICATION_STEP1(ANSI_FONT_EFFECT_UNDERLINE_OFF))        ///< Disable any underline effects
-#else
-#error "The macro \"ANSI_TEXT_UNDERLINE_OFF\" is already defined !"
-#endif /* ANSI_TEXT_UNDERLINE_OFF */
-
+/**
+ * @brief Disable all attributes.
+ *
+ * This is the normal way to reset attributes. The other macros can only reset specific attributes.
+ */
 #ifndef ANSI_RESET_ALL
-#define ANSI_RESET_ALL ANSI_MAIN_ESC_SEQ(STRFICATION_STEP1(ANSI_FONT_EFFECT_RESET))                             ///< Disable all attributes
+#define ANSI_RESET_ALL ANSI_MAIN_ESC_SEQ(STRFICATION_STEP1(ANSI_FONT_EFFECT_RESET))
 #else
 #error "The macro \"ANSI_RESET_ALL\" is already defined !"
 #endif /* ANSI_RESET_ALL */
+
+#ifndef ANSI_TEXT_NORMAL_COLOR_OR_INTENSITY
+#define ANSI_TEXT_NORMAL_COLOR_OR_INTENSITY ANSI_MAIN_ESC_SEQ(STRFICATION_STEP1(ANSI_FONT_EFFECT_NORMAL_COLOR_OR_INTENSITY))    ///< Disable user-defined color or intensity
+#else
+#error "The macro \"ANSI_TEXT_NORMAL_COLOR_OR_INTENSITY\" is already defined !"
+#endif /* ANSI_TEXT_NORMAL_COLOR_OR_INTENSITY */
+#ifndef ANSI_TEXT_NOT_ITALIC_NOT_FRAKTUR
+#define ANSI_TEXT_NOT_ITALIC_NOT_FRAKTUR    ANSI_MAIN_ESC_SEQ(STRFICATION_STEP1(ANSI_FONT_EFFECT_NOT_ITALIC_NOT_FRAKTUR))       ///< Disable the fraktur property
+#else
+#error "The macro \"ANSI_TEXT_NOT_ITALIC_NOT_FRAKTUR\" is already defined !"
+#endif /* ANSI_TEXT_NOT_ITALIC_NOT_FRAKTUR */
+#ifndef ANSI_TEXT_INVERSE_OFF
+#define ANSI_TEXT_INVERSE_OFF   ANSI_MAIN_ESC_SEQ(STRFICATION_STEP1(ANSI_FONT_EFFECT_INVERSE_OFF))                              ///< Disable the inverse property
+#else
+#error "The macro \"ANSI_TEXT_INVERSE_OFF\" is already defined !"
+#endif /* ANSI_TEXT_INVERSE_OFF */
+#ifndef ANSI_TEXT_NOT_CROSSED_OUT
+#define ANSI_TEXT_NOT_CROSSED_OUT   ANSI_MAIN_ESC_SEQ(STRFICATION_STEP1(ANSI_FONT_EFFECT_NOT_CROSSED_OUT))                      ///< Disable the crossed out property
+#else
+#error "The macro \"ANSI_TEXT_NOT_CROSSED_OUT\" is already defined !"
+#endif /* ANSI_TEXT_NOT_CROSSED_OUT */
+#ifndef ANSI_TEXT_NOT_FRAMED_OR_ENCIRCLED
+#define ANSI_TEXT_NOT_FRAMED_OR_ENCIRCLED   ANSI_MAIN_ESC_SEQ(STRFICATION_STEP1(ANSI_FONT_EFFECT_NOT_FRAMED_OR_ENCIRCLED))      ///< Disable the framed and the encircled property
+#else
+#error "The macro \"ANSI_TEXT_NOT_FRAMED_OR_ENCIRCLED\" is already defined !"
+#endif /* ANSI_TEXT_NOT_FRAMED_OR_ENCIRCLED */
+#ifndef ANSI_TEXT_NOT_OVERLINED
+#define ANSI_TEXT_NOT_OVERLINED ANSI_MAIN_ESC_SEQ(STRFICATION_STEP1(ANSI_FONT_EFFECT_NOT_OVERLINED))                            ///< Disable the overline property
+#else
+#error "The macro \"ANSI_TEXT_NOT_OVERLINED\" is already defined !"
+#endif /* ANSI_TEXT_NOT_OVERLINED */
+#ifndef ANSI_TEXT_IDEOGRAM_ATTRIBUTES_OFF
+#define ANSI_TEXT_IDEOGRAM_ATTRIBUTES_OFF   ANSI_MAIN_ESC_SEQ(STRFICATION_STEP1(ANSI_FONT_EFFECT_IDEOGRAM_ATTRIBUTES_OFF))      ///< Disable all ideogram attributes
+#else
+#error "The macro \"ANSI_TEXT_IDEOGRAM_ATTRIBUTES_OFF\" is already defined !"
+#endif /* ANSI_TEXT_IDEOGRAM_ATTRIBUTES_OFF */
+#ifndef ANSI_TEXT_UNDERLINE_OFF
+#define ANSI_TEXT_UNDERLINE_OFF     ANSI_MAIN_ESC_SEQ(STRFICATION_STEP1(ANSI_FONT_EFFECT_UNDERLINE_OFF))                        ///< Disable any underline effects
+#else
+#error "The macro \"ANSI_TEXT_UNDERLINE_OFF\" is already defined !"
+#endif /* ANSI_TEXT_UNDERLINE_OFF */
 // ===== ===== ===== ===== ===== ===== ===== ===== END Reset set macros ===== ===== ===== ===== ===== ===== ===== =====
 
 
