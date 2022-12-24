@@ -188,9 +188,10 @@ extern "C"
 
 
 /**
- * @brief Small test whether the ANSI escape sequences are working.
+ * @brief Small test whether the main ANSI escape sequences (different colors and font changes like bold and italic) are
+ * working.
  */
-extern void Test_ANSI_Esc_Seq(void);
+extern void Test_ANSI_Main_Esc_Seq(void);
 
 
 

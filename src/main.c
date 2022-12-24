@@ -343,6 +343,7 @@ Run_All_Test_Functions
     RUN(TEST_Number_Of_Sets_Equal_With_Switched_Input_Files);
 
     RUN(TEST_Number_Of_Free_Calls);
+    RUN(TEST_ANSI_Esc_Seq);
 
     return;
 }

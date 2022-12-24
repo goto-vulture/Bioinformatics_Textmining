@@ -14,6 +14,7 @@
 #include "../CLI_Parameter.h"
 #include "../Exec_Intersection.h"
 #include "../Error_Handling/Dynamic_Memory.h"
+#include "../ANSI_Esc_Seq.h"
 
 
 
@@ -43,6 +44,24 @@ extern void TEST_Number_Of_Free_Calls (void)
 
     // We expect, that no free call is missing
     ASSERT_EQUALS(0, missing_free_calls);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Check the functionality of the most important ANSI esc sequences.
+ *
+ * This test cannot fail, because it is not possible for the program to check whether the output on the terminal has
+ * the expected view.
+ */
+extern void TEST_ANSI_Esc_Seq (void)
+{
+    Test_ANSI_Main_Esc_Seq();
+
+    // We cannot check the view of the terminal output; so such a test cannot fail.
+    ASSERT_EQUALS(true, true);
 
     return;
 }

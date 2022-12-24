@@ -15,11 +15,12 @@
 
 
 /**
- * @brief Small test whether the ANSI escape sequences are working.
+ * @brief Small test whether the main ANSI escape sequences (different colors and font changes like bold and italic) are
+ * working.
  */
-extern void Test_ANSI_Esc_Seq()
+extern void Test_ANSI_Main_Esc_Seq()
 {
-    puts(ANSI_RESET_ALL);
+    printf(ANSI_RESET_ALL);
     printf("> Begin: %s <\n", __func__);
 
     puts("Text color");
@@ -37,15 +38,16 @@ extern void Test_ANSI_Esc_Seq()
     puts(ANSI_RESET_ALL "DEFAULT");
     puts("");
 
+    puts("Main font changes");
     puts(ANSI_TEXT_BOLD "BOLD");
     puts(ANSI_TEXT_ITALIC "ITALIC");
     puts(ANSI_TEXT_UNDERLINE "UNDERLINE" ANSI_TEXT_UNDERLINE_OFF);
     puts(ANSI_TEXT_DOUBLE_UNDERLINE "DOUBLE UNDERLINE" ANSI_TEXT_UNDERLINE_OFF);
-    // On many systems slow and fast blink have the same blink time
+    // On many systems slow and fast blink has the same blink time
     puts(ANSI_TEXT_SLOW_BLINK "SLOW BLINK");
     puts(ANSI_TEXT_FAST_BLINK "FAST BLINK");
 
-    puts(ANSI_RESET_ALL);
+    printf(ANSI_RESET_ALL);
     printf("> End: %s <\n", __func__);
     fflush(stdout);
     return;

@@ -25,6 +25,14 @@ extern "C"
  */
 extern void TEST_Number_Of_Free_Calls (void);
 
+/**
+ * @brief Check the functionality of the most important ANSI esc sequences.
+ *
+ * This test cannot fail, because it is not possible for the program to check whether the output on the terminal has
+ * the expected view.
+ */
+extern void TEST_ANSI_Esc_Seq (void);
+
 
 
 #ifdef __cplusplus
