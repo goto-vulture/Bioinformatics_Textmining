@@ -78,6 +78,11 @@ struct Document_Word_List
 /**
  * @brief Create new document word list.
  *
+ * The variable "max_array_length" is actual not in use. In the past the idea of this value was to make all dynamic
+ * memory blocks large enough, that every block could hold all data. -> Reduction of realloc calls. But it is to
+ * inefficient in the memory usage. This value is nevertheless available, because the idea with the worest case memory
+ * block could be useful in the future. But not currently!
+ *
  * Asserts:
  *      number_of_arrays > 0
  *      max_array_length > 0
@@ -96,6 +101,11 @@ DocumentWordList_CreateObject
 
 /**
  * @brief Create new document word list as result for an intersection process.
+ *
+ * The variable "max_array_length" is actual not in use. In the past the idea of this value was to make all dynamic
+ * memory blocks large enough, that every block could hold all data. -> Reduction of realloc calls. But it is to
+ * inefficient in the memory usage. This value is nevertheless available, because the idea with the worest case memory
+ * block could be useful in the future. But not currently!
  *
  * Asserts:
  *      number_of_arrays > 0
