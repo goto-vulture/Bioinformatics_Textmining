@@ -19,6 +19,10 @@ extern "C"
 
 
 
+#include "Error_Handling/_Generics.h"
+
+
+
 #ifndef ANSI_MAIN_ESC_SEQ
 #define ANSI_MAIN_ESC_SEQ(...) "\033[" __VA_ARGS__ "m"  ///< Place the prae- and postfix char for a ANSI color escape sequence
 #else
@@ -360,6 +364,144 @@ extern "C"
 #else
 #error "The macro \"ANSI_FONT_EFFECT_IDEOGRAM_ATTRIBUTES_OFF\" is already defined !"
 #endif /* ANSI_FONT_EFFECT_IDEOGRAM_ATTRIBUTES_OFF */
+
+// Check, whether the macros create integer values
+// Such a check is only possible in the C11 (and newer) standards
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+IS_INT(ANSI_FONT_EFFECT_RESET)
+IS_INT(ANSI_FONT_EFFECT_BOLD)
+IS_INT(ANSI_FONT_EFFECT_FAINT)
+IS_INT(ANSI_FONT_EFFECT_ITALIC)
+IS_INT(ANSI_FONT_EFFECT_UNDERLINE)
+IS_INT(ANSI_FONT_EFFECT_SLOW_BLINK)
+IS_INT(ANSI_FONT_EFFECT_RAPID_BLINK)
+IS_INT(ANSI_FONT_EFFECT_REVERSE_VIDEO)
+IS_INT(ANSI_FONT_EFFECT_CONCEAL)
+IS_INT(ANSI_FONT_EFFECT_CROSSED_OUT)
+_Static_assert(ANSI_FONT_EFFECT_RESET >= 0,         "A negative value for the macro \"ANSI_FONT_EFFECT_RESET\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_BOLD >= 0,          "A negative value for the macro \"ANSI_FONT_EFFECT_BOLD\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_FAINT >= 0,         "A negative value for the macro \"ANSI_FONT_EFFECT_FAINT\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_ITALIC >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_ITALIC\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_UNDERLINE >= 0,     "A negative value for the macro \"ANSI_FONT_EFFECT_UNDERLINE\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_SLOW_BLINK >= 0,    "A negative value for the macro \"ANSI_FONT_EFFECT_SLOW_BLINK\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_RAPID_BLINK >= 0,   "A negative value for the macro \"ANSI_FONT_EFFECT_RAPID_BLINK\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_REVERSE_VIDEO >= 0, "A negative value for the macro \"ANSI_FONT_EFFECT_REVERSE_VIDEO\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_CONCEAL >= 0,       "A negative value for the macro \"ANSI_FONT_EFFECT_CONCEAL\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_CROSSED_OUT >= 0,   "A negative value for the macro \"ANSI_FONT_EFFECT_CROSSED_OUT\" is invalid !");
+
+IS_INT(ANSI_FONT_EFFECT_DEFAULT_FONT)
+IS_INT(ANSI_FONT_EFFECT_ALTERNATE_FONT_1)
+IS_INT(ANSI_FONT_EFFECT_ALTERNATE_FONT_2)
+IS_INT(ANSI_FONT_EFFECT_ALTERNATE_FONT_3)
+IS_INT(ANSI_FONT_EFFECT_ALTERNATE_FONT_4)
+IS_INT(ANSI_FONT_EFFECT_ALTERNATE_FONT_5)
+IS_INT(ANSI_FONT_EFFECT_ALTERNATE_FONT_6)
+IS_INT(ANSI_FONT_EFFECT_ALTERNATE_FONT_7)
+IS_INT(ANSI_FONT_EFFECT_ALTERNATE_FONT_8)
+IS_INT(ANSI_FONT_EFFECT_ALTERNATE_FONT_9)
+_Static_assert(ANSI_FONT_EFFECT_DEFAULT_FONT >= 0,      "A negative value for the macro \"ANSI_FONT_EFFECT_DEFAULT_FONT\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_ALTERNATE_FONT_1 >= 0,  "A negative value for the macro \"ANSI_FONT_EFFECT_ALTERNATE_FONT_1\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_ALTERNATE_FONT_2 >= 0,  "A negative value for the macro \"ANSI_FONT_EFFECT_ALTERNATE_FONT_2\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_ALTERNATE_FONT_3 >= 0,  "A negative value for the macro \"ANSI_FONT_EFFECT_ALTERNATE_FONT_3\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_ALTERNATE_FONT_4 >= 0,  "A negative value for the macro \"ANSI_FONT_EFFECT_ALTERNATE_FONT_4\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_ALTERNATE_FONT_5 >= 0,  "A negative value for the macro \"ANSI_FONT_EFFECT_ALTERNATE_FONT_5\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_ALTERNATE_FONT_6 >= 0,  "A negative value for the macro \"ANSI_FONT_EFFECT_ALTERNATE_FONT_6\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_ALTERNATE_FONT_7 >= 0,  "A negative value for the macro \"ANSI_FONT_EFFECT_ALTERNATE_FONT_7\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_ALTERNATE_FONT_8 >= 0,  "A negative value for the macro \"ANSI_FONT_EFFECT_ALTERNATE_FONT_8\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_ALTERNATE_FONT_9 >= 0,  "A negative value for the macro \"ANSI_FONT_EFFECT_ALTERNATE_FONT_9\" is invalid !");
+
+IS_INT(ANSI_FONT_EFFECT_FRAKTUR)
+IS_INT(ANSI_FONT_EFFECT_DOUBLE_UNDERLINE)
+IS_INT(ANSI_FONT_EFFECT_NORMAL_COLOR_OR_INTENSITY)
+IS_INT(ANSI_FONT_EFFECT_NOT_ITALIC_NOT_FRAKTUR)
+IS_INT(ANSI_FONT_EFFECT_UNDERLINE_OFF)
+_Static_assert(ANSI_FONT_EFFECT_FRAKTUR >= 0,                   "A negative value for the macro \"ANSI_FONT_EFFECT_FRAKTUR\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_DOUBLE_UNDERLINE >= 0,          "A negative value for the macro \"ANSI_FONT_EFFECT_DOUBLE_UNDERLINE\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_NORMAL_COLOR_OR_INTENSITY >= 0, "A negative value for the macro \"ANSI_FONT_EFFECT_NORMAL_COLOR_OR_INTENSITY\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_NOT_ITALIC_NOT_FRAKTUR >= 0,    "A negative value for the macro \"ANSI_FONT_EFFECT_NOT_ITALIC_NOT_FRAKTUR\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_UNDERLINE_OFF >= 0,             "A negative value for the macro \"ANSI_FONT_EFFECT_UNDERLINE_OFF\" is invalid !");
+
+// #define ANSI_FONT_EFFECT_ 26 NOT IN USE !
+IS_INT(ANSI_FONT_EFFECT_BLINK_OFF)
+IS_INT(ANSI_FONT_EFFECT_INVERSE_OFF)
+IS_INT(ANSI_FONT_EFFECT_REVEAL)
+IS_INT(ANSI_FONT_EFFECT_NOT_CROSSED_OUT)
+_Static_assert(ANSI_FONT_EFFECT_BLINK_OFF >= 0,         "A negative value for the macro \"ANSI_FONT_EFFECT_BLINK_OFF\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_INVERSE_OFF >= 0,       "A negative value for the macro \"ANSI_FONT_EFFECT_INVERSE_OFF\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_REVEAL >= 0,            "A negative value for the macro \"ANSI_FONT_EFFECT_REVEAL\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_NOT_CROSSED_OUT >= 0,   "A negative value for the macro \"ANSI_FONT_EFFECT_NOT_CROSSED_OUT\" is invalid !");
+
+IS_INT(ANSI_FONT_EFFECT_FOREGROUND_COLOR_1)
+IS_INT(ANSI_FONT_EFFECT_FOREGROUND_COLOR_2)
+IS_INT(ANSI_FONT_EFFECT_FOREGROUND_COLOR_3)
+IS_INT(ANSI_FONT_EFFECT_FOREGROUND_COLOR_4)
+IS_INT(ANSI_FONT_EFFECT_FOREGROUND_COLOR_5)
+IS_INT(ANSI_FONT_EFFECT_FOREGROUND_COLOR_6)
+IS_INT(ANSI_FONT_EFFECT_FOREGROUND_COLOR_7)
+IS_INT(ANSI_FONT_EFFECT_FOREGROUND_COLOR_8)
+IS_INT(ANSI_FONT_EFFECT_SET_FOREGROUND_COLOR)
+IS_INT(ANSI_FONT_EFFECT_DEFAULT_FOREGROUND_COLOR)
+_Static_assert(ANSI_FONT_EFFECT_FOREGROUND_COLOR_1 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_FOREGROUND_COLOR_1\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_FOREGROUND_COLOR_2 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_FOREGROUND_COLOR_2\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_FOREGROUND_COLOR_3 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_FOREGROUND_COLOR_3\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_FOREGROUND_COLOR_4 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_FOREGROUND_COLOR_4\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_FOREGROUND_COLOR_5 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_FOREGROUND_COLOR_5\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_FOREGROUND_COLOR_6 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_FOREGROUND_COLOR_6\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_FOREGROUND_COLOR_7 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_FOREGROUND_COLOR_7\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_FOREGROUND_COLOR_8 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_FOREGROUND_COLOR_8\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_SET_FOREGROUND_COLOR >= 0,      "A negative value for the macro \"ANSI_FONT_EFFECT_SET_FOREGROUND_COLOR\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_DEFAULT_FOREGROUND_COLOR >= 0,  "A negative value for the macro \"ANSI_FONT_EFFECT_DEFAULT_FOREGROUND_COLOR\" is invalid !");
+
+IS_INT(ANSI_FONT_EFFECT_BACKGROUND_COLOR_1)
+IS_INT(ANSI_FONT_EFFECT_BACKGROUND_COLOR_2)
+IS_INT(ANSI_FONT_EFFECT_BACKGROUND_COLOR_3)
+IS_INT(ANSI_FONT_EFFECT_BACKGROUND_COLOR_4)
+IS_INT(ANSI_FONT_EFFECT_BACKGROUND_COLOR_5)
+IS_INT(ANSI_FONT_EFFECT_BACKGROUND_COLOR_6)
+IS_INT(ANSI_FONT_EFFECT_BACKGROUND_COLOR_7)
+IS_INT(ANSI_FONT_EFFECT_BACKGROUND_COLOR_8)
+IS_INT(ANSI_FONT_EFFECT_SET_BACKGROUND_COLOR)
+IS_INT(ANSI_FONT_EFFECT_DEFAULT_BACKGROUND_COLOR)
+_Static_assert(ANSI_FONT_EFFECT_BACKGROUND_COLOR_1 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_BACKGROUND_COLOR_1\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_BACKGROUND_COLOR_2 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_BACKGROUND_COLOR_2\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_BACKGROUND_COLOR_3 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_BACKGROUND_COLOR_3\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_BACKGROUND_COLOR_4 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_BACKGROUND_COLOR_4\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_BACKGROUND_COLOR_5 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_BACKGROUND_COLOR_5\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_BACKGROUND_COLOR_6 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_BACKGROUND_COLOR_6\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_BACKGROUND_COLOR_7 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_BACKGROUND_COLOR_7\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_BACKGROUND_COLOR_8 >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_BACKGROUND_COLOR_8\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_SET_BACKGROUND_COLOR >= 0,      "A negative value for the macro \"ANSI_FONT_EFFECT_SET_BACKGROUND_COLOR\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_DEFAULT_BACKGROUND_COLOR >= 0,  "A negative value for the macro \"ANSI_FONT_EFFECT_DEFAULT_BACKGROUND_COLOR\" is invalid !");
+
+// #define ANSI_FONT_EFFECT_ 50 NOT IN USE !
+IS_INT(ANSI_FONT_EFFECT_FRAMED)
+IS_INT(ANSI_FONT_EFFECT_ENCIRCLED)
+IS_INT(ANSI_FONT_EFFECT_OVERLINED)
+IS_INT(ANSI_FONT_EFFECT_NOT_FRAMED_OR_ENCIRCLED)
+IS_INT(ANSI_FONT_EFFECT_NOT_OVERLINED)
+// #define ANSI_FONT_EFFECT_ 56 NOT IN USE !
+// #define ANSI_FONT_EFFECT_ 57 NOT IN USE !
+// #define ANSI_FONT_EFFECT_ 58 NOT IN USE !
+// #define ANSI_FONT_EFFECT_ 59 NOT IN USE !
+_Static_assert(ANSI_FONT_EFFECT_FRAMED >= 0,                    "A negative value for the macro \"ANSI_FONT_EFFECT_FRAMED\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_ENCIRCLED >= 0,                 "A negative value for the macro \"ANSI_FONT_EFFECT_ENCIRCLED\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_OVERLINED >= 0,                 "A negative value for the macro \"ANSI_FONT_EFFECT_OVERLINED\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_NOT_FRAMED_OR_ENCIRCLED >= 0,   "A negative value for the macro \"ANSI_FONT_EFFECT_NOT_FRAMED_OR_ENCIRCLED\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_NOT_OVERLINED >= 0,             "A negative value for the macro \"ANSI_FONT_EFFECT_NOT_OVERLINED\" is invalid !");
+
+IS_INT(ANSI_FONT_EFFECT_IDEOGRAM_UNDERLINE)
+IS_INT(ANSI_FONT_EFFECT_IDEOGRAM_DOUBLE_UNDERLINE)
+IS_INT(ANSI_FONT_EFFECT_IDEOGRAM_OVERLINE)
+IS_INT(ANSI_FONT_EFFECT_IDEOGRAM_DOUBLE_OVERLINE)
+IS_INT(ANSI_FONT_EFFECT_IDEOGRAM_STRESS_MARKING)
+IS_INT(ANSI_FONT_EFFECT_IDEOGRAM_ATTRIBUTES_OFF)
+_Static_assert(ANSI_FONT_EFFECT_IDEOGRAM_UNDERLINE >= 0,        "A negative value for the macro \"ANSI_FONT_EFFECT_IDEOGRAM_UNDERLINE\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_IDEOGRAM_DOUBLE_UNDERLINE >= 0, "A negative value for the macro \"ANSI_FONT_EFFECT_IDEOGRAM_DOUBLE_UNDERLINE\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_IDEOGRAM_OVERLINE >= 0,         "A negative value for the macro \"ANSI_FONT_EFFECT_IDEOGRAM_OVERLINE\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_IDEOGRAM_DOUBLE_OVERLINE >= 0,  "A negative value for the macro \"ANSI_FONT_EFFECT_IDEOGRAM_DOUBLE_OVERLINE\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_IDEOGRAM_STRESS_MARKING >= 0,   "A negative value for the macro \"ANSI_FONT_EFFECT_IDEOGRAM_STRESS_MARKING\" is invalid !");
+_Static_assert(ANSI_FONT_EFFECT_IDEOGRAM_ATTRIBUTES_OFF >= 0,   "A negative value for the macro \"ANSI_FONT_EFFECT_IDEOGRAM_ATTRIBUTES_OFF\" is invalid !");
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 // ===== ===== ===== ===== ===== ===== ===== ===== END Font effects ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -405,6 +547,28 @@ extern "C"
 #else
 #error "The macro \"ANSI_TEXT_COLOR_WHITE\" is already defined !"
 #endif /* ANSI_TEXT_COLOR_WHITE */
+
+// Check, whether the macros create integer values
+// Such a check is only possible in the C11 (and newer) standards
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+IS_CONST_STR(ANSI_TEXT_COLOR_BLACK)
+IS_CONST_STR(ANSI_TEXT_COLOR_RED)
+IS_CONST_STR(ANSI_TEXT_COLOR_GREEN)
+IS_CONST_STR(ANSI_TEXT_COLOR_YELLOW)
+_Static_assert(sizeof(ANSI_TEXT_COLOR_BLACK) > 0 + 1,   "The macro \"ANSI_TEXT_COLOR_BLACK\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_COLOR_RED) > 0 + 1,     "The macro \"ANSI_TEXT_COLOR_RED\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_COLOR_GREEN) > 0 + 1,   "The macro \"ANSI_TEXT_COLOR_GREEN\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_COLOR_YELLOW) > 0 + 1,  "The macro \"ANSI_TEXT_COLOR_YELLOW\" needs at least one char (plus '\0') !");
+
+IS_CONST_STR(ANSI_TEXT_COLOR_BLUE)
+IS_CONST_STR(ANSI_TEXT_COLOR_MAGENTA)
+IS_CONST_STR(ANSI_TEXT_COLOR_CYAN)
+IS_CONST_STR(ANSI_TEXT_COLOR_WHITE)
+_Static_assert(sizeof(ANSI_TEXT_COLOR_BLUE) > 0 + 1,    "The macro \"ANSI_TEXT_COLOR_BLUE\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_COLOR_MAGENTA) > 0 + 1, "The macro \"ANSI_TEXT_COLOR_MAGENTA\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_COLOR_CYAN) > 0 + 1,    "The macro \"ANSI_TEXT_COLOR_CYAN\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_COLOR_WHITE) > 0 + 1,   "The macro \"ANSI_TEXT_COLOR_WHITE\" needs at least one char (plus '\0') !");
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 // ===== ===== ===== ===== ===== ===== ===== ===== END Color set macros ===== ===== ===== ===== ===== ===== ===== =====
 
 // ===== ===== ===== ===== ===== ===== ===== ===== BEGIN Main ANSI set macros ===== ===== ===== ===== ===== ===== ===== =====
@@ -438,6 +602,23 @@ extern "C"
 #else
 #error "The macro \"ANSI_TEXT_FAST_BLINK\" is already defined !"
 #endif /* ANSI_TEXT_FAST_BLINK */
+
+// Check, whether the macros create integer values
+// Such a check is only possible in the C11 (and newer) standards
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+IS_CONST_STR(ANSI_TEXT_BOLD)
+IS_CONST_STR(ANSI_TEXT_ITALIC)
+IS_CONST_STR(ANSI_TEXT_UNDERLINE)
+IS_CONST_STR(ANSI_TEXT_DOUBLE_UNDERLINE)
+IS_CONST_STR(ANSI_TEXT_SLOW_BLINK)
+IS_CONST_STR(ANSI_TEXT_FAST_BLINK)
+_Static_assert(sizeof(ANSI_TEXT_BOLD) > 0 + 1,              "The macro \"ANSI_TEXT_BOLD\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_ITALIC) > 0 + 1,            "The macro \"ANSI_TEXT_ITALIC\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_UNDERLINE) > 0 + 1,         "The macro \"ANSI_TEXT_UNDERLINE\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_DOUBLE_UNDERLINE) > 0 + 1,  "The macro \"ANSI_TEXT_DOUBLE_UNDERLINE\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_SLOW_BLINK) > 0 + 1,        "The macro \"ANSI_TEXT_SLOW_BLINK\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_FAST_BLINK) > 0 + 1,        "The macro \"ANSI_TEXT_FAST_BLINK\" needs at least one char (plus '\0') !");
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 // ===== ===== ===== ===== ===== ===== ===== ===== END Main ANSI set macros ===== ===== ===== ===== ===== ===== ===== ====
 
 // ===== ===== ===== ===== ===== ===== ===== ===== BEGIN Reset set macros ===== ===== ===== ===== ===== ===== ===== =====
@@ -492,6 +673,30 @@ extern "C"
 #else
 #error "The macro \"ANSI_TEXT_UNDERLINE_OFF\" is already defined !"
 #endif /* ANSI_TEXT_UNDERLINE_OFF */
+
+// Check, whether the macros create integer values
+// Such a check is only possible in the C11 (and newer) standards
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+IS_CONST_STR(ANSI_RESET_ALL)
+_Static_assert(sizeof(ANSI_RESET_ALL) > 0 + 1, "The macro \"ANSI_RESET_ALL\" needs at least one char (plus '\0') !");
+
+IS_CONST_STR(ANSI_TEXT_NORMAL_COLOR_OR_INTENSITY)
+IS_CONST_STR(ANSI_TEXT_NOT_ITALIC_NOT_FRAKTUR)
+IS_CONST_STR(ANSI_TEXT_INVERSE_OFF)
+IS_CONST_STR(ANSI_TEXT_NOT_CROSSED_OUT)
+IS_CONST_STR(ANSI_TEXT_NOT_FRAMED_OR_ENCIRCLED)
+IS_CONST_STR(ANSI_TEXT_NOT_OVERLINED)
+IS_CONST_STR(ANSI_TEXT_IDEOGRAM_ATTRIBUTES_OFF)
+IS_CONST_STR(ANSI_TEXT_UNDERLINE_OFF)
+_Static_assert(sizeof(ANSI_TEXT_NORMAL_COLOR_OR_INTENSITY) > 0 + 1, "The macro \"ANSI_TEXT_NORMAL_COLOR_OR_INTENSITY\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_NOT_ITALIC_NOT_FRAKTUR) > 0 + 1,    "The macro \"ANSI_TEXT_NOT_ITALIC_NOT_FRAKTUR\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_INVERSE_OFF) > 0 + 1,               "The macro \"ANSI_TEXT_INVERSE_OFF\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_NOT_CROSSED_OUT) > 0 + 1,           "The macro \"ANSI_TEXT_NOT_CROSSED_OUT\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_NOT_FRAMED_OR_ENCIRCLED) > 0 + 1,   "The macro \"ANSI_TEXT_NOT_FRAMED_OR_ENCIRCLED\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_NOT_OVERLINED) > 0 + 1,             "The macro \"ANSI_TEXT_NOT_OVERLINED\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_IDEOGRAM_ATTRIBUTES_OFF) > 0 + 1,   "The macro \"ANSI_TEXT_IDEOGRAM_ATTRIBUTES_OFF\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(ANSI_TEXT_UNDERLINE_OFF) > 0 + 1,             "The macro \"ANSI_TEXT_UNDERLINE_OFF\" needs at least one char (plus '\0') !");
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 // ===== ===== ===== ===== ===== ===== ===== ===== END Reset set macros ===== ===== ===== ===== ===== ===== ===== =====
 
 
