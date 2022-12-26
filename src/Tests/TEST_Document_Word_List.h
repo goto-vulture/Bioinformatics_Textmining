@@ -23,8 +23,10 @@ extern "C"
 
 /**
  * @brief First intersection test with test data from the first meeting (11.05.2022).
+ *
+ * Now (26.12.2022) this function is a test function to check the intersection results with trivial input.
  */
-extern _Bool TEST_Intersection (void);
+extern void TEST_Intersection (void);
 
 /**
  * @brief Intersection tests with full pseudo random numbers.

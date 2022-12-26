@@ -167,7 +167,7 @@ IntersectionApproach_TwoNestedLoops
     ASSERT_MSG(data != NULL, "Data is NULL !");
     ASSERT_MSG(data_length > 0, "Length of the data is 0 !");
 
-    struct Document_Word_List* intersection_result = DocumentWordList_CreateObject (object->number_of_arrays,
+    struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult (object->number_of_arrays,
             object->max_array_length);
     ASSERT_ALLOC(intersection_result, "Cannot create new Document Word List for intersection !",
             sizeof (struct Document_Word_List) + object->number_of_arrays * object->max_array_length *

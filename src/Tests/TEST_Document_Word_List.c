@@ -10,6 +10,7 @@
 #include "TEST_Document_Word_List.h"
 
 #include <time.h>
+#include <string.h>
 #include "../Document_Word_List.h"
 #include "../Misc.h"
 #include "../Error_Handling/Assert_Msg.h"
@@ -17,6 +18,7 @@
 #include "../Error_Handling/_Generics.h"
 #include "../Print_Tools.h"
 #include "Create_Test_Data.h"
+#include "tinytest.h"
 
 
 
@@ -73,10 +75,12 @@ static void Use_All_Intersection_Modes
 
 /**
  * @brief First intersection test with test data from the first meeting (11.05.2022).
+ *
+ * Now (26.12.2022) this function is a test function to check the intersection results with trivial input.
  */
-extern _Bool TEST_Intersection (void)
+extern void TEST_Intersection (void)
 {
-    _Bool result = false;
+    _Bool result = true;
 
     // Testdata (from the first meeting)
     struct Document_Word_List* test_data [4];
@@ -155,6 +159,52 @@ extern _Bool TEST_Intersection (void)
         puts("");
     }
 
+    // Check results with the expected results
+    const uint_fast32_t expected_results_1 [][2] =
+    {
+            { 1, 7 },
+            { 1, 12 }
+    };
+    const uint_fast32_t expected_results_2 [][4] =
+    {
+            { 1, 7, 12, 13 },
+            { 7, 0, 0, 0 } // Zeros to fill up the array
+    };
+    const uint_fast32_t expected_results_3 [][1] =
+    {
+            { 7 }
+    };
+    const uint_fast32_t expected_results_length [] =
+    {
+            COUNT_ARRAY_ELEMENTS(expected_results_1),
+            COUNT_ARRAY_ELEMENTS(expected_results_2),
+            COUNT_ARRAY_ELEMENTS(expected_results_3)
+    };
+
+    // Check the number of arrays and their values
+    int memcmp_result = 0;
+    if (intersection_objects [0]->next_free_array != expected_results_length [0]) { result = false; goto end; }
+    memcmp_result = memcmp(expected_results_1[0], intersection_objects[0]->data_struct.data[0],
+                    intersection_objects[0]->arrays_lengths[0] * sizeof(intersection_objects[0]->data_struct.data[0][0]));
+    if (memcmp_result != 0) { result = false; goto end; }
+    memcmp_result = memcmp(expected_results_1[1], intersection_objects[0]->data_struct.data[1],
+                    intersection_objects[0]->arrays_lengths[1] * sizeof(intersection_objects[0]->data_struct.data[0][0]));
+    if (memcmp_result != 0) { result = false; goto end; }
+
+    if (intersection_objects [1]->next_free_array != expected_results_length [1]) { result = false; goto end; }
+    memcmp_result = memcmp(expected_results_2[0], intersection_objects[1]->data_struct.data[0],
+                    intersection_objects[1]->arrays_lengths[0] * sizeof(intersection_objects[1]->data_struct.data[0][0]));
+    if (memcmp_result != 0) { result = false; goto end; }
+    memcmp_result = memcmp(expected_results_2[1], intersection_objects[1]->data_struct.data[1],
+                    intersection_objects[1]->arrays_lengths[1] * sizeof(intersection_objects[1]->data_struct.data[0][0]));
+    if (memcmp_result != 0) { result = false; goto end; }
+
+    if (intersection_objects [2]->next_free_array != expected_results_length [2]) { result = false; goto end; }
+    memcmp_result = memcmp(expected_results_3[0], intersection_objects[2]->data_struct.data[0],
+                    intersection_objects[2]->arrays_lengths[0] * sizeof(intersection_objects[2]->data_struct.data[0][0]));
+    if (memcmp_result != 0) { result = false; goto end; }
+    end:
+
     // Delete both arrays
     for (size_t i = 0; i < COUNT_ARRAY_ELEMENTS(test_data); ++ i)
     {
@@ -167,7 +217,10 @@ extern _Bool TEST_Intersection (void)
         intersection_objects[i] = NULL;
     }
 
-    return result;
+    // Is the result flag true ?
+    ASSERT_EQUALS(true, result);
+
+    return;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
