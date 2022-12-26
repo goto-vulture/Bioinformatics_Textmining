@@ -41,7 +41,7 @@
 #endif /* RAND_UPPER_BOUND */
 
 #ifndef NUMBER_OF_RUNS
-#define NUMBER_OF_RUNS 50 ///< Numer of runs in each test
+#define NUMBER_OF_RUNS 50 ///< Number of runs in each test
 #else
 #error "The macro \"NUMBER_OF_RUNS\" is already defined !"
 #endif /* NUMBER_OF_RUNS */

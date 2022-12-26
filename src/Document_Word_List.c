@@ -49,7 +49,7 @@ IS_TYPE(INT_ALLOCATION_STEP_SIZE, int)
  *
  * The variable "max_array_length" is actual not in use. In the past the idea of this value was to make all dynamic
  * memory blocks large enough, that every block could hold all data. -> Reduction of realloc calls. But it is to
- * inefficient in the memory usage. This value is nevertheless available, because the idea with the worest case memory
+ * inefficient in the memory usage. This value is nevertheless available, because the idea with the worst case memory
  * block could be useful in the future. But not currently!
  *
  * Asserts:
@@ -113,7 +113,7 @@ static inline void Increase_Data_Array_Size_Allocation_Step_Size
  *
  * The variable "max_array_length" is actual not in use. In the past the idea of this value was to make all dynamic
  * memory blocks large enough, that every block could hold all data. -> Reduction of realloc calls. But it is to
- * inefficient in the memory usage. This value is nevertheless available, because the idea with the worest case memory
+ * inefficient in the memory usage. This value is nevertheless available, because the idea with the worst case memory
  * block could be useful in the future. But not currently!
  *
  * Asserts:
@@ -150,7 +150,7 @@ DocumentWordList_CreateObject
  *
  * The variable "max_array_length" is actual not in use. In the past the idea of this value was to make all dynamic
  * memory blocks large enough, that every block could hold all data. -> Reduction of realloc calls. But it is to
- * inefficient in the memory usage. This value is nevertheless available, because the idea with the worest case memory
+ * inefficient in the memory usage. This value is nevertheless available, because the idea with the worst case memory
  * block could be useful in the future. But not currently!
  *
  * Asserts:
@@ -782,7 +782,7 @@ DocumentWordList_IsDataInObject
  *
  * The variable "max_array_length" is actual not in use. In the past the idea of this value was to make all dynamic
  * memory blocks large enough, that every block could hold all data. -> Reduction of realloc calls. But it is to
- * inefficient in the memory usage. This value is nevertheless available, because the idea with the worest case memory
+ * inefficient in the memory usage. This value is nevertheless available, because the idea with the worst case memory
  * block could be useful in the future. But not currently!
  *
  * Asserts:
