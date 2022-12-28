@@ -892,12 +892,10 @@ Exec_Intersection
             {
                 if (first_result_dataset_written)
                 {
-                    const char* output_str = (first_result_dataset_written) ? "},\n" : "}\n";
-
-                    file_operation_ret_value = fputs(output_str, result_file);
+                    file_operation_ret_value = fputs(",\n", result_file);
                     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
                             GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
-                    result_file_size += strlen(output_str);
+                    result_file_size += strlen(",\n");
                 }
             }
 
@@ -913,18 +911,20 @@ Exec_Intersection
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
             const size_t json_export_str_len = strlen (json_export_str);
 
-            // Removing the trailing closing bracket and the newline
-            // And remove the first char (The opening bracket)
+            // Removing the trailing closing bracket and the newline (in a formatted output)
             // These steps are necessary, because the string objects meant to be stand alone JSON objects
             // But in our case we concatenate these JSON objects. So it is necessary to modify the objects for a valid
             // JSON result file
             json_export_str [json_export_str_len - 1] = '\0';
-            json_export_str [json_export_str_len - 2] = '\0';
+            // Remove the newline in a formatted output
+            if (!(intersection_settings & SHORTEN_OUTPUT))
+            { json_export_str [json_export_str_len - 2] = '\0'; }
 
+            // Ignore the first char (The opening bracket)
             file_operation_ret_value = fputs(json_export_str + 1, result_file);
             ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
                     GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
-            result_file_size = result_file_size + (json_export_str_len - 3);
+            result_file_size = result_file_size + (json_export_str_len - ((intersection_settings & SHORTEN_OUTPUT) ? 2 : 3));
 
             // Don't use the macro "FREE_AND_SET_TO_NULL" because it increases the free counter. But this memory was
             // allocated from the JSON lib !
@@ -953,12 +953,12 @@ Exec_Intersection
 abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
 
-    const char* end_file_string = ((intersection_settings & SHORTEN_OUTPUT) ? "}}" : "\n}");
+    const char* end_file_string = ((intersection_settings & SHORTEN_OUTPUT) ? "}" : "\n}");
 
     file_operation_ret_value = fputs(end_file_string, result_file);
     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
             strerror(errno));
-    result_file_size += strlen (end_file_string);
+    result_file_size += strlen ((intersection_settings & SHORTEN_OUTPUT) ? "}" : "\n}");
     FCLOSE_AND_SET_TO_NULL(result_file);
     printf ("\nDone !");
 
