@@ -44,6 +44,21 @@ Some build examples:
 
 `make clean` removes all compilation files - including the object files.
 
+### A simplified building tutorial
+
+There is no universal building instruction possible without any expectations about the used platform. For the following tutorial I assume, that Linux as OS will be used. With Linux the compilation should be work out of the box. A compilation with Windows is also possible, but the installation of a C compiler and the Make build tool is more complicated. There are many tutorials available in the internet for example [here](https://www.freecodecamp.org/news/how-to-install-c-and-cpp-compiler-on-windows/). In details the installation way differs depending on the Windows version.
+
+- Download the repository as ZIP file via the github web page
+- Extract the ZIP file
+- Go into the new created folder
+- Use the `make` command without any parameter; this will build the program in debug mode
+- With Linux as OS the compiled program name will be "Bioinformatics_Textmining_Debug_Linux"
+- Call the program with `./Bioinformatics_Textmining_Debug_Linux` followed by the CLI parameter 
+
+E.g.: If you want to run the program with the first source file "input.json" and the second source file "input2.txt" the program will create a output file "output.json" with the following command: `./Bioinformatics_Textmining_Debug_Linux -i "./input.json" -j "./input2.txt" -o "./output.json"`
+
+This example command expects, that the source files are in the same directory as the program file.
+
 ### Interface
 
 The CLI accepts the following main inputs, that are required:
