@@ -20,6 +20,59 @@ With the help of some elementary set operations (the main important one: interse
 
 
 
+## Example calculation
+The first input file is usual a JSON file with the abstracts of many thousands studies:
+```JSON
+"tokens": [
+    "Randomized",
+    "phase",
+    "II",
+    "study",
+    "of",
+    "two",
+    "different",
+    "schedules",
+    "of",
+    "gemcitabine",
+    "and",
+    "oral",
+    "..."]
+```
+The second input file is a "database" with interesting token sets. These sets can be formatted as JSON file or as simple text files. A JSON example:
+```JSON
+"tokens": ["gemcitabine", "in", "treatment", "arm", "1"]
+```
+
+A possible output of the calculation could be:
+```JSON
+"name_2_3":	{
+    "tokens":	["gemcitabine", "in", "treatment", "arm", "1"],
+    "tokens w/o stop words":	["gemcitabine", "treatment", "arm"],
+    "Inters. (partial)":	{
+        "23357440":	{
+            "tokens":	["treatment", "arm"],
+            "char offs.":	[50, 887],
+            "word offs.":	[6, 140]
+        },
+        "20189026":	{
+            "tokens":	["arm", "treatment"],
+            "char offs.":	[807, 1298],
+            "word offs.":	[111, 184]
+        },
+    },
+    "Inters. (full)":	{
+        "20147856":	{
+            "tokens":	["gemcitabine", "treatment", "arm"],
+            "char offs.":	[56, 440, 583],
+            "word offs.":	[9, 66, 99]
+        }
+    }
+},
+```
+With intersection operations (and many pre-calculation) between the different sets of tokens it is possible to decide, whether a list of tokens appear partial or full in abstracts of studies. With the char and word offsets it is possible to approximate the relevance of a set of tokens for a list with thousands studies. 
+
+
+
 ## Structure of the evaluation
 <img src="https://github.com/goto-vulture/Bioinformatics_Textmining/blob/Misc/Written_elaboration/Structure_of_the_evaluation_process_EN.png" width="50%" height="50%">
 
