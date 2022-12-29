@@ -641,7 +641,7 @@ Exec_Intersection
 
     // To have a newline after the general information and after the too long tokens
     // In the formatted mode this is not necessary
-    if (intersection_settings & SHORTEN_OUTPUT)
+    if (! FORMATTING_ENABLED(intersection_settings))
     {
         file_operation_ret_value = fputc ('\n', result_file);
         ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
@@ -664,7 +664,7 @@ Exec_Intersection
     uint_fast32_t last_used_selected_data_2_array = UINT_FAST32_MAX;
 
     // How many tokens needs to be left for a valid data set?
-    register const size_t min_token_left_for_valid_data_set = (intersection_settings & KEEP_SINGLE_TOKEN_RESULTS) ? 1 : 2;
+    register const size_t min_token_left_for_valid_data_set = (KEEP_SINGLE_TOKEN_RESULTS_BIT(intersection_settings)) ? 1 : 2;
 
     // ===== ===== ===== ===== ===== ===== ===== ===== BEGIN Outer loop ===== ===== ===== ===== ===== ===== ===== =====
     // Flag, if the first result set was written (This information is necessary to decide, whether a comma need to be
@@ -676,8 +676,8 @@ Exec_Intersection
     {
         cJSON_NEW_OBJ_CHECK(export_results);
 
-        if (intersection_settings & PART_MATCH) { cJSON_NEW_OBJ_CHECK(intersections_partial_match); }
-        if (intersection_settings & FULL_MATCH) { cJSON_NEW_OBJ_CHECK(intersections_full_match); }
+        if (PART_MATCH_BIT(intersection_settings))  { cJSON_NEW_OBJ_CHECK(intersections_partial_match); }
+        if (FULL_MATCH_BIT(intersection_settings))  { cJSON_NEW_OBJ_CHECK(intersections_full_match); }
         cJSON_NEW_OBJ_CHECK(outer_object);
         _Bool data_found = false;
 
@@ -774,8 +774,8 @@ Exec_Intersection
                 }
 
                 cJSON_NEW_ARR_CHECK(char_offset_array);
-                if (intersection_settings & SENTENCE_OFFSET)    { cJSON_NEW_ARR_CHECK(sentence_offset_array); }
-                if (intersection_settings & WORD_OFFSET)        { cJSON_NEW_ARR_CHECK(word_offset_array); }
+                if (SENTENCE_OFFSET_BIT(intersection_settings)) { cJSON_NEW_ARR_CHECK(sentence_offset_array); }
+                if (WORD_OFFSET_BIT(intersection_settings))     { cJSON_NEW_ARR_CHECK(word_offset_array); }
                 cJSON_NEW_ARR_CHECK(tokens_array);
 
                 //fputs("Found tokens_array in:\n", result_file);
@@ -796,12 +796,12 @@ Exec_Intersection
                     cJSON* char_offset = cJSON_CreateNumber(intersection_result->data_struct.char_offsets [0][i]);
                     ASSERT_MSG(char_offset != NULL, "char offset is NULL !");
 
-                    if (intersection_settings & SENTENCE_OFFSET)
+                    if (SENTENCE_OFFSET_BIT(intersection_settings))
                     {
                         sentence_offset = cJSON_CreateNumber(intersection_result->data_struct.sentence_offsets [0][i]);
                         ASSERT_MSG(sentence_offset != NULL, "sentence offset is NULL !");
                     }
-                    if (intersection_settings & WORD_OFFSET)
+                    if (WORD_OFFSET_BIT(intersection_settings))
                     {
                         word_offset = cJSON_CreateNumber(intersection_result->data_struct.word_offsets [0][i]);
                         ASSERT_MSG(word_offset != NULL, "word offset is NULL !");
@@ -809,8 +809,8 @@ Exec_Intersection
 
                     cJSON_NEW_STR_CHECK(token, int_to_token_mem);
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(char_offset_array, char_offset);
-                    if (intersection_settings & SENTENCE_OFFSET)    { cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset); }
-                    if (intersection_settings & WORD_OFFSET)        { cJSON_ADD_ITEM_TO_ARRAY_CHECK(word_offset_array, word_offset); }
+                    if (SENTENCE_OFFSET_BIT(intersection_settings)) { cJSON_ADD_ITEM_TO_ARRAY_CHECK(sentence_offset_array, sentence_offset); }
+                    if (WORD_OFFSET_BIT(intersection_settings))     { cJSON_ADD_ITEM_TO_ARRAY_CHECK(word_offset_array, word_offset); }
                     cJSON_ADD_ITEM_TO_ARRAY_CHECK(tokens_array, token);
                 }
 
@@ -829,7 +829,7 @@ Exec_Intersection
                 const int tokens_array_size = cJSON_GetArraySize(tokens_array);
                 if (tokens_array_size == cJSON_GetArraySize(src_tokens_array_wo_stop_words))
                 {
-                    if (intersection_settings & FULL_MATCH)
+                    if (FULL_MATCH_BIT(intersection_settings))
                     {
                         cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match,
                                 token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
@@ -839,7 +839,7 @@ Exec_Intersection
                 }
                 else
                 {
-                    if (intersection_settings & PART_MATCH)
+                    if (PART_MATCH_BIT(intersection_settings))
                     {
                         cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match,
                                 token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
@@ -872,13 +872,13 @@ Exec_Intersection
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
         {
-            if (intersection_settings & PART_MATCH)
+            if (PART_MATCH_BIT(intersection_settings))
             { cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, INTERSECTIONS " (partial)", intersections_partial_match); }
-            if (intersection_settings & FULL_MATCH)
+            if (FULL_MATCH_BIT(intersection_settings))
             { cJSON_ADD_ITEM_TO_OBJECT_CHECK(outer_object, INTERSECTIONS " (full)", intersections_full_match); }
             cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, dataset_id_2, outer_object);
 
-            if (!(intersection_settings & SHORTEN_OUTPUT))
+            if (FORMATTING_ENABLED(intersection_settings))
             {
                 if (first_result_dataset_written)
                 {
@@ -906,7 +906,7 @@ Exec_Intersection
             // a single call at the end.
             // So the only possibility: Intermediate calls
             char* json_export_str = cJSON_PrintBuffered(export_results, CJSON_PRINT_BUFFER_SIZE,
-                    !(intersection_settings & SHORTEN_OUTPUT)); // No shorten output => Use formatting
+                    FORMATTING_ENABLED(intersection_settings)); // No shorten output => Use formatting
 
             ASSERT_MSG(json_export_str != NULL, "JSON export string is NULL !");
             const size_t json_export_str_len = strlen (json_export_str);
@@ -917,14 +917,14 @@ Exec_Intersection
             // JSON result file
             json_export_str [json_export_str_len - 1] = '\0';
             // Remove the newline in a formatted output
-            if (!(intersection_settings & SHORTEN_OUTPUT))
+            if (FORMATTING_ENABLED(intersection_settings))
             { json_export_str [json_export_str_len - 2] = '\0'; }
 
             // Ignore the first char (The opening bracket)
             file_operation_ret_value = fputs(json_export_str + 1, result_file);
             ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
                     GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
-            result_file_size = result_file_size + (json_export_str_len - ((intersection_settings & SHORTEN_OUTPUT) ? 2 : 3));
+            result_file_size = result_file_size + (json_export_str_len - ((FORMATTING_ENABLED(intersection_settings)) ? 3 : 2));
 
             // Don't use the macro "FREE_AND_SET_TO_NULL" because it increases the free counter. But this memory was
             // allocated from the JSON lib !
@@ -953,12 +953,12 @@ Exec_Intersection
 abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
 
-    const char* end_file_string = ((intersection_settings & SHORTEN_OUTPUT) ? "}" : "\n}");
+    const char* end_file_string = ((! FORMATTING_ENABLED(intersection_settings)) ? "}" : "\n}");
 
     file_operation_ret_value = fputs(end_file_string, result_file);
     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
             strerror(errno));
-    result_file_size += strlen ((intersection_settings & SHORTEN_OUTPUT) ? "}" : "\n}");
+    result_file_size += strlen ((! FORMATTING_ENABLED(intersection_settings)) ? "}" : "\n}");
     FCLOSE_AND_SET_TO_NULL(result_file);
     printf ("\nDone !");
 
@@ -1053,21 +1053,21 @@ Add_General_Information_To_Export_File
     // Creation mode (Part match ? Full match ? Part and full match ?)
     cJSON* creation_mode = cJSON_CreateObject();
     cJSON_NOT_NULL(creation_mode);
-    cJSON* part_match = cJSON_CreateBool(export_settings & PART_MATCH);
+    cJSON* part_match = cJSON_CreateBool(PART_MATCH_BIT(export_settings));
     cJSON_NOT_NULL(part_match);
-    cJSON* full_match = cJSON_CreateBool(export_settings & FULL_MATCH);
+    cJSON* full_match = cJSON_CreateBool(FULL_MATCH_BIT(export_settings));
     cJSON_NOT_NULL(full_match);
-    cJSON* stop_word_list = cJSON_CreateBool(export_settings & STOP_WORD_LIST);
+    cJSON* stop_word_list = cJSON_CreateBool(STOP_WORD_LIST_BIT(export_settings));
     cJSON_NOT_NULL(stop_word_list);
 
     // Up to now there will be no switch or similar structure to alter this export behavior
-    cJSON* char_offset = cJSON_CreateBool(export_settings & CHAR_OFFSET);
+    cJSON* char_offset = cJSON_CreateBool(CHAR_OFFSET_BIT(export_settings));
     cJSON_NOT_NULL(char_offset);
-    cJSON* sentence_offset = cJSON_CreateBool(export_settings & SENTENCE_OFFSET);
+    cJSON* sentence_offset = cJSON_CreateBool(SENTENCE_OFFSET_BIT(export_settings));
     cJSON_NOT_NULL(sentence_offset);
-    cJSON* word_offset = cJSON_CreateBool(export_settings & WORD_OFFSET);
+    cJSON* word_offset = cJSON_CreateBool(WORD_OFFSET_BIT(export_settings));
     cJSON_NOT_NULL(sentence_offset);
-    cJSON* keep_single_tokens_result = cJSON_CreateBool(export_settings & KEEP_SINGLE_TOKEN_RESULTS);
+    cJSON* keep_single_tokens_result = cJSON_CreateBool(KEEP_SINGLE_TOKEN_RESULTS_BIT(export_settings));
     cJSON_NOT_NULL(sentence_offset);
 
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
@@ -1161,7 +1161,7 @@ Add_Counter_To_Export_File
 
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "Counter", counter);
 
-    if (!(export_settings & PART_MATCH) && !(export_settings & FULL_MATCH))
+    if (! PART_MATCH_BIT(export_settings) && ! FULL_MATCH_BIT(export_settings))
     {
         cJSON* no_data_available = cJSON_CreateString("");
         cJSON_NOT_NULL(no_data_available);
@@ -1259,14 +1259,14 @@ Append_cJSON_Object_To_Result_File
 
     // Insert the general information to the result file
     char* general_information_as_str = cJSON_PrintBuffered(cJSON_obj, CJSON_PRINT_BUFFER_SIZE,
-            !(export_settings & SHORTEN_OUTPUT)); // No shorten output => Using formatting
+            ! SHORTEN_OUTPUT_BIT(export_settings)); // No shorten output => Using formatting
 
     ASSERT_MSG(general_information_as_str != NULL, "JSON general information string is NULL !");
     const size_t general_information_as_str_len = strlen (general_information_as_str);
 
     // Remove the last char(s), to make the fragment compatible as JSON fragment
     general_information_as_str [general_information_as_str_len - 1] = '\0';
-    if (!(export_settings & SHORTEN_OUTPUT))
+    if (! SHORTEN_OUTPUT_BIT(export_settings))
     {
         general_information_as_str [general_information_as_str_len - 2] = '\0';
     }
@@ -1696,7 +1696,7 @@ Update_Data_Found_Flag
 
     // The child pointer represents object in the inner nesting (NO next pointer, because this shows the next
     // object on the same nesting level !)
-    if ((intersection_settings & PART_MATCH) && (intersection_settings & FULL_MATCH))
+    if ((PART_MATCH_BIT(intersection_settings)) && (FULL_MATCH_BIT(intersection_settings)))
     {
         // In normal situations this statement should be always true; but it is not guaranteed !
         if (intersections_full_match != NULL && intersections_partial_match != NULL)
@@ -1707,7 +1707,7 @@ Update_Data_Found_Flag
             }
         }
     }
-    else if (intersection_settings & FULL_MATCH)
+    else if (FULL_MATCH_BIT(intersection_settings))
     {
         // In normal situations this statement should be always true; but it is not guaranteed !
         if (intersections_full_match != NULL)
@@ -1718,7 +1718,7 @@ Update_Data_Found_Flag
             }
         }
     }
-    else if (intersection_settings & PART_MATCH)
+    else if (PART_MATCH_BIT(intersection_settings))
     {
         // In normal situations this statement should be always true; but it is not guaranteed !
         if (intersections_partial_match != NULL)
