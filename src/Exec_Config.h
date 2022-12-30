@@ -41,6 +41,96 @@ enum Exec_Config_Types
 };
 
 /**
+ * Macros to detect the bits with more comfort
+ */
+// > Main settings <
+#ifndef PART_MATCH_BIT
+#define PART_MATCH_BIT(input) ((input) & PART_MATCH) ///< Is PART_MATCH bit set ?
+#else
+#error "The macro \"PART_MATCH_BIT\" is already defined !"
+#endif /* PART_MATCH_BIT */
+
+#ifndef FULL_MATCH_BIT
+#define FULL_MATCH_BIT(input) ((input) & FULL_MATCH) ///< Is FULL_MATCH bit set ?
+#else
+#error "The macro \"FULL_MATCH_BIT\" is already defined !"
+#endif /* FULL_MATCH_BIT */
+
+#ifndef STOP_WORD_LIST_BIT
+#define STOP_WORD_LIST_BIT(input) ((input) & STOP_WORD_LIST) ///< Is STOP_WORD_LIST bit set ?
+#else
+#error "The macro \"STOP_WORD_LIST_BIT\" is already defined !"
+#endif /* STOP_WORD_LIST_BIT */
+
+#ifndef CHAR_OFFSET_BIT
+#define CHAR_OFFSET_BIT(input) ((input) & CHAR_OFFSET) ///< Is CHAR_OFFSET bit set ?
+#else
+#error "The macro \"CHAR_OFFSET_BIT\" is already defined !"
+#endif /* CHAR_OFFSET_BIT */
+
+#ifndef SENTENCE_OFFSET_BIT
+#define SENTENCE_OFFSET_BIT(input) ((input) & SENTENCE_OFFSET) ///< Is SENTENCE_OFFSET bit set ?
+#else
+#error "The macro \"SENTENCE_OFFSET_BIT\" is already defined !"
+#endif /* SENTENCE_OFFSET_BIT */
+
+#ifndef WORD_OFFSET_BIT
+#define WORD_OFFSET_BIT(input) ((input) & WORD_OFFSET) ///< Is WORD_OFFSET bit set ?
+#else
+#error "The macro \"WORD_OFFSET_BIT\" is already defined !"
+#endif /* WORD_OFFSET_BIT */
+
+#ifndef CASE_SENSITIVE_BIT
+#define CASE_SENSITIVE_BIT(input) ((input) & CASE_SENSITIVE) ///< Is CASE_SENSITIVE bit set ?
+#else
+#error "The macro \"CASE_SENSITIVE_BIT\" is already defined !"
+#endif /* CASE_SENSITIVE_BIT */
+
+// > Additional settings <
+#ifndef SHORTEN_OUTPUT_BIT
+#define SHORTEN_OUTPUT_BIT(input) ((input) & SHORTEN_OUTPUT) ///< Is SHORTEN_OUTPUT bit set ?
+#else
+#error "The macro \"SHORTEN_OUTPUT_BIT\" is already defined !"
+#endif /* SHORTEN_OUTPUT_BIT */
+
+/**
+ * @brief Another way to check, whether the SHORTEN_OUTPUT bit is set. The idea is a more usable name for this bit.
+ *
+ * A shorten output is the opposite of a enabled formatting.
+ */
+#ifndef FORMATTING_ENABLED
+#define FORMATTING_ENABLED(input) !(SHORTEN_OUTPUT_BIT(input))
+#else
+#error "The macro \"FORMATTING_ENABLED\" is already defined !"
+#endif /* FORMATTING_ENABLED */
+
+#ifndef NO_FILENAMES_BIT
+#define NO_FILENAMES_BIT(input) ((input) & NO_FILENAMES) ///< Is NO_FILENAMES bit set ?
+#else
+#error "The macro \"NO_FILENAMES_BIT\" is already defined !"
+#endif /* NO_FILENAMES_BIT */
+
+#ifndef NO_CREATION_TIME_BIT
+#define NO_CREATION_TIME_BIT(input) ((input) & NO_CREATION_TIME) ///< Is NO_CREATION_TIME bit set ?
+#else
+#error "The macro \"NO_CREATION_TIME_BIT\" is already defined !"
+#endif /* NO_CREATION_TIME_BIT */
+
+#ifndef NO_PROGRAM_VERSION_BIT
+#define NO_PROGRAM_VERSION_BIT(input) ((input) & NO_PROGRAM_VERSION) ///< Is NO_PROGRAM_VERSION bit set ?
+#else
+#error "The macro \"NO_PROGRAM_VERSION_BIT\" is already defined !"
+#endif /* NO_PROGRAM_VERSION_BIT */
+
+#ifndef KEEP_SINGLE_TOKEN_RESULTS_BIT
+#define KEEP_SINGLE_TOKEN_RESULTS_BIT(input) ((input) & KEEP_SINGLE_TOKEN_RESULTS) ///< Is KEEP_SINGLE_TOKEN_RESULTS bit set ?
+#else
+#error "The macro \"KEEP_SINGLE_TOKEN_RESULTS_BIT\" is already defined !"
+#endif /* KEEP_SINGLE_TOKEN_RESULTS_BIT */
+
+
+
+/**
  * @brief All settings, except SENTENCE_OFFSET,
  *
  * @return The default settings encoded in a value.

@@ -47,6 +47,11 @@ IS_TYPE(INT_ALLOCATION_STEP_SIZE, int)
  *
  * Additional operations (e.g. data for a intersection result) will be done in the specific creation function.
  *
+ * The variable "max_array_length" is actual not in use. In the past the idea of this value was to make all dynamic
+ * memory blocks large enough, that every block could hold all data. -> Reduction of realloc calls. But it is to
+ * inefficient in the memory usage. This value is nevertheless available, because the idea with the worst case memory
+ * block could be useful in the future. But not currently!
+ *
  * Asserts:
  *      number_of_arrays > 0
  *      max_array_length > 0
@@ -106,6 +111,11 @@ static inline void Increase_Data_Array_Size_Allocation_Step_Size
 /**
  * @brief Create new document word list.
  *
+ * The variable "max_array_length" is actual not in use. In the past the idea of this value was to make all dynamic
+ * memory blocks large enough, that every block could hold all data. -> Reduction of realloc calls. But it is to
+ * inefficient in the memory usage. This value is nevertheless available, because the idea with the worst case memory
+ * block could be useful in the future. But not currently!
+ *
  * Asserts:
  *      number_of_arrays > 0
  *      max_array_length > 0
@@ -125,6 +135,7 @@ DocumentWordList_CreateObject
     // Avoid a unused warning
     (void) Increase_Data_Array_Size_Allocation_Step_Size;
     ASSERT_MSG(number_of_arrays != 0, "Number of arrays is 0 !");
+    // Value check although this value is not in use !
     ASSERT_MSG(max_array_length != 0, "Max array length is 0 !");
 
     struct Document_Word_List* new_object = Create_Main_Object_Structure (number_of_arrays, max_array_length);
@@ -136,6 +147,11 @@ DocumentWordList_CreateObject
 
 /**
  * @brief Create new document word list as result for an intersection process.
+ *
+ * The variable "max_array_length" is actual not in use. In the past the idea of this value was to make all dynamic
+ * memory blocks large enough, that every block could hold all data. -> Reduction of realloc calls. But it is to
+ * inefficient in the memory usage. This value is nevertheless available, because the idea with the worst case memory
+ * block could be useful in the future. But not currently!
  *
  * Asserts:
  *      number_of_arrays > 0
@@ -156,6 +172,7 @@ DocumentWordList_CreateObjectAsIntersectionResult
     // Avoid a unused warning
     (void) Increase_Data_Array_Size_Allocation_Step_Size;
     ASSERT_MSG(number_of_arrays != 0, "Number of arrays is 0 !");
+    // Value check although this value is not in use !
     ASSERT_MSG(max_array_length != 0, "Max array length is 0 !");
 
     struct Document_Word_List* new_object = Create_Main_Object_Structure (number_of_arrays, max_array_length);
@@ -763,6 +780,11 @@ DocumentWordList_IsDataInObject
  *
  * Additional operations (e.g. data for a intersection result) will be done in the specific creation function.
  *
+ * The variable "max_array_length" is actual not in use. In the past the idea of this value was to make all dynamic
+ * memory blocks large enough, that every block could hold all data. -> Reduction of realloc calls. But it is to
+ * inefficient in the memory usage. This value is nevertheless available, because the idea with the worst case memory
+ * block could be useful in the future. But not currently!
+ *
  * Asserts:
  *      number_of_arrays > 0
  *      max_array_length > 0
@@ -780,6 +802,7 @@ Create_Main_Object_Structure
 )
 {
     ASSERT_MSG(number_of_arrays != 0, "Number of arrays is 0 !");
+    // Value check although this value is not in use !
     ASSERT_MSG(max_array_length != 0, "Max array length is 0 !");
 
     struct Document_Word_List* new_object = (struct Document_Word_List*) CALLOC(1, sizeof (struct Document_Word_List));
