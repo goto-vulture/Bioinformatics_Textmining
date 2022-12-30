@@ -10,11 +10,13 @@
 #include "TEST_Etc.h"
 
 #include <math.h>
+#include <string.h>
 #include "tinytest.h"
 #include "../CLI_Parameter.h"
 #include "../Exec_Intersection.h"
 #include "../Error_Handling/Dynamic_Memory.h"
 #include "../ANSI_Esc_Seq.h"
+#include "../String_Tools.h"
 
 
 
@@ -62,6 +64,52 @@ extern void TEST_ANSI_Esc_Seq (void)
 
     // We cannot check the view of the terminal output; so such a test cannot fail.
     ASSERT_EQUALS(true, true);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Test, whether the Tokenize_String function do the tokenisation calculation properly.
+ */
+extern void TEST_Tokenize_String (void)
+{
+    const char* test_str    = "hello world, friend of mine!";
+    const char* delimiter   = " ,!";
+    const char* const expected_results [] =
+    {
+            "hello",
+            "world",
+            "friend",
+            "of",
+            "mine"
+    };
+
+    _Bool test_results = true;
+
+    struct Tokenized_String tokenized_string = Tokenize_String (test_str, delimiter);
+    ASSERT_EQUALS(sizeof (expected_results) / sizeof (expected_results [0]), tokenized_string.next_free_pos_len);
+
+    for (size_t i = 0; i < (sizeof (expected_results) / sizeof (expected_results [0])); ++ i)
+    {
+        const char* curr_token = &(test_str [tokenized_string.token_data[i].pos]);
+        printf ("Expected: \"%s\"; Got: \"", expected_results [i]);
+        // Use the current pointer to print only the token char by char
+        for (size_t i2 = 0; i2 < (size_t) tokenized_string.token_data[i].len; ++ i2)
+        {
+            putc(curr_token [i2], stdout);
+        }
+        puts("\"");
+
+        const int cmp_res = strncmp(curr_token, expected_results [i], (size_t) tokenized_string.token_data[i].len);
+        if (cmp_res != 0)
+        {
+            test_results = false;
+            break;
+        }
+    }
+    ASSERT_EQUALS(true, test_results);
 
     return;
 }
