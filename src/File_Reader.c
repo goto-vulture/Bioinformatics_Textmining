@@ -15,6 +15,8 @@
 #include <time.h>
 #include <math.h>
 #include <limits.h>
+#include <errno.h>
+#include <ctype.h>
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Error_Handling/_Generics.h"
@@ -235,6 +237,32 @@ Use_Current_JSON_Fragment
         struct Token_List_Container* const new_container
 );
 
+
+
+enum File_Type
+{
+    NOT_SPECIFIED_FILE_TYPE = 0,    ///< File type not specified (This can be used as initial value for new variables)
+    JSON_FILE_TYPE,                 ///< JSON file type
+    TXT_FILE_TYPE,                  ///< Text file type
+
+    UNKNOWN_FILE_TYPE               ///< Type is not determinable (This should not be used as initial value for new variables !)
+};
+
+/**
+ * @brief Try to determine the file type.
+ *
+ * The function will check for a JSON or a text file.
+ *
+ * @param input_file FILE pointer to the already opened file.
+ *
+ * @return Type of the file; if a determination was not possible UNKNOWN_FILE_TYPE will be returned
+ */
+static enum File_Type
+Determine_File_Type
+(
+        FILE* input_file
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -328,6 +356,26 @@ TokenListContainer_CreateObject
     ASSERT_ALLOC(input_file_data, "Cannot allocate memory for reading the input file !",
             ((size_t) input_file_length + sizeof ("")) * sizeof (char));
     new_container->malloc_calloc_calls ++;
+
+    // Determine the file type
+    const enum File_Type file_type = Determine_File_Type (input_file);
+    switch (file_type)
+    {
+    case NOT_SPECIFIED_FILE_TYPE:
+        printf("Not specified file type for \"%s\"\n", file_name);
+        break;
+    case JSON_FILE_TYPE:
+        printf("Assume, that \"%s\" is a JSON file\n", file_name);
+        break;
+    case TXT_FILE_TYPE:
+        printf("Assume, that \"%s\" is a text file\n", file_name);
+        break;
+    case UNKNOWN_FILE_TYPE:
+        printf("Cannot determine the file type for \"%s\" !\n", file_name);
+        break;
+    default:
+        ASSERT_MSG(false, "Switch case default path executed !");
+    }
 
     uint_fast32_t line_counter              = 0;
     uint_fast32_t sum_tokens_found          = 0;
@@ -1395,6 +1443,84 @@ Use_Current_JSON_Fragment
     new_container->next_free_element ++;
 
     return tokens_found;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Try to determine the file type.
+ *
+ * The function will check for a JSON or a text file.
+ *
+ * Asserts:
+ *      input_file != NULL
+ *
+ * @param input_file FILE pointer to the already opened file.
+ *
+ * @return Type of the file; if a determination was not possible UNKNOWN_FILE_TYPE will be returned
+ */
+static enum File_Type
+Determine_File_Type
+(
+        FILE* input_file
+)
+{
+    ASSERT_MSG(input_file != NULL, "FILE is NULL !");
+
+    _Bool JSON_start_char_found = false;
+    _Bool JSON_end_char_found   = false;
+
+    // For a simple check mechanism we expect, that an JSON file starts with a '{' and end with a '}'
+    // There will be no check, if the input file is a full valid JSON file. This will done in the reading process, when
+    // this function determines a JSON file
+
+    // Set the cursor to the start of the file and save the current cursor position
+    const long int curr_cursor_pos = ftell (input_file);
+    ASSERT_FMSG(curr_cursor_pos != -1L, "ftell() returned -1: %s", strerror(errno));
+    int fseek_return = fseek (input_file, 0, SEEK_SET);
+    ASSERT_FMSG(fseek_return == 0, "fseek() returned a nonzero value: %s", strerror(errno));
+
+    // Reading until an '{' or a not space char was found
+    int curr_c = 0;
+    while ((curr_c = fgetc(input_file)) != EOF)
+    {
+        if (curr_c == '{')
+        {
+            JSON_start_char_found = true;
+            break;
+        }
+        else if (! isspace(curr_c))
+        {
+            JSON_start_char_found = false;
+            break;
+        }
+    }
+
+    // Reading until an '}' or a not space char was found
+    curr_c = 0;
+    for (long int i = 0; curr_c != EOF; i ++)
+    {
+        fseek_return = fseek (input_file, -(i + 1), SEEK_END);
+        ASSERT_FMSG(fseek_return == 0, "fseek() returned a nonzero value: %s", strerror(errno));
+
+        curr_c = fgetc (input_file);
+        if (curr_c == '}')
+        {
+            JSON_end_char_found = true;
+            break;
+        }
+        else if (! isspace(curr_c))
+        {
+            JSON_end_char_found = true;
+            break;
+        }
+    }
+
+    // Set the file cursor the origin position
+    fseek_return = fseek (input_file, curr_cursor_pos, SEEK_SET);
+    ASSERT_FMSG(fseek_return == 0, "fseek() returned a nonzero value: %s", strerror(errno));
+
+    return (JSON_start_char_found && JSON_end_char_found) ? JSON_FILE_TYPE : TXT_FILE_TYPE;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
