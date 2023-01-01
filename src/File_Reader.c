@@ -24,6 +24,7 @@
 #include "Misc.h"
 #include "JSON_Parser/cJSON.h"
 #include "str2int.h"
+#include "int2str.h"
 #include "Token_Int_Mapping.h"
 #include "String_Tools.h"
 #include "UTF8/utf8.h"
@@ -237,6 +238,34 @@ Use_Current_JSON_Fragment
         struct Token_List_Container* const new_container
 );
 
+/**
+ * @brief Use the current text line and determine the tokens, char, sentence and the word offset.
+ *
+ * The idea of the curr_line_num is, that the data sets get an created ID, because the data fragments from text files
+ * have - unlike the JSON fragments - no ID. Technically an ID is not necessary for the calculations, but it is a good
+ * information to get the position of the data in the source file.
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param[in] curr_text Content of the current text line
+ * @param[in] curr_text_len Length of the current text line
+ * @param[in] curr_line_num Current line number or UINT_FAST32_MAX, if this variable is unused
+ * @param[in] tokenize_data Already calculated tokenize data
+ * @param[in] new_container The new container, that will save the new information
+ *
+ * @return Number of tokens, that were found (This value can be 0 !)
+ */
+static uint_fast32_t
+Use_Current_Text_Fragment
+(
+        char* const curr_text,
+        const size_t curr_text_len,
+        const uint_fast32_t curr_line_num,
+        const struct Tokenized_String* const tokenize_data,
+        struct Token_List_Container* const new_container
+);
+
 
 
 enum File_Type
@@ -396,6 +425,8 @@ TokenListContainer_CreateObject
         ++ line_counter;
         const char* current_parsing_position = input_file_data;
         // ===== ===== ===== ===== BEGIN Parse current line ===== ===== ===== =====
+        if (file_type == JSON_FILE_TYPE)
+        {
         while (*current_parsing_position != '\0')
         {
             // Parse the file JSON fragment per JSON fragment
@@ -432,6 +463,45 @@ TokenListContainer_CreateObject
 
             cJSON_Delete(json);
             json = NULL;
+        }
+        }
+        else if (file_type == TXT_FILE_TYPE)
+        {
+            // Add explicit a delimiter at the end of the input data to avoid problems with the last token
+            // The tokenize function go one char behind the last token and - when there is no extra char - the function
+            // determines a '\0' and stop working. The result: the last token will be skipped
+            // But this modification is only possible, when the input array has at least one char left
+            ASSERT_FMSG((char_read + 1) < unsigned_input_file_length,
+                    "Cannot prepare data for the tokenization ! The array needs to be at least %zu large; current length: %zu",
+                    (char_read + 1) + 1, unsigned_input_file_length)
+            input_file_data [char_read] = ' ';
+            input_file_data [char_read + 1] = '\0';
+            const struct Tokenized_String tokenized_string = Tokenize_String(input_file_data, " \t\n\r");
+
+            // Print process information
+            char_read_before_last_output = Process_Printer(print_steps, char_read_before_last_output,
+                    sum_char_read, unsigned_input_file_length, true,
+                    Read_File_Process_Print_Function,
+                    NULL,
+                    NULL);
+
+            if (input_file_length > 0 && tokenized_string.next_free_pos_len == 0)
+            {
+                printf ("Error in the line %" PRIuFAST32 "\n", line_counter);
+                continue; // while (*current_parsing_position != '\0')
+            }
+
+            if (tokenized_string.next_free_pos_len > 0)
+            {
+                sum_tokens_found +=
+                        Use_Current_Text_Fragment(input_file_data, unsigned_input_file_length, line_counter,
+                                &tokenized_string, new_container);
+            }
+        }
+        else
+        {
+            ASSERT_MSG(false,
+                    "Else path in the line parsing executed ! (No code for parsing the current file format available)");
         }
         // ===== ===== ===== ===== BEGIN Parse current line ===== ===== ===== =====
 
@@ -1438,6 +1508,186 @@ Use_Current_JSON_Fragment
         }
     }
     // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
+
+    // Use next element in the container
+    new_container->next_free_element ++;
+
+    return tokens_found;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Use the current text line and determine the tokens, char, sentence and the word offset.
+ *
+ * The idea of the curr_line_num is, that the data sets get an created ID, because the data fragments from text files
+ * have - unlike the JSON fragments - no ID. Technically an ID is not necessary for the calculations, but it is a good
+ * information to get the position of the data in the source file.
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param[in] curr_text Content of the current text line
+ * @param[in] curr_text_len Length of the current text line
+ * @param[in] curr_line_num Current line number or UINT_FAST32_MAX, if this variable is unused
+ * @param[in] tokenize_data Already calculated tokenize data
+ * @param[in] new_container The new container, that will save the new information
+ *
+ * @return Number of tokens, that were found (This value can be 0 !)
+ */
+static uint_fast32_t
+Use_Current_Text_Fragment
+(
+        char* const curr_text,
+        const size_t curr_text_len,
+        const uint_fast32_t curr_line_num,
+        const struct Tokenized_String* const tokenize_data,
+        struct Token_List_Container* const new_container
+)
+{
+    uint_fast32_t tokens_found = 0;
+
+    // Realloc necessary ?
+    // Is it necessary to realloc/increase the number of Token_List objects in the container ?
+    if (new_container->next_free_element >= new_container->allocated_token_container)
+    {
+        Increase_Number_Of_Token_Lists (new_container);
+    }
+
+    if (curr_line_num != UINT_FAST32_MAX)
+    {
+        char int_to_str_mem [8];
+        memset(int_to_str_mem, '\0', sizeof (int_to_str_mem));
+
+        const enum int2str_errno convert_status = int2str(int_to_str_mem,
+                COUNT_ARRAY_ELEMENTS(int_to_str_mem), (long int) curr_line_num);
+        ASSERT_FMSG(convert_status == INT2STR_SUCCESS, "Cannot convert the int value %" PRIuFAST32 " to a c string ! "
+                "Error code: %d !", curr_line_num, (int) convert_status);
+
+        strncpy (new_container->token_lists [new_container->next_free_element].dataset_id, "Line ",
+                strlen("Line ") + 1);
+        strncat (new_container->token_lists [new_container->next_free_element].dataset_id, int_to_str_mem,
+                DATASET_ID_LENGTH - 1 - strlen("Line "));
+        new_container->token_lists [new_container->next_free_element].dataset_id [DATASET_ID_LENGTH - 1] = '\0';
+    }
+
+    struct Token_List* const current_token_list_obj = &(new_container->token_lists [new_container->next_free_element]);
+
+    // ===== ===== ===== BEGIN Use all tokens in the current text line ===== ===== =====
+    for (uint_fast32_t i = 0; i < tokenize_data->next_free_pos_len; ++ i)
+    {
+        // Skip empty tokens
+        if (tokenize_data->token_data [i].len == 0) { continue; }
+
+        ASSERT_FMSG((size_t) (tokenize_data->token_data[i].pos + tokenize_data->token_data[i].len) <= curr_text_len,
+                "Invalid tokenize data found ! Length needs to be at least %zu; but a text with %zu is given !",
+                (size_t) (tokenize_data->token_data[i].pos + tokenize_data->token_data[i].len), curr_text_len);
+
+        // Is more memory for the new token in the Token_List necessary ?
+        if (current_token_list_obj->next_free_element >= current_token_list_obj->allocated_tokens)
+        {
+            Increase_Number_Of_Tokens (current_token_list_obj);
+
+            // Adjust the number of reallocs in the upper container
+            new_container->realloc_calls += 3;
+        }
+
+        char* const res_mem_for_curr_token = Get_Address_Of_Next_Free_Token (current_token_list_obj);
+
+        const size_t curr_token_len = (size_t) tokenize_data->token_data [i].len;
+        char* const token_begin = &(curr_text [tokenize_data->token_data [i].pos]);
+
+        // Temporary override end char of the current token to make the char range null terminated
+        const char saved_char = *(token_begin + curr_token_len);
+        *(token_begin + curr_token_len) = '\0';
+
+        // Copy token to the current Token_List
+        strncpy(res_mem_for_curr_token, token_begin, curr_token_len /* current_token_list_obj->max_token_length - 1 */);
+
+        // Save the full token, if it is too long
+        if (curr_token_len > (current_token_list_obj->max_token_length - 1))
+        {
+            TwoDimCStrArray_AppendNewString
+            (
+                    new_container->list_of_too_long_token,
+                    token_begin,
+                    curr_token_len
+            );
+        }
+
+        if (current_token_list_obj->next_free_element == 0)
+        {
+            current_token_list_obj->char_offsets [0]        = 0;
+            current_token_list_obj->sentence_offsets [0]    = 0;
+            current_token_list_obj->word_offsets [0]        = 0;
+        }
+        else
+        {
+            const char* last_token =
+                    Get_Address_Of_Token (current_token_list_obj, current_token_list_obj->next_free_element - 1);
+            // VVV This is the old way without notifying UTF8 char VVV
+            // const size_t last_token_length = strlen(last_token);
+            const size_t last_token_length = (size_t) u8_strlen((char*) last_token);
+
+            size_t new_char_offset = current_token_list_obj->char_offsets [current_token_list_obj->next_free_element - 1] +
+                    last_token_length;
+
+            // Don't forget, that the char offsets in original data includes the blanks between the tokens !
+            // Example from test_ebm_formatted.json:
+            /*
+             "tokens": [
+              "[",
+              "The",
+              "chemotherapy",
+              "of",
+            */
+            /*
+            "abs_char_offsets": [
+              0,
+              2,
+              6,
+              19,
+            */
+            /* => */ new_char_offset ++;
+
+            const size_t new_sentence_offset =
+                    current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element - 1] +
+                    (last_token [0] == '.') ? 1 : 0;
+
+            // This is the way, when every token (including punctuation character like dots) should be
+            // interpreted as word for the word offset
+            // In other words all char of a token are printable
+            // Almost all tokens of the input files will be pass this test
+            size_t new_word_offset = 0;
+            new_word_offset = current_token_list_obj->word_offsets [current_token_list_obj->next_free_element - 1];
+            //if (Is_String_Printable(last_token, last_token_length))
+            {
+                ++ new_word_offset;
+            }
+
+            // When the new char offset is larger that are saveable in this type, then will be the calculation
+            // aborted, because in such a situation exists no possibility to "save" this problem
+            ASSERT_FMSG(new_char_offset < CHAR_OFFSET_TYPE_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
+                    new_char_offset, CHAR_OFFSET_TYPE_MAX - 1);
+
+            current_token_list_obj->char_offsets [current_token_list_obj->next_free_element] =
+                    (CHAR_OFFSET_TYPE) new_char_offset;
+            current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element] =
+                    (SENTENCE_OFFSET_TYPE) new_sentence_offset;
+            current_token_list_obj->word_offsets [current_token_list_obj->next_free_element] =
+                    (WORD_OFFSET_TYPE) new_word_offset;
+        }
+
+        current_token_list_obj->next_free_element ++;
+        tokens_found ++;
+
+        // Is the current token longer than the previous tokens ?
+        new_container->longest_token_length = MAX(new_container->longest_token_length, curr_token_len);
+
+        // Recover the origin text content
+        *(token_begin + tokenize_data->token_data [i].len) = saved_char;
+    }
+    // ===== ===== ===== END Use all tokens in the current text line ===== ===== =====
 
     // Use next element in the container
     new_container->next_free_element ++;

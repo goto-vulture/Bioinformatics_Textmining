@@ -513,11 +513,17 @@ Tokenize_String
            input += strspn(input, breakset);
            const ptrdiff_t strspn_diff = input - before_strspn;
            results.token_data[counter].pos += strspn_diff;
-
         }
         counter ++;
     }
     while(input != NULL && *input != '\0' && counter < max_datasets);
+
+    // Override the newest entry, because sometimes - especially when delimiter are at the end of the string - there
+    // will be position data in this object
+    // Technically this is not a problem, because the counter will be decreased before return; but it could
+    // misunderstandings
+    results.token_data [counter].pos = 0;
+    results.token_data [counter].len = 0;
 
     // The last call creates an empty token, because a do-while loop must be used with strpbrk and strspn
     counter --;
