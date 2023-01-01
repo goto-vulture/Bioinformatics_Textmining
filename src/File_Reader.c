@@ -1412,32 +1412,6 @@ Use_Current_JSON_Fragment
             // const size_t last_token_length = strlen(last_token);
             const size_t last_token_length = (size_t) u8_strlen((char*) last_token);
 
-            // Such a check is not necessary:
-            // "It was designed for backward compatibility with ASCII: the first 128 characters of Unicode,
-            // which correspond one-to-one with ASCII, are encoded using a single byte with the same binary
-            // value as ASCII, so that valid ASCII text is valid UTF-8-encoded Unicode as well."
-            //
-            // @see https://en.wikipedia.org/wiki/UTF-8
-            //
-//                        // > UTF-8 check <
-//                        // If the string contains at least one UTF8 symbol the suitable function to determine the length
-//                        // of a string with UTF8 symbols will be called
-//                        // In all other situations the standard way (strlen()) will be used
-//#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-//                        if (u8_contains_string_u8_char((char*) last_token)) // It is necessary to discard the const qualifier
-//#else
-//                        if (u8_contains_string_u8_char((char*) last_token)) // It is necessary to discard the const qualifier
-//#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L */
-//
-//                        {
-//                            // Here it is also necessary to discard the const qualifier -.-
-//                            last_token_length = (size_t) u8_strlen((char*) last_token);
-//                        }
-//                        else
-//                        {
-//                            last_token_length = strlen(last_token);
-//                        }
-
             size_t new_char_offset = 0;
             if (curr_char_offset != NULL)
             {
