@@ -990,6 +990,42 @@ TokenListContainer_ShowAttributes
     return;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Add a tuple with the three offsets to a Token_List.
+ *
+ * Asserts:
+ *      container != NULL
+ *      index < container->allocated_tokens
+ *
+ * @param[in] container Token_List object
+ * @param[in] index Data index
+ * @param[in] char_offset New char offset
+ * @param[in] sentence_offset New sentence offset
+ * @param[in] word_offset New word offset
+ */
+extern void
+TokenList_SetOffsets
+(
+        struct Token_List* const container,
+        const size_t index,
+        const CHAR_OFFSET_TYPE char_offset,
+        const SENTENCE_OFFSET_TYPE sentence_offset,
+        const WORD_OFFSET_TYPE word_offset
+)
+{
+    ASSERT_MSG(container != NULL, "Token_List object is NULL !");
+    ASSERT_FMSG(index < container->allocated_tokens, "Index (%zu) is out of bounds ! Max. valid %zu !", index,
+            container->allocated_tokens);
+
+    container->char_offsets [index]     = char_offset;
+    container->sentence_offsets [index] = sentence_offset;
+    container->word_offsets [index]     = word_offset;
+
+    return;
+}
+
 //=====================================================================================================================
 
 /**
@@ -1364,7 +1400,7 @@ Use_Current_JSON_Fragment
 
     struct Token_List* const current_token_list_obj = &(new_container->token_lists [new_container->next_free_element]);
 
-    // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
+    // ===== ===== ===== BEGIN Go though the full chained list (the tokens array in the JSON file) ===== ===== =====
     while (curr_token != NULL)
     {
         if (! curr_token->valuestring) { curr_token = curr_token->next; continue; }
@@ -1400,9 +1436,7 @@ Use_Current_JSON_Fragment
         // Zero for the fist element
         if (current_token_list_obj->next_free_element == 0)
         {
-            current_token_list_obj->char_offsets [0]        = 0;
-            current_token_list_obj->sentence_offsets [0]    = 0;
-            current_token_list_obj->word_offsets [0]        = 0;
+            TokenList_SetOffsets(current_token_list_obj, 0, 0, 0, 0);
         }
         else
         {
@@ -1424,49 +1458,21 @@ Use_Current_JSON_Fragment
 
                 // Don't forget, that the char offsets in original data includes the blanks between the tokens !
                 // Example from test_ebm_formatted.json:
-                /*
-                 "tokens": [
-                  "[",
-                  "The",
-                  "chemotherapy",
-                  "of",
-                */
-                /*
-                "abs_char_offsets": [
-                  0,
-                  2,
-                  6,
-                  19,
-                */
+                /* "tokens":            [ "[", "The", "chemotherapy", "of", ... ] */
+                /* abs_char_offsets":   [ 0, 2, 6, 19, ... ] */
                 /* => */ new_char_offset ++;
             }
 
             const size_t new_sentence_offset =
                     current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element - 1] +
-                    (last_token [0] == '.') ? 1 : 0;
+                    (last_token [0] == '.' && (IS_STRING_LENGTH_ONE(last_token))) ? 1 : 0;
+            const size_t new_word_offset = (size_t)
+                    current_token_list_obj->word_offsets [current_token_list_obj->next_free_element - 1] + 1;
 
-            // This is the way, when every token (including punctuation character like dots) should be
-            // interpreted as word for the word offset
-            // In other words all char of a token are printable
-            // Almost all tokens of the input files will be pass this test
-            size_t new_word_offset = 0;
-            new_word_offset = current_token_list_obj->word_offsets [current_token_list_obj->next_free_element - 1];
-            //if (Is_String_Printable(last_token, last_token_length))
-            {
-                ++ new_word_offset;
-            }
+            CAST_CHECK(new_char_offset, size_t, CHAR_OFFSET_TYPE);
 
-            // When the new char offset is larger that are saveable in this type, then will be the calculation
-            // aborted, because in such a situation exists no possibility to "save" this problem
-            ASSERT_FMSG(new_char_offset < CHAR_OFFSET_TYPE_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
-                    new_char_offset, CHAR_OFFSET_TYPE_MAX - 1);
-
-            current_token_list_obj->char_offsets [current_token_list_obj->next_free_element] =
-                    (CHAR_OFFSET_TYPE) new_char_offset;
-            current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element] =
-                    (SENTENCE_OFFSET_TYPE) new_sentence_offset;
-            current_token_list_obj->word_offsets [current_token_list_obj->next_free_element] =
-                    (WORD_OFFSET_TYPE) new_word_offset;
+            TokenList_SetOffsets(current_token_list_obj, current_token_list_obj->next_free_element,
+                    (CHAR_OFFSET_TYPE) new_char_offset, (SENTENCE_OFFSET_TYPE) new_sentence_offset, (WORD_OFFSET_TYPE) new_word_offset);
         }
 
         current_token_list_obj->next_free_element ++;
@@ -1481,7 +1487,7 @@ Use_Current_JSON_Fragment
             curr_char_offset = curr_char_offset->next;
         }
     }
-    // ===== BEGIN Go though the full chained list (the tokens array in the JSON file) =====
+    // ===== ===== ===== END Go though the full chained list (the tokens array in the JSON file) ===== ===== =====
 
     // Use next element in the container
     new_container->next_free_element ++;
@@ -1530,19 +1536,15 @@ Use_Current_Text_Fragment
 
     if (curr_line_num != UINT_FAST32_MAX)
     {
-        char int_to_str_mem [8];
-        memset(int_to_str_mem, '\0', sizeof (int_to_str_mem));
+        char int_to_str_mem [10] = { '\0', '\0', '\0', '\0', '\0',  '\0', '\0', '\0', '\0', '\0' };
 
         const enum int2str_errno convert_status = int2str(int_to_str_mem,
                 COUNT_ARRAY_ELEMENTS(int_to_str_mem), (long int) curr_line_num);
         ASSERT_FMSG(convert_status == INT2STR_SUCCESS, "Cannot convert the int value %" PRIuFAST32 " to a c string ! "
                 "Error code: %d !", curr_line_num, (int) convert_status);
 
-        strncpy (new_container->token_lists [new_container->next_free_element].dataset_id, "Line ",
-                strlen("Line ") + 1);
-        strncat (new_container->token_lists [new_container->next_free_element].dataset_id, int_to_str_mem,
-                DATASET_ID_LENGTH - 1 - strlen("Line "));
-        new_container->token_lists [new_container->next_free_element].dataset_id [DATASET_ID_LENGTH - 1] = '\0';
+        Multi_strncat(new_container->token_lists [new_container->next_free_element].dataset_id,
+                DATASET_ID_LENGTH - 1, 3, "Line ", int_to_str_mem, "\0");
     }
 
     struct Token_List* const current_token_list_obj = &(new_container->token_lists [new_container->next_free_element]);
@@ -1591,9 +1593,7 @@ Use_Current_Text_Fragment
 
         if (current_token_list_obj->next_free_element == 0)
         {
-            current_token_list_obj->char_offsets [0]        = 0;
-            current_token_list_obj->sentence_offsets [0]    = 0;
-            current_token_list_obj->word_offsets [0]        = 0;
+            TokenList_SetOffsets(current_token_list_obj, 0, 0, 0, 0);
         }
         else
         {
@@ -1608,48 +1608,20 @@ Use_Current_Text_Fragment
 
             // Don't forget, that the char offsets in original data includes the blanks between the tokens !
             // Example from test_ebm_formatted.json:
-            /*
-             "tokens": [
-              "[",
-              "The",
-              "chemotherapy",
-              "of",
-            */
-            /*
-            "abs_char_offsets": [
-              0,
-              2,
-              6,
-              19,
-            */
+            /* "tokens":            [ "[", "The", "chemotherapy", "of", ... ] */
+            /* abs_char_offsets":   [ 0, 2, 6, 19, ... ] */
             /* => */ new_char_offset ++;
 
             const size_t new_sentence_offset =
                     current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element - 1] +
-                    (last_token [0] == '.') ? 1 : 0;
+                    (last_token [0] == '.' && (IS_STRING_LENGTH_ONE(last_token))) ? 1 : 0;
+            const size_t new_word_offset = (size_t)
+                    current_token_list_obj->word_offsets [current_token_list_obj->next_free_element - 1] + 1;
 
-            // This is the way, when every token (including punctuation character like dots) should be
-            // interpreted as word for the word offset
-            // In other words all char of a token are printable
-            // Almost all tokens of the input files will be pass this test
-            size_t new_word_offset = 0;
-            new_word_offset = current_token_list_obj->word_offsets [current_token_list_obj->next_free_element - 1];
-            //if (Is_String_Printable(last_token, last_token_length))
-            {
-                ++ new_word_offset;
-            }
+            CAST_CHECK(new_char_offset, size_t, CHAR_OFFSET_TYPE);
 
-            // When the new char offset is larger that are saveable in this type, then will be the calculation
-            // aborted, because in such a situation exists no possibility to "save" this problem
-            ASSERT_FMSG(new_char_offset < CHAR_OFFSET_TYPE_MAX, "New offset is too large ! New value: %zu; max valid: %d !",
-                    new_char_offset, CHAR_OFFSET_TYPE_MAX - 1);
-
-            current_token_list_obj->char_offsets [current_token_list_obj->next_free_element] =
-                    (CHAR_OFFSET_TYPE) new_char_offset;
-            current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element] =
-                    (SENTENCE_OFFSET_TYPE) new_sentence_offset;
-            current_token_list_obj->word_offsets [current_token_list_obj->next_free_element] =
-                    (WORD_OFFSET_TYPE) new_word_offset;
+            TokenList_SetOffsets(current_token_list_obj, current_token_list_obj->next_free_element,
+                    (CHAR_OFFSET_TYPE) new_char_offset, (SENTENCE_OFFSET_TYPE) new_sentence_offset, (WORD_OFFSET_TYPE) new_word_offset);
         }
 
         current_token_list_obj->next_free_element ++;
