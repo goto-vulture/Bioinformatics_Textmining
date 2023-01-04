@@ -312,6 +312,12 @@ IntersectionApproach_HeapSortAndBinarySearch
 
 //---------------------------------------------------------------------------------------------------------------------
 
+// Disable the -Wstack-protector warning for the next function, because stack protector are not possible with functions
+// that works with VLA
+#ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wstack-protector"
+#endif /* __GNUC__ */
 /**
  * @brief Determine intersections with a naive approach (Compare everyone with everyone -> to nested loops).
  *
@@ -481,6 +487,10 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 
     return intersection_result;
 }
+// Enable the -Wstack-protector warning again
+#ifdef __GNUC__
+    #pragma GCC diagnostic pop
+#endif /* __GNUC__ */
 
 //=====================================================================================================================
 

@@ -11,7 +11,7 @@ DOXYGEN_PATH = $(shell command -v $(DOXYGEN) 2> /dev/null)
 
 
 # Flags, die sowohl im Debug- als auch im Release-Build, verwendet werden
-CCFLAGS = -pedantic -Wall -Wextra -Wconversion -fmessage-length=0
+CCFLAGS = -pedantic -Wall -Wextra -Wconversion -fmessage-length=0 -Wstack-protector
 
 # Verwendete Libs
 LIBS = -lm
@@ -89,7 +89,7 @@ TARGET =
 
 # Zusaetzliche Flags fuer Linux
 # -D_POSIX_C_SOURCE=200112L:  Dies macht POSIX Funktionen verfuegbar, die nicht zum reinen C-Standard gehoeren (verwendet fuer fseeko()/ftello())
-ADDITIONAL_LINUX_FLAGS = -fstack-protector -Wl,-z,relro -Wl,-z,now -D_POSIX_C_SOURCE=200112L
+ADDITIONAL_LINUX_FLAGS = -fstack-protector-strong -Wl,-z,relro -Wl,-z,now -D_POSIX_C_SOURCE=200112L
 
 # Zusaetzliche Flags fuer Windows
 # Unter Windows gibt es bei Format-Strings einige Probleme !
