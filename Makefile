@@ -3,6 +3,7 @@
 CC = gcc
 RM = rm
 MKDIR = mkdir
+MAKE = make
 
 # Pfad zu doxygen, falls es auf dem System vorhanden ist
 DOXYGEN = doxygen
@@ -406,6 +407,16 @@ utf8.o: $(UTF8_C)
 ANSI_Esc_Seq.o: $(ANSI_ESC_SEQ_C)
 	$(CC) $(CCFLAGS) -c $(ANSI_ESC_SEQ_C)
 ##### ENDE Die einzelnen Uebersetzungseinheiten #####
+
+# Kompilierung des Programms im Debug Modus mit direkter Ausfuehrung der Tests
+test:
+	$(MAKE) clean
+	@echo
+	$(MAKE) all STD=11 NO_DOCU=1
+	@echo
+	@echo Run all tests ...
+	@echo
+	./$(TARGET) -T
 
 # Alles wieder aufraeumen
 clean:
