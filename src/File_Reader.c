@@ -1578,7 +1578,7 @@ Use_Current_Text_Fragment
         *(token_begin + curr_token_len) = '\0';
 
         // Copy token to the current Token_List
-        strncpy(res_mem_for_curr_token, token_begin, curr_token_len /* current_token_list_obj->max_token_length - 1 */);
+        strncpy(res_mem_for_curr_token, token_begin, current_token_list_obj->max_token_length - 1);
 
         // Save the full token, if it is too long
         if (curr_token_len > (current_token_list_obj->max_token_length - 1))
