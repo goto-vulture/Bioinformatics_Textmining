@@ -28,6 +28,7 @@
 #include "Token_Int_Mapping.h"
 #include "String_Tools.h"
 #include "UTF8/utf8.h"
+#include "ANSI_Esc_Seq.h"
 
 
 
@@ -394,10 +395,10 @@ TokenListContainer_CreateObject
         printf("Not specified file type for \"%s\"\n", file_name);
         break;
     case JSON_FILE_TYPE:
-        printf("Assume, that \"%s\" is a JSON file\n", file_name);
+        printf("Assume, that \"%s\" is a " ANSI_TEXT_BOLD "JSON file" ANSI_RESET_ALL "\n", file_name);
         break;
     case TXT_FILE_TYPE:
-        printf("Assume, that \"%s\" is a text file\n", file_name);
+        printf("Assume, that \"%s\" is a " ANSI_TEXT_BOLD "text file" ANSI_RESET_ALL "\n", file_name);
         break;
     case UNKNOWN_FILE_TYPE:
         printf("Cannot determine the file type for \"%s\" !\n", file_name);
@@ -517,14 +518,17 @@ TokenListContainer_CreateObject
     // Print tokens, that was longer than the expected length
     if (new_container->list_of_too_long_token->next_free_c_str > 0)
     {
-        puts("\n\nTokens, that are longer than expected:");
+        printf("\n\nTokens, that are longer than expected (max. expected length: %d):\n", MAX_TOKEN_LENGTH - 1);
         TwoDimCStrArray_PrintAllStrings(new_container->list_of_too_long_token);
     }
 
     CLOCK_WITH_RETURN_CHECK(end);
     used_seconds = DETERMINE_USED_TIME(start, end);
-    printf ("\n=> %3.3fs (~ %.3f MB/s) for parsing the whole file (%" PRIuFAST32 " tokens found)\n", used_seconds,
-            ((float) input_file_length / 1024.0f / 1024.0f) / used_seconds, sum_tokens_found);
+
+    const float file_size_in_MB = ((float) input_file_length / 1024.0f / 1024.0f);
+    printf ("\n=> %.3f MB in %3.3fs (~ %.3f MB/s) for parsing the whole file (" ANSI_TEXT_BOLD ANSI_TEXT_ITALIC
+            "%" PRIuFAST32 " tokens found" ANSI_RESET_ALL ")\n",
+            file_size_in_MB, used_seconds, file_size_in_MB / used_seconds, sum_tokens_found);
 
     FCLOSE_AND_SET_TO_NULL(input_file);
     FREE_AND_SET_TO_NULL(input_file_data);

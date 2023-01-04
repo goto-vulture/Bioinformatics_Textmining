@@ -26,6 +26,7 @@
 #include "Stop_Words/Stop_Words.h"
 #include "JSON_Parser/cJSON.h"
 #include "Exec_Config.h"
+#include "ANSI_Esc_Seq.h"
 
 
 
@@ -534,11 +535,13 @@ Exec_Intersection
     // ... and fill them with all tokens (Content from the first file)
     uint_fast32_t token_added_to_mapping =
             Append_Token_List_Container_Data_To_Token_Int_Mapping (token_container_input_1, token_int_mapping);
-    printf ("\nAfter token container 1: %" PRIuFAST32 " elements added to token int mapping\n", token_added_to_mapping);
+    printf ("\nAfter token container 1: " ANSI_TEXT_BOLD ANSI_TEXT_ITALIC "%" PRIuFAST32 " elements" ANSI_RESET_ALL
+            " added to token int mapping\n", token_added_to_mapping);
     // Content from the second file
     token_added_to_mapping +=
             Append_Token_List_Container_Data_To_Token_Int_Mapping (token_container_input_2, token_int_mapping);
-    printf ("\nAfter token container 2: %" PRIuFAST32 " elements added to token int mapping\n", token_added_to_mapping);
+    printf ("\nAfter token container 2: " ANSI_TEXT_BOLD ANSI_TEXT_ITALIC "%" PRIuFAST32 " elements" ANSI_RESET_ALL
+            " added to token int mapping\n", token_added_to_mapping);
 
 
 
@@ -968,8 +971,10 @@ abort_label:
     printf ("cJSON objects memory usage: ");
     Print_Memory_Size_As_B_KB_MB(cJSON_mem_counter);
 
-    printf ("=> Result file size: ");
+    printf ("\n=> Result file: " ANSI_TEXT_BOLD "%s" ANSI_RESET_ALL, GLOBAL_CLI_OUTPUT_FILE);
+    printf ("\n=> Result file size: " ANSI_TEXT_BOLD);
     Print_Memory_Size_As_B_KB_MB(result_file_size);
+    printf (ANSI_RESET_ALL);
 
     const uint_fast64_t intersection_tokens_found_counter = counter_tokens_in_full_sets + counter_tokens_in_partital_sets;
     const uint_fast64_t intersection_sets_found_counter = counter_full_sets + counter_partial_sets;

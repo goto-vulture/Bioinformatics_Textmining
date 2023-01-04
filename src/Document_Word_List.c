@@ -614,10 +614,17 @@ DocumentWordList_ShowAttributes
 {
     ASSERT_MSG(object != NULL, "Object is NULL !");
 
+    size_t count_tokens = 0;
+    for (uint_fast32_t i = 0; i < object->next_free_array; i ++) { count_tokens += object->arrays_lengths [i]; }
+    const size_t avg_array_length = count_tokens / object->number_of_arrays;
+
     // Int formatter for the output
     int formatter_int = (int) MAX_WITH_TYPE_CHECK(Count_Number_Of_Digits(object->number_of_arrays),
                 Count_Number_Of_Digits(object->max_array_length));
     formatter_int = MAX_WITH_TYPE_CHECK((int) Count_Number_Of_Digits(object->malloc_calloc_calls), formatter_int);
+    formatter_int = MAX_WITH_TYPE_CHECK((int) Count_Number_Of_Digits(count_tokens), formatter_int);
+    formatter_int = MAX_WITH_TYPE_CHECK((int) Count_Number_Of_Digits(avg_array_length), formatter_int);
+
 
     puts("");
     printf("Full document word list container size: ");
@@ -625,8 +632,10 @@ DocumentWordList_ShowAttributes
 
     puts ("> Attributes <");
     printf ("Intersection data:     %*s\n",  formatter_int, (object->intersection_data /* == true */) ? "YES" : "NO");
+    printf ("Number of tokens:      %*zu\n", formatter_int, count_tokens);
     printf ("Number of arrays:      %*zu\n", formatter_int, object->number_of_arrays);
     printf ("Max. array length:     %*zu\n", formatter_int, object->max_array_length);
+    printf ("Avg. array length:     %*zu\n", formatter_int, avg_array_length);
     printf ("Malloc / calloc calls: %*zu\n", formatter_int, object->malloc_calloc_calls);
     printf ("Realloc calls:         %*zu\n", formatter_int, object->realloc_calls);
 
