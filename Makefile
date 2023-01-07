@@ -76,6 +76,10 @@ RELEASE = 0
 # Default C Standard: C11
 CSTD = -std=c11
 
+USING_OMP = 0
+
+
+
 PROJECT_NAME = Bioinformatics_Textmining
 DOCUMENTATION_PATH = ./Documentation
 NO_DOCUMENTATION = 1
@@ -144,6 +148,21 @@ ifeq ($(STD), C99)
 	CSTD = -std=c99
 endif
 CCFLAGS += $(CSTD)
+
+# Check for OpenMP flag
+ifeq ($(OMP), 1)
+	USING_OMP = 1
+endif
+ifeq ($(omp), 1)
+	USING_OMP = 1
+endif
+
+
+
+# Soll OpenMP Lib verwendet werden ?
+ifeq ($(USING_OMP), 1)
+	CCFLAGS += -fopenmp
+endif
 
 # Soll die Dokumentation mittels Doxygen erzeugt werden ? Die Erzeugung der Dokumentation benoetigt mit Abstand die meiste
 # Zeit bei der Erstellung des Programms
