@@ -519,7 +519,28 @@ TokenListContainer_CreateObject
     if (new_container->list_of_too_long_token->next_free_c_str > 0)
     {
         printf("\n\nTokens, that are longer than expected (max. expected length: %d):\n", MAX_TOKEN_LENGTH - 1);
-        TwoDimCStrArray_PrintAllStrings(new_container->list_of_too_long_token);
+        if (new_container->list_of_too_long_token->next_free_c_str <= 50)
+        {
+            TwoDimCStrArray_PrintAllStrings(new_container->list_of_too_long_token);
+        }
+        else
+        {
+            const uint_fast32_t next_free_c_str = new_container->list_of_too_long_token->next_free_c_str;
+            const int num_of_digits             = (int) Count_Number_Of_Digits(next_free_c_str);
+            const uint_fast32_t print_range     = 15;
+
+            // Print the first and the last 15 tokens
+            for (uint_fast32_t i = 0; i < print_range; ++ i)
+            {
+                printf("%*" PRIuFAST32 ": %s\n", num_of_digits, i + 1, new_container->list_of_too_long_token->data [i]);
+            }
+            PRINT_X_TIMES_SAME_CHAR(' ', num_of_digits + 2);
+            puts("...");
+            for (uint_fast32_t i = (next_free_c_str - print_range); i < next_free_c_str; ++ i)
+            {
+                printf("%*" PRIuFAST32 ": %s\n", num_of_digits, i + 1, new_container->list_of_too_long_token->data [i]);
+            }
+        }
     }
 
     CLOCK_WITH_RETURN_CHECK(end);
