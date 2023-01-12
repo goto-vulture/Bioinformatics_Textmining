@@ -519,8 +519,8 @@ Tokenize_String
 
     // Override the newest entry, because sometimes - especially when delimiter are at the end of the string - there
     // will be position data in this object
-    // Technically this is not a problem, because the counter will be decreased before return; but it could
-    // misunderstandings
+    // Technically this is not a problem, because the counter will be decreased before return; but it could create
+    // misunderstandings, if someone uses the last entry
     results.token_data [counter].pos = 0;
     results.token_data [counter].len = 0;
 
