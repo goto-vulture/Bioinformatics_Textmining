@@ -313,6 +313,12 @@ Is_String_Null_Terminated
 
 //---------------------------------------------------------------------------------------------------------------------
 
+#ifndef TOKENIZED_STRING_MAX_DATASETS
+#define TOKENIZED_STRING_MAX_DATASETS 250   ///< Max number of data sets, that a Tokenized_String struct can hold
+#else
+#error "The macro \"TOKENIZED_STRING_MAX_DATASETS\" is already defined !"
+#endif /* TOKENIZED_STRING_MAX_DATASETS */
+
 /**
  * @brief This structure saves the main information about a tokenized c string. It saves the position as offset and the
  * length of the token.
@@ -321,10 +327,10 @@ struct Tokenized_String
 {
     struct
     {
-        ptrdiff_t pos;                  ///< Position as offset
-        ptrdiff_t len;                  ///< Length focused from the offset
-    } token_data [250];                 ///< The value should be enough for our purposes
-    uint_fast32_t next_free_pos_len;    ///< Index of the next unused object
+        ptrdiff_t pos;                              ///< Position as offset
+        ptrdiff_t len;                              ///< Length focused from the offset
+    } token_data [TOKENIZED_STRING_MAX_DATASETS];   ///< The value should be enough for our purposes
+    uint_fast32_t next_free_pos_len;                ///< Index of the next unused object
 };
 
 /**

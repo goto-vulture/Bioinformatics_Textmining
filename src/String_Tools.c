@@ -496,7 +496,6 @@ Tokenize_String
     if (IS_STRING_LENGTH_ZERO(breakset))    { return results; }
 
     const char* const orig_input_ptr = input;
-    const size_t max_datasets = sizeof (results.token_data) / sizeof (results.token_data [0]);
     uint_fast32_t counter = 1;
 
     results.token_data[0].pos = 0;
@@ -516,7 +515,7 @@ Tokenize_String
         }
         counter ++;
     }
-    while(input != NULL && *input != '\0' && counter < max_datasets);
+    while(input != NULL && *input != '\0' && counter < TOKENIZED_STRING_MAX_DATASETS);
 
     // Override the newest entry, because sometimes - especially when delimiter are at the end of the string - there
     // will be position data in this object
