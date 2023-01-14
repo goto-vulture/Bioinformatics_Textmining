@@ -1657,6 +1657,10 @@ Create_Intersection_Settings_With_CLI_Parameter
     {
         intersection_settings |= KEEP_SINGLE_TOKEN_RESULTS;
     }
+    if (GLOBAL_CLI_NO_CREATION_TIME)
+    {
+        intersection_settings |= NO_CREATION_TIME;
+    }
 
     return intersection_settings;
 }

@@ -254,6 +254,8 @@ int main (const int argc, const char* argv [])
                     "Execute all test functions", NULL, 0, 0),
             OPT_FLOAT('A', "abort", &GLOBAL_ABORT_PROCESS_PERCENT,
                      "At which percent the calculation should be aborted ?", NULL, 0, 0),
+            OPT_BOOLEAN('\0', "no_creation_time", &GLOBAL_CLI_NO_CREATION_TIME,
+                    "Don't insert a creation time timestamp in the result file", NULL, 0, 0),
 
             OPT_END()
     };

@@ -61,6 +61,12 @@ extern _Bool GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN;
  */
 extern float GLOBAL_ABORT_PROCESS_PERCENT;
 
+/**
+ * @brief Insert no timestamp in the general information block from the result file. This is useful for debugging
+ * purposes. With timestamp is no checksum comparison of the files possible.
+ */
+extern _Bool GLOBAL_CLI_NO_CREATION_TIME;
+
 
 
 /**
