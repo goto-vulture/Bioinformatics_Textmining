@@ -19,35 +19,33 @@ extern "C"
 
 
 
+extern const char* const GLOBAL_USAGES [];                          ///< Description of the CLI interface usage
 
-
-extern const char* const GLOBAL_USAGES []; ///< Description of the CLI interface usage
-
-extern const char* const GLOBAL_PROGRAM_DESCRIPTION; ///< General program description
-extern const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION; ///< Additional program description
+extern const char* const GLOBAL_PROGRAM_DESCRIPTION;                ///< General program description
+extern const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION;     ///< Additional program description
 
 
 
 // Variables for the parsed CLI parameter
-extern const char* GLOBAL_CLI_INPUT_FILE; ///< First input file
+extern const char* GLOBAL_CLI_INPUT_FILE;       ///< First input file
 
-extern const char* GLOBAL_CLI_INPUT_FILE2; ///< Second input file
+extern const char* GLOBAL_CLI_INPUT_FILE2;      ///< Second input file
 
-extern const char* GLOBAL_CLI_OUTPUT_FILE; ///< Output file
+extern const char* GLOBAL_CLI_OUTPUT_FILE;      ///< Output file
 
-extern _Bool GLOBAL_CLI_FORMAT_OUTPUT; ///< Format the output ?
+extern _Bool GLOBAL_CLI_FORMAT_OUTPUT;          ///< Format the output ?
 
-extern _Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS; ///< Run all test functions ?
+extern _Bool GLOBAL_RUN_ALL_TEST_FUNCTIONS;     ///< Run all test functions ?
 
-extern _Bool GLOBAL_CLI_SENTENCE_OFFSET; ///< Create sentence offsets in the calculation ?
+extern _Bool GLOBAL_CLI_SENTENCE_OFFSET;        ///< Create sentence offsets in the calculation ?
 
-extern _Bool GLOBAL_CLI_WORD_OFFSET; ///< Create word offsets in the calculation ?
+extern _Bool GLOBAL_CLI_WORD_OFFSET;            ///< Create word offsets in the calculation ?
 
-extern _Bool GLOBAL_CLI_SHOW_TOO_LONG_TOKENS; ///< Show too long tokens in the result file
+extern _Bool GLOBAL_CLI_SHOW_TOO_LONG_TOKENS;   ///< Show too long tokens in the result file
 
-extern _Bool GLOBAL_CLI_NO_PART_MATCHES; ///< Do not show part matches in the result file
+extern _Bool GLOBAL_CLI_NO_PART_MATCHES;        ///< Do not show part matches in the result file
 
-extern _Bool GLOBAL_CLI_NO_FULL_MATCHES; ///< Do not show full matches in the result file
+extern _Bool GLOBAL_CLI_NO_FULL_MATCHES;        ///< Do not show full matches in the result file
 
 /**
  * @brief Shall be results with only one token written in the result file ? In normal cases such information are
