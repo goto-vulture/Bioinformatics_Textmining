@@ -40,8 +40,10 @@ extern uint_fast64_t GLOBAL_free_calls;     ///< Number of executed free calls
 /**
  * @brief Show the current malloc (), calloc (), realloc () and free () calls, that were measured with the MALLOC,
  * CALLOC and FREE macros.
+ *
+ * @param[in] no_missing_free_call_print Print the status even when no free calls are missing
  */
-extern void Show_Dynamic_Memory_Status (void);
+extern void Show_Dynamic_Memory_Status (const _Bool no_missing_free_call_print);
 
 
 

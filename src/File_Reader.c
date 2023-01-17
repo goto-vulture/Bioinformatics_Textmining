@@ -395,10 +395,10 @@ TokenListContainer_CreateObject
         printf("Not specified file type for \"%s\"\n", file_name);
         break;
     case JSON_FILE_TYPE:
-        printf("Assume, that \"%s\" is a " ANSI_TEXT_BOLD "JSON file" ANSI_RESET_ALL "\n", file_name);
+        printf("Assume, that \"%s\" is a " ANSI_TEXT_BOLD ANSI_TEXT_ITALIC "JSON file" ANSI_RESET_ALL "\n", file_name);
         break;
     case TXT_FILE_TYPE:
-        printf("Assume, that \"%s\" is a " ANSI_TEXT_BOLD "text file" ANSI_RESET_ALL "\n", file_name);
+        printf("Assume, that \"%s\" is a " ANSI_TEXT_BOLD ANSI_TEXT_ITALIC "text file" ANSI_RESET_ALL "\n", file_name);
         break;
     case UNKNOWN_FILE_TYPE:
         printf("Cannot determine the file type for \"%s\" !\n", file_name);

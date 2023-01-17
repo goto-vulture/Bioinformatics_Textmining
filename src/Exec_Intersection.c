@@ -536,12 +536,12 @@ Exec_Intersection
     uint_fast32_t token_added_to_mapping =
             Append_Token_List_Container_Data_To_Token_Int_Mapping (token_container_input_1, token_int_mapping);
     printf ("\nAfter token container 1: " ANSI_TEXT_BOLD ANSI_TEXT_ITALIC "%" PRIuFAST32 " elements" ANSI_RESET_ALL
-            " added to token int mapping\n", token_added_to_mapping);
+            " in token int mapping\n", token_added_to_mapping);
     // Content from the second file
     token_added_to_mapping +=
             Append_Token_List_Container_Data_To_Token_Int_Mapping (token_container_input_2, token_int_mapping);
     printf ("\nAfter token container 2: " ANSI_TEXT_BOLD ANSI_TEXT_ITALIC "%" PRIuFAST32 " elements" ANSI_RESET_ALL
-            " added to token int mapping\n", token_added_to_mapping);
+            " in token int mapping\n", token_added_to_mapping);
 
 
 
@@ -971,7 +971,7 @@ abort_label:
     printf ("cJSON objects memory usage: ");
     Print_Memory_Size_As_B_KB_MB(cJSON_mem_counter);
 
-    printf ("\n=> Result file: " ANSI_TEXT_BOLD "%s" ANSI_RESET_ALL, GLOBAL_CLI_OUTPUT_FILE);
+    printf ("\n=> Result file:      " ANSI_TEXT_BOLD "%s" ANSI_RESET_ALL, GLOBAL_CLI_OUTPUT_FILE);
     printf ("\n=> Result file size: " ANSI_TEXT_BOLD);
     Print_Memory_Size_As_B_KB_MB(result_file_size);
     printf (ANSI_RESET_ALL);
@@ -1767,13 +1767,15 @@ Print_Counter
             Count_Number_Of_Digits((size_t) intersection_sets_found_counter));
 
     printf ("\n\n");
-    printf ("Intersection tokens found:  %*" PRIuFAST64 "\n", int_formatter, intersection_tokens_found_counter);
+    printf ("Intersection tokens found:  " ANSI_TEXT_BOLD "%*" PRIuFAST64 ANSI_RESET_ALL "\n",
+            int_formatter, intersection_tokens_found_counter);
     if (intersection_settings & PART_MATCH)
     { printf ("\tIn partial matches: %*" PRIuFAST64 "\n", int_formatter, counter_tokens_partial_match); }
     if (intersection_settings & FULL_MATCH)
     { printf ("\tIn full matches:    %*" PRIuFAST64 "\n", int_formatter, counter_tokens_full_match); }
 
-    printf ("Intersection sets found:    %*" PRIuFAST64 "\n", int_formatter, intersection_sets_found_counter);
+    printf ("Intersection sets found:    " ANSI_TEXT_BOLD "%*" PRIuFAST64 ANSI_RESET_ALL "\n",
+            int_formatter, intersection_sets_found_counter);
     if (intersection_settings & PART_MATCH)
     { printf ("\tPartial sets:       %*" PRIuFAST64 "\n", int_formatter, counter_sets_partial_match); }
     if (intersection_settings & FULL_MATCH)

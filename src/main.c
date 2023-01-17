@@ -277,11 +277,11 @@ int main (const int argc, const char* argv [])
     if (! isnan(GLOBAL_ABORT_PROCESS_PERCENT))
     {
         Check_CLI_Parameter_GLOBAL_ABORT_PROCESS_PERCENT();
-        printf ("Abort percent value: %f\n", GLOBAL_ABORT_PROCESS_PERCENT);
+        // printf ("Abort percent value: %f\n", GLOBAL_ABORT_PROCESS_PERCENT);
     }
     if (GLOBAL_CLI_INPUT_FILE != NULL)
     {
-        printf ("Input file 1: \"%s\"\n", GLOBAL_CLI_INPUT_FILE);
+        // printf ("Input file 1: \"%s\"\n", GLOBAL_CLI_INPUT_FILE);
         Check_CLI_Parameter_CLI_INPUT_FILE();
     }
     else
@@ -291,7 +291,7 @@ int main (const int argc, const char* argv [])
     }
     if (GLOBAL_CLI_INPUT_FILE2 != NULL)
     {
-        printf ("Input file 2: \"%s\"\n", GLOBAL_CLI_INPUT_FILE2);
+        // printf ("Input file 2: \"%s\"\n", GLOBAL_CLI_INPUT_FILE2);
         Check_CLI_Parameter_CLI_INPUT_FILE2();
     }
     else
@@ -301,7 +301,7 @@ int main (const int argc, const char* argv [])
     }
     if (GLOBAL_CLI_OUTPUT_FILE != NULL)
     {
-        printf ("Output file:  \"%s\"\n", GLOBAL_CLI_OUTPUT_FILE);
+        // printf ("Output file:  \"%s\"\n", GLOBAL_CLI_OUTPUT_FILE);
         Check_CLI_Parameter_CLI_OUTPUT_FILE();
     }
     else
@@ -363,8 +363,8 @@ At_Exit_Function
         void
 )
 {
-    puts ("\n");
-    Show_Dynamic_Memory_Status();
+    if ((GLOBAL_malloc_calls + GLOBAL_calloc_calls - GLOBAL_free_calls) != 0) { puts ("\n"); }
+    Show_Dynamic_Memory_Status(false);
     return;
 }
 
