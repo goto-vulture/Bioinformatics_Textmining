@@ -324,6 +324,8 @@ TokenListContainer_CreateObject
     fseek_return = fseek (input_file, 0, SEEK_SET);
     ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");
 
+    ASSERT_FMSG(input_file_length > 0, "Input file (%s) has the length 0 !", file_name);
+
     char* input_file_data = (char*) CALLOC (((size_t) input_file_length + sizeof ("")), sizeof (char));
     ASSERT_ALLOC(input_file_data, "Cannot allocate memory for reading the input file !",
             ((size_t) input_file_length + sizeof ("")) * sizeof (char));
