@@ -18,9 +18,11 @@
 #include "TEST_Exec_Intersection.h"
 #include <math.h>
 #include "../Error_Handling/_Generics.h"
+#include "../Error_Handling/Assert_Msg.h"
 #include "../Exec_Intersection.h"
 #include "tinytest.h"
 #include "../CLI_Parameter.h"
+#include "md5.h"
 
 
 
@@ -60,6 +62,12 @@
 #error "The macro \"INTERVENTION_10MB_FILE_MD5\" is already defined !"
 #endif /* INTERVENTION_10MB_FILE_MD5 */
 
+#ifndef GENE_OR_GENOME_FILE_MD5
+#define GENE_OR_GENOME_FILE_MD5 "a6bca16326273b218758042dcd09ea1a"
+#else
+#error "The macro \"GENE_OR_GENOME_FILE_MD5\" is already defined !"
+#endif /* GENE_OR_GENOME_FILE_MD5 */
+
 #ifndef EXPECTED_COUNT_INTERSECTIONS_TOKENS
 #define EXPECTED_COUNT_INTERSECTIONS_TOKENS 338306
 #else
@@ -75,22 +83,61 @@
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(sizeof(FILE_1) > 0 + 1, "The macro \"FILE_1\" needs at least one char (plus '\0') !");
 _Static_assert(sizeof(FILE_2) > 0 + 1, "The macro \"FILE_2\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(FILE_CSV) > 0 + 1, "The macro \"FILE_CSV\" needs at least one char (plus '\0') !");
 _Static_assert(sizeof(OUT_FILE) > 0 + 1, "The macro \"OUT_FILE\" needs at least one char (plus '\0') !");
 _Static_assert(sizeof(TEST_EBM_FILE_MD5) > 0 + 1, "The macro \"TEST_EBM_FILE_MD5\" needs at least one char (plus '\0') !");
 _Static_assert(sizeof(INTERVENTION_10MB_FILE_MD5) > 0 + 1, "The macro \"INTERVENTION_10MB_FILE_MD5\" needs at least one char (plus '\0') !");
+_Static_assert(sizeof(GENE_OR_GENOME_FILE_MD5) > 0 + 1, "The macro \"GENE_OR_GENOME_FILE_MD5\" needs at least one char (plus '\0') !");
 _Static_assert(EXPECTED_COUNT_INTERSECTIONS_TOKENS > 0, "The macro \"EXPECTED_COUNT_INTERSECTIONS_TOKENS\" needs to be at least one !");
 _Static_assert(EXPECTED_COUNT_INTERSECTIONS_SETS > 0, "The macro \"EXPECTED_COUNT_INTERSECTIONS_SETS\" needs to be at least one !");
 
 IS_CONST_STR(FILE_1)
 IS_CONST_STR(FILE_2)
+IS_CONST_STR(FILE_CSV)
 IS_CONST_STR(OUT_FILE)
 IS_CONST_STR(TEST_EBM_FILE_MD5)
 IS_CONST_STR(INTERVENTION_10MB_FILE_MD5)
+IS_CONST_STR(GENE_OR_GENOME_FILE_MD5)
 IS_TYPE(EXPECTED_COUNT_INTERSECTIONS_TOKENS, int)
 IS_TYPE(EXPECTED_COUNT_INTERSECTIONS_SETS, int)
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Test, whether the test files have the expected MD5 sum.
+ */
+extern void TEST_MD5_Of_Test_Files (void)
+{
+    const char* files [] =
+    {
+            FILE_1,
+            FILE_2,
+            FILE_CSV
+    };
+    const char* md5_sums [] =
+    {
+            TEST_EBM_FILE_MD5,
+            INTERVENTION_10MB_FILE_MD5,
+            GENE_OR_GENOME_FILE_MD5
+    };
+
+    for (size_t i = 0; i < sizeof (files) / sizeof (files [0]); ++ i)
+    {
+        _Bool err_occurred = true;
+        const _Bool md5_sum_check_result = Check_Test_File_MD5_Sum(files [i], md5_sums [i],
+                &err_occurred);
+        ASSERT_MSG(err_occurred == false, "Error occurred while checking a MD5 sum of a file !");
+        ASSERT_FMSG(md5_sum_check_result == true, "MD5 sum of the file (%s) is not equal with the expected sum (%s) !",
+                files [i], md5_sums [i]);
+
+        ASSERT_EQUALS(true, md5_sum_check_result);
+    }
+
+    return;
+}
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -307,6 +354,10 @@ extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files_JSON_And_CSV (vo
 #ifdef INTERVENTION_10MB_FILE_MD5
 #undef INTERVENTION_10MB_FILE_MD5
 #endif /* INTERVENTION_10MB_FILE_MD5 */
+
+#ifdef GENE_OR_GENOME_FILE_MD5
+#undef GENE_OR_GENOME_FILE_MD5
+#endif /* GENE_OR_GENOME_FILE_MD5 */
 
 #ifdef EXPECTED_COUNT_INTERSECTIONS_TOKENS
 #undef EXPECTED_COUNT_INTERSECTIONS_TOKENS

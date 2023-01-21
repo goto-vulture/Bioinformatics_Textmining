@@ -26,6 +26,11 @@ extern "C"
 
 
 /**
+ * @brief Test, whether the test files have the expected MD5 sum.
+ */
+extern void TEST_MD5_Of_Test_Files (void);
+
+/**
  * @brief Check, whether the number of tokens, that were found, is the expected value.
  */
 extern void TEST_Number_Of_Tokens_Found (void);

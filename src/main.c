@@ -342,6 +342,8 @@ Run_All_Test_Functions
     RUN(TEST_Max_Tokenarray_Length);
     RUN(TEST_Length_Of_The_First_25_Tokenarrays);
 
+    RUN(TEST_MD5_Of_Test_Files);
+
     RUN(TEST_Number_Of_Tokens_Found);
     RUN(TEST_Number_Of_Sets_Found);
     RUN(TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files);
