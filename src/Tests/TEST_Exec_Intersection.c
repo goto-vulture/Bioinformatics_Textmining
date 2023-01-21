@@ -36,6 +36,12 @@
 #error "The macro \"FILE_2\" is already defined !"
 #endif /* FILE_2 */
 
+#ifndef FILE_CSV
+#define FILE_CSV "./src/Tests/Test_Data/Gene_or_Genome.csv" ///< The delimiter in this file is a whitespace
+#else
+#error "The macro \"FILE_CSV\" is already defined !"
+#endif /* FILE_CSV */
+
 #ifndef OUT_FILE
 #define OUT_FILE "./out.json"
 #else
@@ -204,6 +210,78 @@ extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files (void)
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Check, whether the number of tokens is equal with switched input files.
+ *
+ * One of the input files is a JSON file; the second is a CSV file with whitespace as delimiter.
+ *
+ * This function is comparable with "TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files()".
+ *
+ * @see TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files
+ */
+extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files_JSON_And_CSV (void)
+{
+    Set_CLI_Parameter_To_Default_Values();
+
+    uint_fast64_t number_of_intersection_tokens_1 = 0;
+    uint_fast64_t number_of_intersection_tokens_2 = 0;
+
+    // Adjust the CLI parameter to make the test runnable
+    GLOBAL_CLI_INPUT_FILE = FILE_1;
+    GLOBAL_CLI_INPUT_FILE2 = FILE_CSV;
+    GLOBAL_CLI_OUTPUT_FILE = OUT_FILE;
+
+    Exec_Intersection(NAN, &number_of_intersection_tokens_1, NULL); // First intersection call
+
+    // Swap the input files
+    GLOBAL_CLI_INPUT_FILE = FILE_CSV;
+    GLOBAL_CLI_INPUT_FILE2 = FILE_1;
+
+    Exec_Intersection(NAN, &number_of_intersection_tokens_2, NULL); // Second intersection call
+
+    ASSERT_EQUALS(number_of_intersection_tokens_1, number_of_intersection_tokens_2);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Check, whether the number of sets is equal with switched input files.
+ *
+ * One of the input files is a JSON file; the second is a CSV file with whitespace as delimiter.
+ *
+ * This function is comparable with "TEST_Number_Of_Sets_Equal_With_Switched_Input_Files()".
+ *
+ * @see TEST_Number_Of_Sets_Equal_With_Switched_Input_Files
+ */
+extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files_JSON_And_CSV (void)
+{
+    Set_CLI_Parameter_To_Default_Values();
+
+    uint_fast64_t number_of_intersection_sets_1 = 0;
+    uint_fast64_t number_of_intersection_sets_2 = 0;
+
+    // Adjust the CLI parameter to make the test runnable
+    GLOBAL_CLI_INPUT_FILE = FILE_1;
+    GLOBAL_CLI_INPUT_FILE2 = FILE_CSV;
+    GLOBAL_CLI_OUTPUT_FILE = OUT_FILE;
+
+    Exec_Intersection(NAN, NULL, &number_of_intersection_sets_1); // First intersection call
+
+    // Swap the input files
+    GLOBAL_CLI_INPUT_FILE = FILE_CSV;
+    GLOBAL_CLI_INPUT_FILE2 = FILE_1;
+
+    Exec_Intersection(NAN, NULL, &number_of_intersection_sets_2); // Second intersection call
+
+    ASSERT_EQUALS(number_of_intersection_sets_1, number_of_intersection_sets_2);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 
 
 #ifdef FILE_1
@@ -213,6 +291,10 @@ extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files (void)
 #ifdef FILE_2
 #undef FILE_2
 #endif /* FILE_2 */
+
+#ifdef FILE_CSV
+#undef FILE_CSV
+#endif /* FILE_CSV */
 
 #ifdef OUT_FILE
 #undef OUT_FILE

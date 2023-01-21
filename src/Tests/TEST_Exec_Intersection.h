@@ -51,6 +51,28 @@ extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files (void);
  */
 extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files (void);
 
+/**
+ * @brief Check, whether the number of tokens is equal with switched input files.
+ *
+ * One of the input files is a JSON file; the second is a CSV file with whitespace as delimiter.
+ *
+ * This function is comparable with "TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files()".
+ *
+ * @see TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files
+ */
+extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files_JSON_And_CSV (void);
+
+/**
+ * @brief Check, whether the number of sets is equal with switched input files.
+ *
+ * One of the input files is a JSON file; the second is a CSV file with whitespace as delimiter.
+ *
+ * This function is comparable with "TEST_Number_Of_Sets_Equal_With_Switched_Input_Files()".
+ *
+ * @see TEST_Number_Of_Sets_Equal_With_Switched_Input_Files
+ */
+extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files_JSON_And_CSV (void);
+
 
 
 #ifdef __cplusplus
