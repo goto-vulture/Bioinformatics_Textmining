@@ -86,7 +86,7 @@ extern void TEST_cJSON_Parse_JSON_Fragment (void)
 
             // Add at the end of every partial parsing result a newline char
             strncat (parsing_result, "\n", parsing_result_mem_left);
-            parsing_result_mem_left -= strlen ("\n");
+            parsing_result_mem_left -= STATIC_STRLEN ("\n");
             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result is too small ! "
                     "%lu byte were allocated.", parsing_result_length);
 
@@ -168,11 +168,11 @@ extern void TEST_cJSON_Get_Token_Array_From_JSON_Fragment (void)
                     memset (name_x_x, '\0', sizeof (name_x_x));
                     size_t mem_left = COUNT_ARRAY_ELEMENTS(name_x_x) - 1;
                     strncat(name_x_x, "name_", mem_left);
-                    mem_left -= strlen ("name_");
+                    mem_left -= STATIC_STRLEN ("name_");
                     strncat(name_x_x, first_x_as_str, mem_left);
                     mem_left -= strlen (first_x_as_str);
                     strncat(name_x_x, "_", mem_left);
-                    mem_left -= strlen ("_");
+                    mem_left -= STATIC_STRLEN ("_");
                     strncat(name_x_x, second_x_as_str, mem_left);
                     mem_left -= strlen (second_x_as_str);
 
@@ -193,7 +193,7 @@ extern void TEST_cJSON_Get_Token_Array_From_JSON_Fragment (void)
                             //printf ("%s\n", current_token->valuestring);
                             // Insert token to result object
                             strncat(parsing_result, "\"", parsing_result_mem_left);
-                            parsing_result_mem_left -= strlen ("\"");
+                            parsing_result_mem_left -= STATIC_STRLEN ("\"");
                             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result "
                                     "is too small ! %zu byte were allocated.", parsing_result_length);
                             strncat(parsing_result, current_token->valuestring, parsing_result_mem_left);
@@ -201,7 +201,7 @@ extern void TEST_cJSON_Get_Token_Array_From_JSON_Fragment (void)
                             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result "
                                     "is too small ! %zu byte were allocated.", parsing_result_length);
                             strncat(parsing_result, "\", ", parsing_result_mem_left);
-                            parsing_result_mem_left -= strlen ("\", ");
+                            parsing_result_mem_left -= STATIC_STRLEN ("\", ");
                             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result "
                                     "is too small ! %zu byte were allocated.", parsing_result_length);
                         }

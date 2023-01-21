@@ -55,6 +55,17 @@ extern "C"
 #error "The macro \"IS_STRING_LENGTH_ONE\" is already defined !"
 #endif /* IS_STRING_LENGTH_ONE */
 
+/**
+ * @brief Do a string length calculation of string literals at compile time.
+ *
+ * The idea of this macro is from the cJSON lib !
+ */
+#ifndef STATIC_STRLEN
+#define STATIC_STRLEN(string_literal) (sizeof((string_literal)) - sizeof(""))
+#else
+#error "The macro \"STATIC_STRLEN\" is already defined !"
+#endif /* STATIC_STRLEN */
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**

@@ -26,6 +26,7 @@
 #include "Stop_Words/Stop_Words.h"
 #include "JSON_Parser/cJSON.h"
 #include "Exec_Config.h"
+#include "String_Tools.h"
 
 
 
@@ -909,7 +910,7 @@ Exec_Intersection
                     file_operation_ret_value = fputs(",\n", result_file);
                     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s",
                             GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
-                    result_file_size += strlen(",\n");
+                    result_file_size += STATIC_STRLEN(",\n");
                 }
             }
 
@@ -972,7 +973,7 @@ abort_label:
     file_operation_ret_value = fputs(end_file_string, result_file);
     ASSERT_FMSG(file_operation_ret_value != EOF, "Error while writing in the file \"%s\": %s", GLOBAL_CLI_OUTPUT_FILE,
             strerror(errno));
-    result_file_size += strlen ((! FORMATTING_ENABLED(intersection_settings)) ? "}" : "\n}");
+    result_file_size += STATIC_STRLEN ((! FORMATTING_ENABLED(intersection_settings)) ? "}" : "\n}");
     FCLOSE_AND_SET_TO_NULL(result_file);
     printf ("\nDone !");
 
