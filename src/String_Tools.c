@@ -466,3 +466,70 @@ Is_String_Null_Terminated
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Tokenize a string and save the tokens in a struct with the position information as offset and the length of
+ * the token focused on the offsets.
+ *
+ * Every delimiter is represented as one char in the c string.
+ *
+ * An error will be indicated, that the counter in the result struct for the next free data block is 0.
+ *
+ * @param[in] input input c string
+ * @param[in] breakset List of delimiters
+ *
+ * @return The Tokenized_String data
+ */
+extern struct Tokenized_String
+Tokenize_String
+(
+        const char* restrict input,
+        const char* restrict breakset
+)
+{
+    struct Tokenized_String results;
+    memset(&results, '\0', sizeof(results));
+
+    if (input == NULL)                      { return results; }
+    if (IS_STRING_LENGTH_ZERO(input))       { return results; }
+    if (breakset == NULL)                   { return results; }
+    if (IS_STRING_LENGTH_ZERO(breakset))    { return results; }
+
+    const char* const orig_input_ptr = input;
+    const size_t max_datasets = sizeof (results.token_data) / sizeof (results.token_data [0]);
+    uint_fast32_t counter = 1;
+
+    results.token_data[0].pos = 0;
+    do
+    {
+        // Find one of the separators
+        input = strpbrk(input, breakset);
+        if(input != NULL)
+        {
+           results.token_data[counter].pos = input - orig_input_ptr;
+           results.token_data[counter - 1].len = (ptrdiff_t) (results.token_data[counter].pos - results.token_data[counter - 1].pos);
+           // Skip the separator
+           const char* before_strspn = input;
+           input += strspn(input, breakset);
+           const ptrdiff_t strspn_diff = input - before_strspn;
+           results.token_data[counter].pos += strspn_diff;
+        }
+        counter ++;
+    }
+    while(input != NULL && *input != '\0' && counter < max_datasets);
+
+    // Override the newest entry, because sometimes - especially when delimiter are at the end of the string - there
+    // will be position data in this object
+    // Technically this is not a problem, because the counter will be decreased before return; but it could
+    // misunderstandings
+    results.token_data [counter].pos = 0;
+    results.token_data [counter].len = 0;
+
+    // The last call creates an empty token, because a do-while loop must be used with strpbrk and strspn
+    counter --;
+    results.next_free_pos_len = counter;
+
+    return results;
+}
+
+//---------------------------------------------------------------------------------------------------------------------

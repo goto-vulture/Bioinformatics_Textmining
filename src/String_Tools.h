@@ -322,6 +322,44 @@ Is_String_Null_Terminated
         const size_t str_length
 );
 
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief This structure saves the main information about a tokenized c string. It saves the position as offset and the
+ * length of the token.
+ */
+struct Tokenized_String
+{
+    struct
+    {
+        ptrdiff_t pos;                  ///< Position as offset
+        ptrdiff_t len;                  ///< Length focused from the offset
+    } token_data [250];                 ///< The value should be enough for our purposes
+    uint_fast32_t next_free_pos_len;    ///< Index of the next unused object
+};
+
+/**
+ * @brief Tokenize a string and save the tokens in a struct with the position information as offset and the length of
+ * the token focused on the offsets.
+ *
+ * Every delimiter is represented as one char in the c string.
+ *
+ * An error will be indicated, that the counter in the result struct for the next free data block is 0.
+ *
+ * @param[in] input input c string
+ * @param[in] breakset List of delimiters
+ *
+ * @return The Tokenized_String data
+ */
+extern struct Tokenized_String
+Tokenize_String
+(
+        const char* restrict input,
+        const char* restrict breakset
+);
+
+//---------------------------------------------------------------------------------------------------------------------
+
 
 
 #ifdef __cplusplus

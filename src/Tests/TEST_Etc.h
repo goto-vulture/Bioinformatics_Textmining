@@ -33,6 +33,11 @@ extern void TEST_Number_Of_Free_Calls (void);
  */
 extern void TEST_ANSI_Esc_Seq (void);
 
+/**
+ * @brief Test, whether the Tokenize_String function do the tokenisation calculation properly.
+ */
+extern void TEST_Tokenize_String (void);
+
 
 
 #ifdef __cplusplus

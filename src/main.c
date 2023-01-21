@@ -331,6 +331,7 @@ Run_All_Test_Functions
 )
 {
     RUN(TEST_Intersection);
+    RUN(TEST_Tokenize_String);
 
     RUN(TEST_cJSON_Parse_JSON_Fragment);
     RUN(TEST_cJSON_Get_Token_Array_From_JSON_Fragment);

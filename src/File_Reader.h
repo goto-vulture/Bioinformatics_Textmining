@@ -335,6 +335,29 @@ TokenListContainer_ShowAttributes
         const struct Token_List_Container* const container
 );
 
+/**
+ * @brief Add a tuple with the three offsets to a Token_List.
+ *
+ * Asserts:
+ *      container != NULL
+ *      index < container->allocated_tokens
+ *
+ * @param[in] container Token_List object
+ * @param[in] index Data index
+ * @param[in] char_offset New char offset
+ * @param[in] sentence_offset New sentence offset
+ * @param[in] word_offset New word offset
+ */
+extern void
+TokenList_SetOffsets
+(
+        struct Token_List* const container,
+        const size_t index,
+        const CHAR_OFFSET_TYPE char_offset,
+        const SENTENCE_OFFSET_TYPE sentence_offset,
+        const WORD_OFFSET_TYPE word_offset
+);
+
 
 
 #ifdef __cplusplus

@@ -229,6 +229,22 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Check, whether a cast change the value.
+ *
+ * It is not that flexible, because it is necessary to give the macro the source type. The problem is, that C do not has
+ * a typeof() operator (or similar construction)
+ */
+#ifndef CAST_CHECK
+#define CAST_CHECK(value, source_type, target_type)                                                                     \
+    ASSERT_FMSG((value) == ((source_type)((target_type) (value))), "Cast from \"%s\" to \"%s\" will change the value !",\
+            #source_type, #target_type)
+#else
+#error "The macro \"CAST_CHECK\" is already defined !"
+#endif /* CAST_CHECK */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Count number of digits in a value.
  *
  * @param[in] value Value
