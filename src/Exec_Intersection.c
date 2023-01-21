@@ -834,6 +834,13 @@ Exec_Intersection
                         cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_full_match,
                                 token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
                     }
+                    else
+                    {
+                        // If full matches are not allowed for the result file, the two_array_container cJSON object
+                        // will loose the connection to other cJSON files and cannot be deleted at the end of the outer
+                        // loop
+                        cJSON_FULL_FREE_AND_SET_TO_NULL(two_array_container);
+                    }
                     counter_full_sets ++;
                     counter_tokens_in_full_sets += (uint_fast64_t) tokens_array_size;
                 }
@@ -843,6 +850,13 @@ Exec_Intersection
                     {
                         cJSON_ADD_ITEM_TO_OBJECT_CHECK(intersections_partial_match,
                                 token_container_input_1->token_lists [selected_data_1_array].dataset_id, two_array_container);
+                    }
+                    else
+                    {
+                        // If part matches are not allowed for the result file, the two_array_container cJSON object
+                        // will loose the connection to other cJSON files and cannot be deleted at the end of the outer
+                        // loop
+                        cJSON_FULL_FREE_AND_SET_TO_NULL(two_array_container);
                     }
                     counter_partial_sets ++;
                     counter_tokens_in_partital_sets += (uint_fast64_t) tokens_array_size;
