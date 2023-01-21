@@ -64,6 +64,13 @@ extern float GLOBAL_ABORT_PROCESS_PERCENT;
 
 
 /**
+ * @brief Check, whether the given CLI parameter have a logical consistency.
+ *
+ * E.g. --no_part_matches and --no_full_matches makes no sense.
+ */
+extern void Check_CLI_Parameter_Logical_Consistency (void);
+
+/**
  * @brief @brief Test function for the CLI parameter, that is used as first input file name.
  */
 extern void Check_CLI_Parameter_CLI_INPUT_FILE (void);

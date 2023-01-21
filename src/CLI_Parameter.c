@@ -135,6 +135,48 @@ float GLOBAL_ABORT_PROCESS_PERCENT              = GLOBAL_ABORT_PROCESS_PERCENT_D
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Check, whether the given CLI parameter have a logical consistency.
+ *
+ * E.g. --no_part_matches and --no_full_matches makes no sense.
+ */
+void Check_CLI_Parameter_Logical_Consistency (void)
+{
+    if (GLOBAL_CLI_NO_PART_MATCHES && GLOBAL_CLI_NO_FULL_MATCHES)
+    {
+        FPRINTF_FFLUSH_NO_VA_ARGS(stderr, "\nThe --no_part_matches in combination with --no_full_matches makes no sense,"
+                " because the results will alwas be empty sets !\n");
+        EXIT(1);
+    }
+
+    const size_t length_input_file_1 = (GLOBAL_CLI_INPUT_FILE != NULL) ? strlen (GLOBAL_CLI_INPUT_FILE) : 0;
+    const size_t length_input_file_2 = (GLOBAL_CLI_INPUT_FILE2 != NULL) ? strlen (GLOBAL_CLI_INPUT_FILE2) : 0;
+    const size_t length_output_file = (GLOBAL_CLI_OUTPUT_FILE != NULL) ? strlen (GLOBAL_CLI_OUTPUT_FILE) : 0;
+
+    if (length_input_file_1 == length_output_file &&
+            strncmp(GLOBAL_CLI_INPUT_FILE, GLOBAL_CLI_OUTPUT_FILE, length_input_file_1) == 0)
+    {
+        FPRINTF_FFLUSH(stderr, "\nInput file 1 and the output file are the same files (%s) !\n", GLOBAL_CLI_INPUT_FILE);
+        EXIT(1);
+    }
+    if (length_input_file_2 == length_output_file &&
+            strncmp(GLOBAL_CLI_INPUT_FILE2, GLOBAL_CLI_OUTPUT_FILE, length_input_file_2) == 0)
+    {
+        FPRINTF_FFLUSH(stderr, "\nInput file 2 and the output file are the same files (%s) !\n", GLOBAL_CLI_INPUT_FILE2);
+        EXIT(1);
+    }
+    if (length_input_file_1 == length_input_file_2 &&
+            strncmp(GLOBAL_CLI_INPUT_FILE, GLOBAL_CLI_INPUT_FILE2, length_input_file_2) == 0)
+    {
+        FPRINTF_FFLUSH(stderr, "\nInput file 1 and 2 are the same files (%s) !\n", GLOBAL_CLI_INPUT_FILE);
+        EXIT(1);
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief @brief Test function for the CLI parameter, that is used as first input file name.
  */
 void Check_CLI_Parameter_CLI_INPUT_FILE (void)

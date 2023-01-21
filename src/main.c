@@ -309,6 +309,8 @@ int main (const int argc, const char* argv [])
         PUTS_FFLUSH ("Missing output file. Option: [-o / --output]");
         EXIT(EXIT_FAILURE);
     }
+
+    Check_CLI_Parameter_Logical_Consistency();
     puts("");
 
     // Execute the intersection process
