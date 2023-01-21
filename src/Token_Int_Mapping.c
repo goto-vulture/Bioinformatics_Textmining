@@ -24,7 +24,7 @@
 
 
 /**
- * @brief Memory for this number of tokens per C-String.
+ * @brief Memory for the number of tokens per C-String.
  *
  * It is also the allocation step size, if a reallocation is necessary.
  */

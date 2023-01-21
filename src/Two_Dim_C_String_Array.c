@@ -188,10 +188,9 @@ TwoDimCStrArray_AppendDataToSpecificString
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Append data to the current c string.
+ * @brief Append data to the newest c string.
  *
- * The current c string is at index object->next_free_c_str, or - in the case that object->next_free_c_str is zero - the
- * current c string is at index object->next_free_c_str.
+ * The newest c string is at index object->next_free_c_str. It is equal to the meaning "the current c string".
  *
  * Asserts:
  *      object != NULL
