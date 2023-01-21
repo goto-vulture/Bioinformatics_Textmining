@@ -141,7 +141,8 @@ str2uint
     return STR2UINT_SUCCESS;
 }
 
-extern enum str2double_errno str2double
+extern enum str2double_errno
+str2double
 (
         double* out,
         const char* input_string
@@ -222,7 +223,7 @@ str2d_wo_errno
 )
 {
     double result = 0.0;
-    const enum str2double_errno conversion_status = strtod(input_string, NULL);
+    const enum str2double_errno conversion_status = str2double(&result, input_string);
 
     return (conversion_status == STR2DOUBLE_SUCCESS) ? result : 0.0;
 }

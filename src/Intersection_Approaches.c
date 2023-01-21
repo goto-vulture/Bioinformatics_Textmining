@@ -340,9 +340,6 @@ IntersectionApproach_HeapSortAndBinarySearch
  * @param[in] data_2 Data, that will be used for the intersection with the first data array
  * @param[in] data_2_length Number of the elements in the second data array
  *
- * @param[in] id_1 ID of the first data array
- * @param[in] id_2 ID of the second data array
- *
  * @return New dynamic object containing the intersection result
  */
 extern struct Document_Word_List*
@@ -354,10 +351,7 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     const WORD_OFFSET_TYPE* const restrict word_offsets,
     const size_t data_1_length,
     const uint_fast32_t* const restrict data_2,
-    const size_t data_2_length,
-
-    const char* const restrict id_1,
-    const char* const restrict id_2
+    const size_t data_2_length
 )
 {
     ASSERT_MSG(data_1 != NULL, "Data 1 is NULL !");
@@ -442,16 +436,6 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     }
 
     intersection_result->intersection_data = true;
-    if (id_1 != NULL)
-    {
-        strncpy (intersection_result->dataset_id_1, id_1, COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_1) - 1);
-        intersection_result->dataset_id_1 [COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_1) - 1] = '\0';
-    }
-    if (id_2 != NULL)
-    {
-        strncpy (intersection_result->dataset_id_2, id_2, COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_2) - 1);
-        intersection_result->dataset_id_2 [COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_2) - 1] = '\0';
-    }
 
 #ifndef __STDC_NO_VLA__
     #ifndef UNSAFE_VLA_USAGE

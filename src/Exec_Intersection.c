@@ -113,12 +113,24 @@
 #error "The macro \"RESULT_FILE_BUFFER_SIZE\" is already defined !"
 #endif /* RESULT_FILE_BUFFER_SIZE */
 
+/**
+ * @brief Constant replacement for the mapped tokens. It indicates, that this mapped token is a stop word and must not
+ * used for calculations.
+ */
+#ifndef IN_STOP_WORD_LIST
+#define IN_STOP_WORD_LIST UINT_FAST32_MAX
+#else
+#error "The macro \"IN_STOP_WORD_LIST\" is already defined !"
+#endif /* IN_STOP_WORD_LIST */
+
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
 _Static_assert(CJSON_PRINT_BUFFER_SIZE > 0, "The macro \"CJSON_PRINT_BUFFER_SIZE\" needs to be at least 1 !");
 _Static_assert(RESULT_FILE_BUFFER_SIZE > 0, "The macro \"RESULT_FILE_BUFFER_SIZE\" needs to be at least 1 !");
+_Static_assert(IN_STOP_WORD_LIST > 0, "The macro \"IN_STOP_WORD_LIST\" needs to be at least 1 !");
 
 IS_TYPE(CJSON_PRINT_BUFFER_SIZE, int)
 IS_TYPE(RESULT_FILE_BUFFER_SIZE, int)
+IS_TYPE(IN_STOP_WORD_LIST, uint_fast32_t)
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 
@@ -383,7 +395,6 @@ Create_Intersection_Settings_With_CLI_Parameter
  * match data.
  *
  * @param[in] intersection_settings Settings for the intersection process
- * @param[in] current_data_flag Status of the current data found flag
  * @param[in] intersections_partial_match cJSON object with the partial match data, if available
  * @param[in] intersections_full_match cJSON object with the full match data, if available
  *
@@ -393,7 +404,6 @@ static inline _Bool
 Update_Data_Found_Flag
 (
         const unsigned int intersection_settings,
-        const _Bool current_data_flag,
         const cJSON* const restrict intersections_partial_match,
         const cJSON* const restrict intersections_full_match
 );
@@ -669,6 +679,7 @@ Exec_Intersection
 
     // How many tokens needs to be left for a valid data set?
     register const size_t min_token_left_for_valid_data_set = (KEEP_SINGLE_TOKEN_RESULTS_BIT(intersection_settings)) ? 1 : 2;
+    const _Bool abort_progress_percent_given = ! isnan(abort_progress_percent);
 
     // ===== ===== ===== ===== ===== ===== ===== ===== BEGIN Outer loop ===== ===== ===== ===== ===== ===== ===== =====
     // Flag, if the first result set was written (This information is necessary to decide, whether a comma need to be
@@ -691,10 +702,13 @@ Exec_Intersection
         {
             // Program exit after a given progress
             // This is only for debugging purposes to avoid a complete program execution
-            if (Determine_Percent(intersection_call_counter, number_of_intersection_calls) > abort_progress_percent)
+            if (abort_progress_percent_given)
             {
-                PRINTF_FFLUSH("\nCalculation stopped intended after %.4f %% !\n", abort_progress_percent);
-                goto abort_label;
+                if (Determine_Percent(intersection_call_counter, number_of_intersection_calls) > abort_progress_percent)
+                {
+                    PRINTF_FFLUSH("\nCalculation stopped intended after %.4f %% !\n", abort_progress_percent);
+                    goto abort_label;
+                }
             }
 
             // Print calculation steps
@@ -718,11 +732,7 @@ Exec_Intersection
                     source_int_values_1->arrays_lengths [selected_data_1_array],
 
                     source_int_values_2->data_struct.data [selected_data_2_array],
-                    source_int_values_2->arrays_lengths [selected_data_2_array],
-
-                    NULL, NULL
-//                    token_container_input_1->token_lists [selected_data_1_array].dataset_id,
-//                    token_container_input_2->token_lists [selected_data_2_array].dataset_id
+                    source_int_values_2->arrays_lengths [selected_data_2_array]
             );
 
 
@@ -738,7 +748,7 @@ Exec_Intersection
                 if (Is_Word_In_Stop_Word_List(int_to_token_mem, strlen (int_to_token_mem), ENG))
                 {
                     // Override the mapped int value
-                    intersection_result->data_struct.data [0][i] = UINT_FAST32_MAX;
+                    intersection_result->data_struct.data [0][i] = IN_STOP_WORD_LIST;
                     -- tokens_left;
                 }
             }
@@ -786,10 +796,7 @@ Exec_Intersection
                 // In the intersection result is always only one array ! Therefore a second loop is not necessary
                 for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
                 {
-                    if (intersection_result->data_struct.data [0][i] == UINT_FAST32_MAX)
-                    {
-                        continue;
-                    }
+                    if (intersection_result->data_struct.data [0][i] == IN_STOP_WORD_LIST) { continue; }
 
                     // Reverse the mapping to get the original token (int -> token)
                     const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
@@ -879,13 +886,12 @@ Exec_Intersection
         }
         // ===== ===== ===== ===== ===== END Inner loop ===== ===== ===== ===== =====
 
-        data_found = Update_Data_Found_Flag
-        (
-                intersection_settings,
-                data_found,
-                intersections_partial_match,
-                intersections_full_match
-        );
+        // An flag update can only cause a true to false
+        if (! data_found)
+        {
+            data_found = Update_Data_Found_Flag (intersection_settings, intersections_partial_match,
+                    intersections_full_match);
+        }
 
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
@@ -1423,7 +1429,7 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
             char* token = TokenListContainer_GetToken (token_list_container, i, i2);
             token_int_values [next_free_value] = TokenIntMapping_TokenToInt(token_int_mapping, token, strlen(token));
             // Is the current token in the dictionary ?
-            ASSERT_FMSG(token_int_values [next_free_value] != UINT_FAST32_MAX, "Token \"%s\" is not in the dictionary !",
+            ASSERT_FMSG(token_int_values [next_free_value] != IN_STOP_WORD_LIST, "Token \"%s\" is not in the dictionary !",
                     token);
             ++ next_free_value;
         }
@@ -1701,18 +1707,11 @@ static inline _Bool
 Update_Data_Found_Flag
 (
         const unsigned int intersection_settings,
-        const _Bool current_data_flag,
         const cJSON* const restrict intersections_partial_match,
         const cJSON* const restrict intersections_full_match
 )
 {
-    _Bool updated_data_found_flag = current_data_flag;
-
-    // An flag update can only cause a true to false
-    if (! current_data_flag)
-    {
-        return current_data_flag;
-    }
+    _Bool updated_data_found_flag = true;
 
     // The child pointer represents object in the inner nesting (NO next pointer, because this shows the next
     // object on the same nesting level !)
@@ -1836,6 +1835,10 @@ Print_Counter
 #ifdef RESULT_FILE_BUFFER_SIZE
 #undef RESULT_FILE_BUFFER_SIZE
 #endif /* RESULT_FILE_BUFFER_SIZE */
+
+#ifdef IN_STOP_WORD_LIST
+#undef IN_STOP_WORD_LIST
+#endif /* IN_STOP_WORD_LIST */
 
 #ifdef OFFSET
 #undef OFFSET

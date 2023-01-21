@@ -314,7 +314,7 @@ int main (const int argc, const char* argv [])
     puts("");
 
     // Execute the intersection process
-    Exec_Intersection((! isnan(GLOBAL_ABORT_PROCESS_PERCENT)) ? GLOBAL_ABORT_PROCESS_PERCENT : nanf("0"), NULL, NULL);
+    Exec_Intersection(GLOBAL_ABORT_PROCESS_PERCENT, NULL, NULL);
 
     return EXIT_SUCCESS;
 }

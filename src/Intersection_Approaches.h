@@ -139,10 +139,7 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     const WORD_OFFSET_TYPE* const restrict word_offsets,
     const size_t data_1_length,
     const uint_fast32_t* const restrict data_2,
-    const size_t data_2_length,
-
-    const char* const restrict id_1,
-    const char* const restrict id_2
+    const size_t data_2_length
 );
 
 
