@@ -118,7 +118,7 @@
  * used for calculations.
  */
 #ifndef IN_STOP_WORD_LIST
-#define IN_STOP_WORD_LIST UINT_FAST32_MAX
+#define IN_STOP_WORD_LIST DATA_TYPE_MAX
 #else
 #error "The macro \"IN_STOP_WORD_LIST\" is already defined !"
 #endif /* IN_STOP_WORD_LIST */
@@ -130,7 +130,7 @@ _Static_assert(IN_STOP_WORD_LIST > 0, "The macro \"IN_STOP_WORD_LIST\" needs to 
 
 IS_TYPE(CJSON_PRINT_BUFFER_SIZE, int)
 IS_TYPE(RESULT_FILE_BUFFER_SIZE, int)
-IS_TYPE(IN_STOP_WORD_LIST, uint_fast32_t)
+IS_TYPE(IN_STOP_WORD_LIST, DATA_TYPE)
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 
@@ -546,12 +546,12 @@ Exec_Intersection
     // ... and fill them with all tokens (Content from the first file)
     uint_fast32_t token_added_to_mapping =
             Append_Token_List_Container_Data_To_Token_Int_Mapping (token_container_input_1, token_int_mapping);
-    printf ("\nAfter token container 1: " ANSI_TEXT_BOLD ANSI_TEXT_ITALIC "%" PRIuFAST32 " elements" ANSI_RESET_ALL
+    PRINTF_FFLUSH ("\nAfter token container 1: " ANSI_TEXT_BOLD ANSI_TEXT_ITALIC "%" PRIuFAST32 " elements" ANSI_RESET_ALL
             " added to token int mapping\n", token_added_to_mapping);
     // Content from the second file
     token_added_to_mapping +=
             Append_Token_List_Container_Data_To_Token_Int_Mapping (token_container_input_2, token_int_mapping);
-    printf ("\nAfter token container 2: " ANSI_TEXT_BOLD ANSI_TEXT_ITALIC "%" PRIuFAST32 " elements" ANSI_RESET_ALL
+    PRINTF_FFLUSH ("\nAfter token container 2: " ANSI_TEXT_BOLD ANSI_TEXT_ITALIC "%" PRIuFAST32 " elements" ANSI_RESET_ALL
             " added to token int mapping\n", token_added_to_mapping);
 
 
@@ -1411,16 +1411,16 @@ Append_Token_Int_Mapping_Data_To_Document_Word_List
 
     // Temp memory for appending data in a block
     // This avoids appending operations for each single value
-    uint_fast32_t* token_int_values = (uint_fast32_t*) CALLOC(length_of_longest_token_container,
-            sizeof (uint_fast32_t));
+    DATA_TYPE* token_int_values = (DATA_TYPE*) CALLOC(length_of_longest_token_container,
+            sizeof (DATA_TYPE));
     ASSERT_ALLOC(token_int_values, "Cannot allocate memory for token int mapping values !",
-            length_of_longest_token_container * sizeof (uint_fast32_t));
+            length_of_longest_token_container * sizeof (DATA_TYPE));
 
     uint_fast32_t next_free_value = 0;
 
     for (uint_fast32_t i = 0; i < token_list_container->next_free_element; ++ i)
     {
-        memset(token_int_values, '\0', length_of_longest_token_container * sizeof (uint_fast32_t));
+        memset(token_int_values, '\0', length_of_longest_token_container * sizeof (DATA_TYPE));
         next_free_value = 0;
 
         // Map token to int

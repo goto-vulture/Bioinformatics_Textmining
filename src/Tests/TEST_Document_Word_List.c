@@ -86,34 +86,34 @@ extern void TEST_Intersection (void)
     struct Document_Word_List* test_data [4];
     test_data [0] = DocumentWordList_CreateObject(3, 4);
     ASSERT_ALLOC(test_data [0], "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List) *
-            3 * 4 * sizeof (uint_fast32_t));
+            3 * 4 * sizeof (DATA_TYPE));
     test_data [1] = DocumentWordList_CreateObject(2, 4);
     ASSERT_ALLOC(test_data [0], "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List) *
-            2 * 4 * sizeof (uint_fast32_t));
+            2 * 4 * sizeof (DATA_TYPE));
     test_data [2] = DocumentWordList_CreateObject(2, 6);
     ASSERT_ALLOC(test_data [0], "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List) *
-            2 * 6 * sizeof (uint_fast32_t));
+            2 * 6 * sizeof (DATA_TYPE));
     test_data [3] = DocumentWordList_CreateObject(1, 5);
     ASSERT_ALLOC(test_data [0], "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List) *
-            1 * 5 * sizeof (uint_fast32_t));
+            1 * 5 * sizeof (DATA_TYPE));
 
-    const uint_fast32_t test_0_test_data [][4] =
+    const DATA_TYPE test_0_test_data [][4] =
     {
             { 1, 7, 12, 13 },
             { 2, 5, 7, 9 },
             { 4, 8, 7, 11 }
     };
-    const uint_fast32_t test_1_test_data [][4] =
+    const DATA_TYPE test_1_test_data [][4] =
     {
             { 1, 11, 7, 5 },
             { 1, 12, 15, 14 }
     };
-    const uint_fast32_t test_2_test_data [][6] =
+    const DATA_TYPE test_2_test_data [][6] =
     {
             { 1, 2, 3, 7, 12, 13 },
             { 4, 5, 6, 7, 8, 0 }
     };
-    const uint_fast32_t test_3_test_data [][5] =
+    const DATA_TYPE test_3_test_data [][5] =
     {
             { 2, 7, 17, 20, 22 }
     };
@@ -160,17 +160,17 @@ extern void TEST_Intersection (void)
     }
 
     // Check results with the expected results
-    const uint_fast32_t expected_results_1 [][2] =
+    const DATA_TYPE expected_results_1 [][2] =
     {
             { 1, 7 },
             { 1, 12 }
     };
-    const uint_fast32_t expected_results_2 [][4] =
+    const DATA_TYPE expected_results_2 [][4] =
     {
             { 1, 7, 12, 13 },
             { 7, 0, 0, 0 } // Zeros to fill up the array
     };
-    const uint_fast32_t expected_results_3 [][1] =
+    const DATA_TYPE expected_results_3 [][1] =
     {
             { 7 }
     };
@@ -272,7 +272,7 @@ extern _Bool TEST_Intersection_With_Random_Data_And_Specified_Result (void)
         PRINTF_FFLUSH("%4zu / %4zu\n", i, (size_t) NUMBER_OF_RUNS);
 
         struct Document_Word_List* list_one_with_specified_data = DocumentWordList_CreateObject(1, 5);
-        const uint_fast32_t array_data [] = { 0, 2, 4, 6, 8 };
+        const DATA_TYPE array_data [] = { 0, 2, 4, 6, 8 };
         DocumentWordList_AppendData(list_one_with_specified_data, array_data, COUNT_ARRAY_ELEMENTS(array_data));
 
         struct Document_Word_List* list_two_with_random_data = Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data

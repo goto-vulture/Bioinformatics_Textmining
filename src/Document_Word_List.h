@@ -40,7 +40,7 @@ struct Document_Word_List
 {
     struct Data_And_Offsets
     {
-        uint_fast32_t** data;                       ///< 2 dimensional Array with the data
+        DATA_TYPE** data;                           ///< 2 dimensional Array with the data
         CHAR_OFFSET_TYPE** char_offsets;            ///< Char offsets
         SENTENCE_OFFSET_TYPE** sentence_offsets;    ///< Sentence offsets
         WORD_OFFSET_TYPE** word_offsets;            ///< Word offsets
@@ -153,7 +153,7 @@ extern void
 DocumentWordList_AppendData
 (
         struct Document_Word_List* const object,
-        const uint_fast32_t* const new_data,
+        const DATA_TYPE* const new_data,
         const size_t data_length
 );
 
@@ -174,7 +174,7 @@ extern void
 DocumentWordList_AppendDataWithOffsets
 (
         struct Document_Word_List* const object,
-        const uint_fast32_t* const new_data,
+        const DATA_TYPE* const new_data,
         const CHAR_OFFSET_TYPE* const new_offsets,
         const size_t data_length
 );
@@ -198,7 +198,7 @@ extern void
 DocumentWordList_AppendDataWithThreeTypeOffsets
 (
         struct Document_Word_List* const object,
-        const uint_fast32_t* const new_data,
+        const DATA_TYPE* const new_data,
         const CHAR_OFFSET_TYPE* const new_char_offsets,
         const SENTENCE_OFFSET_TYPE* const new_sentence_offsets,
         const WORD_OFFSET_TYPE* const new_word_offsets,
@@ -221,7 +221,7 @@ extern void
 DocumentWordList_AppendOneValueAsNewDataSet
 (
         struct Document_Word_List* const object,
-        const uint_fast32_t new_value
+        const DATA_TYPE new_value
 );
 
 /**
@@ -241,7 +241,7 @@ extern void
 Put_One_Value_To_Document_Word_List
 (
         struct Document_Word_List* const object,
-        const uint_fast32_t new_value
+        const DATA_TYPE new_value
 );
 
 /**
@@ -264,7 +264,7 @@ extern void
 Put_One_Value_And_Offset_Types_To_Document_Word_List
 (
         struct Document_Word_List* const object,
-        const uint_fast32_t new_value,
+        const DATA_TYPE new_value,
         const CHAR_OFFSET_TYPE new_char_offset,
         const SENTENCE_OFFSET_TYPE new_sentence_offset,
         const WORD_OFFSET_TYPE new_word_offset
@@ -360,7 +360,7 @@ extern struct Document_Word_List*
 DocumentWordList_IntersectWithData
 (
     const struct Document_Word_List* const restrict object,
-    const uint_fast32_t* const restrict data,
+    const DATA_TYPE* const restrict data,
     const size_t data_length,
 
     const enum Intersection_Mode mode

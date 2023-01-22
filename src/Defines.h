@@ -22,6 +22,42 @@ extern "C"
 
 
 
+//---------------------------------------------------------------------------------------------------------------------
+
+#ifndef DATA_TYPE
+#define DATA_TYPE uint_fast32_t
+#else
+#error "The macro \"DATA_TYPE\" is already defined !"
+#endif /* DATA_TYPE */
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+    #ifndef DATA_TYPE_FSTR_SPECIFIER
+    #define DATA_TYPE_FSTR_SPECIFIER GET_FORMAT_STR((DATA_TYPE) 42)
+    #else
+    #error "The macro \"DATA_TYPE_FSTR_SPECIFIER\" is already defined !"
+    #endif /* DATA_TYPE_FSTR_SPECIFIER */
+
+    #ifndef DATA_TYPE_MAX
+    #define DATA_TYPE_MAX GET_MAX((DATA_TYPE) 42)
+    #else
+    #error "The macro \"DATA_TYPE_MAX\" is already defined !"
+    #endif /* DATA_TYPE_MAX */
+#else
+#ifndef DATA_TYPE_FSTR_SPECIFIER
+    #define DATA_TYPE_FSTR_SPECIFIER "lu"
+    #else
+    #error "The macro \"DATA_TYPE_FSTR_SPECIFIER\" is already defined !"
+    #endif /* DATA_TYPE_FSTR_SPECIFIER */
+
+    #ifndef DATA_TYPE_MAX
+    #define DATA_TYPE_MAX UINT_MAX
+    #else
+    #error "The macro \"DATA_TYPE_MAX\" is already defined !"
+    #endif /* DATA_TYPE_MAX */
+#endif /* #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
+//---------------------------------------------------------------------------------------------------------------------
+
 #ifndef CHAR_OFFSET_TYPE
 #define CHAR_OFFSET_TYPE unsigned short int     ///< Char offset type
 #else
@@ -60,7 +96,7 @@ extern "C"
     #endif /* CHAR_OFFSET_TYPE_MAX */
 #endif /* #defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
-
+//---------------------------------------------------------------------------------------------------------------------
 
 #ifndef SENTENCE_OFFSET_TYPE
 #define SENTENCE_OFFSET_TYPE unsigned char      ///< Type for the sentence offsets
@@ -101,7 +137,7 @@ extern "C"
     #endif /* SENTENCE_OFFSET_TYPE_MAX */
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
-
+//---------------------------------------------------------------------------------------------------------------------
 
 #ifndef WORD_OFFSET_TYPE
 #define WORD_OFFSET_TYPE unsigned short      ///< Type for the word offsets
@@ -142,7 +178,7 @@ extern "C"
     #endif /* WORD_OFFSET_TYPE_MAX */
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
-
+//---------------------------------------------------------------------------------------------------------------------
 
 #ifndef INT_MAPPING_TYPE
 #define INT_MAPPING_TYPE unsigned int           ///< Int mapping type

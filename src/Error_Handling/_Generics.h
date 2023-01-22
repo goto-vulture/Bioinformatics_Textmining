@@ -55,6 +55,12 @@ extern "C"
 #error "The macro \"TYPE_PTR_FMT_STR\" is already defined !"
 #endif /* TYPE_PTR_FMT_STR */
 
+#ifndef TYPE_PTR_FMT_STR_WO_LEADING_PERCENT
+#define TYPE_PTR_FMT_STR_WO_LEADING_PERCENT(type) type: "p"
+#else
+#error "The macro \"TYPE_PTR_FMT_STR_WO_LEADING_PERCENT\" is already defined !"
+#endif /* TYPE_PTR_FMT_STR_WO_LEADING_PERCENT */
+
 //---------------------------------------------------------------------------------------------------------------------
 
 #ifndef ALL_POSSIBLE_TYPES
@@ -389,6 +395,72 @@ extern "C"
 #endif /* GET_FORMAT_STR */
 
 /**
+ * @brief This macro returns the format string specifier - without the leading percent char - of the given variable, if
+ * possible.
+ *
+ * ! For the _Generic keyword are "char" and "signed char" | "const signed char" and "const char" different types !
+ */
+#ifndef GET_FORMAT_STR_WO_LEADING_PERCENT
+#define GET_FORMAT_STR_WO_LEADING_PERCENT(value)                                                                        \
+    _Generic((value),                                                                                                   \
+    char: "c",                                                                                                          \
+    const char: "c",                                                                                                    \
+    signed char: "c",                                                                                                   \
+    const signed char: "c",                                                                                             \
+    unsigned char: "hhu",                                                                                               \
+    const unsigned char: "hhu",                                                                                         \
+    \
+    short int: "hi",                                                                                                    \
+    const short int: "hi",                                                                                              \
+    unsigned short int: "hu",                                                                                           \
+    const unsigned short int: "hu",                                                                                     \
+    \
+    int: "d",                                                                                                           \
+    const int: "d",                                                                                                     \
+    unsigned int: "lu",                                                                                                 \
+    const unsigned int: "lu",                                                                                           \
+    \
+    long int: "ld",                                                                                                     \
+    const long int: "ld",                                                                                               \
+    unsigned long int: "lu",                                                                                            \
+    const unsigned long int: "lu",                                                                                      \
+    \
+    long long int: "lld",                                                                                               \
+    const long long int: "lld",                                                                                         \
+    unsigned long long int: "llu",                                                                                      \
+    const unsigned long long int: "llu",                                                                                \
+    \
+    float: "f",                                                                                                         \
+    const float: "f",                                                                                                   \
+    double: "f",                                                                                                        \
+    const double: "f",                                                                                                  \
+    long double: "Lf",                                                                                                  \
+    const long double: "Lf",                                                                                            \
+    \
+    _Bool: "d",                                                                                                         \
+    \
+    ALL_PTR(char, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                                 \
+    ALL_PTR(unsigned char, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                        \
+    ALL_PTR(short int, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                            \
+    ALL_PTR(unsigned short int, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                   \
+    ALL_PTR(int, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                                  \
+    ALL_PTR(unsigned int, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                         \
+    ALL_PTR(long int, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                             \
+    ALL_PTR(unsigned long int, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                    \
+    ALL_PTR(long long int, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                        \
+    ALL_PTR(unsigned long long int, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                               \
+    ALL_PTR(float, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                                \
+    ALL_PTR(double, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                               \
+    ALL_PTR(long double, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                          \
+    ALL_PTR(_Bool, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                                \
+    ALL_PTR(void, TYPE_PTR_FMT_STR_WO_LEADING_PERCENT),                                                                 \
+    \
+    default: "N/A")
+#else
+#error "The macro \"GET_FORMAT_STR_WO_LEADING_PERCENT\" is already defined !"
+#endif /* GET_FORMAT_STR_WO_LEADING_PERCENT */
+
+/**
  * @brief This macro determines the max value of the given type.
  *
  * ! For the _Generic keyword are "char" and "signed char" | "const signed char" and "const char" different types !
@@ -639,6 +711,12 @@ extern "C"
 #error "The macro \"TYPE_PTR_FMT_STR\" is already defined !"
 #endif /* TYPE_PTR_FMT_STR */
 
+#ifndef TYPE_PTR_FMT_STR_WO_LEADING_PERCENT
+#define TYPE_PTR_FMT_STR_WO_LEADING_PERCENT(type)
+#else
+#error "The macro \"TYPE_PTR_FMT_STR_WO_LEADING_PERCENT\" is already defined !"
+#endif /* TYPE_PTR_FMT_STR_WO_LEADING_PERCENT */
+
 
 
 #ifndef ALL_POSSIBLE_TYPES
@@ -822,6 +900,12 @@ extern "C"
 #else
 #error "The macro \"GET_FORMAT_STR\" is already defined !"
 #endif /* GET_FORMAT_STR */
+
+#ifndef GET_FORMAT_STR_WO_LEADING_PERCENT
+#define GET_FORMAT_STR_WO_LEADING_PERCENT(value)
+#else
+#error "The macro \"GET_FORMAT_STR_WO_LEADING_PERCENT\" is already defined !"
+#endif /* GET_FORMAT_STR_WO_LEADING_PERCENT */
 
 #ifndef GET_MAX
 #define GET_MAX(value)

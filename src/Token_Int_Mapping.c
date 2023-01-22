@@ -93,9 +93,9 @@ TokenIntMapping_CreateObject
         ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
                 C_STR_ALLOCATION_STEP_SIZE * sizeof (char) * MAX_TOKEN_LENGTH);
 
-        new_object->int_mapping [i] = (uint_fast32_t*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (uint_fast32_t) * 1);
+        new_object->int_mapping [i] = (DATA_TYPE*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (DATA_TYPE) * 1);
         ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
-                C_STR_ALLOCATION_STEP_SIZE * sizeof (uint_fast32_t) * 1); // NO MAX_TOKEN_LENGTH !
+                C_STR_ALLOCATION_STEP_SIZE * sizeof (DATA_TYPE) * 1); // NO MAX_TOKEN_LENGTH !
 
         new_object->allocated_c_strings_in_array [i] = C_STR_ALLOCATION_STEP_SIZE;
     }
@@ -202,9 +202,9 @@ TokenIntMapping_AddToken
         memset(tmp_ptr + (old_size * MAX_TOKEN_LENGTH), '\0', C_STR_ALLOCATION_STEP_SIZE * MAX_TOKEN_LENGTH *
                 sizeof (char));
 
-        uint_fast32_t* tmp_ptr_2 = (uint_fast32_t*) REALLOC(object->int_mapping [chosen_c_string_array], new_int_mapping_array_size);
+        DATA_TYPE* tmp_ptr_2 = (DATA_TYPE*) REALLOC(object->int_mapping [chosen_c_string_array], new_int_mapping_array_size);
         ASSERT_ALLOC(tmp_ptr_2, "Cannot reallocate memory for token to int mapping data !", new_int_mapping_array_size);
-        memset(tmp_ptr_2 + (old_size), '\0', C_STR_ALLOCATION_STEP_SIZE * 1 * sizeof (uint_fast32_t)); // NO MAX_TOKEN_LENGTH !
+        memset(tmp_ptr_2 + (old_size), '\0', C_STR_ALLOCATION_STEP_SIZE * 1 * sizeof (DATA_TYPE)); // NO MAX_TOKEN_LENGTH !
 
         object->c_str_arrays [chosen_c_string_array]    = tmp_ptr;
         object->int_mapping [chosen_c_string_array]     = tmp_ptr_2;
@@ -217,7 +217,7 @@ TokenIntMapping_AddToken
 
     char* start_to_str = object->c_str_arrays [chosen_c_string_array];
     char* to_str = start_to_str;
-    uint_fast32_t* int_mapping_array = object->int_mapping [chosen_c_string_array];
+    DATA_TYPE* int_mapping_array = object->int_mapping [chosen_c_string_array];
     const uint_fast32_t c_str_array_length = object->c_str_array_lengths [chosen_c_string_array];
 
     // Is the new token already in the list ?
@@ -251,7 +251,7 @@ TokenIntMapping_AddToken
         //to_str [((object->c_str_array_lengths [chosen_c_string_array] + 1) * MAX_TOKEN_LENGTH) - 1] = '\0';
 
         // Find the max. mapping integer in the chosen array
-        uint_fast32_t max_mapping_int_in_chosen_array = 0;
+        DATA_TYPE max_mapping_int_in_chosen_array = 0;
         for (uint_fast32_t i = 0; i < c_str_array_length; ++ i)
         {
             if (int_mapping_array [i] > max_mapping_int_in_chosen_array)
@@ -259,10 +259,10 @@ TokenIntMapping_AddToken
                 max_mapping_int_in_chosen_array = int_mapping_array [i];
             }
         }
-        max_mapping_int_in_chosen_array /= C_STR_ARRAYS;            // Remove encoding
-        ++ max_mapping_int_in_chosen_array;                         // Increment value
-        max_mapping_int_in_chosen_array *= C_STR_ARRAYS;            // Shift two digits (in decimal system) to the left
-        max_mapping_int_in_chosen_array += chosen_c_string_array;   // Add the encoding in the fist two digits
+        max_mapping_int_in_chosen_array /= C_STR_ARRAYS;                        // Remove encoding
+        ++ max_mapping_int_in_chosen_array;                                     // Increment value
+        max_mapping_int_in_chosen_array *= C_STR_ARRAYS;                        // Shift two digits (in decimal system) to the left
+        max_mapping_int_in_chosen_array += (DATA_TYPE) chosen_c_string_array;   // Add the encoding in the fist two digits
         // For a detailed description about the encoding system: See the function comment !
 
                 /*object->c_str_array_lengths [chosen_c_string_array] + (chosen_c_string_array * C_STR_ARRAYS);
@@ -395,7 +395,7 @@ TokenIntMapping_ShowMemoryUsage
  *
  * @return Mapping integer or UINT_FAST32_MAX, if the token is not in the mapping list
  */
-extern uint_fast32_t
+extern DATA_TYPE
 TokenIntMapping_TokenToInt
 (
         const struct Token_Int_Mapping* const restrict object,
@@ -407,7 +407,7 @@ TokenIntMapping_TokenToInt
     ASSERT_MSG(search_token != NULL, "New token is NULL !");
     ASSERT_MSG(search_token_length > 0, "New token has the length 0 !");
 
-    uint_fast32_t result = UINT_FAST32_MAX;
+    DATA_TYPE result = DATA_TYPE_MAX;
     const uint_fast32_t chosen_c_string_array = Pseudo_Hash_Function (search_token, search_token_length);
     _Bool token_found = false;
     uint_fast32_t i = 0;
@@ -470,13 +470,13 @@ extern void
 TokenIntMapping_IntToToken
 (
         const struct Token_Int_Mapping* const restrict object,
-        const uint_fast32_t token_int_value,
+        const DATA_TYPE token_int_value,
         char* const restrict result_token_memory,
         const size_t result_token_memory_size
 )
 {
     ASSERT_MSG(object != NULL, "Token_Int_Mapping object is NULL !");
-    ASSERT_MSG(token_int_value != UINT_FAST32_MAX, "Token integer value is UINT_FAST32_MAX ! This value indicates "
+    ASSERT_MSG(token_int_value != DATA_TYPE_MAX, "Token integer value is UINT_FAST32_MAX ! This value indicates "
             "errors and therefore cannot be a valid input !");
     ASSERT_MSG(result_token_memory != NULL, "The result token memory is NULL !");
     ASSERT_MSG(result_token_memory_size > 0, "The length of the result token memory is 0 !");
@@ -518,7 +518,7 @@ extern const char*
 TokenIntMapping_IntToTokenStaticMem
 (
         const struct Token_Int_Mapping* const object,
-        const uint_fast32_t token_int_value
+        const DATA_TYPE token_int_value
 )
 {
     static char result_token [MAX_TOKEN_LENGTH];

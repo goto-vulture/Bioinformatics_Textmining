@@ -79,7 +79,7 @@ Find_Intersection_Data
 (
         const struct Document_Word_List* const restrict intersection_result,
         const struct Document_Word_List* const restrict object,
-        const uint_fast32_t* const restrict data,
+        const DATA_TYPE* const restrict data,
         const size_t data_length
 );
 
@@ -115,9 +115,9 @@ Compare_Function
 static _Bool
 Binary_Search
 (
-        const uint_fast32_t* const data,
+        const DATA_TYPE* const data,
         const size_t data_size,
-        const uint_fast32_t search_value
+        const DATA_TYPE search_value
 );
 
 /**
@@ -135,7 +135,7 @@ Binary_Search
 static void
 Heapsort
 (
-        uint_fast32_t* const data,
+        DATA_TYPE* const data,
         const size_t data_size
 );
 
@@ -159,7 +159,7 @@ extern struct Document_Word_List*
 IntersectionApproach_TwoNestedLoops
 (
     const struct Document_Word_List* const restrict object,
-    const uint_fast32_t* const restrict data,
+    const DATA_TYPE* const restrict data,
     const size_t data_length
 )
 {
@@ -171,7 +171,7 @@ IntersectionApproach_TwoNestedLoops
             object->max_array_length);
     ASSERT_ALLOC(intersection_result, "Cannot create new Document Word List for intersection !",
             sizeof (struct Document_Word_List) + object->number_of_arrays * object->max_array_length *
-            sizeof (uint_fast32_t));
+            sizeof (DATA_TYPE));
     intersection_result->next_free_array = object->next_free_array;
     intersection_result->intersection_data = true;
 
@@ -245,7 +245,7 @@ extern struct Document_Word_List*
 IntersectionApproach_QSortAndBinarySearch
 (
     const struct Document_Word_List* const restrict object,
-    const uint_fast32_t* const restrict data,
+    const DATA_TYPE* const restrict data,
     const size_t data_length
 )
 {
@@ -258,7 +258,7 @@ IntersectionApproach_QSortAndBinarySearch
     // Sort all data ascending with the QSort algorithm
     for (size_t i = 0; i < object->number_of_arrays; ++ i)
     {
-        qsort (object->data_struct.data [i], object->arrays_lengths [i], sizeof (uint_fast32_t), Compare_Function);
+        qsort (object->data_struct.data [i], object->arrays_lengths [i], sizeof (DATA_TYPE), Compare_Function);
     }
 
     Find_Intersection_Data (intersection_result, object, data, data_length);
@@ -289,7 +289,7 @@ extern struct Document_Word_List*
 IntersectionApproach_HeapSortAndBinarySearch
 (
     const struct Document_Word_List* const restrict object,
-    const uint_fast32_t* const restrict data,
+    const DATA_TYPE* const restrict data,
     const size_t data_length
 )
 {
@@ -345,12 +345,12 @@ IntersectionApproach_HeapSortAndBinarySearch
 extern struct Document_Word_List*
 IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 (
-    const uint_fast32_t* const restrict data_1,
+    const DATA_TYPE* const restrict data_1,
     const CHAR_OFFSET_TYPE* const restrict char_offsets,
     const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets,
     const WORD_OFFSET_TYPE* const restrict word_offsets,
     const size_t data_1_length,
-    const uint_fast32_t* const restrict data_2,
+    const DATA_TYPE* const restrict data_2,
     const size_t data_2_length
 )
 {
@@ -484,7 +484,7 @@ Init_Intersection
             object->max_array_length);
     ASSERT_ALLOC(intersection_result, "Cannot create new Document Word List for intersection !",
             sizeof (struct Document_Word_List) + object->number_of_arrays * object->max_array_length *
-            sizeof (uint_fast32_t));
+            sizeof (DATA_TYPE));
     intersection_result->next_free_array = object->next_free_array;
     intersection_result->intersection_data = true;
 
@@ -515,7 +515,7 @@ Find_Intersection_Data
 (
         const struct Document_Word_List* const restrict intersection_result,
         const struct Document_Word_List* const restrict object,
-        const uint_fast32_t* const restrict data,
+        const DATA_TYPE* const restrict data,
         const size_t data_length
 )
 {
@@ -583,8 +583,8 @@ Compare_Function
         const void* const b
 )
 {
-    const uint_fast32_t* const val_a = (uint_fast32_t*) a;
-    const uint_fast32_t* const val_b = (uint_fast32_t*) b;
+    const DATA_TYPE* const val_a = (DATA_TYPE*) a;
+    const DATA_TYPE* const val_b = (DATA_TYPE*) b;
 
     if (*val_a < *val_b) { return -1; }
     if (*val_a > *val_b) { return +1; }
@@ -610,9 +610,9 @@ Compare_Function
 static _Bool
 Binary_Search
 (
-        const uint_fast32_t* const data,
+        const DATA_TYPE* const data,
         const size_t data_size,
-        const uint_fast32_t search_value
+        const DATA_TYPE search_value
 )
 {
     ASSERT_MSG(data != NULL, "data is NULL !");
@@ -661,7 +661,7 @@ Binary_Search
 static void
 Heapsort
 (
-        uint_fast32_t* const data,
+        DATA_TYPE* const data,
         const size_t data_size
 )
 {
@@ -669,11 +669,11 @@ Heapsort
     // ASSERT_MSG(data_size != 0, "data size is 0 !");
     if (data_size == 0) { return; }
 
-    uint_fast32_t value     = 0;
-    uint_fast32_t parent    = 0;
-    uint_fast32_t child     = 0;
-    uint_fast32_t root      = data_size / 2;
-    uint_fast32_t n         = data_size;
+    DATA_TYPE value    = 0;
+    DATA_TYPE parent   = 0;
+    DATA_TYPE child    = 0;
+    DATA_TYPE root     = (DATA_TYPE) (data_size / 2);
+    DATA_TYPE n        = (DATA_TYPE) data_size;
 
     while (1)
     {

@@ -49,7 +49,7 @@ extern struct Document_Word_List*
 IntersectionApproach_TwoNestedLoops
 (
     const struct Document_Word_List* const restrict object,
-    const uint_fast32_t* const restrict data,
+    const DATA_TYPE* const restrict data,
     const size_t data_length
 );
 
@@ -74,7 +74,7 @@ extern struct Document_Word_List*
 IntersectionApproach_QSortAndBinarySearch
 (
     const struct Document_Word_List* const restrict object,
-    const uint_fast32_t* const restrict data,
+    const DATA_TYPE* const restrict data,
     const size_t data_length
 );
 
@@ -99,7 +99,7 @@ extern struct Document_Word_List*
 IntersectionApproach_HeapSortAndBinarySearch
 (
     const struct Document_Word_List* const restrict object,
-    const uint_fast32_t* const restrict data,
+    const DATA_TYPE* const restrict data,
     const size_t data_length
 );
 
@@ -133,12 +133,12 @@ IntersectionApproach_HeapSortAndBinarySearch
 extern struct Document_Word_List*
 IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 (
-    const uint_fast32_t* const restrict data_1,
+    const DATA_TYPE* const restrict data_1,
     const CHAR_OFFSET_TYPE* const restrict char_offsets,
     const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets,
     const WORD_OFFSET_TYPE* const restrict word_offsets,
     const size_t data_1_length,
-    const uint_fast32_t* const restrict data_2,
+    const DATA_TYPE* const restrict data_2,
     const size_t data_2_length
 );
 

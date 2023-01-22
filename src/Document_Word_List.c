@@ -307,7 +307,7 @@ extern void
 DocumentWordList_AppendData
 (
         struct Document_Word_List* const object,
-        const uint_fast32_t* const new_data,
+        const DATA_TYPE* const new_data,
         const size_t data_length
 )
 {
@@ -328,7 +328,7 @@ DocumentWordList_AppendData
     }
 
     // Copy the new data
-    memcpy (object->data_struct.data [object->next_free_array], new_data, sizeof (uint_fast32_t) * data_length);
+    memcpy (object->data_struct.data [object->next_free_array], new_data, sizeof (DATA_TYPE) * data_length);
     object->arrays_lengths [object->next_free_array] = data_length;
     object->next_free_array ++;
 
@@ -354,7 +354,7 @@ extern void
 DocumentWordList_AppendDataWithOffsets
 (
         struct Document_Word_List* const object,
-        const uint_fast32_t* const new_data,
+        const DATA_TYPE* const new_data,
         const CHAR_OFFSET_TYPE* const new_offsets,
         const size_t data_length
 )
@@ -392,7 +392,7 @@ extern void
 DocumentWordList_AppendDataWithThreeTypeOffsets
 (
         struct Document_Word_List* const object,
-        const uint_fast32_t* const new_data,
+        const DATA_TYPE* const new_data,
         const CHAR_OFFSET_TYPE* const new_char_offsets,
         const SENTENCE_OFFSET_TYPE* const new_sentence_offsets,
         const WORD_OFFSET_TYPE* const new_word_offsets,
@@ -434,7 +434,7 @@ extern void
 DocumentWordList_AppendOneValueAsNewDataSet
 (
         struct Document_Word_List* const object,
-        const uint_fast32_t new_value
+        const DATA_TYPE new_value
 )
 {
     ASSERT_MSG(object != NULL, "Object is NULL !");
@@ -463,7 +463,7 @@ extern void
 Put_One_Value_To_Document_Word_List
 (
         struct Document_Word_List* const object,
-        const uint_fast32_t new_value
+        const DATA_TYPE new_value
 )
 {
     ASSERT_MSG(object != NULL, "Object is NULL !");
@@ -503,7 +503,7 @@ extern void
 Put_One_Value_And_Offset_Types_To_Document_Word_List
 (
         struct Document_Word_List* const object,
-        const uint_fast32_t new_value,
+        const DATA_TYPE new_value,
         const CHAR_OFFSET_TYPE new_char_offset,
         const SENTENCE_OFFSET_TYPE new_sentence_offset,
         const WORD_OFFSET_TYPE new_word_offset
@@ -550,7 +550,7 @@ DocumentWordList_ShowData
         printf ("%2zu: { ", (i + 1));
         for (size_t i2 = 0; i2 < object->arrays_lengths [i]; ++ i2)
         {
-            printf ("%2" PRIuFAST32, object->data_struct.data [i][i2]);
+            printf ("%2" PRIuFAST32, (uint_fast32_t) object->data_struct.data [i][i2]);
 
             if ((i2 + 1) < object->arrays_lengths [i])
             {
@@ -696,7 +696,7 @@ extern struct Document_Word_List*
 DocumentWordList_IntersectWithData
 (
     const struct Document_Word_List* const restrict object,
-    const uint_fast32_t* const restrict data,
+    const DATA_TYPE* const restrict data,
     const size_t data_length,
 
     const enum Intersection_Mode mode
@@ -819,9 +819,9 @@ Create_Main_Object_Structure
     new_object->malloc_calloc_calls ++;
 
     // Outer dimension
-    new_object->data_struct.data = (uint_fast32_t**) CALLOC(number_of_arrays, sizeof (uint_fast32_t*));
+    new_object->data_struct.data = (DATA_TYPE**) CALLOC(number_of_arrays, sizeof (DATA_TYPE*));
     ASSERT_ALLOC(new_object->data_struct.data, "Cannot create new Document_Word_List !",
-            sizeof (uint_fast32_t*) * number_of_arrays);
+            sizeof (DATA_TYPE*) * number_of_arrays);
     new_object->malloc_calloc_calls ++;
 
     // New management data
@@ -833,9 +833,9 @@ Create_Main_Object_Structure
     // Inner dimension
     for (uint_fast32_t i = 0; i < number_of_arrays; ++ i)
     {
-        new_object->data_struct.data [i] = (uint_fast32_t*) CALLOC(INT_ALLOCATION_STEP_SIZE, sizeof (uint_fast32_t));
+        new_object->data_struct.data [i] = (DATA_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE, sizeof (DATA_TYPE));
         ASSERT_ALLOC(new_object->data_struct.data [i], "Cannot create new Document_Word_List !",
-                sizeof (uint_fast32_t) * INT_ALLOCATION_STEP_SIZE);
+                sizeof (DATA_TYPE) * INT_ALLOCATION_STEP_SIZE);
         new_object->malloc_calloc_calls ++;
 
         new_object->allocated_array_size [i] = INT_ALLOCATION_STEP_SIZE;
@@ -887,15 +887,15 @@ static void Increase_Data_Array_Size
 
     ++ object->realloc_calls;
 
-    size_t* tmp_ptr = (size_t*) REALLOC(object->data_struct.data [data_array_index],
-            (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (uint_fast32_t));
+    DATA_TYPE* tmp_ptr = (DATA_TYPE*) REALLOC(object->data_struct.data [data_array_index],
+            (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (DATA_TYPE));
     ASSERT_ALLOC(tmp_ptr, "Cannot increase the data array size !",
-            (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (uint_fast32_t))
+            (object->allocated_array_size [data_array_index] + increase_number_of_objects) * sizeof (DATA_TYPE))
     object->data_struct.data [data_array_index] = tmp_ptr;
 
     // Set the new range of the memory block to '\0'
     memset (&(object->data_struct.data [data_array_index][object->allocated_array_size [data_array_index]]), '\0',
-            increase_number_of_objects * sizeof (uint_fast32_t));
+            increase_number_of_objects * sizeof (DATA_TYPE));
 
     // If the object is a intersection data, then the offset arrays also need a resize operation
     if (object->intersection_data)
