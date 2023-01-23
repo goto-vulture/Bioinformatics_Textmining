@@ -158,6 +158,7 @@ struct Intersection_Data
 };
 
 #ifdef __GNUC__
+#if defined(__AVX__) && defined(__AVX2__)
 /**
  * @brief Using AVX2 intrinsic function to use SIMD commands for the comparisons.
  *
@@ -170,10 +171,14 @@ Inersection_With_AVX2
 (
         const struct Intersection_Data data
 );
+#endif /* defined(__AVX__) && defined(__AVX2__) */
 #endif /* __GNUC__ */
 
+#if ! defined(__AVX__) && ! defined(__AVX2__)
 /**
  * @brief No special instructions for the calculation.
+ *
+ * => Fallback solution
  *
  * @param[in] data struct with all necessary data for the intersection calculation
  */
@@ -182,6 +187,7 @@ Inersection_Without_Special_Instructions
 (
         const struct Intersection_Data data
 );
+#endif /* ! defined(__AVX__) && !  defined(__AVX2__) */
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -474,14 +480,17 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     // For the first implementation and to have a compiler independent code: Only use the CPU extensions, if the GCC
     // compiler will be used
 #ifdef __GNUC__
+#if defined(__AVX__) && defined(__AVX2__)
     if (__builtin_cpu_supports ("avx2"))
     {
         intersection_result = Inersection_With_AVX2(data);
     }
-    else
+#endif /* defined(__AVX__) && defined(__AVX2__) */
+#if ! defined(__AVX__) && ! defined(__AVX2__)
     {
         intersection_result = Inersection_Without_Special_Instructions(data);
     }
+#endif /* ! defined(__AVX__) && ! defined(__AVX2__) */
 #else
     // Fallback for non GCC compiler: Calculation without CPU extensions
     intersection_result = Inersection_Without_Special_Instructions(data);
@@ -515,6 +524,7 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 //=====================================================================================================================
 
 #ifdef __GNUC__
+#if defined(__AVX__) && defined(__AVX2__)
 /**
  * @brief Using AVX2 intrinsic function to use SIMD commands for the comparisons.
  *
@@ -597,12 +607,16 @@ Inersection_With_AVX2
 
     return intersection_result;
 }
+#endif /* defined(__AVX__) && defined(__AVX2__) */
 #endif /* __GNUC__ */
 
 //---------------------------------------------------------------------------------------------------------------------
 
+#if ! defined(__AVX__) && ! defined(__AVX2__)
 /**
  * @brief No special instructions for the calculation.
+ *
+ * => Fallback solution
  *
  * @param[in] data struct with all necessary data for the intersection calculation
  */
@@ -637,6 +651,7 @@ Inersection_Without_Special_Instructions
 
     return intersection_result;
 }
+#endif /* ! defined(__AVX__) && ! defined(__AVX2__) */
 
 //---------------------------------------------------------------------------------------------------------------------
 

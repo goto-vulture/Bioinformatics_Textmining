@@ -316,14 +316,17 @@ int main (const int argc, const char* argv [])
 
 #ifdef __GNUC__
     // Show the used CPU extensions
+#if defined(__AVX__) && defined(__AVX2__)
     if (__builtin_cpu_supports ("avx2"))
     {
         puts("Using " ANSI_TEXT_BOLD "AVX2" ANSI_RESET_ALL " CPU extension.");
     }
-    else
+#endif /* defined(__AVX__) && defined(__AVX2__) */
+#if ! defined(__AVX__) && ! defined(__AVX2__)
     {
         puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension.");
     }
+#endif /* ! defined(__AVX__) && ! defined(__AVX2__) */
 #else
     puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension.");
 #endif /* __GNUC__ */
