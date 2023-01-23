@@ -314,22 +314,14 @@ int main (const int argc, const char* argv [])
     Check_CLI_Parameter_Logical_Consistency();
     puts("");
 
-#ifdef __GNUC__
     // Show the used CPU extensions
 #if defined(__AVX__) && defined(__AVX2__)
-    if (__builtin_cpu_supports ("avx2"))
-    {
-        puts("Using " ANSI_TEXT_BOLD "AVX2" ANSI_RESET_ALL " CPU extension.");
-    }
-#endif /* defined(__AVX__) && defined(__AVX2__) */
-#if ! defined(__AVX__) && ! defined(__AVX2__)
-    {
-        puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension.");
-    }
-#endif /* ! defined(__AVX__) && ! defined(__AVX2__) */
+    puts("Using " ANSI_TEXT_BOLD "AVX2" ANSI_RESET_ALL " CPU extension.");
+#elif defined(__SSE__) && defined(__SSE2__)
+    puts("Using " ANSI_TEXT_BOLD "SSE2" ANSI_RESET_ALL " CPU extension.");
 #else
     puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension.");
-#endif /* __GNUC__ */
+#endif /* ! defined(__AVX__) && ! defined(__AVX2__) && ! defined(__SSE__) && ! defined(__SSE2__) */
     PUTS_FFLUSH("");
 
     // Execute the intersection process

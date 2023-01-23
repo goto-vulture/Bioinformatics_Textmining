@@ -24,6 +24,8 @@
 
 #ifdef __GNUC__
 #include <immintrin.h>
+#include <emmintrin.h>
+#include <smmintrin.h>
 #endif /* __GNUC__ */
 
 #include "Misc.h"
@@ -157,7 +159,6 @@ struct Intersection_Data
     _Bool* const restrict multiple_guard_data_2;
 };
 
-#ifdef __GNUC__
 #if defined(__AVX__) && defined(__AVX2__)
 /**
  * @brief Using AVX2 intrinsic function to use SIMD commands for the comparisons.
@@ -171,10 +172,20 @@ Inersection_With_AVX2
 (
         const struct Intersection_Data data
 );
-#endif /* defined(__AVX__) && defined(__AVX2__) */
-#endif /* __GNUC__ */
-
-#if ! defined(__AVX__) && ! defined(__AVX2__)
+#elif defined(__SSE__) && defined(__SSE2__)
+/**
+ * @brief Using SSE2 intrinsic function to use SIMD commands for the comparisons.
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static struct Document_Word_List*
+Inersection_With_SSE2
+(
+        const struct Intersection_Data data
+);
+#else
 /**
  * @brief No special instructions for the calculation.
  *
@@ -187,7 +198,8 @@ Inersection_Without_Special_Instructions
 (
         const struct Intersection_Data data
 );
-#endif /* ! defined(__AVX__) && !  defined(__AVX2__) */
+#endif /* ! defined(__SSE__) && ! defined(__SSE2__) && ! defined(__AVX__) && ! defined(__AVX2__) */
+
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -479,22 +491,13 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 
     // For the first implementation and to have a compiler independent code: Only use the CPU extensions, if the GCC
     // compiler will be used
-#ifdef __GNUC__
 #if defined(__AVX__) && defined(__AVX2__)
-    if (__builtin_cpu_supports ("avx2"))
-    {
-        intersection_result = Inersection_With_AVX2(data);
-    }
-#endif /* defined(__AVX__) && defined(__AVX2__) */
-#if ! defined(__AVX__) && ! defined(__AVX2__)
-    {
-        intersection_result = Inersection_Without_Special_Instructions(data);
-    }
-#endif /* ! defined(__AVX__) && ! defined(__AVX2__) */
+    intersection_result = Inersection_With_AVX2(data);
+#elif defined(__SSE__) && defined(__SSE2__)
+    intersection_result = Inersection_With_SSE2(data);
 #else
-    // Fallback for non GCC compiler: Calculation without CPU extensions
     intersection_result = Inersection_Without_Special_Instructions(data);
-#endif /* __GNUC__ */
+#endif /* ! defined(__AVX__) && ! defined(__AVX2__) && ! defined(__SSE__) && ! defined(__SSE2__) */
 
     intersection_result->intersection_data = true;
 
@@ -523,7 +526,6 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 
 //=====================================================================================================================
 
-#ifdef __GNUC__
 #if defined(__AVX__) && defined(__AVX2__)
 /**
  * @brief Using AVX2 intrinsic function to use SIMD commands for the comparisons.
@@ -607,12 +609,100 @@ Inersection_With_AVX2
 
     return intersection_result;
 }
-#endif /* defined(__AVX__) && defined(__AVX2__) */
-#endif /* __GNUC__ */
 
 //---------------------------------------------------------------------------------------------------------------------
 
-#if ! defined(__AVX__) && ! defined(__AVX2__)
+#elif defined(__SSE__) && defined(__SSE2__)
+/**
+ * @brief Using SSE4.1 intrinsic function to use SIMD commands for the comparisons.
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static struct Document_Word_List*
+Inersection_With_SSE2
+(
+        const struct Intersection_Data data
+)
+{
+    // This result contains only one array, because two raw data arrays will be used for the intersection
+    struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult
+            (1, MAX(data.data_1_length, data.data_2_length));
+
+    __m128i data_1_packed           = _mm_setzero_si128(); // <<|AVX|>>
+    __m128i data_2_packed           = _mm_setzero_si128(); // <<|AVX|>>
+//    __m128i minus_one_packed        = _mm_set1_epi32(-1); // <<|AVX|>> // Set all bits to 1
+//    __m128i half_minus_one_packed   = _mm_set_epi32(-1, -1, 0, 0); // <<|AVX|>> // Set the higher half bits to 1
+    const size_t data_step                      = 4;
+    const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
+
+    // Calculate intersection
+    for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
+    {
+        const DATA_TYPE curr_data_2_var = data.data_2 [d2];
+
+        // The AVX commands only works with signed integers !
+        data_2_packed = _mm_set1_epi32 ((int) curr_data_2_var); // <<|AVX|>>
+
+        for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
+        {
+            // The AVX commands only works with signed integers !
+            data_1_packed = _mm_set_epi32 (
+                    (int) data.data_1 [d1], (int) data.data_1 [d1+1], (int) data.data_1 [d1+2], (int) data.data_1 [d1+3]); // <<|AVX|>>
+            __m128i cmp_result_packed = _mm_cmpeq_epi32 (data_2_packed, data_1_packed); // <<|AVX2|>> // 32 bit block equal: 0xFFFFFFFF
+
+            // Extract the data from the XMM register
+            int64_t cmp_result [2];
+            cmp_result[0] = _mm_cvtsi128_si64(cmp_result_packed);
+            cmp_result_packed = _mm_srli_si128(cmp_result_packed, 8);
+            cmp_result[1] = _mm_cvtsi128_si64(cmp_result_packed);
+
+            // Are in the whole results no intersections ? -> Skip all of them
+            if (cmp_result[0] == 0 && cmp_result[1] == 0) { continue; }
+
+            register size_t real_d1 = d1;
+            // If at least one intersection found: Are in the two four entries no intersection found -> Skip them
+            if (cmp_result[1] == 0) { real_d1 += data_step / 2; } // Compare with [1], because the data are in reversed order
+
+            for (; real_d1 < (d1 + data_step); ++ real_d1)
+            {
+                if (data.data_1 [real_d1] == curr_data_2_var)
+                {
+                    // Was the current value already inserted in the intersection result ?
+                    if (! data.multiple_guard_data_1 [real_d1] && ! data.multiple_guard_data_2 [d2])
+                    {
+                        Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data.data_1 [real_d1],
+                                data.char_offsets [real_d1], data.sentence_offsets [real_d1], data.word_offsets [real_d1]);
+                        data.multiple_guard_data_1 [real_d1] = true;
+                        data.multiple_guard_data_2 [d2] = true;
+                    }
+                }
+            }
+        }
+        // The last padding calls
+        for (register size_t d1 = data.data_1_length - data_1_length_mod_data_step; d1 < data.data_1_length; d1 ++)
+        {
+            if (data.data_1 [d1] == curr_data_2_var)
+            {
+                // Was the current value already inserted in the intersection result ?
+                if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
+                {
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data.data_1 [d1],
+                            data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
+                    data.multiple_guard_data_1 [d1] = true;
+                    data.multiple_guard_data_2 [d2] = true;
+                }
+            }
+        }
+    }
+
+    return intersection_result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+#else
 /**
  * @brief No special instructions for the calculation.
  *
@@ -651,7 +741,7 @@ Inersection_Without_Special_Instructions
 
     return intersection_result;
 }
-#endif /* ! defined(__AVX__) && ! defined(__AVX2__) */
+#endif /* ! defined(__SSE__) && ! defined(__SSE2__) && ! defined(__AVX__) && ! defined(__AVX2__) */
 
 //---------------------------------------------------------------------------------------------------------------------
 
