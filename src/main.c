@@ -318,6 +318,8 @@ int main (const int argc, const char* argv [])
     // Show the used CPU extensions
 #if defined(__AVX__) && defined(__AVX2__)
     puts("Using " ANSI_TEXT_BOLD "AVX2" ANSI_RESET_ALL " CPU extension.");
+#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__)
+    puts("Using " ANSI_TEXT_BOLD "SSE4.1" ANSI_RESET_ALL " CPU extension.");
 #elif defined(__SSE__) && defined(__SSE2__)
     puts("Using " ANSI_TEXT_BOLD "SSE2" ANSI_RESET_ALL " CPU extension.");
 #else
