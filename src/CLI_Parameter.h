@@ -49,6 +49,8 @@ extern _Bool GLOBAL_CLI_NO_PART_MATCHES; ///< Do not show part matches in the re
 
 extern _Bool GLOBAL_CLI_NO_FULL_MATCHES; ///< Do not show full matches in the result file
 
+extern _Bool GLOBAL_CLI_NO_TIMESTAMP; ///< Don't save the creation timestamp of the export file in the General JSON block
+
 /**
  * @brief Shall be results with only one token written in the result file ? In normal cases such information are
  * useless.

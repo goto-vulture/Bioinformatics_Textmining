@@ -1117,7 +1117,7 @@ Add_General_Information_To_Export_File
     {
         cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Program version", program_version);
     }
-    if (!(export_settings & NO_CREATION_TIME))
+    if (!NO_CREATION_TIME_BIT(export_settings))
     {
         cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation time", creation_time);
     }
@@ -1682,6 +1682,10 @@ Create_Intersection_Settings_With_CLI_Parameter
     if (GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN)
     {
         intersection_settings |= KEEP_SINGLE_TOKEN_RESULTS;
+    }
+    if (GLOBAL_CLI_NO_TIMESTAMP)
+    {
+        intersection_settings |= NO_CREATION_TIME;
     }
 
     return intersection_settings;
