@@ -109,6 +109,7 @@ IntersectionApproach_HeapSortAndBinarySearch
  * ATTENTION: Here are two raw data arrays used. NO Document_Word_List as one of the input parameter.
  *
  * Asserts:
+ *      res_obj != NULL
  *      data_1 != NULL
  *      data_1_length = 0
  *      data_2 != NULL
@@ -117,6 +118,7 @@ IntersectionApproach_HeapSortAndBinarySearch
  *      sentence_offsets != NULL
  *      word_offsets != NULL
  *
+ * @param[in] res_obj Preallocated Document_Word_List object, that will be used for the result data
  * @param[in] data_1 Data, that will be used for the intersection with the second data array
  * @param[in] char_offsets Char offsets of the data focused on the source file, that was also the source for data_1
  * @param[in] sentence_offsets Sentence offsets of the data focused on the source file, that was also the source for data_1
@@ -125,14 +127,13 @@ IntersectionApproach_HeapSortAndBinarySearch
  * @param[in] data_2 Data, that will be used for the intersection with the first data array
  * @param[in] data_2_length Number of the elements in the second data array
  *
- * @param[in] id_1 ID of the first data array
- * @param[in] id_2 ID of the second data array
- *
- * @return New dynamic object containing the intersection result
+ * @return nothing (The result is in the given pointer)
  */
-extern struct Document_Word_List*
+extern void
 IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 (
+    struct Document_Word_List* const res_obj,
+
     const DATA_TYPE* const restrict data_1,
     const CHAR_OFFSET_TYPE* const restrict char_offsets,
     const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets,

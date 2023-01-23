@@ -681,6 +681,9 @@ Exec_Intersection
     register const size_t min_token_left_for_valid_data_set = (KEEP_SINGLE_TOKEN_RESULTS_BIT(intersection_settings)) ? 1 : 2;
     const _Bool abort_progress_percent_given = ! isnan(abort_progress_percent);
 
+    // This is the result object for temorary result data
+    struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult(1, 10);
+
     // ===== ===== ===== ===== ===== ===== ===== ===== BEGIN Outer loop ===== ===== ===== ===== ===== ===== ===== =====
     // Flag, if the first result set was written (This information is necessary to decide, whether a comma need to be
     // printed or not
@@ -721,10 +724,10 @@ Exec_Intersection
             // Determine the current intersection
             // The second array (source_int_values_2->data_struct.data [selected_data_array]) will be used for every data array in
             // source_int_values_1 !
-            //struct Document_Word_List* intersection_result = Intersection_Approach_2_Nested_Loops (source_int_values_1,
-            //        source_int_values_2->data_struct.data [selected_data_2_array], source_int_values_2->arrays_lengths [selected_data_2_array]);
-            struct Document_Word_List* intersection_result = IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
+            IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
             (
+                    intersection_result,
+
                     source_int_values_1->data_struct.data [selected_data_1_array],
                     source_int_values_1->data_struct.char_offsets [selected_data_1_array],
                     source_int_values_1->data_struct.sentence_offsets [selected_data_1_array],
@@ -737,8 +740,9 @@ Exec_Intersection
 
 
             // Remove stop words from the result
-            size_t tokens_left = intersection_result->arrays_lengths [0];
-            for (size_t i = 0; i < intersection_result->arrays_lengths [0]; ++ i)
+            const size_t array_length = intersection_result->arrays_lengths [0];
+            size_t tokens_left = array_length;
+            for (size_t i = 0; i < array_length; ++ i)
             {
                 // Reverse the mapping to get the original token (int -> token)
                 const char* int_to_token_mem = TokenIntMapping_IntToTokenStaticMem(token_int_mapping,
@@ -880,9 +884,6 @@ Exec_Intersection
                         COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1);
                 dataset_id_2 [COUNT_ARRAY_ELEMENTS(dataset_id_2) - 1] = '\0';
             }
-
-            DocumentWordList_DeleteObject(intersection_result);
-            intersection_result = NULL;
         }
         // ===== ===== ===== ===== ===== END Inner loop ===== ===== ===== ===== =====
 
@@ -976,6 +977,9 @@ Exec_Intersection
     // Label for a debugging end of the calculations
 abort_label:
     CLOCK_WITH_RETURN_CHECK(end);
+
+    DocumentWordList_DeleteObject(intersection_result);
+    intersection_result = NULL;
 
     const char* end_file_string = ((! FORMATTING_ENABLED(intersection_settings)) ? "}" : "\n}");
 

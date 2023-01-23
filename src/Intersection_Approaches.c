@@ -148,6 +148,8 @@ Heapsort
 
 struct Intersection_Data
 {
+    struct Document_Word_List* const intersection_result;
+
     const DATA_TYPE* const restrict data_1;
     const CHAR_OFFSET_TYPE* const restrict char_offsets;
     const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets;
@@ -167,7 +169,7 @@ struct Intersection_Data
  *
  * @param[in] data struct with all necessary data for the intersection calculation
  */
-static struct Document_Word_List*
+static void
 Inersection_With_AVX2
 (
         const struct Intersection_Data data
@@ -180,7 +182,7 @@ Inersection_With_AVX2
  *
  * @param[in] data struct with all necessary data for the intersection calculation
  */
-static struct Document_Word_List*
+static void
 Inersection_With_SSE4_1
 (
         const struct Intersection_Data data
@@ -193,7 +195,7 @@ Inersection_With_SSE4_1
  *
  * @param[in] data struct with all necessary data for the intersection calculation
  */
-static struct Document_Word_List*
+static void
 Inersection_With_SSE2
 (
         const struct Intersection_Data data
@@ -206,7 +208,7 @@ Inersection_With_SSE2
  *
  * @param[in] data struct with all necessary data for the intersection calculation
  */
-static struct Document_Word_List*
+static void
 Inersection_Without_Special_Instructions
 (
         const struct Intersection_Data data
@@ -399,6 +401,7 @@ IntersectionApproach_HeapSortAndBinarySearch
  * ATTENTION: Here are two raw data arrays used. NO Document_Word_List as one of the input parameter.
  *
  * Asserts:
+ *      res_obj != NULL
  *      data_1 != NULL
  *      data_1_length = 0
  *      data_2 != NULL
@@ -407,6 +410,7 @@ IntersectionApproach_HeapSortAndBinarySearch
  *      sentence_offsets != NULL
  *      word_offsets != NULL
  *
+ * @param[in] res_obj Preallocated Document_Word_List object, that will be used for the result data
  * @param[in] data_1 Data, that will be used for the intersection with the second data array
  * @param[in] char_offsets Char offsets of the data focused on the source file, that was also the source for data_1
  * @param[in] sentence_offsets Sentence offsets of the data focused on the source file, that was also the source for data_1
@@ -415,11 +419,13 @@ IntersectionApproach_HeapSortAndBinarySearch
  * @param[in] data_2 Data, that will be used for the intersection with the first data array
  * @param[in] data_2_length Number of the elements in the second data array
  *
- * @return New dynamic object containing the intersection result
+ * @return nothing (The result is in the given pointer)
  */
-extern struct Document_Word_List*
+extern void
 IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 (
+    struct Document_Word_List* const res_obj,
+
     const DATA_TYPE* const restrict data_1,
     const CHAR_OFFSET_TYPE* const restrict char_offsets,
     const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets,
@@ -429,6 +435,7 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     const size_t data_2_length
 )
 {
+    ASSERT_MSG(res_obj != NULL, "Given result pointer is NULL !");
     ASSERT_MSG(data_1 != NULL, "Data 1 is NULL !");
     ASSERT_MSG(data_1_length > 0, "Length of the data 1 is 0 !");
     ASSERT_MSG(data_2 != NULL, "Data 2 is NULL !");
@@ -487,10 +494,13 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     ASSERT_ALLOC(multiple_guard_data_2, "Cannot create the multiple guard for data 2 !", data_2_length * sizeof (_Bool));
 #endif /* __STDC_NO_VLA__ */
 
-    struct Document_Word_List* intersection_result = NULL;
+    // Reset the length and the next free element values to "recycle" the given object
+    res_obj->next_free_array = 0;
+    for (size_t i = 0; i < res_obj->number_of_arrays; ++ i) { res_obj->arrays_lengths [i] = 0; }
 
     const struct Intersection_Data data =
     {
+            res_obj,
             data_1,
             char_offsets,
             sentence_offsets,
@@ -505,16 +515,16 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     // For the first implementation and to have a compiler independent code: Only use the CPU extensions, if the GCC
     // compiler will be used
 #if defined(__AVX__) && defined(__AVX2__)
-    intersection_result = Inersection_With_AVX2(data);
+    Inersection_With_AVX2(data);
 #elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__)
-    intersection_result = Inersection_With_SSE4_1(data);
+    Inersection_With_SSE4_1(data);
 #elif defined(__SSE__) && defined(__SSE2__)
-    intersection_result = Inersection_With_SSE2(data);
+    Inersection_With_SSE2(data);
 #else
     intersection_result = Inersection_Without_Special_Instructions(data);
 #endif /* ! defined(__AVX__) && ! defined(__AVX2__) && ! defined(__SSE__) && ! defined(__SSE2__) */
 
-    intersection_result->intersection_data = true;
+    res_obj->intersection_data = true;
 
 #ifndef __STDC_NO_VLA__
     #ifndef UNSAFE_VLA_USAGE
@@ -532,7 +542,7 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     FREE_AND_SET_TO_NULL(multiple_guard_data_2);
 #endif /* __STDC_NO_VLA__ */
 
-    return intersection_result;
+    return;
 }
 // Enable the -Wstack-protector warning again
 #ifdef __GNUC__
@@ -549,16 +559,12 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
  *
  * @param[in] data struct with all necessary data for the intersection calculation
  */
-static struct Document_Word_List*
+static void
 Inersection_With_AVX2
 (
         const struct Intersection_Data data
 )
 {
-    // This result contains only one array, because two raw data arrays will be used for the intersection
-    struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult
-            (1, MAX(data.data_1_length, data.data_2_length));
-
     __m256i data_1_packed           = _mm256_setzero_si256();   // <<|AVX|>>
     __m256i data_2_packed           = _mm256_setzero_si256();   // <<|AVX|>>
     __m256i minus_one_packed        = _mm256_set1_epi32(-1);    // <<|AVX|>> // Set all bits to 1
@@ -604,7 +610,7 @@ Inersection_With_AVX2
                     // Was the current value already inserted in the intersection result ?
                     if (! data.multiple_guard_data_1 [real_d1] && ! data.multiple_guard_data_2 [d2])
                     {
-                        Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data.data_1 [real_d1],
+                        Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [real_d1],
                                 data.char_offsets [real_d1], data.sentence_offsets [real_d1], data.word_offsets [real_d1]);
                         data.multiple_guard_data_1 [real_d1] = true;
                         data.multiple_guard_data_2 [d2] = true;
@@ -620,7 +626,7 @@ Inersection_With_AVX2
                 // Was the current value already inserted in the intersection result ?
                 if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
                 {
-                    Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data.data_1 [d1],
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [d1],
                             data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
                     data.multiple_guard_data_1 [d1] = true;
                     data.multiple_guard_data_2 [d2] = true;
@@ -629,7 +635,7 @@ Inersection_With_AVX2
         }
     }
 
-    return intersection_result;
+    return;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -642,7 +648,7 @@ Inersection_With_AVX2
  *
  * @param[in] data struct with all necessary data for the intersection calculation
  */
-static struct Document_Word_List*
+static void
 Inersection_With_SSE4_1
 (
         const struct Intersection_Data data
@@ -688,7 +694,7 @@ Inersection_With_SSE4_1
                     // Was the current value already inserted in the intersection result ?
                     if (! data.multiple_guard_data_1 [real_d1] && ! data.multiple_guard_data_2 [d2])
                     {
-                        Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data.data_1 [real_d1],
+                        Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [real_d1],
                                 data.char_offsets [real_d1], data.sentence_offsets [real_d1], data.word_offsets [real_d1]);
                         data.multiple_guard_data_1 [real_d1] = true;
                         data.multiple_guard_data_2 [d2] = true;
@@ -713,29 +719,25 @@ Inersection_With_SSE4_1
         }
     }
 
-    return intersection_result;
+    return;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 #elif defined(__SSE__) && defined(__SSE2__)
 /**
- * @brief Using SSE4.1 intrinsic function to use SIMD commands for the comparisons.
+ * @brief Using SSE2 intrinsic function to use SIMD commands for the comparisons.
  *
  * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
  *
  * @param[in] data struct with all necessary data for the intersection calculation
  */
-static struct Document_Word_List*
+static void
 Inersection_With_SSE2
 (
         const struct Intersection_Data data
 )
 {
-    // This result contains only one array, because two raw data arrays will be used for the intersection
-    struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult
-            (1, MAX(data.data_1_length, data.data_2_length));
-
     __m128i data_1_packed           = _mm_setzero_si128(); // <<|SSE2|>>
     __m128i data_2_packed           = _mm_setzero_si128(); // <<|SSE2|>>
     const size_t data_step                      = 4; // 128 bit register width / 32 bit per value
@@ -777,7 +779,7 @@ Inersection_With_SSE2
                     // Was the current value already inserted in the intersection result ?
                     if (! data.multiple_guard_data_1 [real_d1] && ! data.multiple_guard_data_2 [d2])
                     {
-                        Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data.data_1 [real_d1],
+                        Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [real_d1],
                                 data.char_offsets [real_d1], data.sentence_offsets [real_d1], data.word_offsets [real_d1]);
                         data.multiple_guard_data_1 [real_d1] = true;
                         data.multiple_guard_data_2 [d2] = true;
@@ -793,7 +795,7 @@ Inersection_With_SSE2
                 // Was the current value already inserted in the intersection result ?
                 if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
                 {
-                    Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data.data_1 [d1],
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [d1],
                             data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
                     data.multiple_guard_data_1 [d1] = true;
                     data.multiple_guard_data_2 [d2] = true;
@@ -802,7 +804,7 @@ Inersection_With_SSE2
         }
     }
 
-    return intersection_result;
+    return;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -815,16 +817,12 @@ Inersection_With_SSE2
  *
  * @param[in] data struct with all necessary data for the intersection calculation
  */
-static struct Document_Word_List*
+static void
 Inersection_Without_Special_Instructions
 (
         const struct Intersection_Data data
 )
 {
-    // This result contains only one array, because two raw data arrays will be used for the intersection
-    struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult
-            (1, MAX(data.data_1_length, data.data_2_length));
-
     // Calculate intersection
     for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
     {
@@ -835,7 +833,7 @@ Inersection_Without_Special_Instructions
                 // Was the current value already inserted in the intersection result ?
                 if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
                 {
-                    Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data.data_1 [d1],
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [d1],
                             data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
                     data.multiple_guard_data_1 [d1] = true;
                     data.multiple_guard_data_2 [d2] = true;
@@ -844,7 +842,7 @@ Inersection_Without_Special_Instructions
         }
     }
 
-    return intersection_result;
+    return;
 }
 #endif /* ! defined(__SSE__) && ! defined(__SSE2__) && ! defined(__AVX__) && ! defined(__AVX2__) */
 
