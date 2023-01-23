@@ -25,7 +25,7 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 #ifndef DATA_TYPE
-#define DATA_TYPE uint_fast32_t
+#define DATA_TYPE unsigned int
 #else
 #error "The macro \"DATA_TYPE\" is already defined !"
 #endif /* DATA_TYPE */

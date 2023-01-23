@@ -161,6 +161,7 @@ IS_CONST_STR(N_A)
 #include "Intersection_Approaches.h"
 #include "Misc.h"
 #include "Exec_Intersection.h"
+#include "ANSI_Esc_Seq.h"
 
 #include "Tests/tinytest.h"
 #include "Tests/TEST_cJSON_Parser.h"
@@ -312,6 +313,21 @@ int main (const int argc, const char* argv [])
 
     Check_CLI_Parameter_Logical_Consistency();
     puts("");
+
+#ifdef __GNUC__
+    // Show the used CPU extensions
+    if (__builtin_cpu_supports ("avx2"))
+    {
+        puts("Using " ANSI_TEXT_BOLD "AVX2" ANSI_RESET_ALL " CPU extension.");
+    }
+    else
+    {
+        puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension.");
+    }
+#else
+    puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension.");
+#endif /* __GNUC__ */
+    PUTS_FFLUSH("");
 
     // Execute the intersection process
     Exec_Intersection(GLOBAL_ABORT_PROCESS_PERCENT, NULL, NULL);

@@ -11,7 +11,7 @@ DOXYGEN_PATH = $(shell command -v $(DOXYGEN) 2> /dev/null)
 
 
 # Flags, die sowohl im Debug- als auch im Release-Build, verwendet werden
-CCFLAGS = -pedantic -Wall -Wextra -Wconversion -fmessage-length=0 -Wstack-protector
+CCFLAGS = -pedantic -Wall -Wextra -Wconversion -fmessage-length=0 -Wstack-protector -msse -mavx2
 
 # Verwendete Libs
 LIBS = -lm

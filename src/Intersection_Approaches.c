@@ -21,6 +21,11 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+
+#ifdef __GNUC__
+#include <immintrin.h>
+#endif /* __GNUC__ */
+
 #include "Misc.h"
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
@@ -137,6 +142,45 @@ Heapsort
 (
         DATA_TYPE* const data,
         const size_t data_size
+);
+
+struct Intersection_Data
+{
+    const DATA_TYPE* const restrict data_1;
+    const CHAR_OFFSET_TYPE* const restrict char_offsets;
+    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets;
+    const WORD_OFFSET_TYPE* const restrict word_offsets;
+    const size_t data_1_length;
+    const DATA_TYPE* const restrict data_2;
+    const size_t data_2_length;
+    _Bool* const restrict multiple_guard_data_1;
+    _Bool* const restrict multiple_guard_data_2;
+};
+
+#ifdef __GNUC__
+/**
+ * @brief Using AVX2 intrinsic function to use SIMD commands for the comparisons.
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static struct Document_Word_List*
+Inersection_With_AVX2
+(
+        const struct Intersection_Data data
+);
+#endif /* __GNUC__ */
+
+/**
+ * @brief No special instructions for the calculation.
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static struct Document_Word_List*
+Inersection_Without_Special_Instructions
+(
+        const struct Intersection_Data data
 );
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -373,10 +417,6 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     // Nothing to do
 #endif /* #ifndef __STDC_NO_VLA__ */
 
-    // This result contains only one array, because two raw data arrays will be used for the intersection
-    struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult
-            (1, MAX(data_1_length, data_2_length));
-
     // Arrays, which display, if a value is already in the intersection
     _Bool* multiple_guard_data_1 = NULL;
     _Bool* multiple_guard_data_2 = NULL;
@@ -416,24 +456,36 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     ASSERT_ALLOC(multiple_guard_data_2, "Cannot create the multiple guard for data 2 !", data_2_length * sizeof (_Bool));
 #endif /* __STDC_NO_VLA__ */
 
-    // Calculate intersection
-    for (register size_t d1 = 0; d1 < data_1_length; ++ d1)
+    struct Document_Word_List* intersection_result = NULL;
+
+    const struct Intersection_Data data =
     {
-        for (register size_t d2 = 0; d2 < data_2_length; ++ d2)
-        {
-            if (data_1 [d1] == data_2 [d2])
-            {
-                // Was the current value already inserted in the intersection result ?
-                if (! multiple_guard_data_1 [d1] && ! multiple_guard_data_2 [d2])
-                {
-                    Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data_1 [d1],
-                            char_offsets [d1], sentence_offsets [d1], word_offsets [d1]);
-                    multiple_guard_data_1 [d1] = true;
-                    multiple_guard_data_2 [d2] = true;
-                }
-            }
-        }
+            data_1,
+            char_offsets,
+            sentence_offsets,
+            word_offsets,
+            data_1_length,
+            data_2,
+            data_2_length,
+            multiple_guard_data_1,
+            multiple_guard_data_2
+    };
+
+    // For the first implementation and to have a compiler independent code: Only use the CPU extensions, if the GCC
+    // compiler will be used
+#ifdef __GNUC__
+    if (__builtin_cpu_supports ("avx2"))
+    {
+        intersection_result = Inersection_With_AVX2(data);
     }
+    else
+    {
+        intersection_result = Inersection_Without_Special_Instructions(data);
+    }
+#else
+    // Fallback for non GCC compiler: Calculation without CPU extensions
+    intersection_result = Inersection_Without_Special_Instructions(data);
+#endif /* __GNUC__ */
 
     intersection_result->intersection_data = true;
 
@@ -461,6 +513,132 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 #endif /* __GNUC__ */
 
 //=====================================================================================================================
+
+#ifdef __GNUC__
+/**
+ * @brief Using AVX2 intrinsic function to use SIMD commands for the comparisons.
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static struct Document_Word_List*
+Inersection_With_AVX2
+(
+        const struct Intersection_Data data
+)
+{
+    // This result contains only one array, because two raw data arrays will be used for the intersection
+    struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult
+            (1, MAX(data.data_1_length, data.data_2_length));
+
+    __m256i data_1_packed           = _mm256_setzero_si256(); // <<|AVX|>>
+    __m256i data_2_packed           = _mm256_setzero_si256(); // <<|AVX|>>
+    __m256i minus_one_packed        = _mm256_set1_epi32(-1); // <<|AVX|>> // Set all bits to 1
+    __m256i half_minus_one_packed   = _mm256_set_epi32(-1, -1, -1, -1, 0, 0, 0, 0); // <<|AVX|>> // Set the higher half bits to 1
+    const size_t data_step                      = 8;
+    const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
+
+    // Calculate intersection
+    for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
+    {
+        const DATA_TYPE curr_data_2_var = data.data_2 [d2];
+
+        // The AVX commands only works with signed integers !
+        data_2_packed = _mm256_set1_epi32 ((int) curr_data_2_var); // <<|AVX|>>
+
+        for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
+        {
+            // The AVX commands only works with signed integers !
+            data_1_packed = _mm256_set_epi32 (
+                    (int) data.data_1 [d1],   (int) data.data_1 [d1+1], (int) data.data_1 [d1+2], (int) data.data_1 [d1+3],
+                    (int) data.data_1 [d1+4], (int) data.data_1 [d1+5], (int) data.data_1 [d1+6], (int) data.data_1 [d1+7]); // <<|AVX|>>
+            __m256i cmp_result_packed = _mm256_cmpeq_epi32 (data_2_packed, data_1_packed); // <<|AVX2|>> // 32 bit block equal: 0xFFFFFFFF
+
+            // Bitwise AND
+            // If all bits of cmp_result_packed are 0, then the function returns the zero flag (ZF), that was set to 1
+            if (_mm256_testz_si256(cmp_result_packed, minus_one_packed) == 1) { continue; } // <<|AVX|>>
+
+            register size_t real_d1 = d1;
+            // If at least one intersection found: Are in the first four entries no intersection found -> Skip them
+            if (_mm256_testz_si256(cmp_result_packed, half_minus_one_packed) == 1) { real_d1 += data_step / 2; } // <<|AVX|>>
+
+            for (; real_d1 < (d1 + data_step); ++ real_d1)
+            {
+                if (data.data_1 [real_d1] == curr_data_2_var)
+                {
+                    // Was the current value already inserted in the intersection result ?
+                    if (! data.multiple_guard_data_1 [real_d1] && ! data.multiple_guard_data_2 [d2])
+                    {
+                        Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data.data_1 [real_d1],
+                                data.char_offsets [real_d1], data.sentence_offsets [real_d1], data.word_offsets [real_d1]);
+                        data.multiple_guard_data_1 [real_d1] = true;
+                        data.multiple_guard_data_2 [d2] = true;
+                    }
+                }
+            }
+        }
+        // The last padding calls
+        for (register size_t d1 = data.data_1_length - data_1_length_mod_data_step; d1 < data.data_1_length; d1 ++)
+        {
+            if (data.data_1 [d1] == curr_data_2_var)
+            {
+                // Was the current value already inserted in the intersection result ?
+                if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
+                {
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data.data_1 [d1],
+                            data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
+                    data.multiple_guard_data_1 [d1] = true;
+                    data.multiple_guard_data_2 [d2] = true;
+                }
+            }
+        }
+    }
+
+    return intersection_result;
+}
+#endif /* __GNUC__ */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief No special instructions for the calculation.
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static struct Document_Word_List*
+Inersection_Without_Special_Instructions
+(
+        const struct Intersection_Data data
+)
+{
+    // This result contains only one array, because two raw data arrays will be used for the intersection
+    struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult
+            (1, MAX(data.data_1_length, data.data_2_length));
+
+    // Calculate intersection
+    for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
+    {
+        for (register size_t d1 = 0; d1 < data.data_1_length; ++ d1)
+        {
+            if (data.data_1 [d1] == data.data_2 [d2])
+            {
+                // Was the current value already inserted in the intersection result ?
+                if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
+                {
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data.data_1 [d1],
+                            data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
+                    data.multiple_guard_data_1 [d1] = true;
+                    data.multiple_guard_data_2 [d2] = true;
+                }
+            }
+        }
+    }
+
+    return intersection_result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 /**
  * @brief Create a copy of the submitted Document_Word_List and initialize them.
