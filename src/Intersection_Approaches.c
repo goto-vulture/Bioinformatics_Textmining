@@ -654,10 +654,6 @@ Inersection_With_SSE4_1
         const struct Intersection_Data data
 )
 {
-    // This result contains only one array, because two raw data arrays will be used for the intersection
-    struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult
-            (1, MAX(data.data_1_length, data.data_2_length));
-
     __m128i data_1_packed           = _mm_setzero_si128();          // <<|SSE2|>>
     __m128i data_2_packed           = _mm_setzero_si128();          // <<|SSE2|>>
     __m128i minus_one_packed        = _mm_set1_epi32(-1);           // <<|SSE2|>> // Set all bits to 1
@@ -676,18 +672,20 @@ Inersection_With_SSE4_1
         for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
         {
             // The AVX commands only works with signed integers !
-            data_1_packed = _mm_set_epi32 (
-                    (int) data.data_1 [d1], (int) data.data_1 [d1+1], (int) data.data_1 [d1+2], (int) data.data_1 [d1+3]); // <<|SSE2|>>
-            __m128i cmp_result_packed = _mm_cmpeq_epi32 (data_2_packed, data_1_packed); // <<|SSE2|>> // 32 bit block equal: 0xFFFFFFFF
+//            data_1_packed = _mm_set_epi32 (
+//                    (int) data.data_1 [d1+3], (int) data.data_1 [d1+2], (int) data.data_1 [d1+1], (int) data.data_1 [d1]); // <<|SSE2|>>
+            __m128i load_test = _mm_loadu_si128(data.data_1 + d1);
+            __m128i cmp_result_packed = _mm_cmpeq_epi32 (data_2_packed, load_test); // <<|SSE2|>> // 32 bit block equal: 0xFFFFFFFF
+
 
             // If all bits of cmp_result_packed are 0, then the function returns the zero flag (ZF), that was set to 1
             if (_mm_testz_si128(cmp_result_packed, minus_one_packed) == 1) { continue; } // <<|SEE4.1|>>
 
-            register size_t real_d1 = d1;
+            register size_t real_d1 = d1 + data_step - 1;
             // Skip half of the objects, if in this byte range no intersection was found
-            if (_mm_testz_si128(cmp_result_packed, half_minus_one_packed) == 1) { real_d1 += data_step / 2; } //<<|SSE4.1|>>
+            //if (_mm_testz_si128(cmp_result_packed, half_minus_one_packed) == 1) { real_d1 += data_step / 2; } //<<|SSE4.1|>>
 
-            for (; real_d1 < (d1 + data_step); ++ real_d1)
+            for (; real_d1 >= d1 && real_d1 != SIZE_MAX; -- real_d1) // "real_d1 != SIZE_MAX" to avoid underflows
             {
                 if (data.data_1 [real_d1] == curr_data_2_var)
                 {
@@ -710,7 +708,7 @@ Inersection_With_SSE4_1
                 // Was the current value already inserted in the intersection result ?
                 if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
                 {
-                    Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data.data_1 [d1],
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [d1],
                             data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
                     data.multiple_guard_data_1 [d1] = true;
                     data.multiple_guard_data_2 [d2] = true;
