@@ -249,6 +249,42 @@ IS_CONST_STR(VERSION_STR)
 IS_TYPE(VERSION, double) // float is not the right type for the expected type !
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * Macros to manually disable CPU extensions.
+ *
+ * Comment in the macros, if you want to disable this extension.
+ */
+#ifndef NO_AVX2
+//#define NO_AVX2
+#else
+#error "The macro \"NO_AVX2\" is already defined !"
+#endif /* NO_AVX2 */
+
+#ifndef NO_SSE4_1
+//#define NO_SSE4_1
+#else
+#error "The macro \"NO_SSE4_1\" is already defined !"
+#endif /* NO_SSE4_1 */
+
+#ifndef NO_SSE2
+//#define NO_SSE2
+#else
+#error "The macro \"NO_SSE2\" is already defined !"
+#endif /* NO_SSE2 */
+
+/**
+ * @brief Disable ALL CPU extensions.
+ */
+#ifndef NO_CPU_EXTENSIONS
+//#define NO_CPU_EXTENSIONS
+#else
+#error "The macro \"NO_CPU_EXTENSIONS\" is already defined !"
+#endif /* NO_CPU_EXTENSIONS */
+
+//---------------------------------------------------------------------------------------------------------------------
+
 
 
 #ifdef __cplusplus

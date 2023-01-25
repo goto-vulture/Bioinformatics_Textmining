@@ -33,6 +33,7 @@
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Error_Handling/_Generics.h"
 #include "Print_Tools.h"
+#include "Defines.h"
 
 
 
@@ -161,7 +162,7 @@ struct Intersection_Data
     _Bool* const restrict multiple_guard_data_2;
 };
 
-#if defined(__AVX__) && defined(__AVX2__)
+#if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
 /**
  * @brief Using AVX2 intrinsic function to use SIMD commands for the comparisons.
  *
@@ -174,7 +175,7 @@ Inersection_With_AVX2
 (
         const struct Intersection_Data data
 );
-#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__)
+#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
 /**
  * @brief Using SSE4.1 intrinsic function to use SIMD commands for the comparisons.
  *
@@ -187,7 +188,7 @@ Inersection_With_SSE4_1
 (
         const struct Intersection_Data data
 );
-#elif defined(__SSE__) && defined(__SSE2__)
+#elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined (NO_CPU_EXTENSIONS)
 /**
  * @brief Using SSE2 intrinsic function to use SIMD commands for the comparisons.
  *
@@ -213,8 +214,7 @@ Inersection_Without_Special_Instructions
 (
         const struct Intersection_Data data
 );
-#endif /* ! defined(__SSE__) && ! defined(__SSE2__) && ! defined(__AVX__) && ! defined(__AVX2__) */
-
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -514,15 +514,15 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 
     // For the first implementation and to have a compiler independent code: Only use the CPU extensions, if the GCC
     // compiler will be used
-#if defined(__AVX__) && defined(__AVX2__)
+#if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
     Inersection_With_AVX2(data);
-#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__)
+#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
     Inersection_With_SSE4_1(data);
-#elif defined(__SSE__) && defined(__SSE2__)
+#elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
     Inersection_With_SSE2(data);
 #else
-    intersection_result = Inersection_Without_Special_Instructions(data);
-#endif /* ! defined(__AVX__) && ! defined(__AVX2__) && ! defined(__SSE__) && ! defined(__SSE2__) */
+    Inersection_Without_Special_Instructions(data);
+#endif
 
     res_obj->intersection_data = true;
 
@@ -551,7 +551,7 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 
 //=====================================================================================================================
 
-#if defined(__AVX__) && defined(__AVX2__)
+#if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
 /**
  * @brief Using AVX2 intrinsic function to use SIMD commands for the comparisons.
  *
@@ -640,7 +640,7 @@ Inersection_With_AVX2
 
 //---------------------------------------------------------------------------------------------------------------------
 
-#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__)
+#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
 /**
  * @brief Using SSE4.1 intrinsic function to use SIMD commands for the comparisons.
  *
@@ -724,7 +724,7 @@ Inersection_With_SSE4_1
 
 //---------------------------------------------------------------------------------------------------------------------
 
-#elif defined(__SSE__) && defined(__SSE2__)
+#elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
 /**
  * @brief Using SSE2 intrinsic function to use SIMD commands for the comparisons.
  *
@@ -844,7 +844,7 @@ Inersection_Without_Special_Instructions
 
     return;
 }
-#endif /* ! defined(__SSE__) && ! defined(__SSE2__) && ! defined(__AVX__) && ! defined(__AVX2__) */
+#endif
 
 //---------------------------------------------------------------------------------------------------------------------
 

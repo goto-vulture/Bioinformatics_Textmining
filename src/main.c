@@ -162,6 +162,7 @@ IS_CONST_STR(N_A)
 #include "Misc.h"
 #include "Exec_Intersection.h"
 #include "ANSI_Esc_Seq.h"
+#include "Defines.h"
 
 #include "Tests/tinytest.h"
 #include "Tests/TEST_cJSON_Parser.h"
@@ -316,15 +317,15 @@ int main (const int argc, const char* argv [])
     puts("");
 
     // Show the used CPU extensions
-#if defined(__AVX__) && defined(__AVX2__)
+#if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
     puts("Using " ANSI_TEXT_BOLD "AVX2" ANSI_RESET_ALL " CPU extension.");
-#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__)
+#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
     puts("Using " ANSI_TEXT_BOLD "SSE4.1" ANSI_RESET_ALL " CPU extension.");
-#elif defined(__SSE__) && defined(__SSE2__)
+#elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
     puts("Using " ANSI_TEXT_BOLD "SSE2" ANSI_RESET_ALL " CPU extension.");
 #else
     puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension.");
-#endif /* ! defined(__AVX__) && ! defined(__AVX2__) && ! defined(__SSE__) && ! defined(__SSE2__) */
+#endif
     PUTS_FFLUSH("");
 
     // Execute the intersection process
