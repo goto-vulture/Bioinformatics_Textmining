@@ -408,6 +408,7 @@ TokenListContainer_CreateObject
     default:
         ASSERT_MSG(false, "Switch case default path executed !");
     }
+    puts("Start file loading ...");
 
     uint_fast32_t line_counter              = 0;
     uint_fast32_t sum_tokens_found          = 0;
