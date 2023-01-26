@@ -138,6 +138,8 @@ Debugging arguments:
 
 To make the implementation simple, the in and output will be created in a simple way. The name of the input files will be passed trough CLI parameter and the results will be represented as JSON file.
 
+If available the program uses SSE and AVX2 extensions, if the host support these extensions. As fallback, whether a support is not available or not detectable, portable C code is used.
+
 ### Used libraries
 
 - *argparse*: Simple and powerful CLI parser. Here available on [GitHub](https://github.com/cofyc/argparse).
