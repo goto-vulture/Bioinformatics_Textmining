@@ -166,6 +166,12 @@ struct Intersection_Data
 /**
  * @brief Using AVX2 intrinsic function to use SIMD commands for the comparisons.
  *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
  * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
  *
  * @param[in] data struct with all necessary data for the intersection calculation
@@ -178,6 +184,12 @@ Inersection_With_AVX2
 #elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
 /**
  * @brief Using SSE4.1 intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
  *
  * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
  *
@@ -192,6 +204,12 @@ Inersection_With_SSE4_1
 /**
  * @brief Using SSE2 intrinsic function to use SIMD commands for the comparisons.
  *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
  * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
  *
  * @param[in] data struct with all necessary data for the intersection calculation
@@ -204,6 +222,16 @@ Inersection_With_SSE2
 #else
 /**
  * @brief No special instructions for the calculation.
+ *
+ * The original order of the loop (data_2-loop inside of data_1-loop) creates another order of the results than the
+ * versions with the CPU extensions. The results are in sum the same; but not the order.
+ *
+ * The functions with the CPU extensions uses a reverse order. This is necessary, because only with this order suitable
+ * vector calculations can be produced.
+ *
+ * @see Inersection_With_SSE2
+ * @see Inersection_With_SSE4_1
+ * @see Inersection_With_AVX2
  *
  * => Fallback solution
  *
@@ -555,6 +583,12 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 /**
  * @brief Using AVX2 intrinsic function to use SIMD commands for the comparisons.
  *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
  * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
  *
  * @param[in] data struct with all necessary data for the intersection calculation
@@ -646,6 +680,12 @@ Inersection_With_AVX2
 /**
  * @brief Using SSE4.1 intrinsic function to use SIMD commands for the comparisons.
  *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
  * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
  *
  * @param[in] data struct with all necessary data for the intersection calculation
@@ -727,6 +767,12 @@ Inersection_With_SSE4_1
 #elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
 /**
  * @brief Using SSE2 intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
  *
  * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
  *
@@ -815,6 +861,16 @@ Inersection_With_SSE2
 /**
  * @brief No special instructions for the calculation.
  *
+ * The original order of the loop (data_2-loop inside of data_1-loop) creates another order of the results than the
+ * versions with the CPU extensions. The results are in sum the same; but not the order.
+ *
+ * The functions with the CPU extensions uses a reverse order. This is necessary, because only with this order suitable
+ * vector calculations can be produced.
+ *
+ * @see Inersection_With_SSE2
+ * @see Inersection_With_SSE4_1
+ * @see Inersection_With_AVX2
+ *
  * => Fallback solution
  *
  * @param[in] data struct with all necessary data for the intersection calculation
@@ -826,9 +882,9 @@ Inersection_Without_Special_Instructions
 )
 {
     // Calculate intersection
-    for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
+    for (register size_t d1 = 0; d1 < data.data_1_length; ++ d1)
     {
-        for (register size_t d1 = 0; d1 < data.data_1_length; ++ d1)
+        for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
         {
             if (data.data_1 [d1] == data.data_2 [d2])
             {
