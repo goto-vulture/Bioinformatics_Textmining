@@ -567,14 +567,15 @@ Inersection_With_AVX2
 {
     __m256i data_1_packed           = _mm256_setzero_si256();   // <<|AVX|>>
     __m256i data_2_packed           = _mm256_setzero_si256();   // <<|AVX|>>
+    __m256i cmp_result_packed       = _mm256_setzero_si256();   // <<|AVX|>>
     __m256i minus_one_packed        = _mm256_set1_epi32(-1);    // <<|AVX|>> // Set all bits to 1
-    __m256i three_four_minus_one_packed = _mm256_set_epi32(-1, -1, -1, -1, -1, -1, 0, 0);   // <<|AVX|>> // Set higher 75% of the bits to 1
-    __m256i half_minus_one_packed       = _mm256_set_epi32(-1, -1, -1, -1, 0, 0, 0, 0);     // <<|AVX|>> // Set the higher half bits to 1
-    __m256i one_four_minus_one_packed   = _mm256_set_epi32(-1, -1, 0, 0, 0, 0, 0, 0);       // <<|AVX|>> // Set higher 25% of the bits to 1
+//    __m256i three_four_minus_one_packed = _mm256_set_epi32(-1, -1, -1, -1, -1, -1, 0, 0);   // <<|AVX|>> // Set higher 75% of the bits to 1
+//    __m256i half_minus_one_packed       = _mm256_set_epi32(-1, -1, -1, -1, 0, 0, 0, 0);     // <<|AVX|>> // Set the higher half bits to 1
+//    __m256i one_four_minus_one_packed   = _mm256_set_epi32(-1, -1, 0, 0, 0, 0, 0, 0);       // <<|AVX|>> // Set higher 25% of the bits to 1
     const size_t data_step                      = 8; // 256 bit register width / 32 bit per value
-    const size_t data_step_three_four           = data_step * (3 / 4);
-    const size_t data_step_half                 = data_step * (1 / 2);
-    const size_t data_step_one_four             = data_step * (1 / 4);
+//    const size_t data_step_three_four           = data_step * (3 / 4);
+//    const size_t data_step_half                 = data_step * (1 / 2);
+//    const size_t data_step_one_four             = data_step * (1 / 4);
     const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
 
     // Calculate intersection
@@ -588,10 +589,11 @@ Inersection_With_AVX2
         for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
         {
             // The AVX commands only works with signed integers !
-            data_1_packed = _mm256_set_epi32 (
-                    (int) data.data_1 [d1],   (int) data.data_1 [d1+1], (int) data.data_1 [d1+2], (int) data.data_1 [d1+3],
-                    (int) data.data_1 [d1+4], (int) data.data_1 [d1+5], (int) data.data_1 [d1+6], (int) data.data_1 [d1+7]); // <<|AVX|>>
-            __m256i cmp_result_packed = _mm256_cmpeq_epi32 (data_2_packed, data_1_packed); // <<|AVX2|>> // 32 bit block equal: 0xFFFFFFFF
+//            data_1_packed = _mm256_set_epi32 (
+//                    (int) data.data_1 [d1],   (int) data.data_1 [d1+1], (int) data.data_1 [d1+2], (int) data.data_1 [d1+3],
+//                    (int) data.data_1 [d1+4], (int) data.data_1 [d1+5], (int) data.data_1 [d1+6], (int) data.data_1 [d1+7]); // <<|AVX|>>
+            data_1_packed = _mm256_lddqu_si256 ((const __m256i_u*) (data.data_1 + d1)); // <<|AVX|>>
+            cmp_result_packed = _mm256_cmpeq_epi32 (data_2_packed, data_1_packed); // <<|AVX2|>> // 32 bit block equal: 0xFFFFFFFF
 
             // Bitwise AND
             // If all bits of cmp_result_packed are 0, then the function returns the zero flag (ZF), that was set to 1
@@ -599,9 +601,9 @@ Inersection_With_AVX2
 
             register size_t real_d1 = d1;
             // If at least one intersection found: Are in the first four entries no intersection found -> Skip them
-            if (_mm256_testz_si256(cmp_result_packed, three_four_minus_one_packed) == 1)    { real_d1 += data_step_three_four; }    // <<|AVX|>>
-            else if (_mm256_testz_si256(cmp_result_packed, half_minus_one_packed) == 1)     { real_d1 += data_step_half; }          // <<|AVX|>>
-            else if (_mm256_testz_si256(cmp_result_packed, one_four_minus_one_packed) == 1) { real_d1 += data_step_one_four; }      // <<|AVX|>>
+//            if (_mm256_testz_si256(cmp_result_packed, three_four_minus_one_packed) == 1)    { real_d1 += data_step_three_four; }    // <<|AVX|>>
+//            else if (_mm256_testz_si256(cmp_result_packed, half_minus_one_packed) == 1)     { real_d1 += data_step_half; }          // <<|AVX|>>
+//            else if (_mm256_testz_si256(cmp_result_packed, one_four_minus_one_packed) == 1) { real_d1 += data_step_one_four; }      // <<|AVX|>>
 
             for (; real_d1 < (d1 + data_step); ++ real_d1)
             {
@@ -654,10 +656,11 @@ Inersection_With_SSE4_1
         const struct Intersection_Data data
 )
 {
-    __m128i data_1_packed           = _mm_setzero_si128();          // <<|SSE2|>>
-    __m128i data_2_packed           = _mm_setzero_si128();          // <<|SSE2|>>
-    __m128i minus_one_packed        = _mm_set1_epi32(-1);           // <<|SSE2|>> // Set all bits to 1
-    __m128i half_minus_one_packed   = _mm_set_epi32(-1, -1, 0, 0);  // <<|SSE2|>> // Set the higher half bits to 1
+    __m128i data_1_packed           = _mm_setzero_si128();  // <<|SSE2|>>
+    __m128i data_2_packed           = _mm_setzero_si128();  // <<|SSE2|>>
+    __m128i cmp_result_packed       = _mm_setzero_si128();  // <<|SSE2|>>
+    __m128i minus_one_packed        = _mm_set1_epi32(-1);   // <<|SSE2|>> // Set all bits to 1
+    // __m128i half_minus_one_packed   = _mm_set_epi32(-1, -1, 0, 0);  // <<|SSE2|>> // Set the higher half bits to 1
     const size_t data_step                      = 4; // 128 bit register width / 32 bit per value
     const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
 
@@ -674,18 +677,17 @@ Inersection_With_SSE4_1
             // The AVX commands only works with signed integers !
 //            data_1_packed = _mm_set_epi32 (
 //                    (int) data.data_1 [d1+3], (int) data.data_1 [d1+2], (int) data.data_1 [d1+1], (int) data.data_1 [d1]); // <<|SSE2|>>
-            __m128i load_test = _mm_loadu_si128(data.data_1 + d1);
-            __m128i cmp_result_packed = _mm_cmpeq_epi32 (data_2_packed, load_test); // <<|SSE2|>> // 32 bit block equal: 0xFFFFFFFF
-
+            data_1_packed = _mm_loadu_si128((const __m128i_u*) (data.data_1 + d1)); // <<|SSE2|>>
+            cmp_result_packed = _mm_cmpeq_epi32 (data_2_packed, data_1_packed); // <<|SSE2|>> // 32 bit block equal: 0xFFFFFFFF
 
             // If all bits of cmp_result_packed are 0, then the function returns the zero flag (ZF), that was set to 1
             if (_mm_testz_si128(cmp_result_packed, minus_one_packed) == 1) { continue; } // <<|SEE4.1|>>
 
-            register size_t real_d1 = d1 + data_step - 1;
+            register size_t real_d1 = d1;
             // Skip half of the objects, if in this byte range no intersection was found
             //if (_mm_testz_si128(cmp_result_packed, half_minus_one_packed) == 1) { real_d1 += data_step / 2; } //<<|SSE4.1|>>
 
-            for (; real_d1 >= d1 && real_d1 != SIZE_MAX; -- real_d1) // "real_d1 != SIZE_MAX" to avoid underflows
+            for (; real_d1 < (d1 + data_step); ++ real_d1) // "real_d1 != SIZE_MAX" to avoid underflows
             {
                 if (data.data_1 [real_d1] == curr_data_2_var)
                 {
@@ -738,6 +740,7 @@ Inersection_With_SSE2
 {
     __m128i data_1_packed           = _mm_setzero_si128(); // <<|SSE2|>>
     __m128i data_2_packed           = _mm_setzero_si128(); // <<|SSE2|>>
+    __m128i cmp_result_packed       = _mm_setzero_si128(); // <<|SSE2|>>
     const size_t data_step                      = 4; // 128 bit register width / 32 bit per value
     const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
 
@@ -752,9 +755,10 @@ Inersection_With_SSE2
         for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
         {
             // The AVX commands only works with signed integers !
-            data_1_packed = _mm_set_epi32 (
-                    (int) data.data_1 [d1], (int) data.data_1 [d1+1], (int) data.data_1 [d1+2], (int) data.data_1 [d1+3]); // <<|SSE2|>>
-            __m128i cmp_result_packed = _mm_cmpeq_epi32 (data_2_packed, data_1_packed); // <<|SSE2|>> // 32 bit block equal: 0xFFFFFFFF
+//            data_1_packed = _mm_set_epi32 (
+//                    (int) data.data_1 [d1], (int) data.data_1 [d1+1], (int) data.data_1 [d1+2], (int) data.data_1 [d1+3]); // <<|SSE2|>>
+            data_1_packed = _mm_loadu_si128((const __m128i_u*) (data.data_1 + d1)); // <<|SSE2|>>
+            cmp_result_packed = _mm_cmpeq_epi32 (data_2_packed, data_1_packed); // <<|SSE2|>> // 32 bit block equal: 0xFFFFFFFF
 
             // Extract the data from the XMM register
             // Yes the original data are 32 bit. But in the following lines there will be only equal zero tests
@@ -768,7 +772,7 @@ Inersection_With_SSE2
 
             register size_t real_d1 = d1;
             // Skip half of the objects, if in this byte range no intersection was found
-            if (cmp_result[1] == 0) { real_d1 += data_step / 2; } // Compare with [1], because the data are in reversed order
+            //if (cmp_result[1] == 0) { real_d1 += data_step / 2; } // Compare with [1], because the data are in reversed order
 
             for (; real_d1 < (d1 + data_step); ++ real_d1)
             {
