@@ -572,7 +572,7 @@ Inersection_With_AVX2
 //    __m256i three_four_minus_one_packed = _mm256_set_epi32(-1, -1, -1, -1, -1, -1, 0, 0);   // <<|AVX|>> // Set higher 75% of the bits to 1
 //    __m256i half_minus_one_packed       = _mm256_set_epi32(-1, -1, -1, -1, 0, 0, 0, 0);     // <<|AVX|>> // Set the higher half bits to 1
 //    __m256i one_four_minus_one_packed   = _mm256_set_epi32(-1, -1, 0, 0, 0, 0, 0, 0);       // <<|AVX|>> // Set higher 25% of the bits to 1
-    const size_t data_step                      = 8; // 256 bit register width / 32 bit per value
+    const size_t data_step                      = AVX_REG_WIDTH_BIT / SIMD_VALUE_SIZE_BIT; // 256 bit register width / 32 bit per value
 //    const size_t data_step_three_four           = data_step * (3 / 4);
 //    const size_t data_step_half                 = data_step * (1 / 2);
 //    const size_t data_step_one_four             = data_step * (1 / 4);
@@ -661,7 +661,7 @@ Inersection_With_SSE4_1
     __m128i cmp_result_packed       = _mm_setzero_si128();  // <<|SSE2|>>
     __m128i minus_one_packed        = _mm_set1_epi32(-1);   // <<|SSE2|>> // Set all bits to 1
     // __m128i half_minus_one_packed   = _mm_set_epi32(-1, -1, 0, 0);  // <<|SSE2|>> // Set the higher half bits to 1
-    const size_t data_step                      = 4; // 128 bit register width / 32 bit per value
+    const size_t data_step                      = SSE_REG_WIDTH_BIT / SIMD_VALUE_SIZE_BIT; // 128 bit register width / 32 bit per value
     const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
 
     // Calculate intersection
@@ -741,7 +741,7 @@ Inersection_With_SSE2
     __m128i data_1_packed           = _mm_setzero_si128(); // <<|SSE2|>>
     __m128i data_2_packed           = _mm_setzero_si128(); // <<|SSE2|>>
     __m128i cmp_result_packed       = _mm_setzero_si128(); // <<|SSE2|>>
-    const size_t data_step                      = 4; // 128 bit register width / 32 bit per value
+    const size_t data_step                      = SSE_REG_WIDTH_BIT / SIMD_VALUE_SIZE_BIT; // 128 bit register width / 32 bit per value
     const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
 
     // Calculate intersection

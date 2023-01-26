@@ -251,6 +251,57 @@ IS_TYPE(VERSION, double) // float is not the right type for the expected type !
 
 //---------------------------------------------------------------------------------------------------------------------
 
+#ifndef SIMD_VALUE_SIZE_BIT
+#define SIMD_VALUE_SIZE_BIT 32      ///< Width of a single value
+#else
+#error "The macro \"SIMD_VALUE_SIZE_BIT\" is already defined !"
+#endif /* SIMD_VALUE_SIZE_BIT */
+
+#ifndef MMX_REG_WIDTH_BIT
+#define MMX_REG_WIDTH_BIT 64        ///< Width of a MMX register
+#else
+#error "The macro \"MMX_REG_WIDTH_BIT\" is already defined !"
+#endif /* MMX_REG_WIDTH_BIT */
+
+#ifndef SSE_REG_WIDTH_BIT
+#define SSE_REG_WIDTH_BIT 128       ///< Width of a SSE register
+#else
+#error "The macro \"SSE_REG_WIDTH_BIT\" is already defined !"
+#endif /* SSE_REG_WIDTH_BIT */
+
+#ifndef AVX_REG_WIDTH_BIT
+#define AVX_REG_WIDTH_BIT 256       ///< Width of a AVX register
+#else
+#error "The macro \"AVX_REG_WIDTH_BIT\" is already defined !"
+#endif /* AVX_REG_WIDTH_BIT */
+
+#ifndef AVX512_REG_WIDTH_BIT
+#define AVX512_REG_WIDTH_BIT 512    ///< Width of a AVX register
+#else
+#error "The macro \"AVX512_REG_WIDTH_BIT\" is already defined !"
+#endif /* AVX512_REG_WIDTH_BIT */
+
+
+
+/**
+ * @brief Check, whether the macro values are valid.
+ */
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+_Static_assert(SIMD_VALUE_SIZE_BIT == 32,   "The macro \"SIMD_VALUE_SIZE_BIT\" needs to be exact 32 !");
+_Static_assert(MMX_REG_WIDTH_BIT == 64,     "The macro \"MMX_REG_WIDTH_BIT\" needs to be exact 64 !");
+_Static_assert(SSE_REG_WIDTH_BIT == 128,    "The macro \"SSE_REG_WIDTH_BIT\" needs to be exact 128 !");
+_Static_assert(AVX_REG_WIDTH_BIT == 256,    "The macro \"AVX_REG_WIDTH_BIT\" needs to be exact 256 !");
+_Static_assert(AVX512_REG_WIDTH_BIT == 512, "The macro \"AVX512_REG_WIDTH_BIT\" needs to be exact 512 !");
+
+IS_TYPE(SIMD_VALUE_SIZE_BIT, int)
+IS_TYPE(MMX_REG_WIDTH_BIT, int)
+IS_TYPE(SSE_REG_WIDTH_BIT, int)
+IS_TYPE(AVX_REG_WIDTH_BIT, int)
+IS_TYPE(AVX512_REG_WIDTH_BIT, int)
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
+//---------------------------------------------------------------------------------------------------------------------
+
 /**
  * Macros to manually disable CPU extensions.
  *
