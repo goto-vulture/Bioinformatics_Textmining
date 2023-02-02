@@ -329,6 +329,157 @@ extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files_JSON_And_CSV (vo
 
 //---------------------------------------------------------------------------------------------------------------------
 
+#if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Test, whether the results from the calculations with AVX2 extension and without are the same.
+ *
+ * It will be compared:
+ * - Number of tokens
+ * - Number of sets
+ */
+extern void TEST_AVX2_Extension (void)
+{
+    Set_CLI_Parameter_To_Default_Values();
+
+    GLOBAL_CLI_INPUT_FILE = FILE_1;
+    GLOBAL_CLI_INPUT_FILE2 = FILE_CSV;
+    GLOBAL_CLI_OUTPUT_FILE = OUT_FILE;
+
+    uint_fast64_t number_of_intersection_sets_1 = 0;
+    uint_fast64_t number_of_intersection_tokens_1 = 0;
+
+    GLOBAL_CLI_NO_CPU_EXTENSIONS = true;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_1, &number_of_intersection_sets_1);
+
+    uint_fast64_t number_of_intersection_sets_2 = 0;
+    uint_fast64_t number_of_intersection_tokens_2 = 0;
+
+    GLOBAL_CLI_NO_CPU_EXTENSIONS = false;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_2, &number_of_intersection_sets_2);
+
+    ASSERT_EQUALS(number_of_intersection_sets_1, number_of_intersection_sets_2);
+    ASSERT_EQUALS(number_of_intersection_tokens_1, number_of_intersection_tokens_2);
+
+    // ---
+
+    GLOBAL_CLI_INPUT_FILE2 = FILE_2;
+
+    GLOBAL_CLI_NO_CPU_EXTENSIONS = true;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_1, &number_of_intersection_sets_1);
+
+    GLOBAL_CLI_NO_CPU_EXTENSIONS = false;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_2, &number_of_intersection_sets_2);
+
+    ASSERT_EQUALS(number_of_intersection_sets_1, number_of_intersection_sets_2);
+    ASSERT_EQUALS(number_of_intersection_tokens_1, number_of_intersection_tokens_2);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Test, whether the results from the calculations with SSE4_1 extension and without are the same.
+ *
+ * It will be compared:
+ * - Number of tokens
+ * - Number of sets
+ */
+extern void TEST_SSE4_1_Extension (void)
+{
+    Set_CLI_Parameter_To_Default_Values();
+
+    GLOBAL_CLI_INPUT_FILE = FILE_1;
+    GLOBAL_CLI_INPUT_FILE2 = FILE_CSV;
+    GLOBAL_CLI_OUTPUT_FILE = OUT_FILE;
+
+    uint_fast64_t number_of_intersection_sets_1 = 0;
+    uint_fast64_t number_of_intersection_tokens_1 = 0;
+
+    GLOBAL_CLI_NO_CPU_EXTENSIONS = true;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_1, &number_of_intersection_sets_1);
+
+    uint_fast64_t number_of_intersection_sets_2 = 0;
+    uint_fast64_t number_of_intersection_tokens_2 = 0;
+
+    GLOBAL_CLI_NO_CPU_EXTENSIONS = false;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_2, &number_of_intersection_sets_2);
+
+    ASSERT_EQUALS(number_of_intersection_sets_1, number_of_intersection_sets_2);
+    ASSERT_EQUALS(number_of_intersection_tokens_1, number_of_intersection_tokens_2);
+
+    // ---
+
+    GLOBAL_CLI_INPUT_FILE2 = FILE_2;
+
+    GLOBAL_CLI_NO_CPU_EXTENSIONS = true;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_1, &number_of_intersection_sets_1);
+
+    GLOBAL_CLI_NO_CPU_EXTENSIONS = false;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_2, &number_of_intersection_sets_2);
+
+    ASSERT_EQUALS(number_of_intersection_sets_1, number_of_intersection_sets_2);
+    ASSERT_EQUALS(number_of_intersection_tokens_1, number_of_intersection_tokens_2);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+#elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Test, whether the results from the calculations with SSE2 extension and without are the same.
+ *
+ * It will be compared:
+ * - Number of tokens
+ * - Number of sets
+ */
+extern void TEST_SSE2_Extension (void)
+{
+    Set_CLI_Parameter_To_Default_Values();
+
+    GLOBAL_CLI_INPUT_FILE = FILE_1;
+    GLOBAL_CLI_INPUT_FILE2 = FILE_CSV;
+    GLOBAL_CLI_OUTPUT_FILE = OUT_FILE;
+
+    uint_fast64_t number_of_intersection_sets_1 = 0;
+    uint_fast64_t number_of_intersection_tokens_1 = 0;
+
+    GLOBAL_CLI_NO_CPU_EXTENSIONS = true;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_1, &number_of_intersection_sets_1);
+
+    uint_fast64_t number_of_intersection_sets_2 = 0;
+    uint_fast64_t number_of_intersection_tokens_2 = 0;
+
+    GLOBAL_CLI_NO_CPU_EXTENSIONS = false;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_2, &number_of_intersection_sets_2);
+
+    ASSERT_EQUALS(number_of_intersection_sets_1, number_of_intersection_sets_2);
+    ASSERT_EQUALS(number_of_intersection_tokens_1, number_of_intersection_tokens_2);
+
+    // ---
+
+    GLOBAL_CLI_INPUT_FILE2 = FILE_2;
+
+    GLOBAL_CLI_NO_CPU_EXTENSIONS = true;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_1, &number_of_intersection_sets_1);
+
+    GLOBAL_CLI_NO_CPU_EXTENSIONS = false;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_2, &number_of_intersection_sets_2);
+
+    ASSERT_EQUALS(number_of_intersection_sets_1, number_of_intersection_sets_2);
+    ASSERT_EQUALS(number_of_intersection_tokens_1, number_of_intersection_tokens_2);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+#else
+// No extension test possible
+#endif
+
 
 
 #ifdef FILE_1

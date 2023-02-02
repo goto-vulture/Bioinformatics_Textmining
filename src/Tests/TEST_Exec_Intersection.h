@@ -78,6 +78,40 @@ extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files_JSON_And_CSV (
  */
 extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files_JSON_And_CSV (void);
 
+#if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Test, whether the results from the calculations with AVX2 extension and without are the same.
+ *
+ * It will be compared:
+ * - Number of tokens
+ * - Number of sets
+ */
+extern void TEST_AVX2_Extension (void);
+
+#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Test, whether the results from the calculations with AVX2 extension and without are the same.
+ *
+ * It will be compared:
+ * - Number of tokens
+ * - Number of sets
+ */
+extern void TEST_SSE4_1_Extension (void);
+
+#elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Test, whether the results from the calculations with AVX2 extension and without are the same.
+ *
+ * It will be compared:
+ * - Number of tokens
+ * - Number of sets
+ */
+extern void TEST_SSE2_Extension (void);
+
+#else
+// No extension test possible
+#endif
+
 
 
 #ifdef __cplusplus
