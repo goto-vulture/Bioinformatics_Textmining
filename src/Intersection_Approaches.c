@@ -34,6 +34,7 @@
 #include "Error_Handling/_Generics.h"
 #include "Print_Tools.h"
 #include "Defines.h"
+#include "CLI_Parameter.h"
 
 
 
@@ -219,7 +220,7 @@ Inersection_With_SSE2
 (
         const struct Intersection_Data data
 );
-#else
+#endif
 /**
  * @brief No special instructions for the calculation.
  *
@@ -242,7 +243,6 @@ Inersection_Without_Special_Instructions
 (
         const struct Intersection_Data data
 );
-#endif
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -542,15 +542,20 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 
     // For the first implementation and to have a compiler independent code: Only use the CPU extensions, if the GCC
     // compiler will be used
+    if (! GLOBAL_CLI_NO_CPU_EXTENSIONS)
+    {
 #if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
-    Inersection_With_AVX2(data);
+        Inersection_With_AVX2(data);
 #elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
-    Inersection_With_SSE4_1(data);
+        Inersection_With_SSE4_1(data);
 #elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
-    Inersection_With_SSE2(data);
-#else
-    Inersection_Without_Special_Instructions(data);
+        Inersection_With_SSE2(data);
 #endif
+    }
+    else
+    {
+        Inersection_Without_Special_Instructions(data);
+    }
 
     res_obj->intersection_data = true;
 
@@ -857,7 +862,7 @@ Inersection_With_SSE2
 
 //---------------------------------------------------------------------------------------------------------------------
 
-#else
+#endif
 /**
  * @brief No special instructions for the calculation.
  *
@@ -902,7 +907,6 @@ Inersection_Without_Special_Instructions
 
     return;
 }
-#endif
 
 //---------------------------------------------------------------------------------------------------------------------
 
