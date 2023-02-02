@@ -126,11 +126,14 @@ Optional arguments:
 - `--show_too_long_tokens`: Show too long tokens in the export file
 - `--no_part_matches`: No part matches will appear in the export file
 - `--no_full_matches`: No full matches will appear in the export file
+- `-k`, `--keep_single_token_results`: Keep results with only one token (By default single tokens results will be discarded)
+- `-n`, `--no_cpu_extensions`: Don't use CPU extensions, even if there available on the host
+
 - `-h`, `--help`: Show a help message and exit
 
 Debugging arguments:
 - `-A`, `--abort=<float>`: Abort the calculation after X percent
-- `-T`, `--run_all_test_functions`: Runing all test functions. This argument overrides all other arguments, except -h. (Only useful for debugging)
+- `-T`, `--run_all_test_functions`: Running all test functions. This argument overrides all other arguments, except -h. (Only useful for debugging)
 
 
 
@@ -138,7 +141,7 @@ Debugging arguments:
 
 To make the implementation simple, the in and output will be created in a simple way. The name of the input files will be passed trough CLI parameter and the results will be represented as JSON file.
 
-If available the program uses SSE and AVX2 extensions, if the host support these extensions. As fallback, whether a support is not available or not detectable, portable C code is used.
+If available the program uses SSE and AVX2 extensions, if the host support these extensions. As fallback, whether a support is not available or not detectable, portable C code is used. (With the option `-n` or `--no_cpu_extensions` the usage of CPU extensions can be disabled.)
 
 ### Used libraries
 
