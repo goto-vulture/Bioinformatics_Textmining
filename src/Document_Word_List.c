@@ -181,21 +181,20 @@ DocumentWordList_CreateObjectAsIntersectionResult
     new_object->data_struct.char_offsets = (CHAR_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (CHAR_OFFSET_TYPE*));
     ASSERT_ALLOC(new_object->data_struct.char_offsets, "Cannot create new Document_Word_List !",
             sizeof (CHAR_OFFSET_TYPE*) * number_of_arrays);
-    new_object->malloc_calloc_calls ++;
 
     // Outer dimension for sentence offsets
     new_object->data_struct.sentence_offsets =
             (SENTENCE_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (SENTENCE_OFFSET_TYPE*));
     ASSERT_ALLOC(new_object->data_struct.sentence_offsets, "Cannot create new Document_Word_List !",
             sizeof (SENTENCE_OFFSET_TYPE*) * number_of_arrays);
-    new_object->malloc_calloc_calls ++;
 
     // Outer dimension for word offsets
     new_object->data_struct.word_offsets =
             (WORD_OFFSET_TYPE**) CALLOC(number_of_arrays, sizeof (WORD_OFFSET_TYPE*));
     ASSERT_ALLOC(new_object->data_struct.word_offsets, "Cannot create new Document_Word_List !",
             sizeof (WORD_OFFSET_TYPE*) * number_of_arrays);
-    new_object->malloc_calloc_calls ++;
+
+    new_object->malloc_calloc_calls += 3;
 
     // Inner dimension for char, sentence and word offsets
     for (uint_fast32_t i = 0; i < number_of_arrays; ++ i)
@@ -204,20 +203,18 @@ DocumentWordList_CreateObjectAsIntersectionResult
                 sizeof (CHAR_OFFSET_TYPE));
         ASSERT_ALLOC(new_object->data_struct.char_offsets [i], "Cannot create new Document_Word_List !",
                 sizeof (CHAR_OFFSET_TYPE) * INT_ALLOCATION_STEP_SIZE);
-        new_object->malloc_calloc_calls ++;
 
         new_object->data_struct.sentence_offsets [i] = (SENTENCE_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
                 sizeof (SENTENCE_OFFSET_TYPE));
         ASSERT_ALLOC(new_object->data_struct.sentence_offsets [i], "Cannot create new Document_Word_List !",
                 sizeof (SENTENCE_OFFSET_TYPE) * INT_ALLOCATION_STEP_SIZE);
-        new_object->malloc_calloc_calls ++;
 
         new_object->data_struct.word_offsets [i] = (WORD_OFFSET_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE,
                 sizeof (WORD_OFFSET_TYPE));
         ASSERT_ALLOC(new_object->data_struct.word_offsets [i], "Cannot create new Document_Word_List !",
                 sizeof (WORD_OFFSET_TYPE) * INT_ALLOCATION_STEP_SIZE);
-        new_object->malloc_calloc_calls ++;
     }
+    new_object->malloc_calloc_calls += number_of_arrays * 3;
 
     // Show, that this object was created for intersection results
     new_object->intersection_data = true;
@@ -816,19 +813,18 @@ Create_Main_Object_Structure
 
     struct Document_Word_List* new_object = (struct Document_Word_List*) CALLOC(1, sizeof (struct Document_Word_List));
     ASSERT_ALLOC(new_object, "Cannot create new Document_Word_List !", sizeof (struct Document_Word_List));
-    new_object->malloc_calloc_calls ++;
 
     // Outer dimension
     new_object->data_struct.data = (DATA_TYPE**) CALLOC(number_of_arrays, sizeof (DATA_TYPE*));
     ASSERT_ALLOC(new_object->data_struct.data, "Cannot create new Document_Word_List !",
             sizeof (DATA_TYPE*) * number_of_arrays);
-    new_object->malloc_calloc_calls ++;
 
     // New management data
     new_object->allocated_array_size = (size_t*) CALLOC(number_of_arrays, sizeof (size_t));
     ASSERT_ALLOC(new_object->data_struct.data, "Cannot create new Document_Word_List !",
                 sizeof (size_t) * number_of_arrays);
-    new_object->malloc_calloc_calls ++;
+
+    new_object->malloc_calloc_calls += 3;
 
     // Inner dimension
     for (uint_fast32_t i = 0; i < number_of_arrays; ++ i)
@@ -836,10 +832,10 @@ Create_Main_Object_Structure
         new_object->data_struct.data [i] = (DATA_TYPE*) CALLOC(INT_ALLOCATION_STEP_SIZE, sizeof (DATA_TYPE));
         ASSERT_ALLOC(new_object->data_struct.data [i], "Cannot create new Document_Word_List !",
                 sizeof (DATA_TYPE) * INT_ALLOCATION_STEP_SIZE);
-        new_object->malloc_calloc_calls ++;
 
         new_object->allocated_array_size [i] = INT_ALLOCATION_STEP_SIZE;
     }
+    new_object->malloc_calloc_calls += number_of_arrays;
 
     // Length list
     new_object->arrays_lengths = (size_t*) CALLOC(number_of_arrays, sizeof (size_t));

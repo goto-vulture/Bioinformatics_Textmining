@@ -124,9 +124,14 @@ TokenIntMapping_DeleteObject
     // Delete the inner objects
     for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
     {
-        FREE_AND_SET_TO_NULL(object->c_str_arrays [i]);
-        FREE_AND_SET_TO_NULL(object->int_mapping [i]);
+        free(object->c_str_arrays [i]);
+        object->c_str_arrays [i] = NULL;
+        free(object->int_mapping [i]);
+        object->int_mapping [i] = NULL;
+//        FREE_AND_SET_TO_NULL(object->c_str_arrays [i]);
+//        FREE_AND_SET_TO_NULL(object->int_mapping [i]);
     }
+    GLOBAL_free_calls += (C_STR_ARRAYS << 1);
     FREE_AND_SET_TO_NULL(object);
 
     return;
