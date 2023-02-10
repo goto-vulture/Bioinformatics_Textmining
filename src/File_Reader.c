@@ -422,6 +422,11 @@ TokenListContainer_CreateObject
     size_t sum_char_read                = char_read;
     size_t char_read_before_last_output = 0;
 
+    // Variables for the case, that the input file only contains one line
+    const _Bool one_line_file = (char_read == (size_t) input_file_length) ? true : false;
+    const size_t tokens_read_print_steps    = 25000;
+    size_t tokens_read_before_last_output   = 0;
+
     CLOCK_WITH_RETURN_CHECK(start);
     // ===== ===== ===== ===== ===== BEGIN Read file line by line ===== ===== ===== ===== =====
     while(char_read > 0)
@@ -438,10 +443,8 @@ TokenListContainer_CreateObject
 
             // Print process information
             char_read_before_last_output = Process_Printer(print_steps, char_read_before_last_output,
-                    sum_char_read, unsigned_input_file_length, true,
-                    Read_File_Process_Print_Function,
-                    NULL,
-                    NULL);
+                    sum_char_read, unsigned_input_file_length, true, Read_File_Process_Print_Function,
+                    NULL, NULL);
 
             if (! json)
             {
@@ -460,8 +463,19 @@ TokenListContainer_CreateObject
             while (curr != NULL)
             {
                 // Extract the information from the current cJSON object
-                sum_tokens_found += Use_Current_JSON_Fragment(json, curr, new_container);
+                const size_t new_tokens_found = Use_Current_JSON_Fragment(json, curr, new_container);
+                sum_tokens_found += new_tokens_found;
                 curr = curr->next;
+
+                if (one_line_file)
+                {
+                    tokens_read_before_last_output += new_tokens_found;
+                    if (tokens_read_before_last_output > tokens_read_print_steps)
+                    {
+                        PRINTF_FFLUSH("Tokens read: %zu\r", sum_tokens_found);
+                        tokens_read_before_last_output = 0;
+                    }
+                }
             }
             // ===== ===== ===== BEGIN Use current cJSON object ===== ===== =====
 
