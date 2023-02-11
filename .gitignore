@@ -42,3 +42,7 @@ out_error.txt
 
 # Testausgaben als JSON Datei
 out.json
+
+# Code coverage files
+*.gcda
+*.gcno
