@@ -51,6 +51,11 @@ DEBUG_FLAGS = -O0 -g3 -D_FORTIFY_SOURCE=2
 # Eine Praeprozessorkonstante setzen, wenn im Debug-Modus das Programm uebersetzt wird
 DEBUG_FLAGS += -DDEBUG_BUILD
 
+
+# Compiler Flags fuer die Nutzung von Code Coverage Tools
+CODE_COVERAGE_FLAGS = -fprofile-arcs -ftest-coverage
+CODE_COVERAGE_LINK_FLAGS = -lgcov
+
 ##### Siehe: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html #####
 ##### Uebersicht ueber die OPtimierungsmoeglichkeiten von GCC #####
 # Release Build: Hoechste Optimierung und keine Debug Informationen
@@ -120,6 +125,8 @@ else
 		else
 			CCFLAGS += $(DEBUG_FLAGS)
 			TEMP_1 = $(addsuffix _Debug_, $(PROJECT_NAME))
+			CCFLAGS += $(CODE_COVERAGE_FLAGS)
+			LIBS += $(CODE_COVERAGE_LINK_FLAGS)
 			DEBUG = 1
 		endif
 	endif
@@ -400,10 +407,10 @@ TEST_Exec_Intersection.o: $(TEST_EXEC_INTERSECTION_C)
 
 TEST_Etc.o: $(TEST_ETC_C)
 	$(CC) $(CCFLAGS) -c $(TEST_ETC_C)
-	
+
 utf8.o: $(UTF8_C)
 	$(CC) $(CCFLAGS) -c $(UTF8_C)
-	
+
 ANSI_Esc_Seq.o: $(ANSI_ESC_SEQ_C)
 	$(CC) $(CCFLAGS) -c $(ANSI_ESC_SEQ_C)
 ##### ENDE Die einzelnen Uebersetzungseinheiten #####
@@ -428,5 +435,8 @@ clean:
 	@echo \> Deleting doxygen documentation:
 	$(RM) -rf $(DOCUMENTATION_PATH)
 	$(MKDIR) $(DOCUMENTATION_PATH)
+	@echo
+	@echo \> Deleting code coverage data:
+	$(RM) -f *.gcda *.gcno
 	@echo
 	@echo $(PROJECT_NAME) build cleaned.
