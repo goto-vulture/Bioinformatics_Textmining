@@ -217,7 +217,7 @@ TwoDimCStrArray_AppendDataToNewestString
     TwoDimCStrArray_AppendDataToSpecificString
     (
             object,
-            (object->next_free_c_str == 0) ? 0 : object->next_free_c_str,
+            (object->next_free_c_str == 0) ? 0 : object->next_free_c_str - 1,
             append_data, append_data_length
     );
 
