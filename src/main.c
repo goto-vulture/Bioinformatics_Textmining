@@ -169,6 +169,7 @@ IS_CONST_STR(N_A)
 #include "Tests/TEST_File_Reader.h"
 #include "Tests/TEST_Exec_Intersection.h"
 #include "Tests/TEST_Etc.h"
+#include "Tests/TEST_Two_Dim_C_String_Array.h"
 
 
 
@@ -385,6 +386,9 @@ Run_All_Test_Functions
 
     RUN(TEST_Number_Of_Free_Calls);
     RUN(TEST_ANSI_Esc_Seq);
+
+    RUN(TEST_AppendNewString);
+    RUN(TEST_AppendDataToNewestString);
 
     return;
 }
