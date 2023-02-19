@@ -24,11 +24,7 @@ extern "C"
 
 //---------------------------------------------------------------------------------------------------------------------
 
-#ifndef DATA_TYPE
-#define DATA_TYPE unsigned int
-#else
-#error "The macro \"DATA_TYPE\" is already defined !"
-#endif /* DATA_TYPE */
+typedef unsigned int DATA_TYPE;
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
     #ifndef DATA_TYPE_FSTR_SPECIFIER
@@ -58,11 +54,7 @@ extern "C"
 
 //---------------------------------------------------------------------------------------------------------------------
 
-#ifndef CHAR_OFFSET_TYPE
-#define CHAR_OFFSET_TYPE unsigned short int     ///< Char offset type
-#else
-#error "The macro \"CHAR_OFFSET_TYPE\" is already defined !"
-#endif /* CHAR_OFFSET_TYPE */
+typedef unsigned short int CHAR_OFFSET_TYPE;
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
     /**
@@ -98,11 +90,7 @@ extern "C"
 
 //---------------------------------------------------------------------------------------------------------------------
 
-#ifndef SENTENCE_OFFSET_TYPE
-#define SENTENCE_OFFSET_TYPE unsigned char      ///< Type for the sentence offsets
-#else
-#error "The macro \"SENTENCE_OFFSET_TYPE\" is already defined !"
-#endif /* SENTENCE_OFFSET_TYPE */
+typedef unsigned char SENTENCE_OFFSET_TYPE;
 
 // If C11 available -> auto determining the printf specifier and max value
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
@@ -139,11 +127,7 @@ extern "C"
 
 //---------------------------------------------------------------------------------------------------------------------
 
-#ifndef WORD_OFFSET_TYPE
-#define WORD_OFFSET_TYPE unsigned short      ///< Type for the word offsets
-#else
-#error "The macro \"WORD_OFFSET_TYPE\" is already defined !"
-#endif /* WORD_OFFSET_TYPE */
+typedef unsigned short int WORD_OFFSET_TYPE;
 
 // If C11 available -> auto determining the printf specifier and max value
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
@@ -180,11 +164,7 @@ extern "C"
 
 //---------------------------------------------------------------------------------------------------------------------
 
-#ifndef INT_MAPPING_TYPE
-#define INT_MAPPING_TYPE unsigned int           ///< Int mapping type
-#else
-#error "The macro \"INT_MAPPING_TYPE\" is already defined !"
-#endif /* INT_MAPPING_TYPE */
+typedef unsigned int INT_MAPPING_TYPE;
 
 #ifndef INT_MAPPING_TYPE_FSTR_SPECIFIER
 #define INT_MAPPING_TYPE_FSTR_SPECIFIER "u"     ///< Specifier for the int mapping type
