@@ -166,11 +166,38 @@ typedef unsigned short int WORD_OFFSET_TYPE;
 
 typedef unsigned int INT_MAPPING_TYPE;
 
-#ifndef INT_MAPPING_TYPE_FSTR_SPECIFIER
-#define INT_MAPPING_TYPE_FSTR_SPECIFIER "u"     ///< Specifier for the int mapping type
+// If C11 available -> auto determining the printf specifier
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+    /**
+     * @brief Get suitable format specifier with a _Generic expression.
+     */
+    #ifndef INT_MAPPING_TYPE_FSTR_SPECIFIER
+    #define INT_MAPPING_TYPE_FSTR_SPECIFIER GET_FORMAT_STR((INT_MAPPING_TYPE) 42)
+    #else
+    #error "The macro \"INT_MAPPING_TYPE_FSTR_SPECIFIER\" is already defined !"
+    #endif /* INT_MAPPING_TYPE_FSTR_SPECIFIER */
+
+    /**
+     * @brief Max value for the int mapping type. (Get the value with a _Generic expression)
+     */
+    #ifndef INT_MAPPING_TYPE_MAX
+    #define INT_MAPPING_TYPE_MAX GET_MAX((INT_MAPPING_TYPE) 42)
+    #else
+    #error "The macro \"INT_MAPPING_TYPE_MAX\" is already defined !"
+    #endif /* INT_MAPPING_TYPE_MAX */
 #else
-#error "The macro \"INT_MAPPING_TYPE_FSTR_SPECIFIER\" is already defined !"
-#endif /* INT_MAPPING_TYPE_FSTR_SPECIFIER */
+    #ifndef INT_MAPPING_TYPE_FSTR_SPECIFIER
+    #define INT_MAPPING_TYPE_FSTR_SPECIFIER "u"     ///< Specifier for the int mapping type
+    #else
+    #error "The macro \"INT_MAPPING_TYPE_FSTR_SPECIFIER\" is already defined !"
+    #endif /* INT_MAPPING_TYPE_FSTR_SPECIFIER */
+
+    #ifndef INT_MAPPING_TYPE_MAX
+    #define INT_MAPPING_TYPE_MAX UINT_MAX
+    #else
+    #error "The macro \"INT_MAPPING_TYPE_MAX\" is already defined !"
+    #endif /* INT_MAPPING_TYPE_MAX */
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 #ifndef DATASET_ID_LENGTH
 #define DATASET_ID_LENGTH 16                    ///< Length of a data set ID.
