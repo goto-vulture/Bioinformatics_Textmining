@@ -353,6 +353,10 @@ Run_All_Test_Functions
         void
 )
 {
+    RUN(TEST_AppendNewString);
+    RUN(TEST_AppendDataToNewestString);
+    RUN(TEST_AppendDataToSpecificString);
+
     RUN(TEST_Intersection);
     RUN(TEST_Tokenize_String);
 
@@ -386,9 +390,6 @@ Run_All_Test_Functions
 
     RUN(TEST_Number_Of_Free_Calls);
     RUN(TEST_ANSI_Esc_Seq);
-
-    RUN(TEST_AppendNewString);
-    RUN(TEST_AppendDataToNewestString);
 
     return;
 }
