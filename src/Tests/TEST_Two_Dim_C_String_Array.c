@@ -83,7 +83,7 @@ extern void TEST_AppendDataToSpecificString (void)
             "String is too short. Given length %zu; Min. necessary: %zu", COUNT_ARRAY_ELEMENTS(expected_result),
             strlen(first_string) + strlen(new_string) + 1);
 
-    strncat (expected_result, first_string, mem_left);
+    strncpy (expected_result, first_string, mem_left);
     mem_left -= strlen(first_string);
     strncat (expected_result, new_string, mem_left);
 
