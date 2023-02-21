@@ -392,7 +392,7 @@ Run_All_Test_Functions
 #elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
     RUN(TEST_SSE2_Extension);
 #else
-    // No extension test possible
+    RUN(TEST_Placeholder_For_No_Extensions);
 #endif
 
     RUN(TEST_Number_Of_Free_Calls);

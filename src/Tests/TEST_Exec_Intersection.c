@@ -22,6 +22,7 @@
 #include "../Exec_Intersection.h"
 #include "tinytest.h"
 #include "../CLI_Parameter.h"
+#include "../Defines.h"
 #include "md5.h"
 
 
@@ -477,8 +478,22 @@ extern void TEST_SSE2_Extension (void)
 //---------------------------------------------------------------------------------------------------------------------
 
 #else
-// No extension test possible
+/**
+ * @brief This function is only a placeholder and tests nothing.
+ *
+ * Such a placeholder is necessary to have the same number of test functions on all supported machines.
+ */
+extern void TEST_Placeholder_For_No_Extensions (void)
+{
+    // Nothing to do here ...
+
+    ASSERT_EQUALS(true, true);
+
+    return;
+}
 #endif
+
+//---------------------------------------------------------------------------------------------------------------------
 
 
 

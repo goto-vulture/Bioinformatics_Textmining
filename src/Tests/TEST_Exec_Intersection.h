@@ -109,7 +109,12 @@ extern void TEST_SSE4_1_Extension (void);
 extern void TEST_SSE2_Extension (void);
 
 #else
-// No extension test possible
+/**
+ * @brief This function is only a placeholder and tests nothing.
+ *
+ * Such a placeholder is necessary to have the same number of test functions on all supported machines.
+ */
+extern void TEST_Placeholder_For_No_Extensions (void);
 #endif
 
 
