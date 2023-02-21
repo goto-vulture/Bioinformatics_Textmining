@@ -351,8 +351,8 @@ extern "C"
     \
     int: "%d",                                                                                                          \
     const int: "%d",                                                                                                    \
-    unsigned int: "%lu",                                                                                                \
-    const unsigned int: "%lu",                                                                                          \
+    unsigned int: "%u",                                                                                                 \
+    const unsigned int: "%u",                                                                                           \
     \
     long int: "%ld",                                                                                                    \
     const long int: "%ld",                                                                                              \
