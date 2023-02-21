@@ -79,23 +79,23 @@ TwoDimCStrArray_CreateObject
             sizeof (struct Two_Dim_C_String_Array));
 
     // Allocate the outer array
-    new_object->data = (char**) CALLOC(C_STR_ALLOC_STEP_SIZE, sizeof (char*));
-    ASSERT_ALLOC(new_object->data, "Cannot create the outer data array !", C_STR_ALLOC_STEP_SIZE * sizeof (char*));
-    new_object->number_of_c_str = C_STR_ALLOC_STEP_SIZE;
+    new_object->data = (char**) CALLOC(number_of_c_str, sizeof (char*));
+    ASSERT_ALLOC(new_object->data, "Cannot create the outer data array !", number_of_c_str * sizeof (char*));
+    new_object->number_of_c_str = number_of_c_str;
 
     // Allocate an array to save the length of the c strings
-    new_object->allocated_c_str_length = (size_t*) CALLOC(C_STR_ALLOC_STEP_SIZE, sizeof (size_t));
+    new_object->allocated_c_str_length = (size_t*) CALLOC(number_of_c_str, sizeof (size_t));
     ASSERT_ALLOC(new_object->allocated_c_str_length, "Cannot create an array with allocation information !",
-            C_STR_ALLOC_STEP_SIZE * sizeof (size_t));
+            number_of_c_str * sizeof (size_t));
 
     // Allocate an array with the data, what is the next free char in each c string
-    new_object->next_free_char_in_c_str = (uint_fast32_t*) CALLOC(C_STR_ALLOC_STEP_SIZE, sizeof (uint_fast32_t));
+    new_object->next_free_char_in_c_str = (uint_fast32_t*) CALLOC(number_of_c_str, sizeof (uint_fast32_t));
     ASSERT_ALLOC(new_object->next_free_char_in_c_str,
             "Cannot create an array with length information about the c string lengths !",
-            C_STR_ALLOC_STEP_SIZE * sizeof (uint_fast32_t));
+            number_of_c_str * sizeof (uint_fast32_t));
 
     // Allocate the inner array
-    for (size_t i = 0; i < C_STR_ALLOC_STEP_SIZE; ++ i)
+    for (size_t i = 0; i < number_of_c_str; ++ i)
     {
         new_object->data [i] = (char*) CALLOC (C_STR_LENGTH_ALLOC_STEP_SIZE, sizeof (char));
         ASSERT_ALLOC(new_object->data [i], "Cannot create an object of the inner data array !",
@@ -217,7 +217,7 @@ TwoDimCStrArray_AppendDataToNewestString
     TwoDimCStrArray_AppendDataToSpecificString
     (
             object,
-            (object->next_free_c_str == 0) ? 0 : object->next_free_c_str,
+            (object->next_free_c_str == 0) ? 0 : object->next_free_c_str - 1,
             append_data, append_data_length
     );
 

@@ -169,6 +169,7 @@ IS_CONST_STR(N_A)
 #include "Tests/TEST_File_Reader.h"
 #include "Tests/TEST_Exec_Intersection.h"
 #include "Tests/TEST_Etc.h"
+#include "Tests/TEST_Two_Dim_C_String_Array.h"
 
 
 
@@ -352,6 +353,10 @@ Run_All_Test_Functions
         void
 )
 {
+    RUN(TEST_AppendNewString);
+    RUN(TEST_AppendDataToNewestString);
+    RUN(TEST_AppendDataToSpecificString);
+
     RUN(TEST_Intersection);
     RUN(TEST_Tokenize_String);
 

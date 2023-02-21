@@ -51,6 +51,11 @@ DEBUG_FLAGS = -O0 -g3 -D_FORTIFY_SOURCE=2
 # Eine Praeprozessorkonstante setzen, wenn im Debug-Modus das Programm uebersetzt wird
 DEBUG_FLAGS += -DDEBUG_BUILD
 
+
+# Compiler Flags fuer die Nutzung von Code Coverage Tools
+CODE_COVERAGE_FLAGS = -fprofile-arcs -ftest-coverage
+CODE_COVERAGE_LINK_FLAGS = -lgcov
+
 ##### Siehe: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html #####
 ##### Uebersicht ueber die OPtimierungsmoeglichkeiten von GCC #####
 # Release Build: Hoechste Optimierung und keine Debug Informationen
@@ -120,6 +125,8 @@ else
 		else
 			CCFLAGS += $(DEBUG_FLAGS)
 			TEMP_1 = $(addsuffix _Debug_, $(PROJECT_NAME))
+			CCFLAGS += $(CODE_COVERAGE_FLAGS)
+			LIBS += $(CODE_COVERAGE_LINK_FLAGS)
 			DEBUG = 1
 		endif
 	endif
@@ -269,6 +276,9 @@ UTF8_C = ./src/UTF8/utf8.c
 
 ANSI_ESC_SEQ_H = ./src/ANSI_Esc_Seq.h
 ANSI_ESC_SEQ_C = ./src/ANSI_Esc_Seq.c
+
+TEST_TWO_DIM_C_STRING_ARRAY_H = ./src/Tests/TEST_Two_Dim_C_String_Array.h
+TEST_TWO_DIM_C_STRING_ARRAY_C = ./src/Tests/TEST_Two_Dim_C_String_Array.c
 ##### ##### ##### ENDE Uebersetzungseinheiten ##### ##### #####
 
 
@@ -291,11 +301,11 @@ endif
 	@echo
 	@echo $(PROJECT_NAME) build completed !
 
-$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o  Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o Exec_Config.o TEST_Exec_Intersection.o TEST_Etc.o utf8.o ANSI_Esc_Seq.o
+$(TARGET): main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o  Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o Exec_Config.o TEST_Exec_Intersection.o TEST_Etc.o utf8.o ANSI_Esc_Seq.o TEST_Two_Dim_C_String_Array.o
 	@echo
 	@echo Linking object files ...
 	@echo
-	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o Exec_Config.o TEST_Exec_Intersection.o TEST_Etc.o utf8.o ANSI_Esc_Seq.o $(LIBS)
+	$(CC) $(CCFLAGS) -o $(TARGET) main.o str2int.o int2str.o Dynamic_Memory.o tinytest.o argparse.o CLI_Parameter.o Print_Tools.o String_Tools.o Document_Word_List.o TEST_Document_Word_List.o Create_Test_Data.o Intersection_Approaches.o File_Reader.o Token_Int_Mapping.o cJSON.o TEST_cJSON_Parser.o Misc.o Exec_Intersection.o Stop_Words.o Two_Dim_C_String_Array.o md5.o TEST_File_Reader.o Exec_Config.o TEST_Exec_Intersection.o TEST_Etc.o utf8.o ANSI_Esc_Seq.o TEST_Two_Dim_C_String_Array.o $(LIBS)
 
 ##### BEGINN Die einzelnen Uebersetzungseinheiten #####
 main.o: $(MAIN_C)
@@ -400,12 +410,15 @@ TEST_Exec_Intersection.o: $(TEST_EXEC_INTERSECTION_C)
 
 TEST_Etc.o: $(TEST_ETC_C)
 	$(CC) $(CCFLAGS) -c $(TEST_ETC_C)
-	
+
 utf8.o: $(UTF8_C)
 	$(CC) $(CCFLAGS) -c $(UTF8_C)
-	
+
 ANSI_Esc_Seq.o: $(ANSI_ESC_SEQ_C)
 	$(CC) $(CCFLAGS) -c $(ANSI_ESC_SEQ_C)
+
+TEST_Two_Dim_C_String_Array.o: $(TEST_TWO_DIM_C_STRING_ARRAY_C)
+	$(CC) $(CCFLAGS) -c $(TEST_TWO_DIM_C_STRING_ARRAY_C)
 ##### ENDE Die einzelnen Uebersetzungseinheiten #####
 
 # Kompilierung des Programms im Debug Modus mit direkter Ausfuehrung der Tests
@@ -428,5 +441,8 @@ clean:
 	@echo \> Deleting doxygen documentation:
 	$(RM) -rf $(DOCUMENTATION_PATH)
 	$(MKDIR) $(DOCUMENTATION_PATH)
+	@echo
+	@echo \> Deleting code coverage data:
+	$(RM) -f *.gcda *.gcno
 	@echo
 	@echo $(PROJECT_NAME) build cleaned.
