@@ -22,11 +22,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && ! defined(NO_CPU_EXTENSIONS)
 #include <immintrin.h>
 #include <emmintrin.h>
 #include <smmintrin.h>
-#endif /* __GNUC__ */
+#endif /* defined(__GNUC__) && ! defined(NO_CPU_EXTENSIONS) */
 
 #include "Misc.h"
 #include "Error_Handling/Assert_Msg.h"
@@ -550,6 +550,8 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
         Inersection_With_SSE4_1(data);
 #elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
         Inersection_With_SSE2(data);
+#else
+        Inersection_Without_Special_Instructions(data);
 #endif
     }
     else

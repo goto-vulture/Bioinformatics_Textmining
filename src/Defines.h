@@ -341,6 +341,21 @@ IS_TYPE(AVX512_REG_WIDTH_BIT, int)
 #error "The macro \"NO_CPU_EXTENSIONS\" is already defined !"
 #endif /* NO_CPU_EXTENSIONS */
 
+// On a 32 bit system any CPU extension is not usable
+#if defined(__GNUC__)
+#if defined(i386) || defined(__i386) || defined(__i386__) && (! defined(__x86_64__) && ! defined(_M_X64))
+#define NO_CPU_EXTENSIONS
+/**
+ * @brief Summary macro, that the system is a 32 bit x86 system
+ */
+#ifndef I386
+#define I386
+#else
+#error "The macro \"I386\" is already defined !"
+#endif /* I386 */
+#endif /* defined(i386) || defined(__i386) || defined(__i386__) && (! defined(__x86_64__) && ! defined(_M_X64)) */
+#endif /* defined(__GNUC__) */
+
 //---------------------------------------------------------------------------------------------------------------------
 
 
