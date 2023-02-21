@@ -385,6 +385,7 @@ Run_All_Test_Functions
 
     RUN(TEST_Number_Of_Free_Calls);
     RUN(TEST_ANSI_Esc_Seq);
+    RUN(TEST_Any_Print);
 
     return;
 }

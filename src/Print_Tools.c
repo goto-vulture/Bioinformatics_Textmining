@@ -225,3 +225,83 @@ extern void Print_Value_With_Decimal_Points (const long int value)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Printing any basic type.
+ *
+ * The data will be given as void pointer. It will be casted to the type, that was given with the enum VALUE_TYPE object.
+ *
+ * @param[in] data Given data
+ * @param[in] value_type Type of the given data
+ */
+extern void Any_Print(void* data, const enum VALUE_TYPE value_type)
+{
+    switch (value_type)
+    {
+    case UNSIGNED_CHAR:
+    case U_CHAR:
+        printf (GET_FORMAT_STR(*(unsigned char*) data), *(unsigned char*) data); break;
+    case SIGNED_CHAR:
+    case S_CHAR:
+    case CHAR:
+        printf (GET_FORMAT_STR(*(char*) data), *(char*) data); break;
+
+    case UNSIGNED_SHORT:
+    case U_SHORT:
+        printf (GET_FORMAT_STR(*(unsigned short*) data), *(unsigned short*) data); break;
+    case SIGNED_SHORT:
+    case S_SHORT:
+    case SHORT:
+        printf (GET_FORMAT_STR(*(short*) data), *(short*) data); break;
+
+    case UNSIGNED_INT:
+    case U_INT:
+        printf (GET_FORMAT_STR(*(unsigned int*) data), *(unsigned int*) data); break;
+    case SIGNED_INT:
+    case S_INT:
+    case INT:
+        printf (GET_FORMAT_STR(*(int*) data), *(int*) data); break;
+
+    case UNSIGNED_LONG_INT:
+    case U_L_INT:
+        printf (GET_FORMAT_STR(*(unsigned long int*) data), *(unsigned long int*) data); break;
+    case SIGNED_LONG_INT:
+    case S_L_INT:
+    case LONG_INT:
+    case L_INT:
+        printf (GET_FORMAT_STR(*(long int*) data), *(long int*) data); break;
+
+    case UNSIGNED_LONG_LONG_INT:
+    case U_LL_INT:
+        printf (GET_FORMAT_STR(*(unsigned long long int*) data), *(unsigned long long int*) data); break;
+    case SIGNED_LONG_LONG_INT:
+    case S_LL_INT:
+    case LONG_LONG_INT:
+    case LL_INT:
+        printf (GET_FORMAT_STR(*(long long int*) data), *(long long int*) data); break;
+
+    case FLOAT:
+        printf (GET_FORMAT_STR(*(float*) data), *(float*) data); break;
+    case DOUBLE:
+        printf (GET_FORMAT_STR(*(double*) data), *(double*) data); break;
+    case LONG_DOUBLE:
+        printf (GET_FORMAT_STR(*(long double*) data), *(long double*) data); break;
+
+    case BOOL:
+        printf ("%s", ((*(_Bool*) data) == false) ? "false" : "true"); break;
+
+    case POINTER:
+    case PTR:
+        printf ("%p", data); break;
+
+    case UNKNOWN_VALUE_TYPE:
+        printf ("Unknown type was given"); break;
+
+    default:
+        ASSERT_MSG(false, "default path executed !");
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
