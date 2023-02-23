@@ -1261,7 +1261,7 @@ Add_Too_Long_Tokens_To_Export_File
     {
         cJSON* cjson_str = cJSON_CreateString(token_container_input_2->list_of_too_long_token->data [i]);
         cJSON_NOT_NULL(cjson_str);
-        cJSON_ADD_ITEM_TO_ARRAY_CHECK(list_first_file, cjson_str);
+        cJSON_ADD_ITEM_TO_ARRAY_CHECK(list_second_file, cjson_str);
     }
 
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(too_long_token_list, "In first file", list_first_file);
