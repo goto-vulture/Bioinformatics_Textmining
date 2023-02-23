@@ -981,6 +981,16 @@ abort_label:
     DocumentWordList_DeleteObject(intersection_result);
     intersection_result = NULL;
 
+    // If no intersections were found after the whole operation: An ',' too much will remain in the result file
+    // -> Remove them by moving the file pointer one char back
+    if ((counter_tokens_in_full_sets + counter_tokens_in_partital_sets) == 0)
+    {
+        file_operation_ret_value = fseek(result_file, -1, SEEK_CUR);
+        ASSERT_FMSG(file_operation_ret_value != EOF, "Error while removing a char from the file stream for file \"%s\": %s",
+                GLOBAL_CLI_OUTPUT_FILE, strerror(errno));
+        result_file_size --;
+    }
+
     const char* end_file_string = ((! FORMATTING_ENABLED(intersection_settings)) ? "}" : "\n}");
 
     file_operation_ret_value = fputs(end_file_string, result_file);
