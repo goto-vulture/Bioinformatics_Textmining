@@ -647,11 +647,14 @@ Exec_Intersection
     cJSON_FULL_FREE_AND_SET_TO_NULL(general_information);
 
     // Create a list with too long token and append them to the result file
-    cJSON* too_long_tokens = cJSON_CreateObject();
-    cJSON_NOT_NULL(too_long_tokens);
-    Add_Too_Long_Tokens_To_Export_File(too_long_tokens, token_container_input_1, token_container_input_2);
-    result_file_size += Append_cJSON_Object_To_Result_File(result_file, too_long_tokens, intersection_settings);
-    cJSON_FULL_FREE_AND_SET_TO_NULL(too_long_tokens);
+    if (SHOW_TOO_LONG_TOKENS_BIT(intersection_settings))
+    {
+        cJSON* too_long_tokens = cJSON_CreateObject();
+        cJSON_NOT_NULL(too_long_tokens);
+        Add_Too_Long_Tokens_To_Export_File(too_long_tokens, token_container_input_1, token_container_input_2);
+        result_file_size += Append_cJSON_Object_To_Result_File(result_file, too_long_tokens, intersection_settings);
+        cJSON_FULL_FREE_AND_SET_TO_NULL(too_long_tokens);
+    }
 
     // To have a newline after the general information and after the too long tokens
     // In the formatted mode this is not necessary
@@ -1261,8 +1264,8 @@ Add_Too_Long_Tokens_To_Export_File
         cJSON_ADD_ITEM_TO_ARRAY_CHECK(list_first_file, cjson_str);
     }
 
-    cJSON_ADD_ITEM_TO_OBJECT_CHECK(too_long_token_list, "In first file:", list_first_file);
-    cJSON_ADD_ITEM_TO_OBJECT_CHECK(too_long_token_list, "In second file:", list_second_file);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(too_long_token_list, "In first file", list_first_file);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(too_long_token_list, "In second file", list_second_file);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(export_results, "Too long tokens", too_long_token_list);
 
     return;
@@ -1700,6 +1703,10 @@ Create_Intersection_Settings_With_CLI_Parameter
     if (GLOBAL_CLI_NO_TIMESTAMP)
     {
         intersection_settings |= NO_CREATION_TIME;
+    }
+    if (GLOBAL_CLI_SHOW_TOO_LONG_TOKENS)
+    {
+        intersection_settings |= SHOW_TOO_LONG_TOKENS;
     }
 
     return intersection_settings;
