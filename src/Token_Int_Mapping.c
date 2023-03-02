@@ -506,6 +506,8 @@ TokenIntMapping_IntToToken
     return;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
+
 /**
  * @brief This function is comparable with the Int_To_Token() function. But it uses a static array as result memory.
  *
@@ -528,7 +530,7 @@ TokenIntMapping_IntToTokenStaticMem
 {
     static char result_token [MAX_TOKEN_LENGTH];
 
-    TokenIntMapping_IntToToken(object, token_int_value, result_token, COUNT_ARRAY_ELEMENTS(result_token) - 1);
+    TokenIntMapping_IntToToken(object, token_int_value, result_token, COUNT_ARRAY_ELEMENTS(result_token));
 
     return result_token;
 }
