@@ -43,6 +43,16 @@ extern uint_fast64_t GLOBAL_free_calls;     ///< Number of executed free calls
  */
 extern void Show_Dynamic_Memory_Status (void);
 
+/**
+ * @brief Calculate the number of missing free calls.
+ *
+ * Because a free call on a NULL pointer does not have any effect, a negative result (too much calls) is possible
+ * -> int_fast64_t instead of uint_fast64_t as return type.
+ *
+ * @return Number of missing free calls.
+ */
+extern int_fast64_t Missing_Free_Calls (void);
+
 
 
 //---------------------------------------------------------------------------------------------------------------------

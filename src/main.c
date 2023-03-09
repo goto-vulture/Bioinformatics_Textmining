@@ -414,7 +414,7 @@ At_Exit_Function
         void
 )
 {
-    puts ("\n");
+    if (Missing_Free_Calls() != 0) { NEWLINE; }
     Show_Dynamic_Memory_Status();
     return;
 }
