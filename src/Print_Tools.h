@@ -270,6 +270,17 @@ enum VALUE_TYPE
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Same as PRINT_NEWLINE
+ */
+#ifndef NEWLINE
+    #define NEWLINE PRINT_NEWLINE
+#else
+    #error "The macro \"NEWLINE\" is already defined !"
+#endif /* NEWLINE */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Print x times the same char to stdout. (With flush at the end of the process)
  */
 #ifndef PRINT_X_TIMES_SAME_CHAR

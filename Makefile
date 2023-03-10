@@ -41,10 +41,17 @@ CCFLAGS += -Wformat-nonliteral
 CCFLAGS += -Winit-self
 # Warnung, wenn Funktionen, die einen Formatstring erwarten, diesen nicht bekommen
 CCFLAGS += -Wformat-security
+# Weitere Format String Ueberpruefungen
+CCFLAGS += -Wformat=2
+# Laut Doku: "If -Wformat is specified, also warn about strftime formats which may yield only a two-digit year."
+# Die Warnung laesst sich im Code nicht vermeiden, wenn %c verwendet werden muss!
+CCFLAGS += -Wno-format-y2k
 # Einige weitere Moeglichkeiten den Code etwas sicherer zu machen => Diese Flags werden als systemspezifische Flags verwendet,
 # da Windows mit der Standardauswahl nicht arbeiten kann ...
 # CCFLAGS += -fstack-protector -Wl,-z,relro -Wl,-z,now
 
+# Weitere Warnungsflags
+CCFLAGS += -Wvolatile-register-var -Wdisabled-optimization -Winline -Wnested-externs -Wredundant-decls -Wpacked -Wwrite-strings -Wundef
 
 # Debug Build: Keine Optimierung und das hoechste Debug Level
 DEBUG_FLAGS = -O0 -g3 -D_FORTIFY_SOURCE=2

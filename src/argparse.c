@@ -32,6 +32,10 @@ prefix_cmp(const char *str, const char *prefix)
         } else if (*str != *prefix) {
             return (unsigned char)*prefix - (unsigned char)*str;
         }
+
+    fprintf(stderr, "\n\nNo return, in function returning non-void\n");
+    fflush(stderr);
+    EXIT(EXIT_FAILURE);
 }
 
 static void

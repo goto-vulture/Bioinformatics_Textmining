@@ -189,7 +189,7 @@ Run_All_Test_Functions
 static void
 At_Exit_Function
 (
-     void
+        void
 );
 
 //=====================================================================================================================
@@ -207,7 +207,7 @@ int main (const int argc, const char* argv [])
     // Init pseudo random number generator
     const time_t curr_time = time (NULL);
     ASSERT_MSG(curr_time != (time_t) (-1), "time () return value is (time_t) (-1) !");
-    srand ((unsigned int) time (NULL));
+    srand ((unsigned int) curr_time);
 
     // Runtime check of the system
     // This check is necessary, because a _Static_assert test is only available in C11
@@ -414,7 +414,7 @@ At_Exit_Function
         void
 )
 {
-    puts ("\n");
+    if (Missing_Free_Calls() != 0) { NEWLINE; }
     Show_Dynamic_Memory_Status();
     return;
 }
