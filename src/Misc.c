@@ -22,7 +22,10 @@
  *
  * @return The size of the stream in bytes
  */
-static long int Determine_FILE_Size_Fallback (FILE* file);
+static long int Determine_FILE_Size_Fallback
+(
+        FILE* file
+);
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -34,7 +37,10 @@ static long int Determine_FILE_Size_Fallback (FILE* file);
  *
  * @return The number of digits in the given value
  */
-extern size_t Count_Number_Of_Digits (const size_t value)
+extern size_t Count_Number_Of_Digits
+(
+        const size_t value
+)
 {
     size_t result   = 0;
     size_t val_cpy  = value;
@@ -67,7 +73,11 @@ extern size_t Count_Number_Of_Digits (const size_t value)
  *
  * @return percentage value
  */
-extern float Determine_Percent_f (const float value, const float one_hundred_percent)
+extern float Determine_Percent_f
+(
+        const float value,
+        const float one_hundred_percent
+)
 {
     ASSERT_MSG(! isnan(value), "Value is NaN !");
     ASSERT_MSG(isinf(value), "Value is +/-Inf !");
@@ -91,7 +101,11 @@ extern float Determine_Percent_f (const float value, const float one_hundred_per
  *
  * @return percentage value
  */
-extern float Determine_Percent (const size_t value, const size_t one_hundred_percent)
+extern float Determine_Percent
+(
+        const size_t value,
+        const size_t one_hundred_percent
+)
 {
     ASSERT_MSG(one_hundred_percent != 0, "One hundred percent is 0 !");
 
@@ -115,8 +129,13 @@ extern float Determine_Percent (const size_t value, const size_t one_hundred_per
  *
  * @return Expected time left for the calculation
  */
-extern float Determine_Time_Left (const size_t first_value, const size_t second_value, const size_t end_value,
-        const time_t time_between_values)
+extern float Determine_Time_Left
+(
+        const size_t first_value,
+        const size_t second_value,
+        const size_t end_value,
+        const time_t time_between_values
+)
 {
     ASSERT_FMSG(second_value >= first_value, "First value (%zu) is larger than the second value (%zu) !", first_value,
             second_value);
@@ -151,8 +170,13 @@ extern float Determine_Time_Left (const size_t first_value, const size_t second_
  *
  * @return Expected average time left for the calculation
  */
-extern float Determine_Time_Left_Average (const size_t first_value, const size_t second_value, const size_t end_value,
-        const time_t time_between_values)
+extern float Determine_Time_Left_Average
+(
+        const size_t first_value,
+        const size_t second_value,
+        const size_t end_value,
+        const time_t time_between_values
+)
 {
     ASSERT_FMSG(second_value >= first_value, "First value (%zu) is larger than the second value (%zu) !", first_value,
             second_value);
@@ -186,7 +210,10 @@ extern float Determine_Time_Left_Average (const size_t first_value, const size_t
  *
  * @return 0.0 if input is NaN or +/-Inf, otherwise the value itself
  */
-extern inline float Replace_NaN_And_Inf_With_Zero (const float input)
+extern inline float Replace_NaN_And_Inf_With_Zero
+(
+        const float input
+)
 {
     float result = input;
 
@@ -206,8 +233,10 @@ extern inline float Replace_NaN_And_Inf_With_Zero (const float input)
  * but you cannot guarantee this. Especially on 32 bit systems.
  *
  * This problem has a own Wikipedia entry:
- * EN: https://en.wikipedia.org/wiki/Large_file_support
- * DE: https://de.wikipedia.org/wiki/Large_File_Support
+ * EN:
+ * @see https://en.wikipedia.org/wiki/Large_file_support
+ * DE:
+ * @see https://de.wikipedia.org/wiki/Large_File_Support
  *
  * So the workaround:
  * Use the preprocessor to encapsulate system specific code. The portable way with the C standard lib will be the
@@ -220,7 +249,10 @@ extern inline float Replace_NaN_And_Inf_With_Zero (const float input)
  *
  * @return The file size in bytes or -1, if an error occurs.
  */
-extern int_fast64_t Determine_FILE_Size (FILE* file)
+extern int_fast64_t Determine_FILE_Size
+(
+        FILE* file
+)
 {
     ASSERT_MSG(file != NULL, "The FILE pointer is NULL !");
 
@@ -293,7 +325,10 @@ extern int_fast64_t Determine_FILE_Size (FILE* file)
  *
  * @return The size of the stream in bytes
  */
-static long int Determine_FILE_Size_Fallback (FILE* file)
+static long int Determine_FILE_Size_Fallback
+(
+        FILE* file
+)
 {
     int fseek_return = fseek (file, 0, SEEK_END);
     ASSERT_MSG(fseek_return == 0, "fseek() returned a nonzero value !");

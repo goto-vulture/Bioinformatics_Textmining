@@ -19,10 +19,20 @@ extern "C"
 
 
 
+/**
+ * @brief Test Appending a new string.
+ */
 extern void TEST_AppendNewString (void);
-extern void TEST_AppendDataToNewestString (void);
-extern void TEST_AppendDataToSpecificString (void);
 
+/**
+ * @brief Test Appending a string to the newest string.
+ */
+extern void TEST_AppendDataToNewestString (void);
+
+/**
+ * @brief Test Appending a string to a specific string.
+ */
+extern void TEST_AppendDataToSpecificString (void);
 
 
 

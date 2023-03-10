@@ -506,13 +506,13 @@ Tokenize_String
         input = strpbrk(input, breakset);
         if(input != NULL)
         {
-           results.token_data[counter].pos = input - orig_input_ptr;
-           results.token_data[counter - 1].len = (ptrdiff_t) (results.token_data[counter].pos - results.token_data[counter - 1].pos);
-           // Skip the separator
-           const char* before_strspn = input;
-           input += strspn(input, breakset);
-           const ptrdiff_t strspn_diff = input - before_strspn;
-           results.token_data[counter].pos += strspn_diff;
+            results.token_data[counter].pos = input - orig_input_ptr;
+            results.token_data[counter - 1].len = (ptrdiff_t) (results.token_data[counter].pos - results.token_data[counter - 1].pos);
+            // Skip the separator
+            const char* before_strspn = input;
+            input += strspn(input, breakset);
+            const ptrdiff_t strspn_diff = input - before_strspn;
+            results.token_data[counter].pos += strspn_diff;
         }
         counter ++;
     }

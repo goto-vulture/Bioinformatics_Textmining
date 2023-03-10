@@ -16,6 +16,9 @@
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Test Appending a new string.
+ */
 extern void TEST_AppendNewString (void)
 {
     struct Two_Dim_C_String_Array* container = TwoDimCStrArray_CreateObject(10);
@@ -40,6 +43,9 @@ extern void TEST_AppendNewString (void)
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Test Appending a string to the newest string.
+ */
 extern void TEST_AppendDataToNewestString (void)
 {
     struct Two_Dim_C_String_Array* container = TwoDimCStrArray_CreateObject(10);
@@ -68,6 +74,9 @@ extern void TEST_AppendDataToNewestString (void)
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Test Appending a string to a specific string.
+ */
 extern void TEST_AppendDataToSpecificString (void)
 {
     struct Two_Dim_C_String_Array* container = TwoDimCStrArray_CreateObject(10);

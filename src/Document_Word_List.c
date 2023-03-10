@@ -692,11 +692,11 @@ DocumentWordList_ShowDataAndAttributes
 extern struct Document_Word_List*
 DocumentWordList_IntersectWithData
 (
-    const struct Document_Word_List* const restrict object,
-    const DATA_TYPE* const restrict data,
-    const size_t data_length,
+        const struct Document_Word_List* const restrict object,
+        const DATA_TYPE* const restrict data,
+        const size_t data_length,
 
-    const enum Intersection_Mode mode
+        const enum Intersection_Mode mode
 )
 {
     ASSERT_MSG(object != NULL, "Object is NULL !");

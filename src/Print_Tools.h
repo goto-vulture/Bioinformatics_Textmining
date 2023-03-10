@@ -319,7 +319,12 @@ enum VALUE_TYPE
  * @param[in] dim_1 Size of the first array dimension (Number of C-Strings)
  * @param[in] dim_2 Size of the second array dimension (Max number of char per C-String)
  */
-extern void Print_2D_String_Array (const char* const restrict drawing [], const size_t dim_1, const size_t dim_2);
+extern void Print_2D_String_Array
+(
+        const char* const restrict drawing [],
+        const size_t dim_1,
+        const size_t dim_2
+);
 
 /**
  * @brief Print an array of uint_fast32_t variables to stdout.
@@ -330,7 +335,11 @@ extern void Print_2D_String_Array (const char* const restrict drawing [], const 
  * @param[in] array array with the data
  * @param[in] array_length length of the array
  */
-extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const size_t array_length);
+extern void Print_uint_fast32_t_Array
+(
+        const uint_fast32_t* const array,
+        const size_t array_length
+);
 
 /**
  * @brief Print process information with a user defined function, if new process output is to print.
@@ -353,8 +362,13 @@ extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const s
  *
  * @return The new counter
  */
-extern size_t Process_Printer (const size_t print_step_size, const size_t counter_since_last_output,
-        const size_t actual_counter, const size_t hundred_percent, const _Bool with_carriage_return,
+extern size_t Process_Printer
+(
+        const size_t print_step_size,
+        const size_t counter_since_last_output,
+        const size_t actual_counter,
+        const size_t hundred_percent,
+        const _Bool with_carriage_return,
         void (*print_function)
         (
             const size_t print_step_size,
@@ -378,7 +392,10 @@ extern size_t Process_Printer (const size_t print_step_size, const size_t counte
  *
  * param[in] byte_size Value, that will be converted an printed
  */
-extern void Print_Memory_Size_As_B_KB_MB (const size_t byte_size);
+extern void Print_Memory_Size_As_B_KB_MB
+(
+        const size_t byte_size
+);
 
 /**
  * @brief Print a given integer value with decimal dots. This is helpful to get a direct information in which "size
@@ -386,7 +403,10 @@ extern void Print_Memory_Size_As_B_KB_MB (const size_t byte_size);
  *
  * @param[in] value Value, that will be printed with decimal dots
  */
-extern void Print_Value_With_Decimal_Points (const long int value);
+extern void Print_Value_With_Decimal_Points
+(
+        const long int value
+);
 
 /**
  * @brief Printing any basic type.
@@ -396,7 +416,11 @@ extern void Print_Value_With_Decimal_Points (const long int value);
  * @param[in] data Given data
  * @param[in] value_type Type of the given data
  */
-extern void Any_Print(void* data, const enum VALUE_TYPE value_type);
+extern void Any_Print
+(
+        void* data,
+        const enum VALUE_TYPE value_type
+);
 
 
 

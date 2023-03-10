@@ -251,7 +251,10 @@ extern "C"
  *
  * @return The number of digits in the given value
  */
-extern size_t Count_Number_Of_Digits (const size_t value);
+extern size_t Count_Number_Of_Digits
+(
+        const size_t value
+);
 
 /**
  * @brief Determine percentage value. (float input parameter)
@@ -270,7 +273,11 @@ extern size_t Count_Number_Of_Digits (const size_t value);
  *
  * @return percentage value
  */
-extern float Determine_Percent_f (const float value, const float one_hundred_percent);
+extern float Determine_Percent_f
+(
+        const float value,
+        const float one_hundred_percent
+);
 
 /**
  * @brief Determine percentage value. (size_t input parameter)
@@ -283,7 +290,11 @@ extern float Determine_Percent_f (const float value, const float one_hundred_per
  *
  * @return percentage value
  */
-extern float Determine_Percent (const size_t value, const size_t one_hundred_percent);
+extern float Determine_Percent
+(
+        const size_t value,
+        const size_t one_hundred_percent
+);
 
 /**
  * @brief Determine the expected time left for the calculation.
@@ -300,8 +311,13 @@ extern float Determine_Percent (const size_t value, const size_t one_hundred_per
  *
  * @return Expected time left for the calculation
  */
-extern float Determine_Time_Left (const size_t first_value, const size_t second_value, const size_t end_value,
-        const time_t time_between_values);
+extern float Determine_Time_Left
+(
+        const size_t first_value,
+        const size_t second_value,
+        const size_t end_value,
+        const time_t time_between_values
+);
 
 /**
  * @brief Determine the expected average time left for the calculation.
@@ -320,8 +336,13 @@ extern float Determine_Time_Left (const size_t first_value, const size_t second_
  *
  * @return Expected average time left for the calculation
  */
-extern float Determine_Time_Left_Average (const size_t first_value, const size_t second_value, const size_t end_value,
-        const time_t time_between_values);
+extern float Determine_Time_Left_Average
+(
+        const size_t first_value,
+        const size_t second_value,
+        const size_t end_value,
+        const time_t time_between_values
+);
 
 /**
  * @brief Simple thing: When the input is NaN oder +/-Inf the function returns 0.0f.
@@ -330,12 +351,28 @@ extern float Determine_Time_Left_Average (const size_t first_value, const size_t
  *
  * @return 0.0 if input is NaN or +/-Inf, otherwise the value itself
  */
-extern float Replace_NaN_And_Inf_With_Zero (const float input);
+extern float Replace_NaN_And_Inf_With_Zero
+(
+        const float input
+);
 
 /**
- * @brief Determine the size of a FILE* object.
+ * @brief Determine the size of a FILE* object. In normal cases this is the file size.
  *
- * In normal cases this is the file size.
+ * The problem is the magical 2 GB bound. The standard way with fseek() und ftell() can only guarantee a handling with
+ * files up to 2GB size. For larger files there is no portable way to bypass this limitations. On 64 bit systems the
+ * type "long int" (this is the return type of ftell()) is 8 byte long. So the problem not occurs in this situations,
+ * but you cannot guarantee this. Especially on 32 bit systems.
+ *
+ * This problem has a own Wikipedia entry:
+ * EN:
+ * @see https://en.wikipedia.org/wiki/Large_file_support
+ * DE:
+ * @see https://de.wikipedia.org/wiki/Large_File_Support
+ *
+ * So the workaround:
+ * Use the preprocessor to encapsulate system specific code. The portable way with the C standard lib will be the
+ * fallback (with its limitations).
  *
  * Asserts:
  *      file != NULL
@@ -344,7 +381,10 @@ extern float Replace_NaN_And_Inf_With_Zero (const float input);
  *
  * @return The file size in bytes or -1, if an error occurs.
  */
-extern int_fast64_t Determine_FILE_Size (FILE* file);
+extern int_fast64_t Determine_FILE_Size
+(
+        FILE* file
+);
 
 
 

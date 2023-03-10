@@ -48,9 +48,9 @@ extern "C"
 extern struct Document_Word_List*
 IntersectionApproach_TwoNestedLoops
 (
-    const struct Document_Word_List* const restrict object,
-    const DATA_TYPE* const restrict data,
-    const size_t data_length
+        const struct Document_Word_List* const restrict object,
+        const DATA_TYPE* const restrict data,
+        const size_t data_length
 );
 
 /**
@@ -73,9 +73,9 @@ IntersectionApproach_TwoNestedLoops
 extern struct Document_Word_List*
 IntersectionApproach_QSortAndBinarySearch
 (
-    const struct Document_Word_List* const restrict object,
-    const DATA_TYPE* const restrict data,
-    const size_t data_length
+        const struct Document_Word_List* const restrict object,
+        const DATA_TYPE* const restrict data,
+        const size_t data_length
 );
 
 /**
@@ -98,9 +98,9 @@ IntersectionApproach_QSortAndBinarySearch
 extern struct Document_Word_List*
 IntersectionApproach_HeapSortAndBinarySearch
 (
-    const struct Document_Word_List* const restrict object,
-    const DATA_TYPE* const restrict data,
-    const size_t data_length
+        const struct Document_Word_List* const restrict object,
+        const DATA_TYPE* const restrict data,
+        const size_t data_length
 );
 
 /**
@@ -132,15 +132,15 @@ IntersectionApproach_HeapSortAndBinarySearch
 extern void
 IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 (
-    struct Document_Word_List* const res_obj,
+        struct Document_Word_List* const res_obj,
 
-    const DATA_TYPE* const restrict data_1,
-    const CHAR_OFFSET_TYPE* const restrict char_offsets,
-    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets,
-    const WORD_OFFSET_TYPE* const restrict word_offsets,
-    const size_t data_1_length,
-    const DATA_TYPE* const restrict data_2,
-    const size_t data_2_length
+        const DATA_TYPE* const restrict data_1,
+        const CHAR_OFFSET_TYPE* const restrict char_offsets,
+        const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets,
+        const WORD_OFFSET_TYPE* const restrict word_offsets,
+        const size_t data_1_length,
+        const DATA_TYPE* const restrict data_2,
+        const size_t data_2_length
 );
 
 

@@ -177,26 +177,20 @@ IS_CONST_STR(N_A)
  * @brief Run all test functions.
  */
 static void
-Run_All_Test_Functions
-(
-        void
-);
+Run_All_Test_Functions (void);
 
 /**
  * @brief Show the dynamic memory status. (How many malloc / calloc calls were done and is the number equal with the
  * amount of free calls). -> Exists memory leaks ?
  */
 static void
-At_Exit_Function
-(
-        void
-);
+At_Exit_Function (void);
 
 //=====================================================================================================================
 
 /**
  * @brief main function of the program.
- * *
+ *
  * @param[in] argc argc parameter
  * @param[in] argv Number of argc parameter
  *
@@ -355,10 +349,7 @@ int main (const int argc, const char* argv [])
  * @brief Run all test functions.
  */
 static void
-Run_All_Test_Functions
-(
-        void
-)
+Run_All_Test_Functions (void)
 {
     RUN(TEST_AppendNewString);
     RUN(TEST_AppendDataToNewestString);
@@ -409,10 +400,7 @@ Run_All_Test_Functions
  * amount of free calls). -> Exists memory leaks ?
  */
 static void
-At_Exit_Function
-(
-        void
-)
+At_Exit_Function (void)
 {
     if (Missing_Free_Calls() != 0) { NEWLINE; }
     Show_Dynamic_Memory_Status();
