@@ -119,44 +119,47 @@ if __name__ == "__main__":
 
     average_runtime = runtimes_sum / PROGRAM_CALLS
     intersection_operations = num_tokens_first_file * num_tokens_second_file
-    print("\n~Avg time:                                     " + str(average_runtime) + "s")
+    print("\nAvg time:                                     " + str(average_runtime) + "s")
     print("Number of intersection operations:            " + str(int(intersection_operations / 1000000)) + " Mio.")
     print("Number of intersection operations per second: " + str(int(intersection_operations / average_runtime / 1000000)) + " Mio.")
 
-### AMD Athlon 5350 (2.1GHz) 64 bit | SSE4.1 ###
+# => Used files <=
 # First file:    51784 ("./src/Tests/Test_Data/test_ebm.json")
 # Second file:   1703064 ("~/Downloads/Testdaten/intervention.txt")
 # Result tokens: 424454
 # Result sets:   202008
+
+### AMD Athlon 5350 (2.1GHz) 64 bit | SSE4.1 ###
 # Avg time:                                     126.85447577279993s
 # Number of intersection operations:            88191 Mio.
 # Number of intersection operations per second: 695 Mio.
 
 ### AMD Athlon 5350 (2.1GHz) 64 bit | NO EXTENSIONS ###
-# First file:    51784 ("./src/Tests/Test_Data/test_ebm.json")
-# Second file:   1703064 ("~/Downloads/Testdaten/intervention.txt")
-# Result tokens: 424454
-# Result sets:   202008
 # Avg time:                                     312.244104743599s
 # Number of intersection operations:            88191 Mio.
 # Number of intersection operations per second: 282 Mio.
 
+
+### AMD Ryzen 5 5600G (3.9GHz - 4.4GHz) 64 bit | AVX2 ###
+# Avg time:                                     18.92501155539994s
+# Number of intersection operations:            88191 Mio.
+# Number of intersection operations per second: 4660 Mio.
+
 ### AMD Ryzen 5 5600G (3.9GHz - 4.4GHz) 64 bit | NO EXTENSIONS ###
-# First file:    51784 ("./src/Tests/Test_Data/test_ebm.json")
-# Second file:   1703064 ("~/Downloads/Testdaten/intervention.txt")
-# Result tokens: 424454
-# Result sets:   202008
 # Avg time:                                     71.96592135119991s
 # Number of intersection operations:            88191 Mio.
 # Number of intersection operations per second: 1225 Mio.
 
-### AMD Ryzen 5 5600G (3.9GHz - 4.4GHz) 64 bit | AVX2 ###
-# First file:    51784 ("./src/Tests/Test_Data/test_ebm.json")
-# Second file:   1703064 ("~/Downloads/Testdaten/intervention.txt")
-# Result tokens: 424454
-# Result sets:   202008
-# Avg time:                                     18.92501155539994s
+
+### Intel Core i5-3320M (2.6GHz - 3.3GHz) 64 bit | SSE4.1 ###
+# Avg time:                                     42.19706262219997s
 # Number of intersection operations:            88191 Mio.
-# Number of intersection operations per second: 4660 Mio.
+# Number of intersection operations per second: 2089 Mio.
+
+### Intel Core i5-3320M (2.6GHz - 3.3GHz) 64 bit | NO EXTENSIONS ###
+# Avg time:                                     110.84809149160006s
+# Number of intersection operations:            88191 Mio.
+# Number of intersection operations per second: 795 Mio.
+
 
 #======================================================================================================================
