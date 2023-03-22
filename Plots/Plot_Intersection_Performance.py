@@ -162,4 +162,14 @@ if __name__ == "__main__":
 # Number of intersection operations per second: 795 Mio.
 
 
+### Intel Atom N450 (1.6 GHz) 64 bit | SSE2 ###
+# Avg time:                                     340.0929446223992s
+# Number of intersection operations:            88191 Mio.
+# Number of intersection operations per second: 259 Mio.
+
+### Intel Atom N450 (1.6 GHz) 64 bit | NO EXTENSIONS ###
+# Avg time:                                     563.9051550762015s
+# Number of intersection operations:            88191 Mio.
+# Number of intersection operations per second: 156 Mio.
+
 #======================================================================================================================
