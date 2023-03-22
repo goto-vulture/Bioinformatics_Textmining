@@ -526,7 +526,7 @@ Exec_Intersection
 )
 {
     // The function could be unused -> Avoid a warning
-    (void) Add_Counter_To_Export_File;
+    UNUSED(Add_Counter_To_Export_File);
 
     const unsigned int intersection_settings = Create_Intersection_Settings_With_CLI_Parameter();
 

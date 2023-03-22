@@ -262,7 +262,7 @@ int main (const int argc, const char* argv [])
     argparse_init(&argparse_object, cli_options, GLOBAL_USAGES, 0);
     argparse_describe(&argparse_object, GLOBAL_PROGRAM_DESCRIPTION, GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION);
     const int new_argc = argparse_parse(&argparse_object, argc, argv);
-    (void) new_argc;
+    UNUSED(new_argc);
 
     if (GLOBAL_RUN_ALL_TEST_FUNCTIONS)
     {

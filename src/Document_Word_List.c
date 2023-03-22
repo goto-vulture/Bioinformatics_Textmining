@@ -132,8 +132,8 @@ DocumentWordList_CreateObject
         const size_t max_array_length
 )
 {
-    // Avoid a unused warning
-    (void) Increase_Data_Array_Size_Allocation_Step_Size;
+    // Avoid a possible unused warning
+    UNUSED(Increase_Data_Array_Size_Allocation_Step_Size);
     ASSERT_MSG(number_of_arrays != 0, "Number of arrays is 0 !");
     // Value check although this value is not in use !
     ASSERT_MSG(max_array_length != 0, "Max array length is 0 !");
@@ -169,8 +169,9 @@ DocumentWordList_CreateObjectAsIntersectionResult
         const size_t max_array_length
 )
 {
-    // Avoid a unused warning
-    (void) Increase_Data_Array_Size_Allocation_Step_Size;
+    // Avoid a possible unused warning
+    UNUSED(Increase_Data_Array_Size_Allocation_Step_Size);
+
     ASSERT_MSG(number_of_arrays != 0, "Number of arrays is 0 !");
     // Value check although this value is not in use !
     ASSERT_MSG(max_array_length != 0, "Max array length is 0 !");

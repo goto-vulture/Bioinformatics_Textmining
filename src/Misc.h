@@ -245,6 +245,17 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Do a void case to avoid unused compiler warnings. This strategy is a portable solution.
+ */
+#ifndef UNUSED
+#define UNUSED(value) (void)(value);
+#else
+#error "The macro \"UNUSED\" is already defined !"
+#endif /* UNUSED */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Count number of digits in a value.
  *
  * @param[in] value Value

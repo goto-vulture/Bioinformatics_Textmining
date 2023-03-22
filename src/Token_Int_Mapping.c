@@ -368,7 +368,7 @@ TokenIntMapping_ShowMemoryUsage
 
     const int field_size = (int) ((Count_Number_Of_Digits(allocated_memory) > Count_Number_Of_Digits(used_memory)) ?
             Count_Number_Of_Digits(allocated_memory) : Count_Number_Of_Digits(used_memory));
-    (void) field_size;
+    UNUSED(field_size);
 
     printf ("Allocated Token_Int_Mapping size: ");
     Print_Memory_Size_As_B_KB_MB(allocated_memory);

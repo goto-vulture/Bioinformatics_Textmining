@@ -310,7 +310,7 @@ extern int_fast64_t Determine_FILE_Size
     #endif /* __GNUC__ */
 #else
         // Pseudo using to avoid unused warnings
-        (void) Determine_FILE_Size_Fallback;
+        UNUSED(Determine_FILE_Size_Fallback);
 #endif /* USE_FALLBACK */
 
     return result;
