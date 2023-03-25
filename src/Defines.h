@@ -332,6 +332,12 @@ IS_TYPE(AVX512_REG_WIDTH_BIT, int)
 #error "The macro \"NO_SSE2\" is already defined !"
 #endif /* NO_SSE2 */
 
+#ifndef NO_MMX
+//#define NO_MMX
+#else
+#error "The macro \"NO_MMX\" is already defined !"
+#endif /* NO_MMX */
+
 /**
  * @brief Disable ALL CPU extensions.
  */

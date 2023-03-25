@@ -220,6 +220,25 @@ Inersection_With_SSE2
 (
         const struct Intersection_Data data
 );
+#elif defined(__MMX__) && ! defined(NO_MMX) && ! defined (NO_CPU_EXTENSIONS)
+/**
+ * @brief Using MMX intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_MMX
+(
+        const struct Intersection_Data data
+);
 #endif
 /**
  * @brief No special instructions for the calculation.
@@ -550,6 +569,8 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
         Inersection_With_SSE4_1(data);
 #elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
         Inersection_With_SSE2(data);
+#elif defined(__MMX__) && ! defined(NO_MMX) && ! defined (NO_CPU_EXTENSIONS)
+        Inersection_With_MMX(data);
 #else
         Inersection_Without_Special_Instructions(data);
 #endif
@@ -716,12 +737,12 @@ Inersection_With_SSE4_1
     {
         const DATA_TYPE curr_data_2_var = data.data_2 [d2];
 
-        // The AVX commands only works with signed integers !
+        // The SSE commands only works with signed integers !
         data_2_packed = _mm_set1_epi32 ((int) curr_data_2_var); // <<|SSE2|>>
 
         for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
         {
-            // The AVX commands only works with signed integers !
+            // The SSE commands only works with signed integers !
 //            data_1_packed = _mm_set_epi32 (
 //                    (int) data.data_1 [d1+3], (int) data.data_1 [d1+2], (int) data.data_1 [d1+1], (int) data.data_1 [d1]); // <<|SSE2|>>
             data_1_packed = _mm_loadu_si128((const __m128i_u*) (data.data_1 + d1)); // <<|SSE2|>>
@@ -802,12 +823,12 @@ Inersection_With_SSE2
     {
         const DATA_TYPE curr_data_2_var = data.data_2 [d2];
 
-        // The AVX commands only works with signed integers !
+        // The SSE commands only works with signed integers !
         data_2_packed = _mm_set1_epi32 ((int) curr_data_2_var); // <<|SSE2|>>
 
         for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
         {
-            // The AVX commands only works with signed integers !
+            // The SSE commands only works with signed integers !
 //            data_1_packed = _mm_set_epi32 (
 //                    (int) data.data_1 [d1], (int) data.data_1 [d1+1], (int) data.data_1 [d1+2], (int) data.data_1 [d1+3]); // <<|SSE2|>>
             data_1_packed = _mm_loadu_si128((const __m128i_u*) (data.data_1 + d1)); // <<|SSE2|>>
@@ -828,6 +849,87 @@ Inersection_With_SSE2
             //if (cmp_result[1] == 0) { real_d1 += data_step / 2; } // Compare with [1], because the data are in reversed order
 
             for (; real_d1 < (d1 + data_step); ++ real_d1)
+            {
+                if (data.data_1 [real_d1] == curr_data_2_var)
+                {
+                    // Was the current value already inserted in the intersection result ?
+                    if (! data.multiple_guard_data_1 [real_d1] && ! data.multiple_guard_data_2 [d2])
+                    {
+                        Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [real_d1],
+                                data.char_offsets [real_d1], data.sentence_offsets [real_d1], data.word_offsets [real_d1]);
+                        data.multiple_guard_data_1 [real_d1] = true;
+                        data.multiple_guard_data_2 [d2] = true;
+                    }
+                }
+            }
+        }
+        // The last padding calls
+        for (register size_t d1 = data.data_1_length - data_1_length_mod_data_step; d1 < data.data_1_length; d1 ++)
+        {
+            if (data.data_1 [d1] == curr_data_2_var)
+            {
+                // Was the current value already inserted in the intersection result ?
+                if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
+                {
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [d1],
+                            data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
+                    data.multiple_guard_data_1 [d1] = true;
+                    data.multiple_guard_data_2 [d2] = true;
+                }
+            }
+        }
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+#elif defined(__MMX__) && ! defined(NO_MMX) && ! defined (NO_CPU_EXTENSIONS)
+/**
+ * @brief Using MMX intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_MMX
+(
+        const struct Intersection_Data data
+)
+{
+    __m64 data_1_packed           = _mm_setzero_si64(); // <<|MMX|>>
+    __m64 data_2_packed           = _mm_setzero_si64(); // <<|MMX|>>
+    __m64 cmp_result_packed       = _mm_setzero_si64(); // <<|MMX|>>
+    const size_t data_step                      = MMX_REG_WIDTH_BIT / SIMD_VALUE_SIZE_BIT; // 64 bit register width / 32 bit per value
+    const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
+
+    // Calculate intersection
+    for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
+    {
+        const DATA_TYPE curr_data_2_var = data.data_2 [d2];
+
+        // The MMX commands only works with signed integers !
+        data_2_packed = _mm_set1_pi32 ((int) curr_data_2_var); // <<|MMX|>>
+
+        for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
+        {
+            // The MMX commands only works with signed integers !
+            data_1_packed = _mm_set_pi32((int) data.data_1[d1], (int) data.data_1[d1 + 1]); //<<|MMX|>>
+            cmp_result_packed = _mm_cmpeq_pi32 (data_2_packed, data_1_packed); // <<|MMX|>> // 32 bit block equal: 0xFFFFFFFF
+
+            // Extract the data from the MMX register
+            const int64_t cmp_result = _mm_cvtm64_si64(cmp_result_packed); // <<|MMX|>>
+            if (cmp_result == 0) { continue; }
+
+            for (size_t real_d1 = d1; real_d1 < (d1 + data_step); ++ real_d1)
             {
                 if (data.data_1 [real_d1] == curr_data_2_var)
                 {

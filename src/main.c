@@ -330,6 +330,8 @@ int main (const int argc, const char* argv [])
         puts("Using " ANSI_TEXT_BOLD "SSE4.1" ANSI_RESET_ALL " CPU extension.");
 #elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
         puts("Using " ANSI_TEXT_BOLD "SSE2" ANSI_RESET_ALL " CPU extension.");
+#elif defined(__MMX__) && ! defined(NO_MMX) && ! defined (NO_CPU_EXTENSIONS)
+        puts("Using " ANSI_TEXT_BOLD "MMX" ANSI_RESET_ALL " CPU extension.");
 #else
         puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension.");
 #endif
