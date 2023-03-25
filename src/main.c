@@ -163,6 +163,7 @@ IS_CONST_STR(N_A)
 #include "Exec_Intersection.h"
 #include "ANSI_Esc_Seq.h"
 #include "Defines.h"
+#include "CPUID.h"
 
 #include "Tests/tinytest.h"
 #include "Tests/TEST_cJSON_Parser.h"
@@ -311,6 +312,14 @@ int main (const int argc, const char* argv [])
 
     Check_CLI_Parameter_Logical_Consistency();
     puts("");
+
+    printf("Available extensions: ");
+    if (CPUID_IsMMXAvailable())     { printf(ANSI_TEXT_BOLD "MMX " ANSI_RESET_ALL); }
+    if (CPUID_IsSSE2Available())    { printf(ANSI_TEXT_BOLD "SSE2 " ANSI_RESET_ALL); }
+    if (CPUID_IsSSE4_1Available())  { printf(ANSI_TEXT_BOLD "SSE4.1 " ANSI_RESET_ALL); }
+    if (CPUID_IsAVX2Available())    { printf(ANSI_TEXT_BOLD "AVX2 " ANSI_RESET_ALL); }
+    if (CPUID_IsAVX512FAvailable()) { printf(ANSI_TEXT_BOLD "AVX512F " ANSI_RESET_ALL); }
+    NEWLINE
 
     // Show the used CPU extensions
     if (! GLOBAL_CLI_NO_CPU_EXTENSIONS)
