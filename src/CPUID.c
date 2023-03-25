@@ -218,12 +218,13 @@ static _Bool CPUID_IsFlagSet
     case EBX:
         __asm__ volatile
         (
+                "movq $0, %%rcx" NT
                 "mov %1, %%eax" NT
                 "cpuid" NT
 
                 : "=b" (result)
                 : "r" (eax_value)
-                : "rax"
+                : "rax", "rcx"
         );
     break;
     case ECX:
