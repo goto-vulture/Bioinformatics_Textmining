@@ -70,6 +70,16 @@ extern _Bool CPUID_IsSSE4_1Available
 );
 
 /**
+ * @brief Get the bit, that shows whether the host CPU supports the AVX extension or not.
+ *
+ * @return true for AVX support, otherwise false
+ */
+extern _Bool CPUID_IsAVXAvailable
+(
+        void
+);
+
+/**
  * @brief Get the bit, that shows whether the host CPU supports the AVX2 extension or not.
  *
  * @return true for AVX2 support, otherwise false

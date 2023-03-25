@@ -317,6 +317,7 @@ int main (const int argc, const char* argv [])
     if (CPUID_IsMMXAvailable())     { printf(ANSI_TEXT_BOLD "MMX " ANSI_RESET_ALL); }
     if (CPUID_IsSSE2Available())    { printf(ANSI_TEXT_BOLD "SSE2 " ANSI_RESET_ALL); }
     if (CPUID_IsSSE4_1Available())  { printf(ANSI_TEXT_BOLD "SSE4.1 " ANSI_RESET_ALL); }
+    if (CPUID_IsAVXAvailable())     { printf(ANSI_TEXT_BOLD "AVX " ANSI_RESET_ALL); }
     if (CPUID_IsAVX2Available())    { printf(ANSI_TEXT_BOLD "AVX2 " ANSI_RESET_ALL); }
     if (CPUID_IsAVX512FAvailable()) { printf(ANSI_TEXT_BOLD "AVX512F " ANSI_RESET_ALL); }
     NEWLINE
@@ -326,6 +327,8 @@ int main (const int argc, const char* argv [])
     {
 #if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
         puts("Using " ANSI_TEXT_BOLD "AVX2" ANSI_RESET_ALL " CPU extension.");
+#elif defined(__AVX__) && ! defined(NO_AVX) && ! defined(NO_CPU_EXTENSIONS)
+        puts("Using " ANSI_TEXT_BOLD "AVX" ANSI_RESET_ALL " CPU extension.");
 #elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
         puts("Using " ANSI_TEXT_BOLD "SSE4.1" ANSI_RESET_ALL " CPU extension.");
 #elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)

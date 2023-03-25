@@ -320,6 +320,12 @@ IS_TYPE(AVX512_REG_WIDTH_BIT, int)
 #error "The macro \"NO_AVX2\" is already defined !"
 #endif /* NO_AVX2 */
 
+#ifndef NO_AVX
+//#define NO_AVX
+#else
+#error "The macro \"NO_AVX\" is already defined !"
+#endif /* NO_AVX */
+
 #ifndef NO_SSE4_1
 //#define NO_SSE4_1
 #else

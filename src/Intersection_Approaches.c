@@ -182,6 +182,33 @@ Inersection_With_AVX2
 (
         const struct Intersection_Data data
 );
+#elif defined(__AVX__) && ! defined(NO_AVX) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Using AVX intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * ! The main problem with AVX1 is, that this extension has no integer comparison, only floating point. !
+ * In our case this is in almost nearly no situation a problem, because the comparison will be done with values, that
+ * can be fully represented as integer. In such a case even a floating point comparison has no precision loss due a
+ * integer can be represented exact, if it is in a range of few millions compared to zero.
+ *
+ * The speedup compared to SSE4.1 is not that what I expected. The reason is, that in the calculation process are
+ * conversions between int packed to float packed objects.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_AVX
+(
+        const struct Intersection_Data data
+);
 #elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
 /**
  * @brief Using SSE4.1 intrinsic function to use SIMD commands for the comparisons.
@@ -565,6 +592,8 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     {
 #if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
         Inersection_With_AVX2(data);
+#elif defined(__AVX__) && ! defined(NO_AVX) && ! defined(NO_CPU_EXTENSIONS)
+        Inersection_With_AVX(data);
 #elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
         Inersection_With_SSE4_1(data);
 #elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
@@ -668,6 +697,97 @@ Inersection_With_AVX2
 //            else if (_mm256_testz_si256(cmp_result_packed, one_four_minus_one_packed) == 1) { real_d1 += data_step_one_four; }      // <<|AVX|>>
 
             for (; real_d1 < (d1 + data_step); ++ real_d1)
+            {
+                if (data.data_1 [real_d1] == curr_data_2_var)
+                {
+                    // Was the current value already inserted in the intersection result ?
+                    if (! data.multiple_guard_data_1 [real_d1] && ! data.multiple_guard_data_2 [d2])
+                    {
+                        Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [real_d1],
+                                data.char_offsets [real_d1], data.sentence_offsets [real_d1], data.word_offsets [real_d1]);
+                        data.multiple_guard_data_1 [real_d1] = true;
+                        data.multiple_guard_data_2 [d2] = true;
+                    }
+                }
+            }
+        }
+        // The last padding calls
+        for (register size_t d1 = data.data_1_length - data_1_length_mod_data_step; d1 < data.data_1_length; d1 ++)
+        {
+            if (data.data_1 [d1] == curr_data_2_var)
+            {
+                // Was the current value already inserted in the intersection result ?
+                if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
+                {
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [d1],
+                            data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
+                    data.multiple_guard_data_1 [d1] = true;
+                    data.multiple_guard_data_2 [d2] = true;
+                }
+            }
+        }
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+#elif defined(__AVX__) && ! defined(NO_AVX) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Using AVX intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * ! The main problem with AVX1 is, that this extension has no integer comparison, only floating point. !
+ * In our case this is in almost nearly no situation a problem, because the comparison will be done with values, that
+ * can be fully represented as integer. In such a case even a floating point comparison has no precision loss due a
+ * integer can be represented exact, if it is in a range of few millions compared to zero.
+ *
+ * The speedup compared to SSE4.1 is not that what I expected. The reason is, that in the calculation process are
+ * conversions between int packed to float packed objects.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_AVX
+(
+        const struct Intersection_Data data
+)
+{
+    __m256i data_1_packed       = _mm256_setzero_si256();       // <<|AVX|>>
+    __m256 data_2_packed        = _mm256_setzero_ps();          // <<|AVX|>>
+    __m256 cmp_result_packed    = _mm256_setzero_ps();          // <<|AVX|>>
+    __m256 minus_one_packed     = _mm256_set1_ps((float) -1);   // <<|AVX|>> // Set all bits to 1
+    const size_t data_step                      = AVX_REG_WIDTH_BIT / SIMD_VALUE_SIZE_BIT; // 256 bit register width / 32 bit per value
+    const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
+
+    // Calculate intersection
+    for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
+    {
+        const DATA_TYPE curr_data_2_var = data.data_2 [d2];
+
+        // Load the data as vector of float values
+        data_2_packed = _mm256_set1_ps((float) curr_data_2_var); // <<|AVX|>>
+
+        for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
+        {
+            // The AVX commands only works with signed integers !
+            data_1_packed = _mm256_lddqu_si256 ((const __m256i_u*) (data.data_1 + d1)); // <<|AVX|>>
+            // Floating point equal comparison
+            cmp_result_packed = _mm256_cmp_ps (data_2_packed, _mm256_cvtepi32_ps(data_1_packed), _CMP_EQ_OQ); // <<|AVX|>> // 32 bit block equal: 0xFFFFFFFF
+
+            // Bitwise AND
+            // If all bits of cmp_result_packed are 0, then the function returns the zero flag (ZF), that was set to 1
+            if (_mm256_testz_ps(cmp_result_packed, minus_one_packed) == 1) { continue; } // <<|AVX|>>
+
+            for (size_t real_d1 = d1; real_d1 < (d1 + data_step); ++ real_d1)
             {
                 if (data.data_1 [real_d1] == curr_data_2_var)
                 {

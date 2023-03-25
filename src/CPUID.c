@@ -148,6 +148,21 @@ extern _Bool CPUID_IsSSE4_1Available
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Get the bit, that shows whether the host CPU supports the AVX extension or not.
+ *
+ * @return true for AVX support, otherwise false
+ */
+extern _Bool CPUID_IsAVXAvailable
+(
+        void
+)
+{
+    return CPUID_IsFlagSet(1, 28, ECX);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Get the bit, that shows whether the host CPU supports the AVX2 extension or not.
  *
  * @return true for AVX2 support, otherwise false
@@ -198,15 +213,7 @@ static _Bool CPUID_IsFlagSet
     switch (selected_reg)
     {
     case EAX:
-        __asm__ volatile
-        (
-                "mov %1, %%eax" NT
-                "cpuid" NT
-
-                : "=a" (result)
-                : "r" (eax_value)
-                : "rax"
-        );
+        ASSERT_MSG(false, "EAX cannot be a result register with the CPUID instruction !");
     break;
     case EBX:
         __asm__ volatile
@@ -300,6 +307,17 @@ extern _Bool CPUID_IsSSE2Available
 //---------------------------------------------------------------------------------------------------------------------
 
 extern _Bool CPUID_IsSSE4_1Available
+(
+        void
+)
+{
+    ASSERT_MSG(false, "You try to call a function, that contains x86-only instructions, with a non-x86 host CPU");
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+extern _Bool CPUID_IsAVXAvailable
 (
         void
 )
