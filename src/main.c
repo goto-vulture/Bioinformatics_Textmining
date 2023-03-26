@@ -319,7 +319,6 @@ int main (const int argc, const char* argv [])
     if (CPUID_IsSSE4_1Available())  { printf(ANSI_TEXT_BOLD "SSE4.1 " ANSI_RESET_ALL); }
     if (CPUID_IsAVXAvailable())     { printf(ANSI_TEXT_BOLD "AVX " ANSI_RESET_ALL); }
     if (CPUID_IsAVX2Available())    { printf(ANSI_TEXT_BOLD "AVX2 " ANSI_RESET_ALL); }
-    if (CPUID_IsAVX512FAvailable()) { printf(ANSI_TEXT_BOLD "AVX512F " ANSI_RESET_ALL); }
     NEWLINE
 
     // Show the used CPU extensions

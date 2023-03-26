@@ -27,6 +27,33 @@ extern "C"
 
 
 /**
+ * @brief Object for the four general purpose register.
+ */
+struct CPUID_Register
+{
+    int32_t eax;
+    int32_t ebx;
+    int32_t ecx;
+    int32_t edx;
+};
+
+
+
+/**
+ * @brief Execute the CPUID instruction with given eax, ebx, ecx and edx values.
+ *
+ * @param[in] input Input values for the eax, ebx, ecx and edx register
+ *
+ * @return Result values of the eax, ebx, ecx and edx register
+ */
+extern struct CPUID_Register CPUID_ExecWithGivenValues
+(
+        struct CPUID_Register input
+);
+
+
+
+/**
  * @brief Get the vendor string of the x86 host CPU.
  *
  * Asserts:
@@ -37,6 +64,19 @@ extern "C"
 extern void CPUID_GetVendorString
 (
         int32_t (* const result)[4]
+);
+
+/**
+ * @brief Get the AMD easter egg string.
+ *
+ * Asserts:
+ *      result != NULL
+ *
+ * @param[out] result Pointer to a int32_t array with exact 5 elements.
+ */
+extern void CPUID_GetAMDEasterEggString
+(
+        int32_t (* const result)[5]
 );
 
 /**
