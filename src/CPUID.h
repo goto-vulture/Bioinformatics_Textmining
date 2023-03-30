@@ -48,7 +48,7 @@ struct CPUID_Register
  */
 extern struct CPUID_Register CPUID_ExecWithGivenValues
 (
-        struct CPUID_Register input
+        volatile struct CPUID_Register input
 );
 
 
@@ -63,7 +63,7 @@ extern struct CPUID_Register CPUID_ExecWithGivenValues
  */
 extern void CPUID_GetVendorString
 (
-        int32_t (* const result)[4]
+        volatile int32_t (* const result)[4]
 );
 
 /**
@@ -76,7 +76,7 @@ extern void CPUID_GetVendorString
  */
 extern void CPUID_GetAMDEasterEggString
 (
-        int32_t (* const result)[5]
+        volatile int32_t (* const result)[5]
 );
 
 /**

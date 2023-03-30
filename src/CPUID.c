@@ -45,10 +45,10 @@
  */
 extern struct CPUID_Register CPUID_ExecWithGivenValues
 (
-        struct CPUID_Register input
+        volatile struct CPUID_Register input
 )
 {
-    struct CPUID_Register result = { .eax = 0, .ebx = 0, .ecx = 0, .edx = 0 };
+    volatile struct CPUID_Register result = { .eax = 0, .ebx = 0, .ecx = 0, .edx = 0 };
 
     __asm__ volatile
     (
@@ -78,13 +78,13 @@ extern struct CPUID_Register CPUID_ExecWithGivenValues
  */
 extern void CPUID_GetVendorString
 (
-        int32_t (* const result) [4]
+        volatile int32_t (* const result) [4]
 )
 {
     ASSERT_MSG(result != NULL, "Pointer to the result array is NULL !");
 
-    struct CPUID_Register input = { .eax = 0, .ebx = 0, .ecx = 0, .edx = 0 };
-    const struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
+    volatile struct CPUID_Register input = { .eax = 0, .ebx = 0, .ecx = 0, .edx = 0 };
+    const volatile struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
 
     // Yes the order is correct: ebx | edx | ecx
     (*result)[0] = result_register.ebx;
@@ -110,13 +110,13 @@ extern void CPUID_GetVendorString
  */
 extern void CPUID_GetAMDEasterEggString
 (
-        int32_t (* const result)[5]
+        volatile int32_t (* const result)[5]
 )
 {
     ASSERT_MSG(result != NULL, "Pointer to the result array is NULL !");
 
-    struct CPUID_Register input = { .eax = (int32_t) 0x8FFFFFFF, .ebx = 0, .ecx = 0, .edx = 0 };
-    const struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
+    volatile struct CPUID_Register input = { .eax = (int32_t) 0x8FFFFFFF, .ebx = 0, .ecx = 0, .edx = 0 };
+    const volatile struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
 
     (*result)[0] = result_register.eax;
     (*result)[1] = result_register.ebx;
@@ -142,8 +142,8 @@ extern _Bool CPUID_IsMMXAvailable
         void
 )
 {
-    struct CPUID_Register input = { .eax = 1, .ebx = 0, .ecx = 0, .edx = 0 };
-    const struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
+    volatile struct CPUID_Register input = { .eax = 1, .ebx = 0, .ecx = 0, .edx = 0 };
+    const volatile struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
 
     return result_register.edx & (1 << 23);
 }
@@ -160,8 +160,8 @@ extern _Bool CPUID_IsSSE2Available
         void
 )
 {
-    struct CPUID_Register input = { .eax = 1, .ebx = 0, .ecx = 0, .edx = 0 };
-    const struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
+    volatile struct CPUID_Register input = { .eax = 1, .ebx = 0, .ecx = 0, .edx = 0 };
+    const volatile struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
 
     return result_register.edx & (1 << 26);
 }
@@ -178,8 +178,8 @@ extern _Bool CPUID_IsSSE4_1Available
         void
 )
 {
-    struct CPUID_Register input = { .eax = 1, .ebx = 0, .ecx = 0, .edx = 0 };
-    const struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
+    volatile struct CPUID_Register input = { .eax = 1, .ebx = 0, .ecx = 0, .edx = 0 };
+    const volatile struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
 
     return result_register.ecx & (1 << 19);
 }
@@ -196,8 +196,8 @@ extern _Bool CPUID_IsAVXAvailable
         void
 )
 {
-    struct CPUID_Register input = { .eax = 1, .ebx = 0, .ecx = 0, .edx = 0 };
-    const struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
+    volatile struct CPUID_Register input = { .eax = 1, .ebx = 0, .ecx = 0, .edx = 0 };
+    const volatile struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
 
     return result_register.ecx & (1 << 28);
 }
@@ -214,8 +214,8 @@ extern _Bool CPUID_IsAVX2Available
         void
 )
 {
-    struct CPUID_Register input = { .eax = 7, .ebx = 0, .ecx = 0, .edx = 0 };
-    const struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
+    volatile struct CPUID_Register input = { .eax = 7, .ebx = 0, .ecx = 0, .edx = 0 };
+    const volatile struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
 
     return result_register.ebx & (1 << 5);
 }
@@ -232,8 +232,8 @@ extern _Bool CPUID_IsAVX512FAvailable
         void
 )
 {
-    struct CPUID_Register input = { .eax = 7, .ebx = 0, .ecx = 0, .edx = 0 };
-    const struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
+    volatile struct CPUID_Register input = { .eax = 7, .ebx = 0, .ecx = 0, .edx = 0 };
+    const volatile struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
 
     return result_register.ebx & (1 << 16);
 }
