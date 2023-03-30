@@ -391,7 +391,7 @@ Create_Intersection_Settings_With_CLI_Parameter
  * @brief Update the "data found" flag.
  *
  * If not partial- and full matches should be appear in the result file, then the data found flag needs to be updated,
- * because this flag only shows, that data was found. There is no differentiation, weather this are partial or full
+ * because this flag only shows, that data was found. There is no differentiation, whether this are partial or full
  * match data.
  *
  * @param[in] intersection_settings Settings for the intersection process
@@ -684,7 +684,7 @@ Exec_Intersection
     register const size_t min_token_left_for_valid_data_set = (KEEP_SINGLE_TOKEN_RESULTS_BIT(intersection_settings)) ? 1 : 2;
     const _Bool abort_progress_percent_given = ! isnan(abort_progress_percent);
 
-    // This is the result object for temorary result data
+    // This is the result object for temporary result data
     struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult(1, 10);
 
     // ===== ===== ===== ===== ===== ===== ===== ===== BEGIN Outer loop ===== ===== ===== ===== ===== ===== ===== =====
@@ -1718,7 +1718,7 @@ Create_Intersection_Settings_With_CLI_Parameter
  * @brief Update the "data found" flag.
  *
  * If not partial- and full matches should be appear in the result file, then the data found flag needs to be updated,
- * because this flag only shows, that data was found. There is no differentiation, weather this are partial or full
+ * because this flag only shows, that data was found. There is no differentiation, whether this are partial or full
  * match data.
  *
  * @param[in] intersection_settings Settings for the intersection process
