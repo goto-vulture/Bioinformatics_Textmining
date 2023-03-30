@@ -151,6 +151,32 @@ If available the program uses SSE and AVX2 extensions, if the host support these
 
 
 
+## Performance test
+
+Infos about the performance test:
+- First file: ~52000 tokens
+- Second file: ~1.7 Mio. tokens
+- Result file: ~420000 tokens in ~200000 sets
+- Intersection operations: ~88200 Mio.
+
+| Used CPU | Frequency (GHz) | Used CPU extension | Avg. time (s) |
+|----------|-----------------|--------------------|---------------|
+| AMD Ryzen 5 5600G | 3.9 - 4.4 | AVX2 | 18.9 |
+| AMD Ryzen 5 5600G | 3.9 - 4.4 | n/a | 42.2 |
+| AMD Ryzen 3 4300U | 2.7 - 3.7 | AVX2 | 25.6 |
+| AMD Ryzen 3 4300U | 2.7 - 3.7 | n/a | 72.8 |
+| AMD Athlon 5350 | 2.1 | SSE4.1 | 126.8 |
+| AMD Athlon 5350 | 2.1 | n/a | 312.2 |
+| Intel i5-3220M | 2.6 - 3.3 | SSE4.1 | 42.2 |
+| Intel i5-3220M | 2.6 - 3.3 | n/a | 110.8 |
+| Intel Atom N450 | 1.6 | SSE2 | 340.1 |
+| Intel Atom N450 | 1.6 | n/a | 563.9 |
+
+It seems to be important to use a CPU extension, because a intersection operation can be converted to a matrix operation. Even on a low cost CPU from 2010 (N450) with an outdated extension (SSE2 is from 2001) the usage of such a extension will reduce the runtime about ~40%. On other systems a reduction of more than 50% seems to be the normal case.
+
+It would be interesting to compare this results with a CPU, that supports AVX512. Unfortunately I don't own such a CPU.
+
+
 ## Future features
 
 - Determine the end of sentences (Using POS tags from the source files; list of common abbreviations; 3rd party sentence tokenizer)
