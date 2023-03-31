@@ -154,10 +154,10 @@ If available the program uses SSE and AVX2 extensions, if the host support these
 ## Performance test
 
 Infos about the performance test:
-- First file: ~52000 tokens
-- Second file: ~1.7 Mio. tokens
-- Result file: ~420000 tokens in ~200000 sets
-- Intersection operations: ~88200 Mio.
+- First file (1.8 MB): ~52.000 tokens
+- Second file (115 MB): ~1.7 Mio. tokens
+- Result file: ~420.000 tokens in ~200.000 sets
+- Intersection operations: ~88.200 Mio.
 
 | Used CPU | Frequency (GHz) | Used CPU extension | Avg. time (s) |
 |----------|-----------------|--------------------|---------------|
@@ -172,7 +172,7 @@ Infos about the performance test:
 | Intel Atom N450 | 1.6 | SSE2 | 340.1 |
 | Intel Atom N450 | 1.6 | n/a | 563.9 |
 
-It seems to be important to use a CPU extension, because a intersection operation can be converted to a matrix operation. Even on a low cost CPU from 2010 (N450) with an outdated extension (SSE2 is from 2001) the usage of such a extension will reduce the runtime about ~40%. On other systems a reduction of more than 50% seems to be the normal case.
+It seems to be particularly helpful to use a SIMD CPU extension, because a intersection operation can be converted to a matrix operation. Even on a low cost CPU from 2010 (N450) with an outdated extension (SSE2 is from 2001) the usage of such a extension will reduce the runtime about ~40%. On other systems a reduction of more than 50% seems to be the normal case.
 
 It would be interesting to compare this results with a CPU, that supports AVX512. Unfortunately I don't own such a CPU.
 
