@@ -567,6 +567,7 @@ Exec_Intersection
     // will be created with the worst case in the memory usage. This is massive inefficient, but for the development it
     // is okay.
     // => ! It will be changed for real use cases ! <=
+    PRINTF_NO_VA_ARGS_FFLUSH("\nCreate document word lists ...");
     struct Document_Word_List* source_int_values_1 =
             DocumentWordList_CreateObjectAsIntersectionResult(token_container_input_1->next_free_element, length_of_longest_token_container);
     struct Document_Word_List* source_int_values_2 =
@@ -576,6 +577,7 @@ Exec_Intersection
             source_int_values_1);
     Append_Token_Int_Mapping_Data_To_Document_Word_List(token_int_mapping, token_container_input_2,
             source_int_values_2);
+    PUTS_FFLUSH(" Done");
 
     DocumentWordList_ShowAttributes(source_int_values_1);
     DocumentWordList_ShowAttributes(source_int_values_2);
