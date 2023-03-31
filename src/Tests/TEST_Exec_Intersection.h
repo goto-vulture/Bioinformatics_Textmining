@@ -88,9 +88,19 @@ extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files_JSON_And_CSV (vo
  */
 extern void TEST_AVX2_Extension (void);
 
+#elif defined(__AVX__) && ! defined(NO_AVX) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Test, whether the results from the calculations with AVX extension and without are the same.
+ *
+ * It will be compared:
+ * - Number of tokens
+ * - Number of sets
+ */
+extern void TEST_AVX_Extension (void);
+
 #elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
 /**
- * @brief Test, whether the results from the calculations with AVX2 extension and without are the same.
+ * @brief Test, whether the results from the calculations with SSE4_1 extension and without are the same.
  *
  * It will be compared:
  * - Number of tokens
@@ -100,13 +110,23 @@ extern void TEST_SSE4_1_Extension (void);
 
 #elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
 /**
- * @brief Test, whether the results from the calculations with AVX2 extension and without are the same.
+ * @brief Test, whether the results from the calculations with SSE2 extension and without are the same.
  *
  * It will be compared:
  * - Number of tokens
  * - Number of sets
  */
 extern void TEST_SSE2_Extension (void);
+
+#elif defined(__MMX__) && ! defined(NO_MMX) && ! defined (NO_CPU_EXTENSIONS)
+/**
+ * @brief Test, whether the results from the calculations with MMX extension and without are the same.
+ *
+ * It will be compared:
+ * - Number of tokens
+ * - Number of sets
+ */
+extern void TEST_MMX_Extension (void);
 
 #else
 /**

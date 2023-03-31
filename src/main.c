@@ -391,10 +391,14 @@ Run_All_Test_Functions (void)
 
 #if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
     RUN(TEST_AVX2_Extension);
+#elif defined(__AVX__) && ! defined(NO_AVX) && ! defined(NO_CPU_EXTENSIONS)
+    RUN(TEST_AVX_Extension);
 #elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
     RUN(TEST_SSE4_1_Extension);
 #elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
     RUN(TEST_SSE2_Extension);
+#elif defined(__MMX__) && ! defined(NO_MMX) && ! defined (NO_CPU_EXTENSIONS)
+    RUN(TEST_MMX_Extension);
 #else
     RUN(TEST_Placeholder_For_No_Extensions);
 #endif
