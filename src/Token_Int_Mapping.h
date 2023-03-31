@@ -26,6 +26,7 @@ extern "C"
 #include <inttypes.h>   // uint_fast32_t
 #include <stddef.h>     // size_t
 #include "Error_Handling/_Generics.h"
+#include "Defines.h"
 
 
 
@@ -75,7 +76,7 @@ struct Token_Int_Mapping
      */
     char* c_str_arrays [C_STR_ARRAYS];
 
-    uint_fast32_t* int_mapping [C_STR_ARRAYS];          ///< Mapping integers
+    DATA_TYPE* int_mapping [C_STR_ARRAYS];          ///< Mapping integers
 
     /**
      * @brief Allocated number of tokens for the C-String. This means, that every C-String has individual allocation
@@ -210,7 +211,7 @@ TokenIntMapping_ShowMemoryUsage
  *
  * @return Mapping integer or UINT_FAST32_MAX, if the token is not in the mapping list
  */
-extern uint_fast32_t
+extern DATA_TYPE
 TokenIntMapping_TokenToInt
 (
         const struct Token_Int_Mapping* const restrict object,
@@ -244,7 +245,7 @@ extern void
 TokenIntMapping_IntToToken
 (
         const struct Token_Int_Mapping* const restrict object,
-        const uint_fast32_t token_int_value,
+        const DATA_TYPE token_int_value,
         char* const restrict result_token_memory,
         const size_t result_token_memory_size
 );
@@ -266,7 +267,7 @@ extern const char*
 TokenIntMapping_IntToTokenStaticMem
 (
         const struct Token_Int_Mapping* const object,
-        const uint_fast32_t token_int_value
+        const DATA_TYPE token_int_value
 );
 
 

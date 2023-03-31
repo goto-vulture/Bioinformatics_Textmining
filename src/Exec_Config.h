@@ -37,7 +37,8 @@ enum Exec_Config_Types
     NO_FILENAMES                = 1 << 9,   ///< Don't show the input file names in the general info block.
     NO_CREATION_TIME            = 1 << 10,  ///< Don't show the creation time in the general info block.
     NO_PROGRAM_VERSION          = 1 << 11,  ///< Don't show the program version in the general info block.
-    KEEP_SINGLE_TOKEN_RESULTS   = 1 << 12   ///< Keep results with only one token
+    KEEP_SINGLE_TOKEN_RESULTS   = 1 << 12,  ///< Keep results with only one token
+    SHOW_TOO_LONG_TOKENS        = 1 << 13   ///< Show and save too long tokens in the result file
 };
 
 /**
@@ -127,6 +128,12 @@ enum Exec_Config_Types
 #else
 #error "The macro \"KEEP_SINGLE_TOKEN_RESULTS_BIT\" is already defined !"
 #endif /* KEEP_SINGLE_TOKEN_RESULTS_BIT */
+
+#ifndef SHOW_TOO_LONG_TOKENS_BIT
+#define SHOW_TOO_LONG_TOKENS_BIT(input) ((input) & SHOW_TOO_LONG_TOKENS) ///< Is SHOW_TOO_LONG_TOKENS bit set ?
+#else
+#error "The macro \"SHOW_TOO_LONG_TOKENS_BIT\" is already defined !"
+#endif /* SHOW_TOO_LONG_TOKENS_BIT */
 
 
 

@@ -126,11 +126,14 @@ Optional arguments:
 - `--show_too_long_tokens`: Show too long tokens in the export file
 - `--no_part_matches`: No part matches will appear in the export file
 - `--no_full_matches`: No full matches will appear in the export file
+- `-k`, `--keep_single_token_results`: Keep results with only one token (By default single tokens results will be discarded)
+- `-n`, `--no_cpu_extensions`: Don't use CPU extensions, even if there available on the host
+
 - `-h`, `--help`: Show a help message and exit
 
 Debugging arguments:
 - `-A`, `--abort=<float>`: Abort the calculation after X percent
-- `-T`, `--run_all_test_functions`: Runing all test functions. This argument overrides all other arguments, except -h. (Only useful for debugging)
+- `-T`, `--run_all_test_functions`: Running all test functions. This argument overrides all other arguments, except -h. (Only useful for debugging)
 
 
 
@@ -138,12 +141,40 @@ Debugging arguments:
 
 To make the implementation simple, the in and output will be created in a simple way. The name of the input files will be passed trough CLI parameter and the results will be represented as JSON file.
 
+If available the program uses SSE and AVX2 extensions, if the host support these extensions. As fallback, whether a support is not available or not detectable, portable C code is used. (With the option `-n` or `--no_cpu_extensions` the usage of CPU extensions can be disabled.)
+
 ### Used libraries
 
 - *argparse*: Simple and powerful CLI parser. Here available on [GitHub](https://github.com/cofyc/argparse).
 - *cJSON*: Lightweight (and beautiful) JSON parser. Also available on [GitHub](https://github.com/DaveGamble/cJSON).
 - *TinyTest*: Simple and tiny test suite. You can find it here on [GitHub](https://github.com/joewalnes/tinytest).
 
+
+
+## Performance test
+
+Infos about the performance test:
+- First file (1.8 MB): ~52.000 tokens
+- Second file (115 MB): ~1.7 Mio. tokens
+- Result file: ~420.000 tokens in ~200.000 sets
+- Intersection operations: ~88.200 Mio.
+
+| Used CPU | Frequency (GHz) | Used CPU extension | Avg. time (s) |
+|----------|-----------------|--------------------|---------------|
+| AMD Ryzen 5 5600G | 3.9 - 4.4 | AVX2 | 18.9 |
+| AMD Ryzen 5 5600G | 3.9 - 4.4 | n/a | 42.2 |
+| AMD Ryzen 3 4300U | 2.7 - 3.7 | AVX2 | 25.6 |
+| AMD Ryzen 3 4300U | 2.7 - 3.7 | n/a | 72.8 |
+| AMD Athlon 5350 | 2.1 | SSE4.1 | 126.8 |
+| AMD Athlon 5350 | 2.1 | n/a | 312.2 |
+| Intel i5-3220M | 2.6 - 3.3 | SSE4.1 | 42.2 |
+| Intel i5-3220M | 2.6 - 3.3 | n/a | 110.8 |
+| Intel Atom N450 | 1.6 | SSE2 | 340.1 |
+| Intel Atom N450 | 1.6 | n/a | 563.9 |
+
+It seems to be particularly helpful to use a SIMD CPU extension, because a intersection operation can be converted to a matrix operation. Even on a low cost CPU from 2010 (N450) with an outdated extension (SSE2 is from 2001) the usage of such a extension will reduce the runtime about ~40%. On other systems a reduction of more than 50% seems to be the normal case.
+
+It would be interesting to compare this results with a CPU, that supports AVX512. Unfortunately I don't own such a CPU.
 
 
 ## Future features

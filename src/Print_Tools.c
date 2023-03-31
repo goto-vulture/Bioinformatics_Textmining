@@ -32,7 +32,12 @@
  * @param[in] dim_1 Size of the first array dimension (Number of C-Strings)
  * @param[in] dim_2 Size of the second array dimension (Max number of char per C-String)
  */
-extern void Print_2D_String_Array (const char* const restrict drawing [], const size_t dim_1, const size_t dim_2)
+extern void Print_2D_String_Array
+(
+        const char* const restrict drawing [],
+        const size_t dim_1,
+        const size_t dim_2
+)
 {
     ASSERT_MSG(drawing != NULL, "drawing is NULL !");
     ASSERT_MSG(dim_1 != 0, "First array dimension is 0 !");
@@ -77,7 +82,11 @@ extern void Print_2D_String_Array (const char* const restrict drawing [], const 
  * @param[in] array array with the data
  * @param[in] array_length length of the array
  */
-extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const size_t array_length)
+extern void Print_uint_fast32_t_Array
+(
+        const uint_fast32_t* const array,
+        const size_t array_length
+)
 {
     ASSERT_MSG(array != NULL, "array is NULL !");
 
@@ -118,8 +127,13 @@ extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const s
  *
  * @return The new counter
  */
-extern size_t Process_Printer (const size_t print_step_size, const size_t counter_since_last_output,
-        const size_t actual_counter, const size_t hundred_percent, const _Bool with_carriage_return,
+extern size_t Process_Printer
+(
+        const size_t print_step_size,
+        const size_t counter_since_last_output,
+        const size_t actual_counter,
+        const size_t hundred_percent,
+        const _Bool with_carriage_return,
         void (*print_function)
         (
             const size_t print_step_size,
@@ -177,7 +191,10 @@ extern size_t Process_Printer (const size_t print_step_size, const size_t counte
  *
  * param[in] byte_size Value, that will be converted an printed
  */
-extern void Print_Memory_Size_As_B_KB_MB (const size_t byte_size)
+extern void Print_Memory_Size_As_B_KB_MB
+(
+        const size_t byte_size
+)
 {
     ASSERT_MSG(byte_size != 0, "Byte size is 0 !")
 
@@ -195,7 +212,10 @@ extern void Print_Memory_Size_As_B_KB_MB (const size_t byte_size)
  *
  * @param[in] value Value, that will be printed with decimal dots
  */
-extern void Print_Value_With_Decimal_Points (const long int value)
+extern void Print_Value_With_Decimal_Points
+(
+        const long int value
+)
 {
     char value_to_str [30];
     memset(value_to_str, '\0', sizeof(value_to_str));
@@ -219,6 +239,90 @@ extern void Print_Value_With_Decimal_Points (const long int value)
             putchar ('.');
         }
         putchar (value_to_str [i]);
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Printing any basic type.
+ *
+ * The data will be given as void pointer. It will be casted to the type, that was given with the enum VALUE_TYPE object.
+ *
+ * @param[in] data Given data
+ * @param[in] value_type Type of the given data
+ */
+extern void Any_Print
+(
+        void* data,
+        const enum VALUE_TYPE value_type
+)
+{
+    switch (value_type)
+    {
+    case UNSIGNED_CHAR:
+    case U_CHAR:
+        printf (GET_FORMAT_STR(*(unsigned char*) data), *(unsigned char*) data); break;
+    case SIGNED_CHAR:
+    case S_CHAR:
+    case CHAR:
+        printf (GET_FORMAT_STR(*(char*) data), *(char*) data); break;
+
+    case UNSIGNED_SHORT:
+    case U_SHORT:
+        printf (GET_FORMAT_STR(*(unsigned short*) data), *(unsigned short*) data); break;
+    case SIGNED_SHORT:
+    case S_SHORT:
+    case SHORT:
+        printf (GET_FORMAT_STR(*(short*) data), *(short*) data); break;
+
+    case UNSIGNED_INT:
+    case U_INT:
+        printf (GET_FORMAT_STR(*(unsigned int*) data), *(unsigned int*) data); break;
+    case SIGNED_INT:
+    case S_INT:
+    case INT:
+        printf (GET_FORMAT_STR(*(int*) data), *(int*) data); break;
+
+    case UNSIGNED_LONG_INT:
+    case U_L_INT:
+        printf (GET_FORMAT_STR(*(unsigned long int*) data), *(unsigned long int*) data); break;
+    case SIGNED_LONG_INT:
+    case S_L_INT:
+    case LONG_INT:
+    case L_INT:
+        printf (GET_FORMAT_STR(*(long int*) data), *(long int*) data); break;
+
+    case UNSIGNED_LONG_LONG_INT:
+    case U_LL_INT:
+        printf (GET_FORMAT_STR(*(unsigned long long int*) data), *(unsigned long long int*) data); break;
+    case SIGNED_LONG_LONG_INT:
+    case S_LL_INT:
+    case LONG_LONG_INT:
+    case LL_INT:
+        printf (GET_FORMAT_STR(*(long long int*) data), *(long long int*) data); break;
+
+    case FLOAT:
+        printf (GET_FORMAT_STR(*(float*) data), *(float*) data); break;
+    case DOUBLE:
+        printf (GET_FORMAT_STR(*(double*) data), *(double*) data); break;
+    case LONG_DOUBLE:
+        printf (GET_FORMAT_STR(*(long double*) data), *(long double*) data); break;
+
+    case BOOL:
+        printf ("%s", ((*(_Bool*) data) == false) ? "false" : "true"); break;
+
+    case POINTER:
+    case PTR:
+        printf ("%p", data); break;
+
+    case UNKNOWN_VALUE_TYPE:
+        printf ("Unknown type was given"); break;
+
+    default:
+        ASSERT_MSG(false, "default path executed !");
     }
 
     return;

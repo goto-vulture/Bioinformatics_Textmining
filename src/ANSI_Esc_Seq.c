@@ -3,7 +3,8 @@
  *
  * Here are may macros to alter the terminal behavior with ANSI escape sequences.
  *
- * The main source for this sequences: https://readforlearn.com/list-of-ansi-color-escape-sequences/
+ * The main source for this sequences:
+ * @see https://readforlearn.com/list-of-ansi-color-escape-sequences/
  *
  * @date Dec 22, 2022
  * @author: goto-vulture
@@ -18,7 +19,7 @@
  * @brief Small test whether the main ANSI escape sequences (different colors and font changes like bold and italic) are
  * working.
  */
-extern void Test_ANSI_Main_Esc_Seq()
+extern void Test_ANSI_Main_Esc_Seq (void)
 {
     printf(ANSI_RESET_ALL);
     printf("> Begin: %s <\n", __func__);

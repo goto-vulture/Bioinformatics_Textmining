@@ -21,11 +21,20 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+
+#if defined(__GNUC__) && ! defined(NO_CPU_EXTENSIONS)
+#include <immintrin.h>
+#include <emmintrin.h>
+#include <smmintrin.h>
+#endif /* defined(__GNUC__) && ! defined(NO_CPU_EXTENSIONS) */
+
 #include "Misc.h"
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Error_Handling/_Generics.h"
 #include "Print_Tools.h"
+#include "Defines.h"
+#include "CLI_Parameter.h"
 
 
 
@@ -79,7 +88,7 @@ Find_Intersection_Data
 (
         const struct Document_Word_List* const restrict intersection_result,
         const struct Document_Word_List* const restrict object,
-        const uint_fast32_t* const restrict data,
+        const DATA_TYPE* const restrict data,
         const size_t data_length
 );
 
@@ -115,9 +124,9 @@ Compare_Function
 static _Bool
 Binary_Search
 (
-        const uint_fast32_t* const data,
+        const DATA_TYPE* const data,
         const size_t data_size,
-        const uint_fast32_t search_value
+        const DATA_TYPE search_value
 );
 
 /**
@@ -135,8 +144,150 @@ Binary_Search
 static void
 Heapsort
 (
-        uint_fast32_t* const data,
+        DATA_TYPE* const data,
         const size_t data_size
+);
+
+struct Intersection_Data
+{
+    struct Document_Word_List* const intersection_result;
+
+    const DATA_TYPE* const restrict data_1;
+    const CHAR_OFFSET_TYPE* const restrict char_offsets;
+    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets;
+    const WORD_OFFSET_TYPE* const restrict word_offsets;
+    const size_t data_1_length;
+    const DATA_TYPE* const restrict data_2;
+    const size_t data_2_length;
+    _Bool* const restrict multiple_guard_data_1;
+    _Bool* const restrict multiple_guard_data_2;
+};
+
+#if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Using AVX2 intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_AVX2
+(
+        const struct Intersection_Data data
+);
+#elif defined(__AVX__) && ! defined(NO_AVX) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Using AVX intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * ! The main problem with AVX1 is, that this extension has no integer comparison, only floating point. !
+ * In our case this is in almost nearly no situation a problem, because the comparison will be done with values, that
+ * can be fully represented as integer. In such a case even a floating point comparison has no precision loss due a
+ * integer can be represented exact, if it is in a range of few millions compared to zero.
+ *
+ * The speedup compared to SSE4.1 is not that what I expected. The reason is, that in the calculation process are
+ * conversions between int packed to float packed objects.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_AVX
+(
+        const struct Intersection_Data data
+);
+#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Using SSE4.1 intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_SSE4_1
+(
+        const struct Intersection_Data data
+);
+#elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined (NO_CPU_EXTENSIONS)
+/**
+ * @brief Using SSE2 intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_SSE2
+(
+        const struct Intersection_Data data
+);
+#elif defined(__MMX__) && ! defined(NO_MMX) && ! defined (NO_CPU_EXTENSIONS)
+/**
+ * @brief Using MMX intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_MMX
+(
+        const struct Intersection_Data data
+);
+#endif
+/**
+ * @brief No special instructions for the calculation.
+ *
+ * The original order of the loop (data_2-loop inside of data_1-loop) creates another order of the results than the
+ * versions with the CPU extensions. The results are in sum the same; but not the order.
+ *
+ * The functions with the CPU extensions uses a reverse order. This is necessary, because only with this order suitable
+ * vector calculations can be produced.
+ *
+ * @see Inersection_With_SSE2
+ * @see Inersection_With_SSE4_1
+ * @see Inersection_With_AVX2
+ *
+ * => Fallback solution
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_Without_Special_Instructions
+(
+        const struct Intersection_Data data
 );
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -158,9 +309,9 @@ Heapsort
 extern struct Document_Word_List*
 IntersectionApproach_TwoNestedLoops
 (
-    const struct Document_Word_List* const restrict object,
-    const uint_fast32_t* const restrict data,
-    const size_t data_length
+        const struct Document_Word_List* const restrict object,
+        const DATA_TYPE* const restrict data,
+        const size_t data_length
 )
 {
     ASSERT_MSG(object != NULL, "Document_Word_List is NULL !");
@@ -171,7 +322,7 @@ IntersectionApproach_TwoNestedLoops
             object->max_array_length);
     ASSERT_ALLOC(intersection_result, "Cannot create new Document Word List for intersection !",
             sizeof (struct Document_Word_List) + object->number_of_arrays * object->max_array_length *
-            sizeof (uint_fast32_t));
+            sizeof (DATA_TYPE));
     intersection_result->next_free_array = object->next_free_array;
     intersection_result->intersection_data = true;
 
@@ -244,9 +395,9 @@ IntersectionApproach_TwoNestedLoops
 extern struct Document_Word_List*
 IntersectionApproach_QSortAndBinarySearch
 (
-    const struct Document_Word_List* const restrict object,
-    const uint_fast32_t* const restrict data,
-    const size_t data_length
+        const struct Document_Word_List* const restrict object,
+        const DATA_TYPE* const restrict data,
+        const size_t data_length
 )
 {
     ASSERT_MSG(object != NULL, "Document_Word_List is NULL !");
@@ -258,7 +409,7 @@ IntersectionApproach_QSortAndBinarySearch
     // Sort all data ascending with the QSort algorithm
     for (size_t i = 0; i < object->number_of_arrays; ++ i)
     {
-        qsort (object->data_struct.data [i], object->arrays_lengths [i], sizeof (uint_fast32_t), Compare_Function);
+        qsort (object->data_struct.data [i], object->arrays_lengths [i], sizeof (DATA_TYPE), Compare_Function);
     }
 
     Find_Intersection_Data (intersection_result, object, data, data_length);
@@ -288,9 +439,9 @@ IntersectionApproach_QSortAndBinarySearch
 extern struct Document_Word_List*
 IntersectionApproach_HeapSortAndBinarySearch
 (
-    const struct Document_Word_List* const restrict object,
-    const uint_fast32_t* const restrict data,
-    const size_t data_length
+        const struct Document_Word_List* const restrict object,
+        const DATA_TYPE* const restrict data,
+        const size_t data_length
 )
 {
     ASSERT_MSG(object != NULL, "Document_Word_List is NULL !");
@@ -324,6 +475,7 @@ IntersectionApproach_HeapSortAndBinarySearch
  * ATTENTION: Here are two raw data arrays used. NO Document_Word_List as one of the input parameter.
  *
  * Asserts:
+ *      res_obj != NULL
  *      data_1 != NULL
  *      data_1_length = 0
  *      data_2 != NULL
@@ -332,6 +484,7 @@ IntersectionApproach_HeapSortAndBinarySearch
  *      sentence_offsets != NULL
  *      word_offsets != NULL
  *
+ * @param[in] res_obj Preallocated Document_Word_List object, that will be used for the result data
  * @param[in] data_1 Data, that will be used for the intersection with the second data array
  * @param[in] char_offsets Char offsets of the data focused on the source file, that was also the source for data_1
  * @param[in] sentence_offsets Sentence offsets of the data focused on the source file, that was also the source for data_1
@@ -340,26 +493,23 @@ IntersectionApproach_HeapSortAndBinarySearch
  * @param[in] data_2 Data, that will be used for the intersection with the first data array
  * @param[in] data_2_length Number of the elements in the second data array
  *
- * @param[in] id_1 ID of the first data array
- * @param[in] id_2 ID of the second data array
- *
- * @return New dynamic object containing the intersection result
+ * @return nothing (The result is in the given pointer)
  */
-extern struct Document_Word_List*
+extern void
 IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 (
-    const uint_fast32_t* const restrict data_1,
-    const CHAR_OFFSET_TYPE* const restrict char_offsets,
-    const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets,
-    const WORD_OFFSET_TYPE* const restrict word_offsets,
-    const size_t data_1_length,
-    const uint_fast32_t* const restrict data_2,
-    const size_t data_2_length,
+        struct Document_Word_List* const res_obj,
 
-    const char* const restrict id_1,
-    const char* const restrict id_2
+        const DATA_TYPE* const restrict data_1,
+        const CHAR_OFFSET_TYPE* const restrict char_offsets,
+        const SENTENCE_OFFSET_TYPE* const restrict sentence_offsets,
+        const WORD_OFFSET_TYPE* const restrict word_offsets,
+        const size_t data_1_length,
+        const DATA_TYPE* const restrict data_2,
+        const size_t data_2_length
 )
 {
+    ASSERT_MSG(res_obj != NULL, "Given result pointer is NULL !");
     ASSERT_MSG(data_1 != NULL, "Data 1 is NULL !");
     ASSERT_MSG(data_1_length > 0, "Length of the data 1 is 0 !");
     ASSERT_MSG(data_2 != NULL, "Data 2 is NULL !");
@@ -378,10 +528,6 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 #else
     // Nothing to do
 #endif /* #ifndef __STDC_NO_VLA__ */
-
-    // This result contains only one array, because two raw data arrays will be used for the intersection
-    struct Document_Word_List* intersection_result = DocumentWordList_CreateObjectAsIntersectionResult
-            (1, MAX(data_1_length, data_2_length));
 
     // Arrays, which display, if a value is already in the intersection
     _Bool* multiple_guard_data_1 = NULL;
@@ -422,36 +568,48 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     ASSERT_ALLOC(multiple_guard_data_2, "Cannot create the multiple guard for data 2 !", data_2_length * sizeof (_Bool));
 #endif /* __STDC_NO_VLA__ */
 
-    // Calculate intersection
-    for (register size_t d1 = 0; d1 < data_1_length; ++ d1)
+    // Reset the length and the next free element values to "recycle" the given object
+    res_obj->next_free_array = 0;
+    for (size_t i = 0; i < res_obj->number_of_arrays; ++ i) { res_obj->arrays_lengths [i] = 0; }
+
+    const struct Intersection_Data data =
     {
-        for (register size_t d2 = 0; d2 < data_2_length; ++ d2)
-        {
-            if (data_1 [d1] == data_2 [d2])
-            {
-                // Was the current value already inserted in the intersection result ?
-                if (! multiple_guard_data_1 [d1] && ! multiple_guard_data_2 [d2])
-                {
-                    Put_One_Value_And_Offset_Types_To_Document_Word_List(intersection_result, data_1 [d1],
-                            char_offsets [d1], sentence_offsets [d1], word_offsets [d1]);
-                    multiple_guard_data_1 [d1] = true;
-                    multiple_guard_data_2 [d2] = true;
-                }
-            }
-        }
+            res_obj,
+            data_1,
+            char_offsets,
+            sentence_offsets,
+            word_offsets,
+            data_1_length,
+            data_2,
+            data_2_length,
+            multiple_guard_data_1,
+            multiple_guard_data_2
+    };
+
+    // For the first implementation and to have a compiler independent code: Only use the CPU extensions, if the GCC
+    // compiler will be used
+    if (! GLOBAL_CLI_NO_CPU_EXTENSIONS)
+    {
+#if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
+        Inersection_With_AVX2(data);
+#elif defined(__AVX__) && ! defined(NO_AVX) && ! defined(NO_CPU_EXTENSIONS)
+        Inersection_With_AVX(data);
+#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
+        Inersection_With_SSE4_1(data);
+#elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
+        Inersection_With_SSE2(data);
+#elif defined(__MMX__) && ! defined(NO_MMX) && ! defined (NO_CPU_EXTENSIONS)
+        Inersection_With_MMX(data);
+#else
+        Inersection_Without_Special_Instructions(data);
+#endif
+    }
+    else
+    {
+        Inersection_Without_Special_Instructions(data);
     }
 
-    intersection_result->intersection_data = true;
-    if (id_1 != NULL)
-    {
-        strncpy (intersection_result->dataset_id_1, id_1, COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_1) - 1);
-        intersection_result->dataset_id_1 [COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_1) - 1] = '\0';
-    }
-    if (id_2 != NULL)
-    {
-        strncpy (intersection_result->dataset_id_2, id_2, COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_2) - 1);
-        intersection_result->dataset_id_2 [COUNT_ARRAY_ELEMENTS(intersection_result->dataset_id_2) - 1] = '\0';
-    }
+    res_obj->intersection_data = true;
 
 #ifndef __STDC_NO_VLA__
     #ifndef UNSAFE_VLA_USAGE
@@ -469,7 +627,7 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
     FREE_AND_SET_TO_NULL(multiple_guard_data_2);
 #endif /* __STDC_NO_VLA__ */
 
-    return intersection_result;
+    return;
 }
 // Enable the -Wstack-protector warning again
 #ifdef __GNUC__
@@ -477,6 +635,504 @@ IntersectionApproach_TwoNestedLoopsWithTwoRawDataArrays
 #endif /* __GNUC__ */
 
 //=====================================================================================================================
+
+#if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Using AVX2 intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_AVX2
+(
+        const struct Intersection_Data data
+)
+{
+    __m256i data_1_packed           = _mm256_setzero_si256();   // <<|AVX|>>
+    __m256i data_2_packed           = _mm256_setzero_si256();   // <<|AVX|>>
+    __m256i cmp_result_packed       = _mm256_setzero_si256();   // <<|AVX|>>
+    __m256i minus_one_packed        = _mm256_set1_epi32(-1);    // <<|AVX|>> // Set all bits to 1
+//    __m256i three_four_minus_one_packed = _mm256_set_epi32(-1, -1, -1, -1, -1, -1, 0, 0);   // <<|AVX|>> // Set higher 75% of the bits to 1
+//    __m256i half_minus_one_packed       = _mm256_set_epi32(-1, -1, -1, -1, 0, 0, 0, 0);     // <<|AVX|>> // Set the higher half bits to 1
+//    __m256i one_four_minus_one_packed   = _mm256_set_epi32(-1, -1, 0, 0, 0, 0, 0, 0);       // <<|AVX|>> // Set higher 25% of the bits to 1
+    const size_t data_step                      = AVX_REG_WIDTH_BIT / SIMD_VALUE_SIZE_BIT; // 256 bit register width / 32 bit per value
+//    const size_t data_step_three_four           = data_step * (3 / 4);
+//    const size_t data_step_half                 = data_step * (1 / 2);
+//    const size_t data_step_one_four             = data_step * (1 / 4);
+    const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
+
+    // Calculate intersection
+    for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
+    {
+        const DATA_TYPE curr_data_2_var = data.data_2 [d2];
+
+        // The AVX commands only works with signed integers !
+        data_2_packed = _mm256_set1_epi32 ((int) curr_data_2_var); // <<|AVX|>>
+
+        for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
+        {
+            // The AVX commands only works with signed integers !
+//            data_1_packed = _mm256_set_epi32 (
+//                    (int) data.data_1 [d1],   (int) data.data_1 [d1+1], (int) data.data_1 [d1+2], (int) data.data_1 [d1+3],
+//                    (int) data.data_1 [d1+4], (int) data.data_1 [d1+5], (int) data.data_1 [d1+6], (int) data.data_1 [d1+7]); // <<|AVX|>>
+            data_1_packed = _mm256_lddqu_si256 ((const __m256i_u*) (data.data_1 + d1)); // <<|AVX|>>
+            cmp_result_packed = _mm256_cmpeq_epi32 (data_2_packed, data_1_packed); // <<|AVX2|>> // 32 bit block equal: 0xFFFFFFFF
+
+            // Bitwise AND
+            // If all bits of cmp_result_packed are 0, then the function returns the zero flag (ZF), that was set to 1
+            if (_mm256_testz_si256(cmp_result_packed, minus_one_packed) == 1) { continue; } // <<|AVX|>>
+
+            register size_t real_d1 = d1;
+            // If at least one intersection found: Are in the first four entries no intersection found -> Skip them
+//            if (_mm256_testz_si256(cmp_result_packed, three_four_minus_one_packed) == 1)    { real_d1 += data_step_three_four; }    // <<|AVX|>>
+//            else if (_mm256_testz_si256(cmp_result_packed, half_minus_one_packed) == 1)     { real_d1 += data_step_half; }          // <<|AVX|>>
+//            else if (_mm256_testz_si256(cmp_result_packed, one_four_minus_one_packed) == 1) { real_d1 += data_step_one_four; }      // <<|AVX|>>
+
+            for (; real_d1 < (d1 + data_step); ++ real_d1)
+            {
+                if (data.data_1 [real_d1] == curr_data_2_var)
+                {
+                    // Was the current value already inserted in the intersection result ?
+                    if (! data.multiple_guard_data_1 [real_d1] && ! data.multiple_guard_data_2 [d2])
+                    {
+                        Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [real_d1],
+                                data.char_offsets [real_d1], data.sentence_offsets [real_d1], data.word_offsets [real_d1]);
+                        data.multiple_guard_data_1 [real_d1] = true;
+                        data.multiple_guard_data_2 [d2] = true;
+                    }
+                }
+            }
+        }
+        // The last padding calls
+        for (register size_t d1 = data.data_1_length - data_1_length_mod_data_step; d1 < data.data_1_length; d1 ++)
+        {
+            if (data.data_1 [d1] == curr_data_2_var)
+            {
+                // Was the current value already inserted in the intersection result ?
+                if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
+                {
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [d1],
+                            data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
+                    data.multiple_guard_data_1 [d1] = true;
+                    data.multiple_guard_data_2 [d2] = true;
+                }
+            }
+        }
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+#elif defined(__AVX__) && ! defined(NO_AVX) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Using AVX intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * ! The main problem with AVX1 is, that this extension has no integer comparison, only floating point. !
+ * In our case this is in almost nearly no situation a problem, because the comparison will be done with values, that
+ * can be fully represented as integer. In such a case even a floating point comparison has no precision loss due a
+ * integer can be represented exact, if it is in a range of few millions compared to zero.
+ *
+ * The speedup compared to SSE4.1 is not that what I expected. The reason is, that in the calculation process are
+ * conversions between int packed to float packed objects.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_AVX
+(
+        const struct Intersection_Data data
+)
+{
+    __m256i data_1_packed       = _mm256_setzero_si256();       // <<|AVX|>>
+    __m256 data_2_packed        = _mm256_setzero_ps();          // <<|AVX|>>
+    __m256 cmp_result_packed    = _mm256_setzero_ps();          // <<|AVX|>>
+    __m256 minus_one_packed     = _mm256_set1_ps((float) -1);   // <<|AVX|>> // Set all bits to 1
+    const size_t data_step                      = AVX_REG_WIDTH_BIT / SIMD_VALUE_SIZE_BIT; // 256 bit register width / 32 bit per value
+    const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
+
+    // Calculate intersection
+    for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
+    {
+        const DATA_TYPE curr_data_2_var = data.data_2 [d2];
+
+        // Load the data as vector of float values
+        data_2_packed = _mm256_set1_ps((float) curr_data_2_var); // <<|AVX|>>
+
+        for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
+        {
+            // The AVX commands only works with signed integers !
+            data_1_packed = _mm256_lddqu_si256 ((const __m256i_u*) (data.data_1 + d1)); // <<|AVX|>>
+            // Floating point equal comparison
+            cmp_result_packed = _mm256_cmp_ps (data_2_packed, _mm256_cvtepi32_ps(data_1_packed), _CMP_EQ_OQ); // <<|AVX|>> // 32 bit block equal: 0xFFFFFFFF
+
+            // Bitwise AND
+            // If all bits of cmp_result_packed are 0, then the function returns the zero flag (ZF), that was set to 1
+            if (_mm256_testz_ps(cmp_result_packed, minus_one_packed) == 1) { continue; } // <<|AVX|>>
+
+            for (size_t real_d1 = d1; real_d1 < (d1 + data_step); ++ real_d1)
+            {
+                if (data.data_1 [real_d1] == curr_data_2_var)
+                {
+                    // Was the current value already inserted in the intersection result ?
+                    if (! data.multiple_guard_data_1 [real_d1] && ! data.multiple_guard_data_2 [d2])
+                    {
+                        Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [real_d1],
+                                data.char_offsets [real_d1], data.sentence_offsets [real_d1], data.word_offsets [real_d1]);
+                        data.multiple_guard_data_1 [real_d1] = true;
+                        data.multiple_guard_data_2 [d2] = true;
+                    }
+                }
+            }
+        }
+        // The last padding calls
+        for (register size_t d1 = data.data_1_length - data_1_length_mod_data_step; d1 < data.data_1_length; d1 ++)
+        {
+            if (data.data_1 [d1] == curr_data_2_var)
+            {
+                // Was the current value already inserted in the intersection result ?
+                if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
+                {
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [d1],
+                            data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
+                    data.multiple_guard_data_1 [d1] = true;
+                    data.multiple_guard_data_2 [d2] = true;
+                }
+            }
+        }
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Using SSE4.1 intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_SSE4_1
+(
+        const struct Intersection_Data data
+)
+{
+    __m128i data_1_packed           = _mm_setzero_si128();  // <<|SSE2|>>
+    __m128i data_2_packed           = _mm_setzero_si128();  // <<|SSE2|>>
+    __m128i cmp_result_packed       = _mm_setzero_si128();  // <<|SSE2|>>
+    __m128i minus_one_packed        = _mm_set1_epi32(-1);   // <<|SSE2|>> // Set all bits to 1
+    // __m128i half_minus_one_packed   = _mm_set_epi32(-1, -1, 0, 0);  // <<|SSE2|>> // Set the higher half bits to 1
+    const size_t data_step                      = SSE_REG_WIDTH_BIT / SIMD_VALUE_SIZE_BIT; // 128 bit register width / 32 bit per value
+    const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
+
+    // Calculate intersection
+    for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
+    {
+        const DATA_TYPE curr_data_2_var = data.data_2 [d2];
+
+        // The SSE commands only works with signed integers !
+        data_2_packed = _mm_set1_epi32 ((int) curr_data_2_var); // <<|SSE2|>>
+
+        for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
+        {
+            // The SSE commands only works with signed integers !
+//            data_1_packed = _mm_set_epi32 (
+//                    (int) data.data_1 [d1+3], (int) data.data_1 [d1+2], (int) data.data_1 [d1+1], (int) data.data_1 [d1]); // <<|SSE2|>>
+            data_1_packed = _mm_loadu_si128((const __m128i_u*) (data.data_1 + d1)); // <<|SSE2|>>
+            cmp_result_packed = _mm_cmpeq_epi32 (data_2_packed, data_1_packed); // <<|SSE2|>> // 32 bit block equal: 0xFFFFFFFF
+
+            // If all bits of cmp_result_packed are 0, then the function returns the zero flag (ZF), that was set to 1
+            if (_mm_testz_si128(cmp_result_packed, minus_one_packed) == 1) { continue; } // <<|SEE4.1|>>
+
+            register size_t real_d1 = d1;
+            // Skip half of the objects, if in this byte range no intersection was found
+            //if (_mm_testz_si128(cmp_result_packed, half_minus_one_packed) == 1) { real_d1 += data_step / 2; } //<<|SSE4.1|>>
+
+            for (; real_d1 < (d1 + data_step); ++ real_d1) // "real_d1 != SIZE_MAX" to avoid underflows
+            {
+                if (data.data_1 [real_d1] == curr_data_2_var)
+                {
+                    // Was the current value already inserted in the intersection result ?
+                    if (! data.multiple_guard_data_1 [real_d1] && ! data.multiple_guard_data_2 [d2])
+                    {
+                        Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [real_d1],
+                                data.char_offsets [real_d1], data.sentence_offsets [real_d1], data.word_offsets [real_d1]);
+                        data.multiple_guard_data_1 [real_d1] = true;
+                        data.multiple_guard_data_2 [d2] = true;
+                    }
+                }
+            }
+        }
+        // The last padding calls
+        for (register size_t d1 = data.data_1_length - data_1_length_mod_data_step; d1 < data.data_1_length; d1 ++)
+        {
+            if (data.data_1 [d1] == curr_data_2_var)
+            {
+                // Was the current value already inserted in the intersection result ?
+                if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
+                {
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [d1],
+                            data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
+                    data.multiple_guard_data_1 [d1] = true;
+                    data.multiple_guard_data_2 [d2] = true;
+                }
+            }
+        }
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+#elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Using SSE2 intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_SSE2
+(
+        const struct Intersection_Data data
+)
+{
+    __m128i data_1_packed           = _mm_setzero_si128(); // <<|SSE2|>>
+    __m128i data_2_packed           = _mm_setzero_si128(); // <<|SSE2|>>
+    __m128i cmp_result_packed       = _mm_setzero_si128(); // <<|SSE2|>>
+    const size_t data_step                      = SSE_REG_WIDTH_BIT / SIMD_VALUE_SIZE_BIT; // 128 bit register width / 32 bit per value
+    const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
+
+    // Calculate intersection
+    for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
+    {
+        const DATA_TYPE curr_data_2_var = data.data_2 [d2];
+
+        // The SSE commands only works with signed integers !
+        data_2_packed = _mm_set1_epi32 ((int) curr_data_2_var); // <<|SSE2|>>
+
+        for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
+        {
+            // The SSE commands only works with signed integers !
+//            data_1_packed = _mm_set_epi32 (
+//                    (int) data.data_1 [d1], (int) data.data_1 [d1+1], (int) data.data_1 [d1+2], (int) data.data_1 [d1+3]); // <<|SSE2|>>
+            data_1_packed = _mm_loadu_si128((const __m128i_u*) (data.data_1 + d1)); // <<|SSE2|>>
+            cmp_result_packed = _mm_cmpeq_epi32 (data_2_packed, data_1_packed); // <<|SSE2|>> // 32 bit block equal: 0xFFFFFFFF
+
+            // Extract the data from the XMM register
+            // Yes the original data are 32 bit. But in the following lines there will be only equal zero tests
+            int64_t cmp_result [2];
+            cmp_result[0]       = _mm_cvtsi128_si64(cmp_result_packed); // <<|SSE2|>>
+            cmp_result_packed   = _mm_srli_si128(cmp_result_packed, 8); // <<|SSE2|>>
+            cmp_result[1]       = _mm_cvtsi128_si64(cmp_result_packed); // <<|SSE2|>>
+
+            // Are in the whole results no intersections ? -> Skip all of them
+            if (cmp_result[0] == 0 && cmp_result[1] == 0) { continue; }
+
+            register size_t real_d1 = d1;
+            // Skip half of the objects, if in this byte range no intersection was found
+            //if (cmp_result[1] == 0) { real_d1 += data_step / 2; } // Compare with [1], because the data are in reversed order
+
+            for (; real_d1 < (d1 + data_step); ++ real_d1)
+            {
+                if (data.data_1 [real_d1] == curr_data_2_var)
+                {
+                    // Was the current value already inserted in the intersection result ?
+                    if (! data.multiple_guard_data_1 [real_d1] && ! data.multiple_guard_data_2 [d2])
+                    {
+                        Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [real_d1],
+                                data.char_offsets [real_d1], data.sentence_offsets [real_d1], data.word_offsets [real_d1]);
+                        data.multiple_guard_data_1 [real_d1] = true;
+                        data.multiple_guard_data_2 [d2] = true;
+                    }
+                }
+            }
+        }
+        // The last padding calls
+        for (register size_t d1 = data.data_1_length - data_1_length_mod_data_step; d1 < data.data_1_length; d1 ++)
+        {
+            if (data.data_1 [d1] == curr_data_2_var)
+            {
+                // Was the current value already inserted in the intersection result ?
+                if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
+                {
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [d1],
+                            data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
+                    data.multiple_guard_data_1 [d1] = true;
+                    data.multiple_guard_data_2 [d2] = true;
+                }
+            }
+        }
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+#elif defined(__MMX__) && ! defined(NO_MMX) && ! defined (NO_CPU_EXTENSIONS)
+/**
+ * @brief Using MMX intrinsic function to use SIMD commands for the comparisons.
+ *
+ * This function creates the results in a different order than the function without CPU extensions due a reversed order
+ * of the loop nesting. A reversed loop nesting is necessary to create vector operations with performance improvements,
+ * than the version without CPU extensions.
+ *
+ * @see Inersection_Without_Special_Instructions
+ *
+ * @see https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html#
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_With_MMX
+(
+        const struct Intersection_Data data
+)
+{
+    __m64 data_1_packed           = _mm_setzero_si64(); // <<|MMX|>>
+    __m64 data_2_packed           = _mm_setzero_si64(); // <<|MMX|>>
+    __m64 cmp_result_packed       = _mm_setzero_si64(); // <<|MMX|>>
+    const size_t data_step                      = MMX_REG_WIDTH_BIT / SIMD_VALUE_SIZE_BIT; // 64 bit register width / 32 bit per value
+    const size_t data_1_length_mod_data_step    = data.data_1_length % data_step;
+
+    // Calculate intersection
+    for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
+    {
+        const DATA_TYPE curr_data_2_var = data.data_2 [d2];
+
+        // The MMX commands only works with signed integers !
+        data_2_packed = _mm_set1_pi32 ((int) curr_data_2_var); // <<|MMX|>>
+
+        for (register size_t d1 = 0; d1 < (data.data_1_length - data_1_length_mod_data_step); d1 += data_step)
+        {
+            // The MMX commands only works with signed integers !
+            data_1_packed = _mm_set_pi32((int) data.data_1[d1], (int) data.data_1[d1 + 1]); //<<|MMX|>>
+            cmp_result_packed = _mm_cmpeq_pi32 (data_2_packed, data_1_packed); // <<|MMX|>> // 32 bit block equal: 0xFFFFFFFF
+
+            // Extract the data from the MMX register
+            const int64_t cmp_result = _mm_cvtm64_si64(cmp_result_packed); // <<|MMX|>>
+            if (cmp_result == 0) { continue; }
+
+            for (size_t real_d1 = d1; real_d1 < (d1 + data_step); ++ real_d1)
+            {
+                if (data.data_1 [real_d1] == curr_data_2_var)
+                {
+                    // Was the current value already inserted in the intersection result ?
+                    if (! data.multiple_guard_data_1 [real_d1] && ! data.multiple_guard_data_2 [d2])
+                    {
+                        Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [real_d1],
+                                data.char_offsets [real_d1], data.sentence_offsets [real_d1], data.word_offsets [real_d1]);
+                        data.multiple_guard_data_1 [real_d1] = true;
+                        data.multiple_guard_data_2 [d2] = true;
+                    }
+                }
+            }
+        }
+        // The last padding calls
+        for (register size_t d1 = data.data_1_length - data_1_length_mod_data_step; d1 < data.data_1_length; d1 ++)
+        {
+            if (data.data_1 [d1] == curr_data_2_var)
+            {
+                // Was the current value already inserted in the intersection result ?
+                if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
+                {
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [d1],
+                            data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
+                    data.multiple_guard_data_1 [d1] = true;
+                    data.multiple_guard_data_2 [d2] = true;
+                }
+            }
+        }
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+#endif
+/**
+ * @brief No special instructions for the calculation.
+ *
+ * The original order of the loop (data_2-loop inside of data_1-loop) creates another order of the results than the
+ * versions with the CPU extensions. The results are in sum the same; but not the order.
+ *
+ * The functions with the CPU extensions uses a reverse order. This is necessary, because only with this order suitable
+ * vector calculations can be produced.
+ *
+ * @see Inersection_With_SSE2
+ * @see Inersection_With_SSE4_1
+ * @see Inersection_With_AVX2
+ *
+ * => Fallback solution
+ *
+ * @param[in] data struct with all necessary data for the intersection calculation
+ */
+static void
+Inersection_Without_Special_Instructions
+(
+        const struct Intersection_Data data
+)
+{
+    // Calculate intersection
+    for (register size_t d1 = 0; d1 < data.data_1_length; ++ d1)
+    {
+        for (register size_t d2 = 0; d2 < data.data_2_length; ++ d2)
+        {
+            if (data.data_1 [d1] == data.data_2 [d2])
+            {
+                // Was the current value already inserted in the intersection result ?
+                if (! data.multiple_guard_data_1 [d1] && ! data.multiple_guard_data_2 [d2])
+                {
+                    Put_One_Value_And_Offset_Types_To_Document_Word_List(data.intersection_result, data.data_1 [d1],
+                            data.char_offsets [d1], data.sentence_offsets [d1], data.word_offsets [d1]);
+                    data.multiple_guard_data_1 [d1] = true;
+                    data.multiple_guard_data_2 [d2] = true;
+                }
+            }
+        }
+    }
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 
 /**
  * @brief Create a copy of the submitted Document_Word_List and initialize them.
@@ -500,7 +1156,7 @@ Init_Intersection
             object->max_array_length);
     ASSERT_ALLOC(intersection_result, "Cannot create new Document Word List for intersection !",
             sizeof (struct Document_Word_List) + object->number_of_arrays * object->max_array_length *
-            sizeof (uint_fast32_t));
+            sizeof (DATA_TYPE));
     intersection_result->next_free_array = object->next_free_array;
     intersection_result->intersection_data = true;
 
@@ -531,7 +1187,7 @@ Find_Intersection_Data
 (
         const struct Document_Word_List* const restrict intersection_result,
         const struct Document_Word_List* const restrict object,
-        const uint_fast32_t* const restrict data,
+        const DATA_TYPE* const restrict data,
         const size_t data_length
 )
 {
@@ -599,8 +1255,8 @@ Compare_Function
         const void* const b
 )
 {
-    const uint_fast32_t* const val_a = (uint_fast32_t*) a;
-    const uint_fast32_t* const val_b = (uint_fast32_t*) b;
+    const DATA_TYPE* const val_a = (DATA_TYPE*) a;
+    const DATA_TYPE* const val_b = (DATA_TYPE*) b;
 
     if (*val_a < *val_b) { return -1; }
     if (*val_a > *val_b) { return +1; }
@@ -626,9 +1282,9 @@ Compare_Function
 static _Bool
 Binary_Search
 (
-        const uint_fast32_t* const data,
+        const DATA_TYPE* const data,
         const size_t data_size,
-        const uint_fast32_t search_value
+        const DATA_TYPE search_value
 )
 {
     ASSERT_MSG(data != NULL, "data is NULL !");
@@ -677,7 +1333,7 @@ Binary_Search
 static void
 Heapsort
 (
-        uint_fast32_t* const data,
+        DATA_TYPE* const data,
         const size_t data_size
 )
 {
@@ -685,11 +1341,11 @@ Heapsort
     // ASSERT_MSG(data_size != 0, "data size is 0 !");
     if (data_size == 0) { return; }
 
-    uint_fast32_t value     = 0;
-    uint_fast32_t parent    = 0;
-    uint_fast32_t child     = 0;
-    uint_fast32_t root      = data_size / 2;
-    uint_fast32_t n         = data_size;
+    DATA_TYPE value    = 0;
+    DATA_TYPE parent   = 0;
+    DATA_TYPE child    = 0;
+    DATA_TYPE root     = (DATA_TYPE) (data_size / 2);
+    DATA_TYPE n        = (DATA_TYPE) data_size;
 
     while (1)
     {

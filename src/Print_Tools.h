@@ -24,6 +24,62 @@ extern "C"
 
 
 
+/**
+ * @brief enum for the Any_Print function.
+ *
+ * This are symbolic names for the built in types.
+ */
+enum VALUE_TYPE
+{
+    UNSIGNED_CHAR = 0,
+    SIGNED_CHAR,
+    CHAR,
+
+    UNSIGNED_SHORT,
+    SIGNED_SHORT,
+    SHORT,
+
+    UNSIGNED_INT,
+    SIGNED_INT,
+    INT,
+
+    UNSIGNED_LONG_INT,
+    SIGNED_LONG_INT,
+    LONG_INT,
+
+    UNSIGNED_LONG_LONG_INT,
+    SIGNED_LONG_LONG_INT,
+    LONG_LONG_INT,
+
+    FLOAT,
+    DOUBLE,
+    LONG_DOUBLE,
+
+    POINTER,
+
+    U_CHAR,
+    S_CHAR,
+
+    U_SHORT,
+    S_SHORT,
+
+    U_INT,
+    S_INT,
+
+    U_L_INT,
+    S_L_INT,
+    L_INT,
+
+    U_LL_INT,
+    S_LL_INT,
+    LL_INT,
+
+    PTR,
+    BOOL,
+
+    UNKNOWN_VALUE_TYPE
+};
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -214,6 +270,17 @@ extern "C"
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Same as PRINT_NEWLINE
+ */
+#ifndef NEWLINE
+    #define NEWLINE PRINT_NEWLINE
+#else
+    #error "The macro \"NEWLINE\" is already defined !"
+#endif /* NEWLINE */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
  * @brief Print x times the same char to stdout. (With flush at the end of the process)
  */
 #ifndef PRINT_X_TIMES_SAME_CHAR
@@ -252,7 +319,12 @@ extern "C"
  * @param[in] dim_1 Size of the first array dimension (Number of C-Strings)
  * @param[in] dim_2 Size of the second array dimension (Max number of char per C-String)
  */
-extern void Print_2D_String_Array (const char* const restrict drawing [], const size_t dim_1, const size_t dim_2);
+extern void Print_2D_String_Array
+(
+        const char* const restrict drawing [],
+        const size_t dim_1,
+        const size_t dim_2
+);
 
 /**
  * @brief Print an array of uint_fast32_t variables to stdout.
@@ -263,7 +335,11 @@ extern void Print_2D_String_Array (const char* const restrict drawing [], const 
  * @param[in] array array with the data
  * @param[in] array_length length of the array
  */
-extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const size_t array_length);
+extern void Print_uint_fast32_t_Array
+(
+        const uint_fast32_t* const array,
+        const size_t array_length
+);
 
 /**
  * @brief Print process information with a user defined function, if new process output is to print.
@@ -286,8 +362,13 @@ extern void Print_uint_fast32_t_Array (const uint_fast32_t* const array, const s
  *
  * @return The new counter
  */
-extern size_t Process_Printer (const size_t print_step_size, const size_t counter_since_last_output,
-        const size_t actual_counter, const size_t hundred_percent, const _Bool with_carriage_return,
+extern size_t Process_Printer
+(
+        const size_t print_step_size,
+        const size_t counter_since_last_output,
+        const size_t actual_counter,
+        const size_t hundred_percent,
+        const _Bool with_carriage_return,
         void (*print_function)
         (
             const size_t print_step_size,
@@ -311,7 +392,10 @@ extern size_t Process_Printer (const size_t print_step_size, const size_t counte
  *
  * param[in] byte_size Value, that will be converted an printed
  */
-extern void Print_Memory_Size_As_B_KB_MB (const size_t byte_size);
+extern void Print_Memory_Size_As_B_KB_MB
+(
+        const size_t byte_size
+);
 
 /**
  * @brief Print a given integer value with decimal dots. This is helpful to get a direct information in which "size
@@ -319,7 +403,58 @@ extern void Print_Memory_Size_As_B_KB_MB (const size_t byte_size);
  *
  * @param[in] value Value, that will be printed with decimal dots
  */
-extern void Print_Value_With_Decimal_Points (const long int value);
+extern void Print_Value_With_Decimal_Points
+(
+        const long int value
+);
+
+/**
+ * @brief Printing any basic type.
+ *
+ * The data will be given as void pointer. It will be casted to the type, that was given with the enum VALUE_TYPE object.
+ *
+ * @param[in] data Given data
+ * @param[in] value_type Type of the given data
+ */
+extern void Any_Print
+(
+        void* data,
+        const enum VALUE_TYPE value_type
+);
+
+
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+
+/**
+ * @brief Call the Any_Print function with the appropriate value for the given type.
+ */
+#ifndef ANY_PRINT
+#define ANY_PRINT(value)                                                                                                \
+        Any_Print((value), _Generic(((value)),                                                                          \
+                char*: SIGNED_CHAR,                                                                                     \
+                signed char*: SIGNED_CHAR,                                                                              \
+                unsigned char*: UNSIGNED_CHAR,                                                                          \
+                short*: SIGNED_SHORT,                                                                                   \
+                unsigned short*: UNSIGNED_SHORT,                                                                        \
+                int*: SIGNED_INT,                                                                                       \
+                unsigned int*: UNSIGNED_INT,                                                                            \
+                long int*: SIGNED_LONG_INT,                                                                             \
+                unsigned long int*: UNSIGNED_LONG_INT,                                                                  \
+                long long int*: SIGNED_LONG_LONG_INT,                                                                   \
+                unsigned long long int*: UNSIGNED_LONG_LONG_INT,                                                        \
+                float*: FLOAT,                                                                                          \
+                double*: DOUBLE,                                                                                        \
+                long double*: LONG_DOUBLE,                                                                              \
+                _Bool*: BOOL,                                                                                           \
+                /* Because for a value a pointer is already needed, for a void pointer a void** is necessary ! */       \
+                void**: POINTER,                                                                                        \
+                default: UNKNOWN_VALUE_TYPE));
+#else
+#error "The macro \"ANY_PRINT\" is already defined !"
+#endif /* ANY_PRINT */
+
+#endif /* #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
 
 

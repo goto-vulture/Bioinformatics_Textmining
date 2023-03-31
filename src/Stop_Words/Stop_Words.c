@@ -217,7 +217,14 @@ extern _Bool Is_Word_In_Stop_Word_List
                     c_string,
                     c_string_length,
                     selected_stop_word_list [i],
+// On some Windows machines the line
+// "(i < STOP_WORD_LIST_LENGTH) ? eng_stop_word_lengths [i] : strlen (selected_stop_word_list [i])"
+// creates a warning. It's a false positive warning; but to avoid it, an another code fragment will be used
+#ifdef _WIN32
+                    strlen (selected_stop_word_list [i])
+#else
                     (i < STOP_WORD_LIST_LENGTH) ? eng_stop_word_lengths [i] : strlen (selected_stop_word_list [i])
+#endif /* _WIN32 */
             );
 
             if (strings_case_insensitive_equal == 0)

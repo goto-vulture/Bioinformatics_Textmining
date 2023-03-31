@@ -32,13 +32,16 @@
 static char*
 Add_Newline
 (
-    char* restrict parsing_result,
-    size_t* const restrict parsing_result_mem_left,
-    const size_t parsing_result_length
+        char* restrict parsing_result,
+        size_t* const restrict parsing_result_mem_left,
+        const size_t parsing_result_length
 );
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Check, whether a JSON fragment can be parsed.
+ */
 extern void TEST_cJSON_Parse_JSON_Fragment (void)
 {
     const char test_file_content [] =
@@ -109,6 +112,9 @@ extern void TEST_cJSON_Parse_JSON_Fragment (void)
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Check, whether a token array can be parsed from a JSON file.
+ */
 extern void TEST_cJSON_Get_Token_Array_From_JSON_Fragment (void)
 {
     const char test_file_content [] =
@@ -232,6 +238,9 @@ extern void TEST_cJSON_Get_Token_Array_From_JSON_Fragment (void)
 
 //---------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Checking the parsing of a whole file.
+ */
 extern void TEST_cJSON_Parse_Full_JSON_File (void)
 {
     const char input_file_name [] = "./src/Tests/Test_Data/test_ebm.json";
@@ -450,9 +459,9 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
 static char*
 Add_Newline
 (
-    char* restrict parsing_result,
-    size_t* const restrict parsing_result_mem_left,
-    const size_t parsing_result_length
+        char* restrict parsing_result,
+        size_t* const restrict parsing_result_mem_left,
+        const size_t parsing_result_length
 )
 {
     ASSERT_MSG(parsing_result != NULL, "parsing_result is NULL !");

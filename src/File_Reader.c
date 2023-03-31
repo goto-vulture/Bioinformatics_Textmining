@@ -319,14 +319,14 @@ TokenListContainer_CreateObject
     struct Token_List_Container* new_container =
             (struct Token_List_Container*) CALLOC(1, sizeof (struct Token_List_Container));
     ASSERT_ALLOC(new_container, "Cannot create new Token_Container !", 1 * sizeof (struct Token_List_Container));
-    new_container->malloc_calloc_calls ++;
 
     // Create the inner container
     new_container->allocated_token_container = TOKEN_CONTAINER_ALLOCATION_STEP_SIZE;
     new_container->token_lists = (struct Token_List*) CALLOC(new_container->allocated_token_container, sizeof (struct Token_List));
     ASSERT_ALLOC(new_container->token_lists, "Cannot create new Token objects !", new_container->allocated_token_container *
             sizeof (struct Token_List));
-    new_container->malloc_calloc_calls ++;
+
+    new_container->malloc_calloc_calls += 2;
 
     // Allocate memory for the inner container
     for (size_t i = 0; i < new_container->allocated_token_container; ++ i)
@@ -334,22 +334,18 @@ TokenListContainer_CreateObject
         new_container->token_lists [i].data = (char*) CALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE, sizeof (char));
         ASSERT_ALLOC(new_container->token_lists [i].data, "Cannot create data for a Token object !",
                 MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE);
-        new_container->malloc_calloc_calls ++;
 
         new_container->token_lists [i].char_offsets = (CHAR_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (CHAR_OFFSET_TYPE));
         ASSERT_ALLOC(new_container->token_lists [i].char_offsets, "Cannot create data for a Token object !",
                 TOKENS_ALLOCATION_STEP_SIZE * sizeof (CHAR_OFFSET_TYPE));
-        new_container->malloc_calloc_calls ++;
 
         new_container->token_lists [i].sentence_offsets = (SENTENCE_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (SENTENCE_OFFSET_TYPE));
         ASSERT_ALLOC(new_container->token_lists [i].sentence_offsets, "Cannot create data for a Token object !",
                 TOKENS_ALLOCATION_STEP_SIZE * sizeof (SENTENCE_OFFSET_TYPE));
-        new_container->malloc_calloc_calls ++;
 
         new_container->token_lists [i].word_offsets = (WORD_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (WORD_OFFSET_TYPE));
         ASSERT_ALLOC(new_container->token_lists [i].word_offsets, "Cannot create data for a Token object !",
                 TOKENS_ALLOCATION_STEP_SIZE * sizeof (WORD_OFFSET_TYPE));
-        new_container->malloc_calloc_calls ++;
 
         // Init new values
         for (size_t i2 = 0; i2 < TOKENS_ALLOCATION_STEP_SIZE; ++ i2)
@@ -362,6 +358,7 @@ TokenListContainer_CreateObject
         new_container->token_lists [i].max_token_length = MAX_TOKEN_LENGTH;
         new_container->token_lists [i].allocated_tokens = TOKENS_ALLOCATION_STEP_SIZE;
     }
+    new_container->malloc_calloc_calls += (new_container->allocated_token_container << 2);
 
     // Create the container for too long token
     new_container->list_of_too_long_token = TwoDimCStrArray_CreateObject (10);
@@ -408,6 +405,7 @@ TokenListContainer_CreateObject
     default:
         ASSERT_MSG(false, "Switch case default path executed !");
     }
+    puts("Start file loading ...");
 
     uint_fast32_t line_counter              = 0;
     uint_fast32_t sum_tokens_found          = 0;
@@ -420,6 +418,11 @@ TokenListContainer_CreateObject
     size_t char_read                    = Read_Next_Line (input_file, input_file_data, input_file_length);
     size_t sum_char_read                = char_read;
     size_t char_read_before_last_output = 0;
+
+    // Variables for the case, that the input file only contains one line
+    const _Bool one_line_file = (char_read == (size_t) input_file_length) ? true : false;
+    const size_t tokens_read_print_steps    = 25000;
+    size_t tokens_read_before_last_output   = 0;
 
     CLOCK_WITH_RETURN_CHECK(start);
     // ===== ===== ===== ===== ===== BEGIN Read file line by line ===== ===== ===== ===== =====
@@ -437,10 +440,8 @@ TokenListContainer_CreateObject
 
             // Print process information
             char_read_before_last_output = Process_Printer(print_steps, char_read_before_last_output,
-                    sum_char_read, unsigned_input_file_length, true,
-                    Read_File_Process_Print_Function,
-                    NULL,
-                    NULL);
+                    sum_char_read, unsigned_input_file_length, true, Read_File_Process_Print_Function,
+                    NULL, NULL);
 
             if (! json)
             {
@@ -459,8 +460,19 @@ TokenListContainer_CreateObject
             while (curr != NULL)
             {
                 // Extract the information from the current cJSON object
-                sum_tokens_found += Use_Current_JSON_Fragment(json, curr, new_container);
+                const size_t new_tokens_found = Use_Current_JSON_Fragment(json, curr, new_container);
+                sum_tokens_found += new_tokens_found;
                 curr = curr->next;
+
+                if (one_line_file)
+                {
+                    tokens_read_before_last_output += new_tokens_found;
+                    if (tokens_read_before_last_output > tokens_read_print_steps)
+                    {
+                        PRINTF_FFLUSH("Tokens read: %zu\r", sum_tokens_found);
+                        tokens_read_before_last_output = 0;
+                    }
+                }
             }
             // ===== ===== ===== BEGIN Use current cJSON object ===== ===== =====
 
@@ -585,11 +597,20 @@ TokenListContainer_DeleteObject
         // Delete from inner to the outer objects
         for (size_t i = 0; i < object->allocated_token_container; ++ i)
         {
-            FREE_AND_SET_TO_NULL(object->token_lists [i].data);
-            FREE_AND_SET_TO_NULL(object->token_lists [i].char_offsets);
-            FREE_AND_SET_TO_NULL(object->token_lists [i].sentence_offsets);
-            FREE_AND_SET_TO_NULL(object->token_lists [i].word_offsets);
+            free(object->token_lists [i].data);
+            object->token_lists [i].data = NULL;
+            free(object->token_lists [i].char_offsets);
+            object->token_lists [i].char_offsets = NULL;
+            free(object->token_lists [i].sentence_offsets);
+            object->token_lists [i].sentence_offsets = NULL;
+            free(object->token_lists [i].word_offsets);
+            object->token_lists [i].word_offsets = NULL;
+//            FREE_AND_SET_TO_NULL(object->token_lists [i].data);
+//            FREE_AND_SET_TO_NULL(object->token_lists [i].char_offsets);
+//            FREE_AND_SET_TO_NULL(object->token_lists [i].sentence_offsets);
+//            FREE_AND_SET_TO_NULL(object->token_lists [i].word_offsets);
         }
+        GLOBAL_free_calls += (object->allocated_token_container << 2);
     }
 
     FREE_AND_SET_TO_NULL(object->token_lists);
@@ -1011,8 +1032,7 @@ TokenListContainer_ShowAttributes
     printf ("Longest dataset id:             %zu\n", TokenListContainer_GetLengthOfLongestDatasetID(container));
     printf ("Malloc / calloc calls:          %zu\n", container->malloc_calloc_calls);
     printf ("Realloc calls:                  %zu\n", container->realloc_calls);
-    puts("");
-    fflush (stdout);
+    PUTS_FFLUSH("");
 
     return;
 }
@@ -1182,13 +1202,11 @@ Increase_Number_Of_Token_Lists
         token_list_container->token_lists [i].data = (char*) CALLOC(MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE, sizeof (char));
         ASSERT_ALLOC(token_list_container->token_lists [i].data, "Cannot create data for a Token object !",
                 MAX_TOKEN_LENGTH * TOKENS_ALLOCATION_STEP_SIZE * sizeof (char));
-        token_list_container->malloc_calloc_calls ++;
 
         token_list_container->token_lists [i].char_offsets =
                 (CHAR_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (CHAR_OFFSET_TYPE));
         ASSERT_ALLOC(token_list_container->token_lists [i].char_offsets, "Cannot create data for a Token object !",
                 TOKENS_ALLOCATION_STEP_SIZE * sizeof (CHAR_OFFSET_TYPE));
-        token_list_container->malloc_calloc_calls ++;
 
         token_list_container->token_lists [i].sentence_offsets =
                 (SENTENCE_OFFSET_TYPE*) MALLOC (TOKENS_ALLOCATION_STEP_SIZE * sizeof (SENTENCE_OFFSET_TYPE));
@@ -1200,7 +1218,8 @@ Increase_Number_Of_Token_Lists
         ASSERT_ALLOC(token_list_container->token_lists [i].word_offsets, "Cannot create data for a Token object !",
                 TOKENS_ALLOCATION_STEP_SIZE * sizeof (WORD_OFFSET_TYPE));
 
-        token_list_container->malloc_calloc_calls ++;
+        token_list_container->malloc_calloc_calls += 3;
+
         // Init new values
         for (size_t i2 = 0; i2 < TOKENS_ALLOCATION_STEP_SIZE; ++ i2)
         {

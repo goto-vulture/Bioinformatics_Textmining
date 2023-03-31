@@ -43,7 +43,12 @@ enum int2str_errno
  *
  * @return Error code (INT2STR_INCONVERTIBLE) on failure. On success: INT2STR_SUCCESS
  */
-extern enum int2str_errno int2str (char* const output_string, const size_t output_string_size, const long int input);
+extern enum int2str_errno int2str
+(
+        char* const output_string,
+        const size_t output_string_size,
+        const long int input
+);
 
 /**
  * @brief Convert long int (mind. 32 Bit) to C-String.
@@ -57,7 +62,10 @@ extern enum int2str_errno int2str (char* const output_string, const size_t outpu
  *
  * @return Address to the static result C-String; or, in case of errors, a NULL pointer
  */
-extern char* int2str_wo_errno (const long int input);
+extern char* int2str_wo_errno
+(
+        const long int input
+);
 
 
 

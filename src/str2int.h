@@ -65,11 +65,25 @@ enum str2double_errno
  * @return Error code. On success: STR2INT_SUCCESS; Otherwise != STR2INT_OVERFLOW, STR2INT_UNDERFLOW or
  * STR2INT_INCONVERTIBLE
  */
-extern enum str2int_errno str2int (long int* out, const char* input_string, const int base);
+extern enum str2int_errno str2int
+(
+        long int* out,
+        const char* input_string,
+        const int base
+);
 
-extern enum str2uint_errno str2uint (unsigned long int* out, const char* input_string, const int base);
+extern enum str2uint_errno str2uint
+(
+        unsigned long int* out,
+        const char* input_string,
+        const int base
+);
 
-extern enum str2double_errno str2double (double* out, const char* input_string);
+extern enum str2double_errno str2double
+(
+        double* out,
+        const char* input_string
+);
 
 /**
  * @brief Convert a C-String to a integer with a width of at least 32 bits.
@@ -83,13 +97,22 @@ extern enum str2double_errno str2double (double* out, const char* input_string);
  *
  * @return The integer representation of the input C-String or LONG_MIN in case of errors
  */
-extern long int str2int_wo_errno (const char* input_string, const int base);
+extern long int str2int_wo_errno
+(
+        const char* input_string,
+        const int base
+);
 
-extern unsigned long int str2uint_wo_errno (const char* input_string, const int base);
+extern unsigned long int str2uint_wo_errno
+(
+        const char* input_string,
+        const int base
+);
 
-extern double str2d_wo_errno (const char* input_string);
-
-
+extern double str2d_wo_errno
+(
+        const char* input_string
+);
 
 
 

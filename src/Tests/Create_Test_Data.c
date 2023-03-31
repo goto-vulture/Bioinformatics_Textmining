@@ -107,7 +107,7 @@ Create_Document_Word_List_With_Random_Test_Data
 extern struct Document_Word_List*
 Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
 (
-        const uint_fast32_t* specified_data,
+        const DATA_TYPE* specified_data,
         const size_t specified_data_length,
         const size_t number_of_arrays,
         const size_t max_array_length,
@@ -211,10 +211,10 @@ static void Create_Random_Data
         } */
         const size_t used_array_length = max_array_length;
 
-        size_t* new_test_data = (size_t*) MALLOC(sizeof (uint_fast32_t) * used_array_length);
+        DATA_TYPE* new_test_data = (DATA_TYPE*) MALLOC(sizeof (DATA_TYPE) * used_array_length);
         for (size_t i2 = 0; i2 < used_array_length; ++ i2)
         {
-            new_test_data [i2] = (size_t) rand () % (size_t) rand_upper_bound;
+            new_test_data [i2] = (DATA_TYPE) rand () % (DATA_TYPE) rand_upper_bound;
             ++ created_test_data;
         }
         DocumentWordList_AppendData (data_container, new_test_data, used_array_length);

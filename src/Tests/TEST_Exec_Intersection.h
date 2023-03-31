@@ -78,6 +78,65 @@ extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files_JSON_And_CSV (
  */
 extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files_JSON_And_CSV (void);
 
+#if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Test, whether the results from the calculations with AVX2 extension and without are the same.
+ *
+ * It will be compared:
+ * - Number of tokens
+ * - Number of sets
+ */
+extern void TEST_AVX2_Extension (void);
+
+#elif defined(__AVX__) && ! defined(NO_AVX) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Test, whether the results from the calculations with AVX extension and without are the same.
+ *
+ * It will be compared:
+ * - Number of tokens
+ * - Number of sets
+ */
+extern void TEST_AVX_Extension (void);
+
+#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Test, whether the results from the calculations with SSE4_1 extension and without are the same.
+ *
+ * It will be compared:
+ * - Number of tokens
+ * - Number of sets
+ */
+extern void TEST_SSE4_1_Extension (void);
+
+#elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
+/**
+ * @brief Test, whether the results from the calculations with SSE2 extension and without are the same.
+ *
+ * It will be compared:
+ * - Number of tokens
+ * - Number of sets
+ */
+extern void TEST_SSE2_Extension (void);
+
+#elif defined(__MMX__) && ! defined(NO_MMX) && ! defined (NO_CPU_EXTENSIONS)
+/**
+ * @brief Test, whether the results from the calculations with MMX extension and without are the same.
+ *
+ * It will be compared:
+ * - Number of tokens
+ * - Number of sets
+ */
+extern void TEST_MMX_Extension (void);
+
+#else
+/**
+ * @brief This function is only a placeholder and tests nothing.
+ *
+ * Such a placeholder is necessary to have the same number of test functions on all supported machines.
+ */
+extern void TEST_Placeholder_For_No_Extensions (void);
+#endif
+
 
 
 #ifdef __cplusplus

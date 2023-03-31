@@ -161,12 +161,16 @@ IS_CONST_STR(N_A)
 #include "Intersection_Approaches.h"
 #include "Misc.h"
 #include "Exec_Intersection.h"
+#include "ANSI_Esc_Seq.h"
+#include "Defines.h"
+#include "CPUID.h"
 
 #include "Tests/tinytest.h"
 #include "Tests/TEST_cJSON_Parser.h"
 #include "Tests/TEST_File_Reader.h"
 #include "Tests/TEST_Exec_Intersection.h"
 #include "Tests/TEST_Etc.h"
+#include "Tests/TEST_Two_Dim_C_String_Array.h"
 
 
 
@@ -174,26 +178,20 @@ IS_CONST_STR(N_A)
  * @brief Run all test functions.
  */
 static void
-Run_All_Test_Functions
-(
-        void
-);
+Run_All_Test_Functions (void);
 
 /**
  * @brief Show the dynamic memory status. (How many malloc / calloc calls were done and is the number equal with the
  * amount of free calls). -> Exists memory leaks ?
  */
 static void
-At_Exit_Function
-(
-     void
-);
+At_Exit_Function (void);
 
 //=====================================================================================================================
 
 /**
  * @brief main function of the program.
- * *
+ *
  * @param[in] argc argc parameter
  * @param[in] argv Number of argc parameter
  *
@@ -204,7 +202,7 @@ int main (const int argc, const char* argv [])
     // Init pseudo random number generator
     const time_t curr_time = time (NULL);
     ASSERT_MSG(curr_time != (time_t) (-1), "time () return value is (time_t) (-1) !");
-    srand ((unsigned int) time (NULL));
+    srand ((unsigned int) curr_time);
 
     // Runtime check of the system
     // This check is necessary, because a _Static_assert test is only available in C11
@@ -245,8 +243,10 @@ int main (const int argc, const char* argv [])
             OPT_BOOLEAN('s', "sentence_offset", &GLOBAL_CLI_SENTENCE_OFFSET, "Calculate sentence offsets ?", NULL, 0, 0),
             OPT_BOOLEAN('w', "word_offset", &GLOBAL_CLI_WORD_OFFSET, "Calculate word offsets ?", NULL, 0, 0),
             OPT_BOOLEAN('\0', "show_too_long_tokens", &GLOBAL_CLI_SHOW_TOO_LONG_TOKENS, "Show too long tokens in the result file", NULL, 0, 0),
-            OPT_BOOLEAN('\0', "no_part_matches", &GLOBAL_CLI_NO_PART_MATCHES, "Don't show partitial matches in the output file", NULL, 0, 0),
+            OPT_BOOLEAN('\0', "no_part_matches", &GLOBAL_CLI_NO_PART_MATCHES, "Don't show partial matches in the output file", NULL, 0, 0),
             OPT_BOOLEAN('\0', "no_full_matches", &GLOBAL_CLI_NO_FULL_MATCHES, "Don't show full matches in the output file", NULL, 0, 0),
+            OPT_BOOLEAN('\0', "no_timestamp", &GLOBAL_CLI_NO_TIMESTAMP, "Don't save a timestamp in the output file", NULL, 0, 0),
+            OPT_BOOLEAN('n', "no_cpu_extensions", &GLOBAL_CLI_NO_CPU_EXTENSIONS, "Don't use CPU extensions, even if there available on the host", NULL, 0, 0),
             OPT_BOOLEAN('k', "keep_single_token_results", &GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN, "Keep results with only one token", NULL, 0, 0),
 
             OPT_GROUP("Debug / test functions"),
@@ -263,7 +263,7 @@ int main (const int argc, const char* argv [])
     argparse_init(&argparse_object, cli_options, GLOBAL_USAGES, 0);
     argparse_describe(&argparse_object, GLOBAL_PROGRAM_DESCRIPTION, GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION);
     const int new_argc = argparse_parse(&argparse_object, argc, argv);
-    (void) new_argc;
+    UNUSED(new_argc);
 
     if (GLOBAL_RUN_ALL_TEST_FUNCTIONS)
     {
@@ -313,8 +313,45 @@ int main (const int argc, const char* argv [])
     Check_CLI_Parameter_Logical_Consistency();
     puts("");
 
+    printf("Available extensions: ");
+    if (CPUID_IsMMXAvailable())     { printf(ANSI_TEXT_BOLD "MMX " ANSI_RESET_ALL); }
+    if (CPUID_IsSSE2Available())    { printf(ANSI_TEXT_BOLD "SSE2 " ANSI_RESET_ALL); }
+    if (CPUID_IsSSE4_1Available())  { printf(ANSI_TEXT_BOLD "SSE4.1 " ANSI_RESET_ALL); }
+    if (CPUID_IsAVXAvailable())     { printf(ANSI_TEXT_BOLD "AVX " ANSI_RESET_ALL); }
+    if (CPUID_IsAVX2Available())    { printf(ANSI_TEXT_BOLD "AVX2 " ANSI_RESET_ALL); }
+    NEWLINE
+
+    // Show the used CPU extensions
+    if (! GLOBAL_CLI_NO_CPU_EXTENSIONS)
+    {
+#if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
+        puts("Using " ANSI_TEXT_BOLD "AVX2" ANSI_RESET_ALL " CPU extension.");
+#elif defined(__AVX__) && ! defined(NO_AVX) && ! defined(NO_CPU_EXTENSIONS)
+        puts("Using " ANSI_TEXT_BOLD "AVX" ANSI_RESET_ALL " CPU extension.");
+#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
+        puts("Using " ANSI_TEXT_BOLD "SSE4.1" ANSI_RESET_ALL " CPU extension.");
+#elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
+        puts("Using " ANSI_TEXT_BOLD "SSE2" ANSI_RESET_ALL " CPU extension.");
+#elif defined(__MMX__) && ! defined(NO_MMX) && ! defined (NO_CPU_EXTENSIONS)
+        puts("Using " ANSI_TEXT_BOLD "MMX" ANSI_RESET_ALL " CPU extension.");
+#else
+        puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension.");
+#endif
+    }
+    else
+    {
+        puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension.");
+    }
+#ifdef I386
+    puts("Using " ANSI_TEXT_BOLD "32 bit" ANSI_RESET_ALL " mode.");
+#else
+    puts("Using " ANSI_TEXT_BOLD "64 bit" ANSI_RESET_ALL " mode.");
+#endif /* I386 */
+
+    PUTS_FFLUSH("");
+
     // Execute the intersection process
-    Exec_Intersection((! isnan(GLOBAL_ABORT_PROCESS_PERCENT)) ? GLOBAL_ABORT_PROCESS_PERCENT : nanf("0"), NULL, NULL);
+    Exec_Intersection(GLOBAL_ABORT_PROCESS_PERCENT, NULL, NULL);
 
     return EXIT_SUCCESS;
 }
@@ -325,11 +362,12 @@ int main (const int argc, const char* argv [])
  * @brief Run all test functions.
  */
 static void
-Run_All_Test_Functions
-(
-        void
-)
+Run_All_Test_Functions (void)
 {
+    RUN(TEST_AppendNewString);
+    RUN(TEST_AppendDataToNewestString);
+    RUN(TEST_AppendDataToSpecificString);
+
     RUN(TEST_Intersection);
     RUN(TEST_Tokenize_String);
 
@@ -351,8 +389,23 @@ Run_All_Test_Functions
     RUN(TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files_JSON_And_CSV);
     RUN(TEST_Number_Of_Sets_Equal_With_Switched_Input_Files_JSON_And_CSV);
 
+#if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
+    RUN(TEST_AVX2_Extension);
+#elif defined(__AVX__) && ! defined(NO_AVX) && ! defined(NO_CPU_EXTENSIONS)
+    RUN(TEST_AVX_Extension);
+#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
+    RUN(TEST_SSE4_1_Extension);
+#elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
+    RUN(TEST_SSE2_Extension);
+#elif defined(__MMX__) && ! defined(NO_MMX) && ! defined (NO_CPU_EXTENSIONS)
+    RUN(TEST_MMX_Extension);
+#else
+    RUN(TEST_Placeholder_For_No_Extensions);
+#endif
+
     RUN(TEST_Number_Of_Free_Calls);
     RUN(TEST_ANSI_Esc_Seq);
+    RUN(TEST_Any_Print);
 
     return;
 }
@@ -364,12 +417,9 @@ Run_All_Test_Functions
  * amount of free calls). -> Exists memory leaks ?
  */
 static void
-At_Exit_Function
-(
-        void
-)
+At_Exit_Function (void)
 {
-    puts ("\n");
+    if (Missing_Free_Calls() != 0) { NEWLINE; }
     Show_Dynamic_Memory_Status();
     return;
 }

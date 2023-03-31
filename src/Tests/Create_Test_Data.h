@@ -73,7 +73,7 @@ Create_Document_Word_List_With_Random_Test_Data
 extern struct Document_Word_List*
 Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
 (
-        const uint_fast32_t* specified_data,
+        const DATA_TYPE* specified_data,
         const size_t specified_data_length,
         const size_t number_of_arrays,
         const size_t max_array_length,

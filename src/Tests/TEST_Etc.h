@@ -38,6 +38,11 @@ extern void TEST_ANSI_Esc_Seq (void);
  */
 extern void TEST_Tokenize_String (void);
 
+/**
+ * @brief Test the Any_Print function. If a C11 compiler is given, the additional ANY_PRINT macro will be also tested.
+ */
+extern void TEST_Any_Print (void);
+
 
 
 #ifdef __cplusplus
