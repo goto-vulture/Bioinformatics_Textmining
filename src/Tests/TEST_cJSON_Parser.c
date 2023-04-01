@@ -62,8 +62,7 @@ extern void TEST_cJSON_Parse_JSON_Fragment (void)
     const long long unsigned int parsing_result_length = (long long unsigned int) (expected_results_file_length * 2);
     // "long long unsigned int" to avoid warnings on system where size_t are "long long unsigned int"
     long long unsigned int parsing_result_mem_left = parsing_result_length - 1;
-    char* parsing_result = (char*) MALLOC (parsing_result_length * sizeof (char));
-    memset (parsing_result, '\0', parsing_result_length);
+    char* parsing_result = (char*) CALLOC ((size_t) parsing_result_length, sizeof (char));
     ASSERT_ALLOC(parsing_result, "Cannot allocate memory for the parsing result !",
             (expected_results_file_length * 2) * sizeof (char));
     parsing_result [expected_results_file_length * 2 - 1] = '\0'; // Gurantee a temination
@@ -135,7 +134,7 @@ extern void TEST_cJSON_Get_Token_Array_From_JSON_Fragment (void)
     // For the sake of simplicity, I assume that the double length of the expected result is enough
     const long long unsigned int parsing_result_length = (long long unsigned int) (expected_results_file_length * 2);
     long long unsigned int parsing_result_mem_left = parsing_result_length - 1;
-    char* parsing_result = (char*) CALLOC (parsing_result_length, sizeof (char));
+    char* parsing_result = (char*) CALLOC ((size_t) parsing_result_length, sizeof (char));
     ASSERT_ALLOC(parsing_result, "Cannot allocate memory for the parsing result !",
             (expected_results_file_length * 2) * sizeof (char));
     parsing_result [expected_results_file_length * 2 - 1] = '\0'; // Gurantee a temination
