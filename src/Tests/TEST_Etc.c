@@ -133,6 +133,31 @@ extern void TEST_Any_Print (void)
     signed long int s_long_int_value                = GET_MAX((signed long int) 42);
     unsigned long long int u_long_long_int_value    = GET_MAX((unsigned long long int) 42);
     signed long long int s_long_long_int_value      = GET_MAX((signed long long int) 42);
+
+    size_t size_t_value                             = GET_MAX((size_t) 42);
+
+    // On machines with sizeof(int_fast8_t) == sizeof(char) the max value is not printable, because it will be used as
+    // char
+    int_fast8_t int_fast8_t_value                   = 42;
+    int_fast16_t int_fast16_t_value                 = GET_MAX((int_fast16_t) 42);
+    int_fast32_t int_fast32_t_value                 = GET_MAX((int_fast32_t) 42);
+    int_fast64_t int_fast64_t_value                 = GET_MAX((int_fast64_t) 42);
+    uint_fast8_t uint_fast8_t_value                 = GET_MAX((uint_fast8_t) 42);
+    uint_fast16_t uint_fast16_t_value               = GET_MAX((uint_fast16_t) 42);
+    uint_fast32_t uint_fast32_t_value               = GET_MAX((uint_fast32_t) 42);
+    uint_fast64_t uint_fast64_t_value               = GET_MAX((uint_fast64_t) 42);
+
+    // On machines with sizeof(int_least8_t) == sizeof(char) the max value is not printable, because it will be used as
+    // char
+    int_least8_t int_least8_t_value                 = 42;
+    int_least16_t int_least16_t_value               = GET_MAX((int_least16_t) 42);
+    int_least32_t int_least32_t_value               = GET_MAX((int_least32_t) 42);
+    int_least64_t int_least64_t_value               = GET_MAX((int_least64_t) 42);
+    uint_least8_t uint_least8_t_value               = GET_MAX((uint_least8_t) 42);
+    uint_least16_t uint_least16_t_value             = GET_MAX((uint_least16_t) 42);
+    uint_least32_t uint_least32_t_value             = GET_MAX((uint_least32_t) 42);
+    uint_least64_t uint_least64_t_value             = GET_MAX((uint_least64_t) 42);
+
     float float_value                               = 42.42f;
     double double_value                             = 42.42;
     long double long_double_value                   = 42.42L;
@@ -169,6 +194,59 @@ extern void TEST_Any_Print (void)
     puts("");
     printf ("long long int:          ");
     ANY_PRINT(&s_long_long_int_value);
+    puts("");
+    printf ("size_t:                 ");
+    ANY_PRINT(&size_t_value);
+    puts("");
+
+    printf ("int_fast8_t:            ");
+    ANY_PRINT(&int_fast8_t_value);
+    puts("");
+    printf ("int_fast16_t:           ");
+    ANY_PRINT(&int_fast16_t_value);
+    puts("");
+    printf ("int_fast32_t:           ");
+    ANY_PRINT(&int_fast32_t_value);
+    puts("");
+    printf ("int_fast64_t:           ");
+    ANY_PRINT(&int_fast64_t_value);
+    puts("");
+    printf ("uint_fast8_t:           ");
+    ANY_PRINT(&uint_fast8_t_value);
+    puts("");
+    printf ("uint_fast16_t:          ");
+    ANY_PRINT(&uint_fast16_t_value);
+    puts("");
+    printf ("uint_fast32_t:          ");
+    ANY_PRINT(&uint_fast32_t_value);
+    puts("");
+    printf ("uint_fast64_t:          ");
+    ANY_PRINT(&uint_fast64_t_value);
+    puts("");
+
+    printf ("int_least8_t:           ");
+    ANY_PRINT(&int_least8_t_value);
+    puts("");
+    printf ("int_least16_t:          ");
+    ANY_PRINT(&int_least16_t_value);
+    puts("");
+    printf ("int_least32_t:          ");
+    ANY_PRINT(&int_least32_t_value);
+    puts("");
+    printf ("int_least64_t:          ");
+    ANY_PRINT(&int_least64_t_value);
+    puts("");
+    printf ("uint_least8_t:          ");
+    ANY_PRINT(&uint_least8_t_value);
+    puts("");
+    printf ("uint_least16_t:         ");
+    ANY_PRINT(&uint_least16_t_value);
+    puts("");
+    printf ("uint_least32_t:         ");
+    ANY_PRINT(&uint_least32_t_value);
+    puts("");
+    printf ("uint_least64_t:         ");
+    ANY_PRINT(&uint_least64_t_value);
     puts("");
 
     printf ("float:                  ");
@@ -219,6 +297,9 @@ extern void TEST_Any_Print (void)
     printf ("long long int:          ");
     Any_Print(&s_long_long_int_value, SIGNED_LONG_LONG_INT);
     puts("");
+
+    // Printing values from type size_t, uint_fast8_t, ... is without the _Generic keyword not possible !
+    // The real type of "size_t" can differ between different systems; so a hard coded type cannot be used
 
     printf ("float:                  ");
     Any_Print(&float_value, FLOAT);
