@@ -83,13 +83,13 @@ extern void TEST_cJSON_Parse_JSON_Fragment (void)
             char* partial_parsing_result = cJSON_Print(json);
 
             // Append the partial parsing results
-            strncat (parsing_result, partial_parsing_result, parsing_result_mem_left);
+            strncat (parsing_result, partial_parsing_result, (size_t) parsing_result_mem_left);
             parsing_result_mem_left -= strlen(partial_parsing_result);
             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result is too small ! "
                     "%llu byte were allocated.", parsing_result_length);
 
             // Add at the end of every partial parsing result a newline char
-            strncat (parsing_result, "\n", parsing_result_mem_left);
+            strncat (parsing_result, "\n", (size_t) parsing_result_mem_left);
             parsing_result_mem_left -= STATIC_STRLEN ("\n");
             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result is too small ! "
                     "%llu byte were allocated.", parsing_result_length);
@@ -199,15 +199,15 @@ extern void TEST_cJSON_Get_Token_Array_From_JSON_Fragment (void)
                         {
                             //printf ("%s\n", current_token->valuestring);
                             // Insert token to result object
-                            strncat(parsing_result, "\"", parsing_result_mem_left);
+                            strncat(parsing_result, "\"", (size_t) parsing_result_mem_left);
                             parsing_result_mem_left -= STATIC_STRLEN ("\"");
                             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result "
                                     "is too small ! %llu byte were allocated.", parsing_result_length);
-                            strncat(parsing_result, current_token->valuestring, parsing_result_mem_left);
+                            strncat(parsing_result, current_token->valuestring, (size_t) parsing_result_mem_left);
                             parsing_result_mem_left -= strlen(current_token->valuestring);
                             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result "
                                     "is too small ! %llu byte were allocated.", parsing_result_length);
-                            strncat(parsing_result, "\", ", parsing_result_mem_left);
+                            strncat(parsing_result, "\", ", (size_t) parsing_result_mem_left);
                             parsing_result_mem_left -= STATIC_STRLEN ("\", ");
                             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result "
                                     "is too small ! %llu byte were allocated.", parsing_result_length);
