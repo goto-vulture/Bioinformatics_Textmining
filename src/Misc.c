@@ -224,6 +224,10 @@ extern inline float Replace_NaN_And_Inf_With_Zero
 
 //---------------------------------------------------------------------------------------------------------------------
 
+#if defined(__unix__) && defined(_POSIX_C_SOURCE)
+#include <sys/types.h>
+#endif /* defined(__unix__) && defined(_POSIX_C_SOURCE) */
+
 /**
  * @brief Determine the size of a FILE* object. In normal cases this is the file size.
  *
@@ -277,9 +281,6 @@ extern int_fast64_t Determine_FILE_Size
     #endif /* USE_FALLBACK */
 #else
     #if defined(__unix__) && defined(_POSIX_C_SOURCE)
-        // Unix system
-        #include <sys/types.h>
-
         int fseek_return = fseeko (file, 0, SEEK_END);
         ASSERT_MSG(fseek_return == 0, "fseeko() returned a nonzero value !");
 

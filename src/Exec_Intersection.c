@@ -603,9 +603,9 @@ Exec_Intersection
                     1 : ((uint_fast32_t) number_of_intersection_calls / count_steps);
 
     // How many calls were done since the last calculation step was printed ?
-    uint_fast32_t intersection_calls_before_last_output = 0;
+    size_t intersection_calls_before_last_output    = 0;
     // Counter of all calls were done since the execution was started
-    size_t intersection_call_counter                    = 0;
+    size_t intersection_call_counter                = 0;
 
 //    char dataset_id_1 [DATASET_ID_LENGTH];
 //    memset(dataset_id_1, '\0', sizeof (dataset_id_1));
@@ -1379,8 +1379,8 @@ Append_Token_List_Container_Data_To_Token_Int_Mapping
         for (uint_fast32_t i2 = 0; i2 < token_list_container->token_lists [i].next_free_element; ++ i2)
         {
             // Print calculation steps
-            inner_loop_runs_before_last_print = Process_Printer(print_steps, inner_loop_runs_before_last_print,
-                    inner_loop_counter, inner_loop_runs, true,
+            inner_loop_runs_before_last_print = (uint_fast32_t) Process_Printer(print_steps, 
+                    inner_loop_runs_before_last_print, inner_loop_counter, inner_loop_runs, true,
                     Exec_Add_Token_To_Mapping_Process_Print_Function,
                     NULL,
                     NULL);

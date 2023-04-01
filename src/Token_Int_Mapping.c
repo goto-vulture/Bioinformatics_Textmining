@@ -302,10 +302,10 @@ TokenIntMapping_ShowStringArrayUsage
     ASSERT_MSG(object != NULL, "Token_Int_Mapping object is NULL !");
 
     // Find the maximum values (used elements and allocated sizes)
-    size_t max_allocated                = 0;
-    size_t max_used                     = 0;
-    uint_fast32_t sum_allocated_tokens  = 0;
-    uint_fast32_t sum_tokens            = 0;
+    size_t max_allocated            = 0;
+    size_t max_used                 = 0;
+    size_t sum_allocated_tokens     = 0;
+    size_t sum_tokens               = 0;
     for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
     {
         if (object->allocated_c_strings_in_array [i] > max_allocated)
@@ -327,8 +327,8 @@ TokenIntMapping_ShowStringArrayUsage
                 object->c_str_array_lengths [i], Determine_Percent(object->c_str_array_lengths [i],
                         object->allocated_c_strings_in_array [i]));
     }
-    printf ("Sum allocated tokens: %" PRIuFAST32 "\n", sum_allocated_tokens);
-    printf ("Sum used tokens:      %" PRIuFAST32 " (%.2f %% used)\n\n", sum_tokens,
+    printf ("Sum allocated tokens: %zu\n", sum_allocated_tokens);
+    printf ("Sum used tokens:      %zu (%.2f %% used)\n\n", sum_tokens,
             Determine_Percent(sum_tokens, sum_allocated_tokens));
 
     TokenIntMapping_ShowMemoryUsage(object);

@@ -411,8 +411,8 @@ TokenListContainer_CreateObject
     uint_fast32_t sum_tokens_found          = 0;
     const uint_fast8_t count_steps          = 200;
     const size_t unsigned_input_file_length = (size_t) input_file_length;
-    const uint_fast32_t print_steps         = ((unsigned_input_file_length / count_steps) == 0) ?
-            1 : (unsigned_input_file_length / count_steps);
+    const uint_fast32_t print_steps         = (uint_fast32_t) (((unsigned_input_file_length / count_steps) == 0) ?
+            1 : (unsigned_input_file_length / count_steps));
 
     // Read the first line from the file
     size_t char_read                    = Read_Next_Line (input_file, input_file_data, input_file_length);
@@ -461,7 +461,7 @@ TokenListContainer_CreateObject
             {
                 // Extract the information from the current cJSON object
                 const size_t new_tokens_found = Use_Current_JSON_Fragment(json, curr, new_container);
-                sum_tokens_found += new_tokens_found;
+                sum_tokens_found += (uint_fast32_t) new_tokens_found;
                 curr = curr->next;
 
                 if (one_line_file)
@@ -469,7 +469,7 @@ TokenListContainer_CreateObject
                     tokens_read_before_last_output += new_tokens_found;
                     if (tokens_read_before_last_output > tokens_read_print_steps)
                     {
-                        PRINTF_FFLUSH("Tokens read: %zu\r", sum_tokens_found);
+                        PRINTF_FFLUSH("Tokens read: %" PRIuFAST32 "\r", sum_tokens_found);
                         tokens_read_before_last_output = 0;
                     }
                 }
@@ -1119,7 +1119,7 @@ Get_Address_Of_Token
 {
     ASSERT_MSG(token_list != NULL, "Token_List is NULL !");
     ASSERT_FMSG(token_index < token_list->allocated_tokens,
-            "Specified token index is too large ! Given: %" PRIuFAST32 "; Max. valid: %" PRIuFAST32 " !",
+            "Specified token index is too large ! Given: %" PRIuFAST32 "; Max. valid: %zu !",
             token_index, token_list->allocated_tokens - 1);
 
     return token_list->data + (token_list->max_token_length * token_index);
@@ -1377,7 +1377,7 @@ Read_File_Process_Print_Function
     const float time_left   = Determine_Time_Left(char_read_interval_begin, char_read_interval_end, hundred_percent,
             interval_end - interval_begin);
 
-    PRINTF_FFLUSH("Read file: %*" PRIuFAST32 " KByte (%3.2f %% | %.2f sec.)   ",
+    PRINTF_FFLUSH("Read file: %*zu KByte (%3.2f %% | %.2f sec.)   ",
             (digits > 3) ? digits - 3 : 3, char_read_interval_begin / 1024,
                     Replace_NaN_And_Inf_With_Zero((percent > 100.0f) ? 100.0f : percent),
                     Replace_NaN_And_Inf_With_Zero(time_left));

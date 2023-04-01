@@ -59,8 +59,9 @@ extern void TEST_cJSON_Parse_JSON_Fragment (void)
 
     // Allocate memory for the parsing result and execute the parsing process
     // For the sake of simplicity, I assume that the double length of the expected result is enough
-    const long unsigned int parsing_result_length = (long unsigned int) (expected_results_file_length * 2);
-    long unsigned int parsing_result_mem_left = parsing_result_length - 1;
+    const long long unsigned int parsing_result_length = (long long unsigned int) (expected_results_file_length * 2);
+    // "long long unsigned int" to avoid warnings on system where size_t are "long long unsigned int"
+    long long unsigned int parsing_result_mem_left = parsing_result_length - 1;
     char* parsing_result = (char*) MALLOC (parsing_result_length * sizeof (char));
     memset (parsing_result, '\0', parsing_result_length);
     ASSERT_ALLOC(parsing_result, "Cannot allocate memory for the parsing result !",
@@ -85,13 +86,13 @@ extern void TEST_cJSON_Parse_JSON_Fragment (void)
             strncat (parsing_result, partial_parsing_result, parsing_result_mem_left);
             parsing_result_mem_left -= strlen(partial_parsing_result);
             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result is too small ! "
-                    "%lu byte were allocated.", parsing_result_length);
+                    "%llu byte were allocated.", parsing_result_length);
 
             // Add at the end of every partial parsing result a newline char
             strncat (parsing_result, "\n", parsing_result_mem_left);
             parsing_result_mem_left -= STATIC_STRLEN ("\n");
             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result is too small ! "
-                    "%lu byte were allocated.", parsing_result_length);
+                    "%llu byte were allocated.", parsing_result_length);
 
             free (partial_parsing_result);
             partial_parsing_result = NULL;
@@ -132,8 +133,8 @@ extern void TEST_cJSON_Get_Token_Array_From_JSON_Fragment (void)
 
     // Allocate memory for the parsing result and execute the parsing process
     // For the sake of simplicity, I assume that the double length of the expected result is enough
-    const size_t parsing_result_length = (size_t) (expected_results_file_length * 2);
-    long unsigned int parsing_result_mem_left = parsing_result_length - 1;
+    const long long unsigned int parsing_result_length = (long long unsigned int) (expected_results_file_length * 2);
+    long long unsigned int parsing_result_mem_left = parsing_result_length - 1;
     char* parsing_result = (char*) CALLOC (parsing_result_length, sizeof (char));
     ASSERT_ALLOC(parsing_result, "Cannot allocate memory for the parsing result !",
             (expected_results_file_length * 2) * sizeof (char));

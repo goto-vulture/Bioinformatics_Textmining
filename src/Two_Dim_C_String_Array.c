@@ -180,7 +180,7 @@ TwoDimCStrArray_AppendDataToSpecificString
 
     // Append the new data
     strncat (object->data [str_index], append_data, append_data_length);
-    object->next_free_char_in_c_str [str_index] += append_data_length;
+    object->next_free_char_in_c_str [str_index] += (uint_fast32_t) append_data_length;
 
     return;
 }
@@ -268,7 +268,7 @@ TwoDimCStrArray_AppendNewString
     object->data [next_free_c_str_index][object->allocated_c_str_length [next_free_c_str_index] - 1] = '\0';
 
     // Update information
-    object->next_free_char_in_c_str [next_free_c_str_index] = new_str_length;
+    object->next_free_char_in_c_str [next_free_c_str_index] = (uint_fast32_t) new_str_length;
     ++ object->next_free_c_str;
 
     return;
@@ -316,7 +316,7 @@ TwoDimCStrArray_ShowAttributes
     printf ("Full two dim C string array size: ");
     Print_Memory_Size_As_B_KB_MB(full_object_size);
     printf ("Number of C strins:            %zu\n", object->number_of_c_str);
-    printf ("Next free C string:            %zu\n", object->next_free_c_str);
+    printf ("Next free C string:            %" PRIuFAST32 "\n", object->next_free_c_str);
     printf ("Longest allocated C string:    %zu\n", longest_allocated_c_str);
     printf ("Longest C string:              %zu\n", longest_c_str);
     fflush(stdout);
@@ -391,7 +391,7 @@ New_C_String_Necessary
         memset (object->allocated_c_str_length + object->number_of_c_str, '\0',
                 (new_number_of_c_str - object->number_of_c_str) * sizeof (size_t));
 
-        uint_fast32_t* temp_ptr_3 = (size_t*) REALLOC(object->next_free_char_in_c_str,
+        uint_fast32_t* temp_ptr_3 = (uint_fast32_t*) REALLOC(object->next_free_char_in_c_str,
                 new_number_of_c_str * sizeof (uint_fast32_t));
         ASSERT_ALLOC(temp_ptr_3, "Cannot increase the number of administration data !",
                 new_number_of_c_str * sizeof (uint_fast32_t));
