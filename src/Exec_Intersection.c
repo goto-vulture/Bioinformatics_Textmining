@@ -1513,7 +1513,7 @@ Exec_Add_Token_To_Mapping_Process_Print_Function
     const float time_left   = Determine_Time_Left(call_counter_interval_begin, call_counter_interval_end,
             all_calls, interval_end - interval_begin);
 
-    PRINTF_FFLUSH("Add data to token int mapping (%3.2f %% | %.2f sec.)   \r",
+    PRINTF_FFLUSH("Add data to token int mapping (%3.2f %% | %.2f sec.)",
             ceil(Replace_NaN_And_Inf_With_Zero(percent)), Replace_NaN_And_Inf_With_Zero(time_left));
 
     return;

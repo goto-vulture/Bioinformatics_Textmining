@@ -394,10 +394,10 @@ TokenListContainer_CreateObject
         printf("Not specified file type for \"%s\"\n", file_name);
         break;
     case JSON_FILE_TYPE:
-        printf("Assume, that \"%s\" is a " ANSI_TEXT_BOLD "JSON file" ANSI_RESET_ALL "\n", file_name);
+        printf("Assume, that \"%s\" is a file with " ANSI_TEXT_BOLD "JSON formatted data" ANSI_RESET_ALL "\n", file_name);
         break;
     case TXT_FILE_TYPE:
-        printf("Assume, that \"%s\" is a " ANSI_TEXT_BOLD "text file" ANSI_RESET_ALL "\n", file_name);
+        printf("Assume, that \"%s\" is a file with raw " ANSI_TEXT_BOLD "text data" ANSI_RESET_ALL "\n", file_name);
         break;
     case UNKNOWN_FILE_TYPE:
         printf("Cannot determine the file type for \"%s\" !\n", file_name);
@@ -409,7 +409,7 @@ TokenListContainer_CreateObject
 
     uint_fast32_t line_counter              = 0;
     uint_fast32_t sum_tokens_found          = 0;
-    const uint_fast8_t count_steps          = 200;
+    const uint_fast8_t count_steps          = 100;
     const size_t unsigned_input_file_length = (size_t) input_file_length;
     const uint_fast32_t print_steps         = (uint_fast32_t) (((unsigned_input_file_length / count_steps) == 0) ?
             1 : (unsigned_input_file_length / count_steps));
