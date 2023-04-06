@@ -260,6 +260,7 @@ extern void Any_Print
         const enum VALUE_TYPE value_type
 )
 {
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
     switch (value_type)
     {
     case UNSIGNED_CHAR:
@@ -324,6 +325,72 @@ extern void Any_Print
     default:
         ASSERT_MSG(false, "default path executed !");
     }
+#else
+    switch (value_type)
+    {
+    case UNSIGNED_CHAR:
+    case U_CHAR:
+        printf ("%hhu", *(unsigned char*) data); break;
+    case SIGNED_CHAR:
+    case S_CHAR:
+    case CHAR:
+        printf ("%hhd", *(char*) data); break;
+
+    case UNSIGNED_SHORT:
+    case U_SHORT:
+        printf ("%hu", *(unsigned short*) data); break;
+    case SIGNED_SHORT:
+    case S_SHORT:
+    case SHORT:
+        printf ("%hd", *(short*) data); break;
+
+    case UNSIGNED_INT:
+    case U_INT:
+        printf ("%u", *(unsigned int*) data); break;
+    case SIGNED_INT:
+    case S_INT:
+    case INT:
+        printf ("%d", *(int*) data); break;
+
+    case UNSIGNED_LONG_INT:
+    case U_L_INT:
+        printf ("%lu", *(unsigned long int*) data); break;
+    case SIGNED_LONG_INT:
+    case S_L_INT:
+    case LONG_INT:
+    case L_INT:
+        printf ("%ld", *(long int*) data); break;
+
+    case UNSIGNED_LONG_LONG_INT:
+    case U_LL_INT:
+        printf ("%llu", *(unsigned long long int*) data); break;
+    case SIGNED_LONG_LONG_INT:
+    case S_LL_INT:
+    case LONG_LONG_INT:
+    case LL_INT:
+        printf ("%lld", *(long long int*) data); break;
+
+    case FLOAT:
+        printf ("%f", *(float*) data); break;
+    case DOUBLE:
+        printf ("%lf", *(double*) data); break;
+    case LONG_DOUBLE:
+        printf ("%Lf", *(long double*) data); break;
+
+    case BOOL:
+        printf ("%s", ((*(_Bool*) data) == false) ? "false" : "true"); break;
+
+    case POINTER:
+    case PTR:
+        printf ("%p", data); break;
+
+    case UNKNOWN_VALUE_TYPE:
+        printf ("Unknown type was given"); break;
+
+    default:
+        ASSERT_MSG(false, "default path executed !");
+    }
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
     return;
 }

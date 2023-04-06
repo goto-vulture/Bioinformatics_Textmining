@@ -122,6 +122,7 @@ extern void TEST_Tokenize_String (void)
  */
 extern void TEST_Any_Print (void)
 {
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
     unsigned char u_char_value                      = GET_MAX((unsigned char) 42);
     // Here it is not possible to use the max value, because the max value doesn't represent a printable char
     signed char s_char_value                        = 42; //GET_MAX((signed char) 42);
@@ -157,6 +158,44 @@ extern void TEST_Any_Print (void)
     uint_least16_t uint_least16_t_value             = GET_MAX((uint_least16_t) 42);
     uint_least32_t uint_least32_t_value             = GET_MAX((uint_least32_t) 42);
     uint_least64_t uint_least64_t_value             = GET_MAX((uint_least64_t) 42);
+#else
+    unsigned char u_char_value                      = UCHAR_MAX;
+    // Here it is not possible to use the max value, because the max value doesn't represent a printable char
+    signed char s_char_value                        = 42; //GET_MAX((signed char) 42);
+    unsigned short u_short_value                    = USHRT_MAX;
+    signed short s_short_value                      = SHRT_MAX;
+    unsigned int u_int_value                        = UINT_MAX;
+    signed int s_int_value                          = INT_MAX;
+    unsigned long int u_long_int_value              = ULONG_MAX;
+    signed long int s_long_int_value                = LONG_MAX;
+    unsigned long long int u_long_long_int_value    = ULLONG_MAX;
+    signed long long int s_long_long_int_value      = LLONG_MAX;
+
+    // The following variables are not usable in C99
+//    size_t size_t_value                             = SIZE_MAX;
+//
+//    // On machines with sizeof(int_fast8_t) == sizeof(char) the max value is not printable, because it will be used as
+//    // char
+//    int_fast8_t int_fast8_t_value                   = 42;
+//    int_fast16_t int_fast16_t_value                 = INT_FAST16_MAX;
+//    int_fast32_t int_fast32_t_value                 = INT_FAST32_MAX;
+//    int_fast64_t int_fast64_t_value                 = INT_FAST64_MAX;
+//    uint_fast8_t uint_fast8_t_value                 = UINT_FAST8_MAX;
+//    uint_fast16_t uint_fast16_t_value               = UINT_FAST16_MAX;
+//    uint_fast32_t uint_fast32_t_value               = UINT_FAST32_MAX;
+//    uint_fast64_t uint_fast64_t_value               = UINT_FAST64_MAX;
+//
+//    // On machines with sizeof(int_least8_t) == sizeof(char) the max value is not printable, because it will be used as
+//    // char
+//    int_least8_t int_least8_t_value                 = 42;
+//    int_least16_t int_least16_t_value               = INT_LEAST16_MAX;
+//    int_least32_t int_least32_t_value               = INT_LEAST32_MAX;
+//    int_least64_t int_least64_t_value               = INT_LEAST64_MAX;
+//    uint_least8_t uint_least8_t_value               = UINT_LEAST8_MAX;
+//    uint_least16_t uint_least16_t_value             = UINT_LEAST16_MAX;
+//    uint_least32_t uint_least32_t_value             = UINT_LEAST32_MAX;
+//    uint_least64_t uint_least64_t_value             = UINT_LEAST64_MAX;
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
     float float_value                               = 42.42f;
     double double_value                             = 42.42;
@@ -299,7 +338,8 @@ extern void TEST_Any_Print (void)
     puts("");
 
     // Printing values from type size_t, uint_fast8_t, ... is without the _Generic keyword not possible !
-    // The real type of "size_t" can differ between different systems; so a hard coded type cannot be used
+    // The real type of "size_t", "int_fast32_t_value" and Co. can differ between different systems; so a hard coded
+    // type cannot be used !
 
     printf ("float:                  ");
     Any_Print(&float_value, FLOAT);
