@@ -71,6 +71,9 @@ extern "C"
 /**
  * @brief Copy a C-String and convert all upper-case char to lower-case.
  *
+ * If the to_lower_string smaller than the orig_string, than only the first to_lower_string_size - 1 char will be
+ * converted.
+ *
  * Asserts / In this case normal if tests:
  *      orig_string != NULL
  *      to_lower_string != NULL
@@ -95,6 +98,10 @@ String_To_Lower
  *
  * There might be a function "strncasecmp()" on your system with the same functionality. But this is an GNU extension
  * and no portable C code.
+ *
+ * In the case, that the input strings has not the same length, the function returns -1.
+ *
+ * The function expects, that the strings do not (partially) overlap.
  *
  * Asserts / In this case normal if tests:
  *       string_1 != NULL
@@ -324,6 +331,12 @@ Is_String_Null_Terminated
 
 //---------------------------------------------------------------------------------------------------------------------
 
+#ifndef TOKENIZED_STRING_NUM_DATASETS
+#define TOKENIZED_STRING_NUM_DATASETS 250
+#else
+#error "The macro \"TOKENIZED_STRING_NUM_DATASETS\" is already defined !"
+#endif /* TOKENIZED_STRING_NUM_DATASETS */
+
 /**
  * @brief This structure saves the main information about a tokenized c string. It saves the position as offset and the
  * length of the token.
@@ -332,10 +345,10 @@ struct Tokenized_String
 {
     struct
     {
-        ptrdiff_t pos;                  ///< Position as offset
-        ptrdiff_t len;                  ///< Length focused from the offset
-    } token_data [250];                 ///< The value should be enough for our purposes
-    uint_fast32_t next_free_pos_len;    ///< Index of the next unused object
+        ptrdiff_t pos;                              ///< Position as offset
+        ptrdiff_t len;                              ///< Length focused from the offset
+    } token_data [TOKENIZED_STRING_NUM_DATASETS];   ///< The value should be enough for our purposes
+    uint_fast32_t next_free_pos_len;                ///< Index of the next unused object
 };
 
 /**

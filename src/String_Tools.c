@@ -10,7 +10,7 @@
 #include "String_Tools.h"
 #include <string.h>
 #include <ctype.h>
-#include "Misc.h"
+#include <limits.h>
 
 
 
@@ -18,6 +18,9 @@
 
 /**
  * @brief Copy a C-String and convert all upper-case char to lower-case.
+ *
+ * If the to_lower_string smaller than the orig_string, than only the first to_lower_string_size - 1 char will be
+ * converted.
  *
  * Asserts / In this case normal if tests:
  *      orig_string != NULL
@@ -38,14 +41,16 @@ String_To_Lower
         const size_t to_lower_string_size
 )
 {
-    if (orig_string == NULL)        { return INT_MAX; }
-    if (to_lower_string == NULL)    { return INT_MAX; }
-    if (to_lower_string_size == 0)  { return INT_MAX; }
+    const size_t orig_string_len = strlen (orig_string);
+
+    if (orig_string == NULL)                        { return INT_MAX; }
+    if (to_lower_string == NULL)                    { return INT_MAX; }
+    if (to_lower_string_size == 0)                  { return INT_MAX; }
 
     strncpy (to_lower_string, orig_string, to_lower_string_size);
 
     for (size_t current_char = 0;
-            (current_char < strlen (orig_string)) && (current_char < to_lower_string_size);
+            (current_char < orig_string_len) && (current_char < to_lower_string_size);
             ++ current_char)
     {
         // Convert all upper-case char to lower-case char. It is not necessary to check for upper-case char, because
@@ -55,7 +60,7 @@ String_To_Lower
     }
 
     // Guarantee null terminated c string
-    to_lower_string [strlen (orig_string)] = '\0';
+    to_lower_string [to_lower_string_size - 1] = '\0';
 
     return 0;
 }
@@ -67,6 +72,10 @@ String_To_Lower
  *
  * There might be a function "strncasecmp()" on your system with the same functionality. But this is an GNU extension
  * and no portable C code.
+ *
+ * In the case, that the input strings has not the same length, the function returns -1.
+ *
+ * The function expects, that the strings do not (partially) overlap.
  *
  * Asserts / In this case normal if tests:
  *       string_1 != NULL
@@ -102,11 +111,7 @@ Compare_Strings_Case_Insensitive
        for (size_t i = 0; i < string_1_length; ++ i)
        {
            // If a string end was found, stop the comparisons
-           if (string_1 [i] == '\0')
-           // Alternative: if (string_2 [i] == '\0')
-           {
-               break;
-           }
+           if (string_1 [i] == '\0' || string_2 [i] == '\0') { break; }
 
            // This simple test is enough, because tolower() returns the input parameter unchanged, if this is not an
            // alpha char
@@ -193,10 +198,11 @@ Append_X_Times_Char
     if (times == 0)         { return INT_MAX; }
 
     const char one_size_string [2] = { character, '\0' };
+    const size_t one_size_string_len = (sizeof (one_size_string) / sizeof (one_size_string [0])) - 1;
 
     for (size_t i = 0; i < times; ++ i)
     {
-        strncat (str, one_size_string, COUNT_ARRAY_ELEMENTS(one_size_string));
+        strncat (str, one_size_string, one_size_string_len);
     }
 
     return 0;
@@ -427,10 +433,7 @@ Is_Char_In_String
         if (string [i] == search_char)
         {
             result = true;
-            if (pos_of_first_occurrence != NULL)
-            {
-                *pos_of_first_occurrence = i;
-            }
+            if (pos_of_first_occurrence != NULL) { *pos_of_first_occurrence = i; }
             break;
         }
     }
@@ -496,7 +499,6 @@ Tokenize_String
     if (IS_STRING_LENGTH_ZERO(breakset))    { return results; }
 
     const char* const orig_input_ptr = input;
-    const size_t max_datasets = sizeof (results.token_data) / sizeof (results.token_data [0]);
     uint_fast32_t counter = 1;
 
     results.token_data[0].pos = 0;
@@ -514,9 +516,11 @@ Tokenize_String
             const ptrdiff_t strspn_diff = input - before_strspn;
             results.token_data[counter].pos += strspn_diff;
         }
+        // Here a temporary empty token will be created. This is necessary. because a do-while loop must be used with
+        // strpbrk and strspn
         counter ++;
     }
-    while(input != NULL && *input != '\0' && counter < max_datasets);
+    while(input != NULL && *input != '\0' && counter < TOKENIZED_STRING_NUM_DATASETS);
 
     // Override the newest entry, because sometimes - especially when delimiter are at the end of the string - there
     // will be position data in this object
