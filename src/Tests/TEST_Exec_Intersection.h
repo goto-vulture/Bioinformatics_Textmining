@@ -25,6 +25,10 @@ extern "C"
 
 
 
+#include "../OS_Specific_Configurations.h"
+
+
+
 /**
  * @brief Test, whether the test files have the expected MD5 sum.
  */
@@ -136,6 +140,15 @@ extern void TEST_MMX_Extension (void);
  */
 extern void TEST_Placeholder_For_No_Extensions (void);
 #endif
+
+#ifdef LINUX
+/**
+ * @brief This test checks, whether the output file is a valid JSON file.
+ *
+ * The check itself will be done with a system command: "python3 <JSON check Python file> <output file name>
+ */
+extern void TEST_Is_Output_File_JSON_Compatible (void);
+#endif /* LINUX */
 
 
 

@@ -407,6 +407,10 @@ Run_All_Test_Functions (void)
     RUN(TEST_ANSI_Esc_Seq);
     RUN(TEST_Any_Print);
 
+#ifdef LINUX
+    RUN(TEST_Is_Output_File_JSON_Compatible);
+#endif /* LINUX */
+
     return;
 }
 

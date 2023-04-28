@@ -51,6 +51,12 @@
 #error "The macro \"OUT_FILE\" is already defined !"
 #endif /* OUT_FILE */
 
+#ifndef JSON_CHECK_FILE
+#define JSON_CHECK_FILE "./JSON_Check.py"
+#else
+#error "The macro \"JSON_CHECK_FILE\" is already defined !"
+#endif /* JSON_CHECK_FILE */
+
 #ifndef TEST_EBM_FILE_MD5
 #define TEST_EBM_FILE_MD5 "d1205477fc08c6e278d905edfdd537fb"
 #else
@@ -479,6 +485,26 @@ extern void TEST_Placeholder_For_No_Extensions (void)
 
 //---------------------------------------------------------------------------------------------------------------------
 
+#ifdef LINUX
+/**
+ * @brief This test checks, whether the output file is a valid JSON file.
+ *
+ * The check itself will be done with a system command: "python3 <JSON check Python file> <output file name>
+ */
+extern void TEST_Is_Output_File_JSON_Compatible (void)
+{
+    int system_res = system("python3 " JSON_CHECK_FILE " " OUT_FILE);
+    ASSERT_EQUALS(0, system_res);
+
+    system_res = system("rm " OUT_FILE);
+    ASSERT_EQUALS(0, system_res);
+
+    return;
+}
+#endif /* LINUX */
+
+//---------------------------------------------------------------------------------------------------------------------
+
 
 
 #ifdef FILE_1
@@ -496,6 +522,10 @@ extern void TEST_Placeholder_For_No_Extensions (void)
 #ifdef OUT_FILE
 #undef OUT_FILE
 #endif /* OUT_FILE */
+
+#ifdef JSON_CHECK_FILE
+#undef JSON_CHECK_FILE
+#endif /* JSON_CHECK_FILE */
 
 #ifdef TEST_EBM_FILE_MD5
 #undef TEST_EBM_FILE_MD5
