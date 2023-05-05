@@ -892,12 +892,8 @@ Exec_Intersection
         }
         // ===== ===== ===== ===== ===== END Inner loop ===== ===== ===== ===== =====
 
-        // An flag update can only cause a true to false
-        if (! data_found)
-        {
-            data_found = Update_Data_Found_Flag (intersection_settings, intersections_partial_match,
-                    intersections_full_match);
-        }
+        data_found = Update_Data_Found_Flag (intersection_settings, intersections_partial_match,
+                intersections_full_match);
 
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
