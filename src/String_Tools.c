@@ -88,7 +88,7 @@ String_To_Lower
  * @param[in] string_2 Second C-String
  * @param[in] string_2_length Length of the second C-String
  *
- * @return 0, if the C-String equals, else != 0 (In error cases INT_MAX).
+ * @return 0, if the C-Strings are equal, else != 0 (In error cases INT_MAX).
  */
 extern int
 Compare_Strings_Case_Insensitive
@@ -128,6 +128,42 @@ Compare_Strings_Case_Insensitive
     }
 
     return result;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Compare two C-Strings case insensitive.
+ *
+ * There might be a function "strncasecmp()" on your system with the same functionality. But this is an GNU extension
+ * and no portable C code.
+ *
+ * This function has the same interface like the strncmp() function.
+ *
+ * In the case, that the input strings has not the same length, the function returns -1.
+ *
+ * The function expects, that the strings do not (partially) overlap.
+ *
+ * Asserts / In this case normal if tests:
+ *       string_1 != NULL
+ *       string_2 != NULL
+ *       string_length > 0
+ *
+ * @param[in] string_1 First C-String
+ * @param[in] string_2 Second C-String
+ * @param[in] string_length Max number of char, that will be compared
+ *
+ * @return 0, if the C-Strings are equal, else != 0 (In error cases INT_MAX)
+ */
+extern int
+strncasecmp_diy
+(
+       const char* const restrict string_1,
+       const char* const restrict string_2,
+       const size_t string_length
+)
+{
+    return Compare_Strings_Case_Insensitive(string_1, string_length, string_2, string_length);
 }
 
 //---------------------------------------------------------------------------------------------------------------------

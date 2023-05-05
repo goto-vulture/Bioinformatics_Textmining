@@ -64,6 +64,8 @@ IS_TYPE(C_STR_ARRAYS, int)
 IS_TYPE(MAX_TOKEN_LENGTH, int)
 #endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
+typedef int (*Cmp_Func) (const char*, const char*, size_t);
+
 //=====================================================================================================================
 
 struct Token_Int_Mapping
@@ -88,12 +90,24 @@ struct Token_Int_Mapping
      * @brief Used number of tokens per C-String.
      */
     uint_fast32_t c_str_array_lengths [C_STR_ARRAYS];
+
+    /**
+     * @brief Compare function for the tokens; this function can be used to make a case-insensitive comparison possible.
+     *
+     * Such a function pointer is necessary to make a consistent token comparison while loading data and in the
+     * token -> int mapping process.
+     *
+     * It is not possible to use different comparison functions in the loading process and in the mapping process. A
+     * inconsistent mapping table with wrong data would be the result.
+     */
+    Cmp_Func cmp_func;
 };
 
 //=====================================================================================================================
 
 /**
- * @brief Create new dynamic Token_Int_Mapping object.
+ * @brief Create new dynamic Token_Int_Mapping object with the default comparison function (strncmp: case-sensitive
+ * comparison)
  *
  * Asserts:
  *      N/A
@@ -104,6 +118,22 @@ extern struct Token_Int_Mapping*
 TokenIntMapping_CreateObject
 (
         void
+);
+
+/**
+ * @brief Create new dynamic Token_Int_Mapping object with user-defined comparison function for the tokens.
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param[in] cmp_func User-defined comparison function for the tokens.
+ *
+ * @return Pointer to the new object
+ */
+extern struct Token_Int_Mapping*
+TokenIntMapping_CreateObjectWithGivenCmpFunction
+(
+        Cmp_Func cmp_func
 );
 
 /**

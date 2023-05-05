@@ -66,10 +66,29 @@ Pseudo_Hash_Function
         const size_t input_str_length
 );
 
+/**
+ * @brief Create new dynamic Token_Int_Mapping object.
+ *
+ * This is the internal creation function, that will be used from the public creation functions:
+ * - TokenIntMapping_CreateObject
+ * - TokenIntMapping_CreateObjectWithGivenCmpFunction
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @return Pointer to the new object
+ */
+static struct Token_Int_Mapping*
+TokenIntMapping_CreateObject_Internal
+(
+        Cmp_Func cmp_func
+);
+
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Create new dynamic Token_Int_Mapping object.
+ * @brief Create new dynamic Token_Int_Mapping object with the default comparison function (strncmp: case-sensitive
+ * comparison)
  *
  * Asserts:
  *      N/A
@@ -82,25 +101,28 @@ TokenIntMapping_CreateObject
         void
 )
 {
-    // Outer object
-    struct Token_Int_Mapping* new_object = (struct Token_Int_Mapping*) CALLOC(1, sizeof (struct Token_Int_Mapping));
-    ASSERT_ALLOC(new_object, "Cannot create a new token int mapping !", sizeof (struct Token_Int_Mapping));
+    return TokenIntMapping_CreateObject_Internal(&strncmp);
+}
 
-    // Inner C-Strings and memory for the mapping integer values
-    for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
-    {
-        new_object->c_str_arrays [i] = (char*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (char) * MAX_TOKEN_LENGTH);
-        ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
-                C_STR_ALLOCATION_STEP_SIZE * sizeof (char) * MAX_TOKEN_LENGTH);
+//---------------------------------------------------------------------------------------------------------------------
 
-        new_object->int_mapping [i] = (DATA_TYPE*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (DATA_TYPE) * 1);
-        ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
-                C_STR_ALLOCATION_STEP_SIZE * sizeof (DATA_TYPE) * 1); // NO MAX_TOKEN_LENGTH !
-
-        new_object->allocated_c_strings_in_array [i] = C_STR_ALLOCATION_STEP_SIZE;
-    }
-
-    return new_object;
+/**
+ * @brief Create new dynamic Token_Int_Mapping object with user-defined comparison function for the tokens.
+ *
+ * Asserts:
+ *      N/A
+ *
+ * @param[in] cmp_func User-defined comparison function for the tokens.
+ *
+ * @return Pointer to the new object
+ */
+extern struct Token_Int_Mapping*
+TokenIntMapping_CreateObjectWithGivenCmpFunction
+(
+        Cmp_Func cmp_func
+)
+{
+    return TokenIntMapping_CreateObject_Internal(cmp_func);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -120,6 +142,7 @@ TokenIntMapping_DeleteObject
 )
 {
     ASSERT_MSG(object != NULL, "Token_Int_Mapping object is NULL !");
+    object->cmp_func = NULL;
 
     // Delete the inner objects
     for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
@@ -235,7 +258,7 @@ TokenIntMapping_AddToken
             // Before the comparison: Have the strings the same length ?
             if (new_token_length == strlen (to_str))
             {
-                if (strncmp (new_token, to_str, new_token_length) == 0)
+                if (object->cmp_func (new_token, to_str, new_token_length) == 0)
                 {
                     token_already_in_list = true;
                     break;
@@ -428,7 +451,7 @@ TokenIntMapping_TokenToInt
             // Before the comparison: Have the strings the same length ?
             if (search_token_length == strlen(c_string_array))
             {
-                if (strncmp (search_token, c_string_array, search_token_length) == 0)
+                if (object->cmp_func (search_token, c_string_array, search_token_length) == 0)
                 {
                     token_found = true;
                     break;
@@ -571,6 +594,39 @@ Pseudo_Hash_Function
     }
 
     return (sum_char_in_new_token % C_STR_ARRAYS);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+static struct Token_Int_Mapping*
+TokenIntMapping_CreateObject_Internal
+(
+        Cmp_Func cmp_func
+)
+{
+    ASSERT_MSG(cmp_func != NULL, "Comparison function pointer is NULL !");
+
+    // Outer object
+    struct Token_Int_Mapping* new_object = (struct Token_Int_Mapping*) CALLOC(1, sizeof (struct Token_Int_Mapping));
+    ASSERT_ALLOC(new_object, "Cannot create a new token int mapping !", sizeof (struct Token_Int_Mapping));
+
+    // Inner C-Strings and memory for the mapping integer values
+    for (size_t i = 0; i < C_STR_ARRAYS; ++ i)
+    {
+        new_object->c_str_arrays [i] = (char*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (char) * MAX_TOKEN_LENGTH);
+        ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
+                C_STR_ALLOCATION_STEP_SIZE * sizeof (char) * MAX_TOKEN_LENGTH);
+
+        new_object->int_mapping [i] = (DATA_TYPE*) CALLOC(C_STR_ALLOCATION_STEP_SIZE, sizeof (DATA_TYPE) * 1);
+        ASSERT_ALLOC(new_object->c_str_arrays [i], "Cannot allocate memory for the token int mapping !",
+                C_STR_ALLOCATION_STEP_SIZE * sizeof (DATA_TYPE) * 1); // NO MAX_TOKEN_LENGTH !
+
+        new_object->allocated_c_strings_in_array [i] = C_STR_ALLOCATION_STEP_SIZE;
+    }
+
+    new_object->cmp_func = cmp_func;
+
+    return new_object;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
