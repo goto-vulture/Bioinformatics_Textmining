@@ -1493,6 +1493,8 @@ Use_Current_JSON_Fragment
             const size_t last_token_length = (size_t) u8_strlen((char*) last_token);
 
             size_t new_char_offset = 0;
+            // Using the char offset from the data, if available
+            // If not: calculate them
             if (curr_char_offset != NULL)
             {
                 new_char_offset = (size_t) curr_char_offset->valueint;
@@ -1511,7 +1513,7 @@ Use_Current_JSON_Fragment
 
             const size_t new_sentence_offset =
                     current_token_list_obj->sentence_offsets [current_token_list_obj->next_free_element - 1] +
-                    (last_token [0] == '.' && (IS_STRING_LENGTH_ONE(last_token))) ? 1 : 0;
+                    ((last_token [0] == '.' && last_token_length == 1) ? (size_t) 1 : (size_t) 0);
             const size_t new_word_offset = (size_t)
                     current_token_list_obj->word_offsets [current_token_list_obj->next_free_element - 1] + 1;
 
