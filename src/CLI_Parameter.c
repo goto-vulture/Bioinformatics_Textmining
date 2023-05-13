@@ -37,9 +37,9 @@ const char* const GLOBAL_ADDITIONAL_PROGRAM_DESCRIPTION =
         "\nIf you have any questions or suggestions: Get in contact with me: goto-vulture@gmx.de"
         "\n"
         "\nUsed libs"
-        "\n    cJSON    1.7.15 MIT from Dave Gamble (https://github.com/DaveGamble/cJSON)"
-        "\n    argparse 1.1.0  MIT from Yecheng Fu  (https://github.com/cofyc/argparse)"
-        "\n    tinytest n/a    n/a from Joe Walnes  (https://github.com/joewalnes/tinytest)";
+        "\n    cJSON    1.7.15 (Aug 25, 2021) MIT from Dave Gamble (https://github.com/DaveGamble/cJSON)"
+        "\n    argparse 1.1.0  (Feb 7,  2022) MIT from Yecheng Fu  (https://github.com/cofyc/argparse)"
+        "\n    tinytest n/a    (Jun 23, 2015) n/a from Joe Walnes  (https://github.com/joewalnes/tinytest)";
 
 
 
