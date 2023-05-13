@@ -15,6 +15,7 @@
 
 #include "Token_Int_Mapping.h"
 #include <string.h>
+#include <ctype.h>
 #include "Error_Handling/Assert_Msg.h"
 #include "Error_Handling/Dynamic_Memory.h"
 #include "Print_Tools.h"
@@ -252,8 +253,10 @@ TokenIntMapping_AddToken
     _Bool token_already_in_list = false;
     for (uint_fast32_t i = 0; i < c_str_array_length; ++ i)
     {
-        // Pre check the first char to avoid strncmp calls
-        if (new_token [0] == to_str [0])
+        // Pre check the first char to avoid compare strings calls
+        // It is possible, that the program does a case insensitive comparison. For this case only a lower comparison
+        // will always produce the right result !
+        if (tolower(new_token [0]) == tolower(to_str [0]))
         {
             // Before the comparison: Have the strings the same length ?
             if (new_token_length == strlen (to_str))
@@ -445,8 +448,10 @@ TokenIntMapping_TokenToInt
     // Search in the C-String, where the token would be, when it is already in the mapping list
     for (; i < c_str_array_length; ++ i)
     {
-        // Pre check the first char to avoid strncmp calls
-        if (search_token [0] == c_string_array [0])
+        // Pre check the first char to avoid compare string calls
+        // It is possible, that the program does a case insensitive comparison. For this case only a lower comparison
+        // will always produce the right result !
+        if (tolower(search_token [0]) == tolower(c_string_array [0]))
         {
             // Before the comparison: Have the strings the same length ?
             if (search_token_length == strlen(c_string_array))
@@ -588,9 +593,11 @@ Pseudo_Hash_Function
 
     uint_fast32_t sum_char_in_new_token = 0;
     // Add char per char
+    // It is important to use the lower char, because in case of case insensitive comparison the pseudo hash function
+    // needs to be equal, even with different char cases !
     for (size_t i = 0; i < input_str_length; ++ i)
     {
-        sum_char_in_new_token = (uint_fast32_t) (input_str [i]) + sum_char_in_new_token;
+        sum_char_in_new_token = (uint_fast32_t) (tolower(input_str [i])) + sum_char_in_new_token;
     }
 
     return (sum_char_in_new_token % C_STR_ARRAYS);

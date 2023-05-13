@@ -200,6 +200,8 @@ extern void TEST_MD5_Of_Test_Files (void)
 extern void TEST_Number_Of_Tokens_Found (void)
 {
     uint_fast64_t number_of_intersection_tokens = 0;
+    // All tests expects an case sensitive (!) token comparison
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
 
     // Adjust the CLI parameter to make the test runnable
     GLOBAL_CLI_INPUT_FILE = FILE_1;
@@ -225,6 +227,8 @@ extern void TEST_Number_Of_Tokens_Found (void)
 extern void TEST_Number_Of_Sets_Found (void)
 {
     Set_CLI_Parameter_To_Default_Values();
+    // All tests expects an case sensitive (!) token comparison
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
 
     uint_fast64_t number_of_intersection_sets = 0;
 
@@ -253,6 +257,8 @@ extern void TEST_Number_Of_Sets_Found (void)
 extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files (void)
 {
     Set_CLI_Parameter_To_Default_Values();
+    // All tests expects an case sensitive (!) token comparison
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
 
     uint_fast64_t number_of_intersection_tokens_1 = 0;
     uint_fast64_t number_of_intersection_tokens_2 = 0;
@@ -286,6 +292,8 @@ extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files (void)
 extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files (void)
 {
     Set_CLI_Parameter_To_Default_Values();
+    // All tests expects an case sensitive (!) token comparison
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
 
     uint_fast64_t number_of_intersection_sets_1 = 0;
     uint_fast64_t number_of_intersection_sets_2 = 0;
@@ -322,6 +330,8 @@ extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files (void)
 extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files_JSON_And_CSV (void)
 {
     Set_CLI_Parameter_To_Default_Values();
+    // All tests expects an case sensitive (!) token comparison
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
 
     uint_fast64_t number_of_intersection_tokens_1 = 0;
     uint_fast64_t number_of_intersection_tokens_2 = 0;
@@ -358,6 +368,8 @@ extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files_JSON_And_CSV (
 extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files_JSON_And_CSV (void)
 {
     Set_CLI_Parameter_To_Default_Values();
+    // All tests expects an case sensitive (!) token comparison
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
 
     uint_fast64_t number_of_intersection_sets_1 = 0;
     uint_fast64_t number_of_intersection_sets_2 = 0;

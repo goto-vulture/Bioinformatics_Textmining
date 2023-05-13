@@ -253,8 +253,8 @@ int main (const int argc, const char* argv [])
                     "Don't show full matches in the output file", NULL, 0, 0),
             OPT_BOOLEAN('k', "keep_single_token_results", &GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN,
                     "Keep results with only one token", NULL, 0, 0),
-            OPT_BOOLEAN('c', "case_insensitive_token_cmp", &GLOBAL_CLI_CASE_INSENSITIVE_TOKEN_COMPARISON,
-                    "Do a case insensitive comparison of the tokens", NULL, 0, 0),
+            OPT_BOOLEAN('c', "case_sensitive_token_cmp", &GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON,
+                    "Do a case sensitive comparison of the tokens", NULL, 0, 0),
 
             OPT_GROUP("Debug / test functions"),
             OPT_BOOLEAN('T', "run_all_test_functions", &GLOBAL_RUN_ALL_TEST_FUNCTIONS,
@@ -358,6 +358,9 @@ int main (const int argc, const char* argv [])
 #else
     puts("Using " ANSI_TEXT_BOLD "64 bit" ANSI_RESET_ALL " mode.");
 #endif /* I386 */
+
+    printf("Comparison mode: " ANSI_TEXT_BOLD "%s" ANSI_RESET_ALL "\n",
+            (GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON) ? "case sensitive" : "case insensitive");
 
     PUTS_FFLUSH("");
 
