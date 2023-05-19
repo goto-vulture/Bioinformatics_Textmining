@@ -24,6 +24,7 @@
 #include "../CLI_Parameter.h"
 #include "../Defines.h"
 #include "md5.h"
+#include "../Print_Tools.h"
 
 
 
@@ -514,6 +515,79 @@ extern void TEST_Is_Output_File_JSON_Compatible (void)
     return;
 }
 #endif /* LINUX */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief This test checks, whether the usage of a case insensitive string comparison produces more tokens and sets than
+ * the case sensitive string comparison.
+ *
+ * The check itself is only a "greater than".
+ */
+extern void TEST_Case_Insensitive_Comparison (void)
+{
+    Set_CLI_Parameter_To_Default_Values();
+
+    uint_fast64_t number_of_intersection_sets_case_sensitive = 0;
+    uint_fast64_t number_of_intersection_tokens_case_sensitive = 0;
+
+    uint_fast64_t number_of_intersection_sets_case_insensitive = 0;
+    uint_fast64_t number_of_intersection_tokens_case_insensitive = 0;
+
+    /* Test with default input and output files */
+    GLOBAL_CLI_INPUT_FILE = FILE_1;
+    GLOBAL_CLI_INPUT_FILE2 = FILE_CSV;
+    GLOBAL_CLI_OUTPUT_FILE = OUT_FILE;
+
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_case_sensitive, &number_of_intersection_sets_case_sensitive);
+
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = false;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_case_insensitive, &number_of_intersection_sets_case_insensitive);
+
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_tokens_case_sensitive);
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_tokens_case_insensitive);
+//    PRINT_NEWLINE
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_sets_case_sensitive);
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_sets_case_insensitive);
+//    PRINT_NEWLINE
+
+    ASSERT("Num of sets by using insensitive str comparison are not larger than the sensitive comparison !",
+            number_of_intersection_sets_case_insensitive > number_of_intersection_sets_case_sensitive);
+    ASSERT("Num of tokens by using insensitive str comparison are not larger than the sensitive comparison !",
+            number_of_intersection_tokens_case_insensitive > number_of_intersection_tokens_case_sensitive);
+
+    /* Test with another second input file */
+    GLOBAL_CLI_INPUT_FILE2 = FILE_2;
+
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_case_sensitive, &number_of_intersection_sets_case_sensitive);
+
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = false;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_case_insensitive, &number_of_intersection_sets_case_insensitive);
+
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_tokens_case_sensitive);
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_tokens_case_insensitive);
+//    PRINT_NEWLINE
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_sets_case_sensitive);
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_sets_case_insensitive);
+//    PRINT_NEWLINE
+
+    ASSERT("Num of sets by using insensitive str comparison are not larger than the sensitive comparison !",
+            number_of_intersection_sets_case_insensitive > number_of_intersection_sets_case_sensitive);
+    ASSERT("Num of tokens by using insensitive str comparison are not larger than the sensitive comparison !",
+            number_of_intersection_tokens_case_insensitive > number_of_intersection_tokens_case_sensitive);
+
+    return;
+}
 
 //---------------------------------------------------------------------------------------------------------------------
 

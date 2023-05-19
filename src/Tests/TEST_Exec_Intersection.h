@@ -150,6 +150,14 @@ extern void TEST_Placeholder_For_No_Extensions (void);
 extern void TEST_Is_Output_File_JSON_Compatible (void);
 #endif /* LINUX */
 
+/**
+ * @brief This test checks, whether the usage of a case insensitive string comparison produces more tokens and sets than
+ * the case sensitive string comparison.
+ *
+ * The check itself is only a "greater than".
+ */
+extern void TEST_Case_Insensitive_Comparison (void);
+
 
 
 #ifdef __cplusplus

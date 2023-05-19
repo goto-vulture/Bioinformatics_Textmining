@@ -431,7 +431,7 @@ extern void Any_Print
  */
 #ifndef ANY_PRINT
 #define ANY_PRINT(value)                                                                                                \
-        Any_Print((value), _Generic(((value)),                                                                          \
+        Any_Print(((void*) &value), _Generic(((&value)),                                                                \
                 char*: SIGNED_CHAR,                                                                                     \
                 signed char*: SIGNED_CHAR,                                                                              \
                 unsigned char*: UNSIGNED_CHAR,                                                                          \
