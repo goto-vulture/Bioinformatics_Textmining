@@ -96,21 +96,6 @@ static const uint8_t PADDING[] = { 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0
                                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-#ifndef MD5_SUM_LENGTH
-#define MD5_SUM_LENGTH 16
-#else
-#error "The macro \"MD5_SUM_LENGTH\" is already defined !"
-#endif /* MD5_SUM_LENGTH */
-
-/**
- * @brief Compare the MD5 sum of the file with the expected one.
- *
- * @param file_name File name
- * @param expected_md5_sum Expected MD5 sum of the file
- * @param err_occurred Occurred an error in the function ?
- * @return true, if the MD5 sum is equal, else false
- */
-
 /**
  * @brief Print a MD5 sum in hexadecimal notation.
  *
