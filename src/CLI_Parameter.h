@@ -53,6 +53,8 @@ extern _Bool GLOBAL_CLI_NO_TIMESTAMP; ///< Don't save the creation timestamp of 
 
 extern _Bool GLOBAL_CLI_NO_CPU_EXTENSIONS; ///< Don't use any CPU extensions, even there are available on the host
 
+extern _Bool GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON; ///< Do a case-insensitive token comparison ?
+
 /**
  * @brief Shall be results with only one token written in the result file ? In normal cases such information are
  * useless.

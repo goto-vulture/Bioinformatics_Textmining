@@ -24,6 +24,7 @@
 #include "../CLI_Parameter.h"
 #include "../Defines.h"
 #include "md5.h"
+#include "../Print_Tools.h"
 
 
 
@@ -50,6 +51,12 @@
 #else
 #error "The macro \"OUT_FILE\" is already defined !"
 #endif /* OUT_FILE */
+
+#ifndef JSON_CHECK_FILE
+#define JSON_CHECK_FILE "./JSON_Check.py"
+#else
+#error "The macro \"JSON_CHECK_FILE\" is already defined !"
+#endif /* JSON_CHECK_FILE */
 
 #ifndef TEST_EBM_FILE_MD5
 #define TEST_EBM_FILE_MD5 "d1205477fc08c6e278d905edfdd537fb"
@@ -194,6 +201,8 @@ extern void TEST_MD5_Of_Test_Files (void)
 extern void TEST_Number_Of_Tokens_Found (void)
 {
     uint_fast64_t number_of_intersection_tokens = 0;
+    // All tests expects an case sensitive (!) token comparison
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
 
     // Adjust the CLI parameter to make the test runnable
     GLOBAL_CLI_INPUT_FILE = FILE_1;
@@ -219,6 +228,8 @@ extern void TEST_Number_Of_Tokens_Found (void)
 extern void TEST_Number_Of_Sets_Found (void)
 {
     Set_CLI_Parameter_To_Default_Values();
+    // All tests expects an case sensitive (!) token comparison
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
 
     uint_fast64_t number_of_intersection_sets = 0;
 
@@ -247,6 +258,8 @@ extern void TEST_Number_Of_Sets_Found (void)
 extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files (void)
 {
     Set_CLI_Parameter_To_Default_Values();
+    // All tests expects an case sensitive (!) token comparison
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
 
     uint_fast64_t number_of_intersection_tokens_1 = 0;
     uint_fast64_t number_of_intersection_tokens_2 = 0;
@@ -280,6 +293,8 @@ extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files (void)
 extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files (void)
 {
     Set_CLI_Parameter_To_Default_Values();
+    // All tests expects an case sensitive (!) token comparison
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
 
     uint_fast64_t number_of_intersection_sets_1 = 0;
     uint_fast64_t number_of_intersection_sets_2 = 0;
@@ -316,6 +331,8 @@ extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files (void)
 extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files_JSON_And_CSV (void)
 {
     Set_CLI_Parameter_To_Default_Values();
+    // All tests expects an case sensitive (!) token comparison
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
 
     uint_fast64_t number_of_intersection_tokens_1 = 0;
     uint_fast64_t number_of_intersection_tokens_2 = 0;
@@ -352,6 +369,8 @@ extern void TEST_Number_Of_Tokens_Equal_With_Switched_Input_Files_JSON_And_CSV (
 extern void TEST_Number_Of_Sets_Equal_With_Switched_Input_Files_JSON_And_CSV (void)
 {
     Set_CLI_Parameter_To_Default_Values();
+    // All tests expects an case sensitive (!) token comparison
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
 
     uint_fast64_t number_of_intersection_sets_1 = 0;
     uint_fast64_t number_of_intersection_sets_2 = 0;
@@ -479,6 +498,99 @@ extern void TEST_Placeholder_For_No_Extensions (void)
 
 //---------------------------------------------------------------------------------------------------------------------
 
+#ifdef LINUX
+/**
+ * @brief This test checks, whether the output file is a valid JSON file.
+ *
+ * The check itself will be done with a system command: "python3 <JSON check Python file> <output file name>
+ */
+extern void TEST_Is_Output_File_JSON_Compatible (void)
+{
+    int system_res = system("python3 " JSON_CHECK_FILE " " OUT_FILE);
+    ASSERT_EQUALS(0, system_res);
+
+    system_res = system("rm " OUT_FILE);
+    ASSERT_EQUALS(0, system_res);
+
+    return;
+}
+#endif /* LINUX */
+
+//---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief This test checks, whether the usage of a case insensitive string comparison produces more tokens and sets than
+ * the case sensitive string comparison.
+ *
+ * The check itself is only a "greater than".
+ */
+extern void TEST_Case_Insensitive_Comparison (void)
+{
+    Set_CLI_Parameter_To_Default_Values();
+
+    uint_fast64_t number_of_intersection_sets_case_sensitive = 0;
+    uint_fast64_t number_of_intersection_tokens_case_sensitive = 0;
+
+    uint_fast64_t number_of_intersection_sets_case_insensitive = 0;
+    uint_fast64_t number_of_intersection_tokens_case_insensitive = 0;
+
+    /* Test with default input and output files */
+    GLOBAL_CLI_INPUT_FILE = FILE_1;
+    GLOBAL_CLI_INPUT_FILE2 = FILE_CSV;
+    GLOBAL_CLI_OUTPUT_FILE = OUT_FILE;
+
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_case_sensitive, &number_of_intersection_sets_case_sensitive);
+
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = false;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_case_insensitive, &number_of_intersection_sets_case_insensitive);
+
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_tokens_case_sensitive);
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_tokens_case_insensitive);
+//    PRINT_NEWLINE
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_sets_case_sensitive);
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_sets_case_insensitive);
+//    PRINT_NEWLINE
+
+    ASSERT("Num of sets by using insensitive str comparison are not larger than the sensitive comparison !",
+            number_of_intersection_sets_case_insensitive > number_of_intersection_sets_case_sensitive);
+    ASSERT("Num of tokens by using insensitive str comparison are not larger than the sensitive comparison !",
+            number_of_intersection_tokens_case_insensitive > number_of_intersection_tokens_case_sensitive);
+
+    /* Test with another second input file */
+    GLOBAL_CLI_INPUT_FILE2 = FILE_2;
+
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = true;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_case_sensitive, &number_of_intersection_sets_case_sensitive);
+
+    GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON = false;
+    Exec_Intersection(NAN, &number_of_intersection_tokens_case_insensitive, &number_of_intersection_sets_case_insensitive);
+
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_tokens_case_sensitive);
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_tokens_case_insensitive);
+//    PRINT_NEWLINE
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_sets_case_sensitive);
+//    PRINT_NEWLINE
+//    ANY_PRINT(number_of_intersection_sets_case_insensitive);
+//    PRINT_NEWLINE
+
+    ASSERT("Num of sets by using insensitive str comparison are not larger than the sensitive comparison !",
+            number_of_intersection_sets_case_insensitive > number_of_intersection_sets_case_sensitive);
+    ASSERT("Num of tokens by using insensitive str comparison are not larger than the sensitive comparison !",
+            number_of_intersection_tokens_case_insensitive > number_of_intersection_tokens_case_sensitive);
+
+    return;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
 
 
 #ifdef FILE_1
@@ -496,6 +608,10 @@ extern void TEST_Placeholder_For_No_Extensions (void)
 #ifdef OUT_FILE
 #undef OUT_FILE
 #endif /* OUT_FILE */
+
+#ifdef JSON_CHECK_FILE
+#undef JSON_CHECK_FILE
+#endif /* JSON_CHECK_FILE */
 
 #ifdef TEST_EBM_FILE_MD5
 #undef TEST_EBM_FILE_MD5

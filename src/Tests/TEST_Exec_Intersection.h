@@ -25,6 +25,10 @@ extern "C"
 
 
 
+#include "../OS_Specific_Configurations.h"
+
+
+
 /**
  * @brief Test, whether the test files have the expected MD5 sum.
  */
@@ -136,6 +140,23 @@ extern void TEST_MMX_Extension (void);
  */
 extern void TEST_Placeholder_For_No_Extensions (void);
 #endif
+
+#ifdef LINUX
+/**
+ * @brief This test checks, whether the output file is a valid JSON file.
+ *
+ * The check itself will be done with a system command: "python3 <JSON check Python file> <output file name>
+ */
+extern void TEST_Is_Output_File_JSON_Compatible (void);
+#endif /* LINUX */
+
+/**
+ * @brief This test checks, whether the usage of a case insensitive string comparison produces more tokens and sets than
+ * the case sensitive string comparison.
+ *
+ * The check itself is only a "greater than".
+ */
+extern void TEST_Case_Insensitive_Comparison (void);
 
 
 

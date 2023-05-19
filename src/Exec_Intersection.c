@@ -529,7 +529,6 @@ Exec_Intersection
     UNUSED(Add_Counter_To_Export_File);
 
     const unsigned int intersection_settings = Create_Intersection_Settings_With_CLI_Parameter();
-
     int result = 0;
 
     // >>> Read files and extract the tokens <<<
@@ -541,7 +540,8 @@ Exec_Intersection
 
 
     // >>> Create a token int mapping list <<<
-    struct Token_Int_Mapping* token_int_mapping = TokenIntMapping_CreateObject ();
+    struct Token_Int_Mapping* token_int_mapping = TokenIntMapping_CreateObjectWithGivenCmpFunction
+            ((CASE_SENSITIVE_BIT(intersection_settings)) ? &strncmp : &strncasecmp_diy);
 
     // ... and fill them with all tokens (Content from the first file)
     uint_fast32_t token_added_to_mapping =
@@ -603,9 +603,9 @@ Exec_Intersection
                     1 : ((uint_fast32_t) number_of_intersection_calls / count_steps);
 
     // How many calls were done since the last calculation step was printed ?
-    uint_fast32_t intersection_calls_before_last_output = 0;
+    size_t intersection_calls_before_last_output    = 0;
     // Counter of all calls were done since the execution was started
-    size_t intersection_call_counter                    = 0;
+    size_t intersection_call_counter                = 0;
 
 //    char dataset_id_1 [DATASET_ID_LENGTH];
 //    memset(dataset_id_1, '\0', sizeof (dataset_id_1));
@@ -893,13 +893,8 @@ Exec_Intersection
         }
         // ===== ===== ===== ===== ===== END Inner loop ===== ===== ===== ===== =====
 
-        // Check if new data was found (It's possible, that new data is available, but the intersection settings don't
-        // allow to use them)
-        if (possible_data_found)
-        {
-            data_found = Update_Data_Found_Flag (intersection_settings, intersections_partial_match,
-                    intersections_full_match);
-        }
+        data_found = Update_Data_Found_Flag (intersection_settings, intersections_partial_match,
+                intersections_full_match);
 
         // Only append the objects from the current outer loop run, when data was found in the inner loop
         if (data_found)
@@ -1116,6 +1111,8 @@ Add_General_Information_To_Export_File
     cJSON_NOT_NULL(sentence_offset);
     cJSON* keep_single_tokens_result = cJSON_CreateBool(KEEP_SINGLE_TOKEN_RESULTS_BIT(export_settings));
     cJSON_NOT_NULL(sentence_offset);
+    cJSON* case_sensitive_cmp = cJSON_CreateBool(CASE_SENSITIVE_BIT(export_settings));
+    cJSON_NOT_NULL(case_sensitive_cmp);
 
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Part match", part_match);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Full match", full_match);
@@ -1124,6 +1121,7 @@ Add_General_Information_To_Export_File
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Sentence offset", sentence_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Word offset", word_offset);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Keep single tokens result", keep_single_tokens_result);
+    cJSON_ADD_ITEM_TO_OBJECT_CHECK(creation_mode, "Case sensitive comparison", case_sensitive_cmp);
     cJSON_ADD_ITEM_TO_OBJECT_CHECK(general_infos, "Creation mode", creation_mode);
 
     cJSON* creation_time = cJSON_CreateString(time_string);
@@ -1381,8 +1379,8 @@ Append_Token_List_Container_Data_To_Token_Int_Mapping
         for (uint_fast32_t i2 = 0; i2 < token_list_container->token_lists [i].next_free_element; ++ i2)
         {
             // Print calculation steps
-            inner_loop_runs_before_last_print = Process_Printer(print_steps, inner_loop_runs_before_last_print,
-                    inner_loop_counter, inner_loop_runs, true,
+            inner_loop_runs_before_last_print = (uint_fast32_t) Process_Printer(print_steps, 
+                    inner_loop_runs_before_last_print, inner_loop_counter, inner_loop_runs, true,
                     Exec_Add_Token_To_Mapping_Process_Print_Function,
                     NULL,
                     NULL);
@@ -1515,7 +1513,7 @@ Exec_Add_Token_To_Mapping_Process_Print_Function
     const float time_left   = Determine_Time_Left(call_counter_interval_begin, call_counter_interval_end,
             all_calls, interval_end - interval_begin);
 
-    PRINTF_FFLUSH("Add data to token int mapping (%3.2f %% | %.2f sec.)   \r",
+    PRINTF_FFLUSH("Add data to token int mapping (%3.2f %% | %.2f sec.)",
             ceil(Replace_NaN_And_Inf_With_Zero(percent)), Replace_NaN_And_Inf_With_Zero(time_left));
 
     return;
@@ -1694,10 +1692,12 @@ Create_Intersection_Settings_With_CLI_Parameter
     }
     if (GLOBAL_CLI_NO_PART_MATCHES)
     {
+        // Disable the PART MATCH setting
         if (intersection_settings & PART_MATCH) { intersection_settings ^= PART_MATCH; }
     }
     if (GLOBAL_CLI_NO_FULL_MATCHES)
     {
+        // Disable the FULL MATCH setting
         if (intersection_settings & FULL_MATCH) { intersection_settings ^= FULL_MATCH; }
     }
     if (GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN)
@@ -1711,6 +1711,10 @@ Create_Intersection_Settings_With_CLI_Parameter
     if (GLOBAL_CLI_SHOW_TOO_LONG_TOKENS)
     {
         intersection_settings |= SHOW_TOO_LONG_TOKENS;
+    }
+    if (GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON)
+    {
+        intersection_settings |= CASE_SENSITIVE;
     }
 
     return intersection_settings;

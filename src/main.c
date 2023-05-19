@@ -239,21 +239,32 @@ int main (const int argc, const char* argv [])
             OPT_STRING('o', "output", &GLOBAL_CLI_OUTPUT_FILE, "Output file", NULL, 0, 0),
 
             OPT_GROUP("Additional functions"),
-            OPT_BOOLEAN('f', "format", &GLOBAL_CLI_FORMAT_OUTPUT, "Format the output for better readability in a normal editor ?", NULL, 0, 0),
-            OPT_BOOLEAN('s', "sentence_offset", &GLOBAL_CLI_SENTENCE_OFFSET, "Calculate sentence offsets ?", NULL, 0, 0),
-            OPT_BOOLEAN('w', "word_offset", &GLOBAL_CLI_WORD_OFFSET, "Calculate word offsets ?", NULL, 0, 0),
-            OPT_BOOLEAN('\0', "show_too_long_tokens", &GLOBAL_CLI_SHOW_TOO_LONG_TOKENS, "Show too long tokens in the result file", NULL, 0, 0),
-            OPT_BOOLEAN('\0', "no_part_matches", &GLOBAL_CLI_NO_PART_MATCHES, "Don't show partial matches in the output file", NULL, 0, 0),
-            OPT_BOOLEAN('\0', "no_full_matches", &GLOBAL_CLI_NO_FULL_MATCHES, "Don't show full matches in the output file", NULL, 0, 0),
-            OPT_BOOLEAN('\0', "no_timestamp", &GLOBAL_CLI_NO_TIMESTAMP, "Don't save a timestamp in the output file", NULL, 0, 0),
-            OPT_BOOLEAN('n', "no_cpu_extensions", &GLOBAL_CLI_NO_CPU_EXTENSIONS, "Don't use CPU extensions, even if there available on the host", NULL, 0, 0),
-            OPT_BOOLEAN('k', "keep_single_token_results", &GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN, "Keep results with only one token", NULL, 0, 0),
+            OPT_BOOLEAN('f', "format", &GLOBAL_CLI_FORMAT_OUTPUT,
+                    "Format the output for better readability in a normal editor", NULL, 0, 0),
+            OPT_BOOLEAN('s', "sentence_offset", &GLOBAL_CLI_SENTENCE_OFFSET,
+                    "Calculate sentence offsets", NULL, 0, 0),
+            OPT_BOOLEAN('w', "word_offset", &GLOBAL_CLI_WORD_OFFSET,
+                    "Calculate word offsets (On by default)", NULL, 0, 0),
+            OPT_BOOLEAN('\0', "show_too_long_tokens", &GLOBAL_CLI_SHOW_TOO_LONG_TOKENS,
+                    "Show too long tokens in the result file", NULL, 0, 0),
+            OPT_BOOLEAN('\0', "no_part_matches", &GLOBAL_CLI_NO_PART_MATCHES,
+                    "Don't show partial matches in the output file", NULL, 0, 0),
+            OPT_BOOLEAN('\0', "no_full_matches", &GLOBAL_CLI_NO_FULL_MATCHES,
+                    "Don't show full matches in the output file", NULL, 0, 0),
+            OPT_BOOLEAN('k', "keep_single_token_results", &GLOBAL_CLI_KEEP_RESULTS_WITH_ONE_TOKEN,
+                    "Keep results with only one token", NULL, 0, 0),
+            OPT_BOOLEAN('c', "case_sensitive_token_cmp", &GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON,
+                    "Do a case sensitive comparison of the tokens", NULL, 0, 0),
 
             OPT_GROUP("Debug / test functions"),
             OPT_BOOLEAN('T', "run_all_test_functions", &GLOBAL_RUN_ALL_TEST_FUNCTIONS,
                     "Execute all test functions", NULL, 0, 0),
             OPT_FLOAT('A', "abort", &GLOBAL_ABORT_PROCESS_PERCENT,
-                     "At which percent the calculation should be aborted ?", NULL, 0, 0),
+                     "Abort the calculation at this percent", NULL, 0, 0),
+            OPT_BOOLEAN('n', "no_cpu_extensions", &GLOBAL_CLI_NO_CPU_EXTENSIONS,
+                    "Don't use CPU extensions, even if there available on the host", NULL, 0, 0),
+            OPT_BOOLEAN('\0', "no_timestamp", &GLOBAL_CLI_NO_TIMESTAMP,
+                    "Don't save a timestamp in the output file", NULL, 0, 0),
 
             OPT_END()
     };
@@ -348,6 +359,9 @@ int main (const int argc, const char* argv [])
     puts("Using " ANSI_TEXT_BOLD "64 bit" ANSI_RESET_ALL " mode.");
 #endif /* I386 */
 
+    printf("Comparison mode: " ANSI_TEXT_BOLD "%s" ANSI_RESET_ALL "\n",
+            (GLOBAL_CLI_CASE_SENSITIVE_TOKEN_COMPARISON) ? "case sensitive" : "case insensitive");
+
     PUTS_FFLUSH("");
 
     // Execute the intersection process
@@ -403,9 +417,15 @@ Run_All_Test_Functions (void)
     RUN(TEST_Placeholder_For_No_Extensions);
 #endif
 
+    RUN(TEST_Case_Insensitive_Comparison);
+
     RUN(TEST_Number_Of_Free_Calls);
     RUN(TEST_ANSI_Esc_Seq);
     RUN(TEST_Any_Print);
+
+#ifdef LINUX
+    RUN(TEST_Is_Output_File_JSON_Compatible);
+#endif /* LINUX */
 
     return;
 }

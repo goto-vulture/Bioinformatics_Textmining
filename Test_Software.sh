@@ -49,6 +49,7 @@ do
     for (( j=0; j<${#MODES[@]}; j++ ))
     do
         printf "===== Test mode \"%s\" with \"%s\" =====\n" ${MODES[j]} ${C_STD[i]}
+        printf "Make... "
 
         program_output=$(make clean)
         last_call=${?}
@@ -57,6 +58,7 @@ do
         program_output=$(make ${MODES[j]} ${C_STD[i]})
         last_call=${?}
         Check_Last_Program_Call
+        echo "done"
 
         if [[ ${j} -eq 0 ]];
         then

@@ -71,6 +71,9 @@ extern "C"
 /**
  * @brief Copy a C-String and convert all upper-case char to lower-case.
  *
+ * If the to_lower_string smaller than the orig_string, than only the first to_lower_string_size - 1 char will be
+ * converted.
+ *
  * Asserts / In this case normal if tests:
  *      orig_string != NULL
  *      to_lower_string != NULL
@@ -96,6 +99,10 @@ String_To_Lower
  * There might be a function "strncasecmp()" on your system with the same functionality. But this is an GNU extension
  * and no portable C code.
  *
+ * In the case, that the input strings has not the same length, the function returns -1.
+ *
+ * The function expects, that the strings do not (partially) overlap.
+ *
  * Asserts / In this case normal if tests:
  *       string_1 != NULL
  *       string_1_length > 0
@@ -107,7 +114,7 @@ String_To_Lower
  * @param[in] string_2 Second C-String
  * @param[in] string_2_length Length of the second C-String
  *
- * @return 0, if the C-String equals, else != 0 (In error cases INT_MAX)
+ * @return 0, if the C-Strings are equal, else != 0 (In error cases INT_MAX)
  */
 extern int
 Compare_Strings_Case_Insensitive
@@ -116,6 +123,37 @@ Compare_Strings_Case_Insensitive
         const size_t string_1_length,
         const char* const restrict string_2,
         const size_t string_2_length
+);
+
+/**
+ * @brief Compare two C-Strings case insensitive.
+ *
+ * There might be a function "strncasecmp()" on your system with the same functionality. But this is an GNU extension
+ * and no portable C code.
+ *
+ * This function has the same interface like the strncmp() function.
+ *
+ * In the case, that the input strings has not the same length, the function returns -1.
+ *
+ * The function expects, that the strings do not (partially) overlap.
+ *
+ * Asserts / In this case normal if tests:
+ *       string_1 != NULL
+ *       string_2 != NULL
+ *       string_length > 0
+ *
+ * @param[in] string_1 First C-String
+ * @param[in] string_2 Second C-String
+ * @param[in] string_length Max number of char, that will be compared
+ *
+ * @return 0, if the C-Strings are equal, else != 0 (In error cases INT_MAX)
+ */
+extern int
+strncasecmp_diy
+(
+       const char* const restrict string_1,
+       const char* const restrict string_2,
+       const size_t string_length
 );
 
 /**
@@ -324,6 +362,12 @@ Is_String_Null_Terminated
 
 //---------------------------------------------------------------------------------------------------------------------
 
+#ifndef TOKENIZED_STRING_NUM_DATASETS
+#define TOKENIZED_STRING_NUM_DATASETS 250
+#else
+#error "The macro \"TOKENIZED_STRING_NUM_DATASETS\" is already defined !"
+#endif /* TOKENIZED_STRING_NUM_DATASETS */
+
 /**
  * @brief This structure saves the main information about a tokenized c string. It saves the position as offset and the
  * length of the token.
@@ -332,10 +376,10 @@ struct Tokenized_String
 {
     struct
     {
-        ptrdiff_t pos;                  ///< Position as offset
-        ptrdiff_t len;                  ///< Length focused from the offset
-    } token_data [250];                 ///< The value should be enough for our purposes
-    uint_fast32_t next_free_pos_len;    ///< Index of the next unused object
+        ptrdiff_t pos;                              ///< Position as offset
+        ptrdiff_t len;                              ///< Length focused from the offset
+    } token_data [TOKENIZED_STRING_NUM_DATASETS];   ///< The value should be enough for our purposes
+    uint_fast32_t next_free_pos_len;                ///< Index of the next unused object
 };
 
 /**

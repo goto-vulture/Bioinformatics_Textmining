@@ -140,7 +140,7 @@ Create_Document_Word_List_With_Random_Test_Data_Plus_Specified_Data
         {
             while (1)
             {
-                used_positions [i2] = (uint_fast32_t) rand () % max_array_length;
+                used_positions [i2] = (uint_fast32_t) (rand () % (int) max_array_length);
                 _Bool new_position = true;
 
                 // Is the current position in use for a value from the pre-specified data ?

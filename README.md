@@ -120,6 +120,8 @@ The CLI accepts the following main inputs, that are required:
 - `-o`, `--output=<str>`: Output file
 
 Optional arguments:
+- `-h`, `--help`: Show a help message and exit
+
 - `-f`, `--format`: Format the output for better readability in a normal editor?
 - `-s`, `--sentence_offset`: Calculate sentence offsets? (In normal cases this is not necessary)
 - `-w`, `--word_offset`: Calculate word offsets?
@@ -127,13 +129,13 @@ Optional arguments:
 - `--no_part_matches`: No part matches will appear in the export file
 - `--no_full_matches`: No full matches will appear in the export file
 - `-k`, `--keep_single_token_results`: Keep results with only one token (By default single tokens results will be discarded)
-- `-n`, `--no_cpu_extensions`: Don't use CPU extensions, even if there available on the host
-
-- `-h`, `--help`: Show a help message and exit
+- `-c`, `--case_insensitive_token_cmp`: Do a case insensitive comparison of the tokens
 
 Debugging arguments:
 - `-A`, `--abort=<float>`: Abort the calculation after X percent
 - `-T`, `--run_all_test_functions`: Running all test functions. This argument overrides all other arguments, except -h. (Only useful for debugging)
+- `-n`, `--no_cpu_extensions`: Don't use CPU extensions, even if there available on the host
+- `--no_timestamp`: Don't save a timestamp in the output file
 
 
 

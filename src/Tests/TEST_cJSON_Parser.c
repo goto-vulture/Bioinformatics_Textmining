@@ -23,10 +23,10 @@
 
 /**
  * @brief Add the system specific newline byte sequence to the parsing result.
- * 
+ *
  * Linux: '\n'
  * Windows: '\r\n'
- 
+
  * @return The new parsing_result pointer
  */
 static char*
@@ -59,10 +59,10 @@ extern void TEST_cJSON_Parse_JSON_Fragment (void)
 
     // Allocate memory for the parsing result and execute the parsing process
     // For the sake of simplicity, I assume that the double length of the expected result is enough
-    const long unsigned int parsing_result_length = (long unsigned int) (expected_results_file_length * 2);
-    long unsigned int parsing_result_mem_left = parsing_result_length - 1;
-    char* parsing_result = (char*) MALLOC (parsing_result_length * sizeof (char));
-    memset (parsing_result, '\0', parsing_result_length);
+    const long long unsigned int parsing_result_length = (long long unsigned int) (expected_results_file_length * 2);
+    // "long long unsigned int" to avoid warnings on system where size_t are "long long unsigned int"
+    long long unsigned int parsing_result_mem_left = parsing_result_length - 1;
+    char* parsing_result = (char*) CALLOC ((size_t) parsing_result_length, sizeof (char));
     ASSERT_ALLOC(parsing_result, "Cannot allocate memory for the parsing result !",
             (expected_results_file_length * 2) * sizeof (char));
     parsing_result [expected_results_file_length * 2 - 1] = '\0'; // Gurantee a temination
@@ -82,16 +82,16 @@ extern void TEST_cJSON_Parse_JSON_Fragment (void)
             char* partial_parsing_result = cJSON_Print(json);
 
             // Append the partial parsing results
-            strncat (parsing_result, partial_parsing_result, parsing_result_mem_left);
+            strncat (parsing_result, partial_parsing_result, (size_t) parsing_result_mem_left);
             parsing_result_mem_left -= strlen(partial_parsing_result);
             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result is too small ! "
-                    "%lu byte were allocated.", parsing_result_length);
+                    "%llu byte were allocated.", parsing_result_length);
 
             // Add at the end of every partial parsing result a newline char
-            strncat (parsing_result, "\n", parsing_result_mem_left);
+            strncat (parsing_result, "\n", (size_t) parsing_result_mem_left);
             parsing_result_mem_left -= STATIC_STRLEN ("\n");
             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result is too small ! "
-                    "%lu byte were allocated.", parsing_result_length);
+                    "%llu byte were allocated.", parsing_result_length);
 
             free (partial_parsing_result);
             partial_parsing_result = NULL;
@@ -132,9 +132,9 @@ extern void TEST_cJSON_Get_Token_Array_From_JSON_Fragment (void)
 
     // Allocate memory for the parsing result and execute the parsing process
     // For the sake of simplicity, I assume that the double length of the expected result is enough
-    const size_t parsing_result_length = (size_t) (expected_results_file_length * 2);
-    long unsigned int parsing_result_mem_left = parsing_result_length - 1;
-    char* parsing_result = (char*) CALLOC (parsing_result_length, sizeof (char));
+    const long long unsigned int parsing_result_length = (long long unsigned int) (expected_results_file_length * 2);
+    long long unsigned int parsing_result_mem_left = parsing_result_length - 1;
+    char* parsing_result = (char*) CALLOC ((size_t) parsing_result_length, sizeof (char));
     ASSERT_ALLOC(parsing_result, "Cannot allocate memory for the parsing result !",
             (expected_results_file_length * 2) * sizeof (char));
     parsing_result [expected_results_file_length * 2 - 1] = '\0'; // Gurantee a temination
@@ -198,18 +198,18 @@ extern void TEST_cJSON_Get_Token_Array_From_JSON_Fragment (void)
                         {
                             //printf ("%s\n", current_token->valuestring);
                             // Insert token to result object
-                            strncat(parsing_result, "\"", parsing_result_mem_left);
+                            strncat(parsing_result, "\"", (size_t) parsing_result_mem_left);
                             parsing_result_mem_left -= STATIC_STRLEN ("\"");
                             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result "
-                                    "is too small ! %zu byte were allocated.", parsing_result_length);
-                            strncat(parsing_result, current_token->valuestring, parsing_result_mem_left);
+                                    "is too small ! %llu byte were allocated.", parsing_result_length);
+                            strncat(parsing_result, current_token->valuestring, (size_t) parsing_result_mem_left);
                             parsing_result_mem_left -= strlen(current_token->valuestring);
                             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result "
-                                    "is too small ! %zu byte were allocated.", parsing_result_length);
-                            strncat(parsing_result, "\", ", parsing_result_mem_left);
+                                    "is too small ! %llu byte were allocated.", parsing_result_length);
+                            strncat(parsing_result, "\", ", (size_t) parsing_result_mem_left);
                             parsing_result_mem_left -= STATIC_STRLEN ("\", ");
                             ASSERT_FMSG(parsing_result_mem_left < parsing_result_length, "Memory for parsing result "
-                                    "is too small ! %zu byte were allocated.", parsing_result_length);
+                                    "is too small ! %llu byte were allocated.", parsing_result_length);
                         }
                     }
                 }
@@ -356,10 +356,10 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
                 strncat(parsing_result, name->string, parsing_result_mem_left);
                 parsing_result += strlen (name->string);
                 parsing_result_mem_left -= strlen (name->string);
-                
+
                 // Check, if memory left
-                ASSERT_FMSG(parsing_result_mem_left > 0 && parsing_result_mem_left < parsing_result_length, 
-                        "Not enough memory allocated for the parsing result ! (Allocated size: %zu byte)", 
+                ASSERT_FMSG(parsing_result_mem_left > 0 && parsing_result_mem_left < parsing_result_length,
+                        "Not enough memory allocated for the parsing result ! (Allocated size: %zu byte)",
                         parsing_result_length);
             }
 
@@ -387,7 +387,7 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
                 parsing_result ++;
                 parsing_result_mem_left --;
 
-                // Length parameter statement checks for underflows 
+                // Length parameter statement checks for underflows
                 strncat(parsing_result, curr_token->valuestring, (parsing_result_mem_left >= parsing_result_length) ? 0 : parsing_result_mem_left);
                 tokens_found ++;
                 const size_t curr_token_length = strlen(curr_token->valuestring);
@@ -450,7 +450,7 @@ extern void TEST_cJSON_Parse_Full_JSON_File (void)
 
 /**
  * @brief Add the system specific newline byte sequence to the parsing result.
- * 
+ *
  * Linux: '\n'
  * Windows: '\r\n'
  *
