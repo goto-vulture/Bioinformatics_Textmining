@@ -702,7 +702,6 @@ Exec_Intersection
         if (PART_MATCH_BIT(intersection_settings))  { cJSON_NEW_OBJ_CHECK(intersections_partial_match); }
         if (FULL_MATCH_BIT(intersection_settings))  { cJSON_NEW_OBJ_CHECK(intersections_full_match); }
         cJSON_NEW_OBJ_CHECK(outer_object);
-        _Bool possible_data_found = false;
         _Bool data_found = false;
 
         // ===== ===== ===== ===== ===== BEGIN Inner loop ===== ===== ===== ===== =====
@@ -767,8 +766,6 @@ Exec_Intersection
             // In default cases a valid data block needs to contain at least 2 (!) tokens
             if (DocumentWordList_IsDataInObject(intersection_result) && tokens_left >= min_token_left_for_valid_data_set)
             {
-                possible_data_found = true;
-
                 // "selected_data_2_array" is the counter for the outer loop
                 // This test has the effect, that the tokens array only appear once for each outer element
                 if (selected_data_2_array != last_used_selected_data_2_array)
