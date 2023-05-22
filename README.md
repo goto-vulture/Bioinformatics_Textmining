@@ -123,8 +123,8 @@ Optional arguments:
 - `-h`, `--help`: Show a help message and exit
 
 - `-f`, `--format`: Format the output for better readability in a normal editor?
-- `-s`, `--sentence_offset`: Calculate sentence offsets? (In normal cases this is not necessary)
-- `-w`, `--word_offset`: Calculate word offsets?
+- `-s`, `--sentence_offset`: Calculate sentence offsets?
+- `-w`, `--word_offset`: Calculate word offsets? (*On by default*)
 - `--show_too_long_tokens`: Show too long tokens in the export file
 - `--no_part_matches`: No part matches will appear in the export file
 - `--no_full_matches`: No full matches will appear in the export file
