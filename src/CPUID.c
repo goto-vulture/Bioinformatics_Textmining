@@ -3,6 +3,9 @@
  *
  * @brief Functions with inline asm to discover details of a x86 processor.
  *
+ * The goal of the design of this translation unit is, that it can be used with the standard and nothing more. Therefore
+ * some of my macros are here not in use. E.g. ASSERT_MSG
+ *
  * Documentation:
  * @see https://www.sandpile.org/x86/cpuid.htm
  *
@@ -11,7 +14,8 @@
  */
 
 #include "CPUID.h"
-#include "Error_Handling/Assert_Msg.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 #if defined(__GNUC__)
 
@@ -71,9 +75,6 @@ extern struct CPUID_Register CPUID_ExecWithGivenValues
 /**
  * @brief Get the vendor string of the x86 host CPU.
  *
- * Asserts:
- *      result != NULL
- *
  * @param[out] result Pointer to a int32_t array with exact 4 elements.
  */
 extern void CPUID_GetVendorString
@@ -81,9 +82,15 @@ extern void CPUID_GetVendorString
         volatile int32_t (* const result) [4]
 )
 {
-    ASSERT_MSG(result != NULL, "Pointer to the result array is NULL !");
-
     volatile struct CPUID_Register input = { .eax = 0, .ebx = 0, .ecx = 0, .edx = 0 };
+    if (result == NULL)
+    {
+        (*result) [0] = 0;
+        (*result) [1] = 0;
+        (*result) [2] = 0;
+        (*result) [3] = 0;
+        return;
+    }
     const volatile struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
 
     // Yes the order is correct: ebx | edx | ecx
@@ -103,8 +110,7 @@ extern void CPUID_GetVendorString
 /**
  * @brief Get the AMD easter egg string.
  *
- * Asserts:
- *      result != NULL
+ * @see https://en.wikipedia.org/wiki/CPUID#EAX=8FFFFFFFh:_AMD_Easter_Egg
  *
  * @param[out] result Pointer to a int32_t array with exact 5 elements.
  */
@@ -113,9 +119,16 @@ extern void CPUID_GetAMDEasterEggString
         volatile int32_t (* const result)[5]
 )
 {
-    ASSERT_MSG(result != NULL, "Pointer to the result array is NULL !");
-
     volatile struct CPUID_Register input = { .eax = (int32_t) 0x8FFFFFFF, .ebx = 0, .ecx = 0, .edx = 0 };
+    if (result == NULL)
+    {
+        (*result) [0] = 0;
+        (*result) [1] = 0;
+        (*result) [2] = 0;
+        (*result) [3] = 0;
+        (*result) [4] = 0;
+        return;
+    }
     const volatile struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
 
     (*result)[0] = result_register.eax;
@@ -248,15 +261,6 @@ extern _Bool CPUID_IsAVX512FAvailable
 
 #warning "Translation unit, that contains only functions designed for a x86 host CPU included."
 
-/**
- * @brief Error message if a x86 specific function will be executed on a non-x86 host CPU.
- */
-#ifndef ERR_MSG
-#define ERR_MSG "You try to call a function, that contains x86-only instructions, with a non-x86 host CPU"
-#else
-#error "The macro \"ERR_MSG\" is already defined !"
-#endif /* ERR_MSG */
-
 //---------------------------------------------------------------------------------------------------------------------
 
 extern struct CPUID_Register CPUID_ExecWithGivenValues
@@ -264,18 +268,25 @@ extern struct CPUID_Register CPUID_ExecWithGivenValues
         struct CPUID_Register input
 )
 {
-    ASSERT_MSG(false, ERR_MSG);
-    return;
+    (void) input;
+
+    struct CPUID_Register result = { .eax = -1, .ebx = -1, .ecx = -1, .edx = -1 };
+
+    return result;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 extern void CPUID_GetVendorString
 (
-        int32_t (* const result) [4]
+        volatile int32_t (* const result) [4]
 )
 {
-    ASSERT_MSG(false, ERR_MSG);
+    (*result) [0] = 0;
+    (*result) [1] = 0;
+    (*result) [2] = 0;
+    (*result) [3] = 0;
+
     return;
 }
 
@@ -283,10 +294,15 @@ extern void CPUID_GetVendorString
 
 extern void CPUID_GetAMDEasterEggString
 (
-        int32_t (* const result)[5]
+        volatile int32_t (* const result)[5]
 )
 {
-    ASSERT_MSG(false, ERR_MSG);
+    (*result) [0] = 0;
+    (*result) [1] = 0;
+    (*result) [2] = 0;
+    (*result) [3] = 0;
+    (*result) [4] = 0;
+
     return;
 }
 
@@ -297,8 +313,7 @@ extern _Bool CPUID_IsMMXAvailable
         void
 )
 {
-    ASSERT_MSG(false, ERR_MSG);
-    return;
+    return false;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -308,8 +323,7 @@ extern _Bool CPUID_IsSSE2Available
         void
 )
 {
-    ASSERT_MSG(false, ERR_MSG);
-    return;
+    return false;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -319,8 +333,7 @@ extern _Bool CPUID_IsSSE4_1Available
         void
 )
 {
-    ASSERT_MSG(false, ERR_MSG);
-    return;
+    return false;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -330,8 +343,7 @@ extern _Bool CPUID_IsAVXAvailable
         void
 )
 {
-    ASSERT_MSG(false, ERR_MSG);
-    return;
+    return false;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -341,8 +353,7 @@ extern _Bool CPUID_IsAVX2Available
         void
 )
 {
-    ASSERT_MSG(false, ERR_MSG);
-    return;
+    return false;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -352,8 +363,7 @@ extern _Bool CPUID_IsAVX512FAvailable
         void
 )
 {
-    ASSERT_MSG(false, ERR_MSG);
-    return;
+    return false;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -366,6 +376,7 @@ extern _Bool CPUID_IsAVX512FAvailable
 
 #else /* #if defined(__GNUC__) */
 
-#error "This translation unit uses inline assembly code in the GCC syntax, which is not portable to other compilers. If you don't need functions from this translation unit: comment the include line out."
+#error "This translation unit uses inline assembly code in the GCC syntax, which is not portable to other compilers. "  \
+       "If you don't need functions from this translation unit: comment the include line out."
 
 #endif /* #if defined(__GNUC__) */

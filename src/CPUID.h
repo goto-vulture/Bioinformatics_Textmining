@@ -1,7 +1,10 @@
 /**
- * @file CPUID.h
+ * @file CPUID.c
  *
  * @brief Functions with inline asm to discover details of a x86 processor.
+ *
+ * The goal of the design of this translation unit is, that it can be used with the standard and nothing more. Therefore
+ * some of my macros are here not in use. E.g. ASSERT_MSG
  *
  * Documentation:
  * @see https://www.sandpile.org/x86/cpuid.htm
@@ -56,9 +59,6 @@ extern struct CPUID_Register CPUID_ExecWithGivenValues
 /**
  * @brief Get the vendor string of the x86 host CPU.
  *
- * Asserts:
- *      result != NULL
- *
  * @param[out] result Pointer to a int32_t array with exact 4 elements.
  */
 extern void CPUID_GetVendorString
@@ -69,8 +69,7 @@ extern void CPUID_GetVendorString
 /**
  * @brief Get the AMD easter egg string.
  *
- * Asserts:
- *      result != NULL
+ * @see https://en.wikipedia.org/wiki/CPUID#EAX=8FFFFFFFh:_AMD_Easter_Egg
  *
  * @param[out] result Pointer to a int32_t array with exact 5 elements.
  */
