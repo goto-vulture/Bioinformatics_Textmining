@@ -324,35 +324,35 @@ int main (const int argc, const char* argv [])
     Check_CLI_Parameter_Logical_Consistency();
     puts("");
 
+    _Bool no_extensions = true;
     printf("Available extensions: ");
-    if (CPUID_IsMMXAvailable())     { printf(ANSI_TEXT_BOLD "MMX " ANSI_RESET_ALL); }
-    if (CPUID_IsSSE2Available())    { printf(ANSI_TEXT_BOLD "SSE2 " ANSI_RESET_ALL); }
-    if (CPUID_IsSSE4_1Available())  { printf(ANSI_TEXT_BOLD "SSE4.1 " ANSI_RESET_ALL); }
-    if (CPUID_IsAVXAvailable())     { printf(ANSI_TEXT_BOLD "AVX " ANSI_RESET_ALL); }
-    if (CPUID_IsAVX2Available())    { printf(ANSI_TEXT_BOLD "AVX2 " ANSI_RESET_ALL); }
+    if (CPUID_IsMMXAvailable())     { printf(ANSI_TEXT_BOLD "MMX " ANSI_RESET_ALL); no_extensions = false; }
+    if (CPUID_IsSSE2Available())    { printf(ANSI_TEXT_BOLD "SSE2 " ANSI_RESET_ALL); no_extensions = false; }
+    if (CPUID_IsSSE4_1Available())  { printf(ANSI_TEXT_BOLD "SSE4.1 " ANSI_RESET_ALL); no_extensions = false; }
+    if (CPUID_IsAVXAvailable())     { printf(ANSI_TEXT_BOLD "AVX " ANSI_RESET_ALL); no_extensions = false; }
+    if (CPUID_IsAVX2Available())    { printf(ANSI_TEXT_BOLD "AVX2 " ANSI_RESET_ALL); no_extensions = false; }
+    if (no_extensions)              { printf(ANSI_TEXT_BOLD "N/A " ANSI_RESET_ALL); }
     NEWLINE
 
     // Show the used CPU extensions
+#if ! defined(NO_CPU_EXTENSIONS)
     if (! GLOBAL_CLI_NO_CPU_EXTENSIONS)
     {
-#if defined(__AVX__) && defined(__AVX2__) && ! defined(NO_AVX2) && ! defined(NO_CPU_EXTENSIONS)
-        puts("Using " ANSI_TEXT_BOLD "AVX2" ANSI_RESET_ALL " CPU extension.");
-#elif defined(__AVX__) && ! defined(NO_AVX) && ! defined(NO_CPU_EXTENSIONS)
-        puts("Using " ANSI_TEXT_BOLD "AVX" ANSI_RESET_ALL " CPU extension.");
-#elif defined(__SSE__) && defined(__SSE2__) && defined(__SSE3__) && defined(__SSE4_1__) && ! defined(NO_SSE4_1) && ! defined(NO_CPU_EXTENSIONS)
-        puts("Using " ANSI_TEXT_BOLD "SSE4.1" ANSI_RESET_ALL " CPU extension.");
-#elif defined(__SSE__) && defined(__SSE2__) && ! defined(NO_SSE2) && ! defined(NO_CPU_EXTENSIONS)
-        puts("Using " ANSI_TEXT_BOLD "SSE2" ANSI_RESET_ALL " CPU extension.");
-#elif defined(__MMX__) && ! defined(NO_MMX) && ! defined (NO_CPU_EXTENSIONS)
-        puts("Using " ANSI_TEXT_BOLD "MMX" ANSI_RESET_ALL " CPU extension.");
-#else
-        puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension.");
-#endif
+        if (CPUID_IsAVX2Available())        { puts("Using " ANSI_TEXT_BOLD "AVX2" ANSI_RESET_ALL " CPU extension."); }
+        else if (CPUID_IsAVXAvailable())    { puts("Using " ANSI_TEXT_BOLD "AVX" ANSI_RESET_ALL " CPU extension."); }
+        else if (CPUID_IsSSE4_1Available()) { puts("Using " ANSI_TEXT_BOLD "SSE4.1" ANSI_RESET_ALL " CPU extension."); }
+        else if (CPUID_IsSSE2Available())   { puts("Using " ANSI_TEXT_BOLD "SSE2" ANSI_RESET_ALL " CPU extension."); }
+        else if (CPUID_IsMMXAvailable())    { puts("Using " ANSI_TEXT_BOLD "MMX" ANSI_RESET_ALL " CPU extension."); }
+        else                                { puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension."); }
     }
     else
     {
         puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension.");
     }
+#else
+    puts("Using " ANSI_TEXT_BOLD "no" ANSI_RESET_ALL " CPU extension.");
+#endif /* ! defined(NO_CPU_EXTENSIONS) */
+
 #ifdef I386
     puts("Using " ANSI_TEXT_BOLD "32 bit" ANSI_RESET_ALL " mode.");
 #else
