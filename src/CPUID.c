@@ -83,14 +83,7 @@ extern void CPUID_GetVendorString
 )
 {
     volatile struct CPUID_Register input = { .eax = 0, .ebx = 0, .ecx = 0, .edx = 0 };
-    if (result == NULL)
-    {
-        (*result) [0] = 0;
-        (*result) [1] = 0;
-        (*result) [2] = 0;
-        (*result) [3] = 0;
-        return;
-    }
+    if (result == NULL) { return; }
     const volatile struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
 
     // Yes the order is correct: ebx | edx | ecx
@@ -120,15 +113,7 @@ extern void CPUID_GetAMDEasterEggString
 )
 {
     volatile struct CPUID_Register input = { .eax = (int32_t) 0x8FFFFFFF, .ebx = 0, .ecx = 0, .edx = 0 };
-    if (result == NULL)
-    {
-        (*result) [0] = 0;
-        (*result) [1] = 0;
-        (*result) [2] = 0;
-        (*result) [3] = 0;
-        (*result) [4] = 0;
-        return;
-    }
+    if (result == NULL) { return; }
     const volatile struct CPUID_Register result_register = CPUID_ExecWithGivenValues(input);
 
     (*result)[0] = result_register.eax;
