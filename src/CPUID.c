@@ -56,14 +56,10 @@ extern struct CPUID_Register CPUID_ExecWithGivenValues
 
     __asm__ volatile
     (
-            "mov %4, %%eax" NT
-            "mov %5, %%ebx" NT
-            "mov %6, %%ecx" NT
-            "mov %7, %%edx" NT
             "cpuid" NT
 
             : "=a" (result.eax), "=b" (result.ebx), "=c" (result.ecx), "=d" (result.edx)
-            : "r" (input.eax), "r" (input.ebx), "r" (input.ecx), "r" (input.edx)
+            : "0" (input.eax), "1" (input.ebx), "2" (input.ecx), "3" (input.edx)
             :
     );
 
