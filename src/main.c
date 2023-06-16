@@ -229,6 +229,10 @@ int main (const int argc, const char* argv [])
     // Use a user defined function at the end of the program
     atexit(At_Exit_Function);
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+    at_quick_exit(At_Exit_Function);
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
+
     struct argparse_option cli_options [] =
     {
             OPT_HELP(),
