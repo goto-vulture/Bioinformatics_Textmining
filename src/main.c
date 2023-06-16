@@ -206,7 +206,7 @@ int main (const int argc, const char* argv [])
 
     // Runtime check of the system
     // This check is necessary, because a _Static_assert test is only available in C11
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ < 201112L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
     #include <limits.h> // Necessary for "CHAR_BIT"
 
     ASSERT_MSG(CHAR_BIT == 8, "A char must be exact 8 bit long !");
@@ -224,7 +224,7 @@ int main (const int argc, const char* argv [])
     ASSERT_MSG(sizeof(float) >= 4, "The type \"float\" needs to be at least 4 byte wide !");
     ASSERT_MSG(sizeof(double) >= 4, "The type \"double\" needs to be at least 4 byte wide !");
     ASSERT_MSG(sizeof(long double) >= 4, "The type \"long double\" needs to be at least 4 byte wide !");
-#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ < 201112L */
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
     // Use a user defined function at the end of the program
     atexit(At_Exit_Function);
