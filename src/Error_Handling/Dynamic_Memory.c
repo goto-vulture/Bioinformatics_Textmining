@@ -52,7 +52,13 @@ void Show_Dynamic_Memory_Status (void)
             (GLOBAL_free_calls > 1000) ? GLOBAL_free_calls / 1000 :  GLOBAL_free_calls,
             (GLOBAL_free_calls > 1000) ? k : null_str,
             missing_free_calls,
+            // Since C11 UTF-8 string literals are allowed
+            // https://en.cppreference.com/w/c/language/string_literal
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+            (missing_free_calls == 0) ? u8"🙂" : (missing_free_calls < 0) ? u8"😲 " : u8"🙁");
+#else
             (missing_free_calls == 0) ? ":D" : (missing_free_calls < 0) ? ":oo" : ":o");
+#endif /* defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L */
 
     return;
 }
