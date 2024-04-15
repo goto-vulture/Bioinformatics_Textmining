@@ -178,7 +178,7 @@ It seems to be particularly helpful to use a SIMD CPU extension, because a inter
 
 It would be interesting to compare this results with a CPU, that supports AVX512. Unfortunately I don't own such a CPU.
 
-
+<!---
 ## Future features
 
 - Determine the end of sentences (Using POS tags from the source files; list of common abbreviations; 3rd party sentence tokenizer)
@@ -188,7 +188,7 @@ It would be interesting to compare this results with a CPU, that supports AVX512
     - They need to be appear in their original representation in the result file
     - In all other cases a case insensitive comparison
 - A more user-friendly interface. Maybe with a GUI. But the priority in this project is low.
-
+-->
 
 
 ## Help
